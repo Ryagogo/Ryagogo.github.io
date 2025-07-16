@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ryan | Merchandiser</title>
+  <style>
+  nav a {
+  margin-left: 2rem;
+  text-decoration: none;
+  color: #1a1a1a;
+  font-size: 0.98em;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+nav a::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 0;
+  background: #2078ff;
+  transition: width 0.3s;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #fff;
+      color: #222;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      padding: 1.5rem 2rem 1rem 2rem;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 1.1em;
+      letter-spacing: 0.5px;
+    }
+    nav a {
+      margin-left: 2rem;
+      text-decoration: none;
+      color: #1a1a1a;
+      font-size: 0.98em;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    nav a.active {
+      color: #2078ff;
+      font-weight: bold;
+    }
+    .main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 2rem;
+}
+
+    .card-container {
+      width: 340px;
+      margin-right: 4rem;
+      background: #f3ede7;
+      padding: 2.5rem 2rem 2rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 3px 18px #ececec96;
+      text-align: center;
+    }
+    .profile-img {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      margin: 0 auto 1rem auto;
+      background: #ddd;
+      object-fit: cover;
+      display: block;
+    }
+    .name {
+      font-size: 1.3em;
+      font-weight: bold;
+      margin: 1rem 0 0.4rem 0;
+    }
+    .role {
+      font-size: 0.97em;
+      color: #888;
+      margin-bottom: 1.2rem;
+      letter-spacing: 1px;
+    }
+    .socials a {
+      margin: 0 8px;
+      font-size: 1.2em;
+      text-decoration: none;
+      color: #444;
+    }
+    .intro-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-top: 1.5rem;
+    }
+    .intro-content h1 {
+      font-size: 3em;
+      margin: 0 0 0.1em 0;
+    }
+    .intro-content p {
+      font-size: 1.04em;
+      color: #444;
+      line-height: 1.5em;
+      margin-bottom: 1.4em;
+      max-width: 510px;
+    }
+    .buttons {
+      margin: 1.3em 0 2.4em 0;
+    }
+    .buttons a {
+      display: inline-block;
+      padding: 0.68em 2.1em;
+      font-size: 1em;
+      border-radius: 30px;
+      text-decoration: none;
+      border: 2px solid #2078ff;
+      color: #20f;
+      background: #fff;
+      margin-right: 0.85em;
+      transition: 0.15s;
+    }
+    .buttons a.primary {
+     background: #2178FF;
+    color: #ffffff;
+    border
+}
+    footer {
+      color: #777;
+      background: #fff;
+      font-size: 0.96em;
+      border-top: 1px solid #eee;
+      padding: 1.25rem 2rem 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 3rem;
+    }
+    .footer-col {
+      margin-bottom: 5px;
+    }
+    @media (max-width: 900px) {
+      .main-content { flex-direction: column; }
+      .card-container { margin: 0 0 2rem 0; }
+    }
+    @media (max-width: 600px) {
+      header, .main-content, footer {
+        padding: 1rem;
+      }
+      .intro-content h1 { font-size: 2em; }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header>
+    <div>
+      <span class="logo"><span style="color:#2078ff;">■</span> Ryan Gray</span>
+      <span style="margin-left:18px; font-size:0.9em; color:#888;">/ Merchandiser</span>
+    </div>
+    <nav>
+      <a class="active" href="#">About Me</a>
+      <a href="Resume.html">Resume</a>
+      <a href="#">Projects</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <aside class="card-container">
+      <img class="profile-img" src="profile-placeholder.jpg" alt="Profile Photo">
+      <div class="name">Ryan Gray</div>
+      <div class="role">Merchandiser</div>
+      <div class="socials">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </aside>
+    <section class="intro-content">
+      <h1>Hello</h1>
+      <div style="margin-bottom:1.2em;">
+        <span>Here's who I am &amp; what I do</span>
+      </div>
+      <div class="buttons">
+        <a href="#" class="primary">Resume</a>
+        <a href="#">Projects</a>
+      </div>
+      <p>
+        I'm a paragraph. Click here to add your own text and edit me. It's easy. Just click “Edit Text” or double click me to add your own content and make changes to the font.<br><br>
+        I'm a great place for you to tell a story and let your users know a little more about you.I'm a paragraph. 
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-col">
+      &copy; 2025 Ryan Gray<br>
+   
+    </div>
+    <div class="footer-col">
+      <div>Call<br><span style="color:#222;">757-779-1724</span></div>
+    </div>
+    <div class="footer-col">
+      <div>Write<br><span style="color:#222;">info@mysite.com</span></div>
+    </div>
+    <div class="footer-col">
+      <div>Follow<br>
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+
