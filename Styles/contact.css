@@ -1,0 +1,88 @@
+header { background: #050505; color: rgb(255, 255, 255); padding: 10px; text-align: center; }
+nav { background: #0c0c0c; text-align: center; padding: 10px; }
+    nav a { color: rgb(255, 255, 255); margin: 0 15px; text-decoration: none; font-weight: bold; }
+    section { max-width: 800px; margin: 20px auto; padding: 20px; background: rgb(255, 255, 255); border-radius: 5px; }
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  margin: auto;
+  text-align: center;
+
+  
+}
+
+.title {
+  color: grey;
+  font-size: 18px;
+}
+
+button {
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 8px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+}
+
+a {
+  text-decoration: none;
+  font-size: 22px;
+  color: black;
+}
+
+button:hover, a:hover {
+  opacity: 0.7;
+}
+
+body {
+display: block;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+header {
+  width: 100%;
+}
+
+.card {
+  margin: auto;
+}
+nav a {
+  color: rgb(255, 255, 255);
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: bold;
+  position: relative; /* Needed for the underline animation */
+  transition: color 0.2s ease;
+  font-size: 22px;
+}
+
+nav a::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 0;
+  background: #2078ff;
+  transition: width 0.3s;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
