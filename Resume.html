@@ -1,103 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Ryan Gray - Resume</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="Styles/Resume.css">
-</head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS RESET & LAYOUT */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: grid;
+            /* Narrowed sidebar to 25% */
+            grid-template-columns: 25% 75%;
+            min-height: 100vh;
+            line-height: 1.15;
+            /* Gradient updated to match the new 25% width */
+            background: linear-gradient(to right, #2c3e50 25%, #ffffff 25%);
+            color: #333;
+        }
+
+        /* LEFT SIDEBAR (BLUE) */
+        .sidebar {
+            grid-column: 1;
+            color: #ffffff;
+            padding: 30px 20px; /* Slightly tighter horizontal padding */
+        }
+
+        .sidebar h1 {
+            font-family: 'Hammersmith One', sans-serif;
+            font-size: 1.6rem; /* Slightly smaller to fit narrower width */
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar .contact-info {
+            font-size: 0.7rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .sidebar h2 {
+            font-family: 'Hammersmith One', sans-serif;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            margin: 15px 0 8px 0;
+            padding-bottom: 3px;
+        }
+
+        .sidebar p {
+            font-size: 0.75rem;
+            margin-bottom: 6px;
+            font-weight: 300;
+        }
+
+        /* RIGHT MAIN SECTION (WHITE) */
+        .main-content {
+            grid-column: 2;
+            padding: 30px 45px;
+        }
+
+        section {
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-family: 'Hammersmith One', sans-serif;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            border-bottom: 1.5px solid #333;
+            margin-bottom: 6px;
+            margin-top: 10px;
+        }
+
+        /* SECTION SPACING ADJUSTMENTS */
+        #certifications {
+            margin-bottom: 5px;
+        }
+
+        #experience h2 {
+            margin-top: 18px; /* Balanced spacing for the gap */
+        }
+
+        p, li {
+            font-size: 0.82rem;
+            margin-bottom: 3px;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 8px;
+        }
+
+        .job-title {
+            font-weight: 700;
+            font-size: 0.88rem;
+        }
+
+        .location-date {
+            font-style: italic;
+            color: #666;
+            font-size: 0.75rem;
+        }
+
+        ul {
+            margin-left: 15px;
+            margin-top: 4px;
+        }
+
+        li {
+            margin-bottom: 2px;
+        }
+
+        .cert-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 0.82rem;
+        }
+
+        br { display: none; }
+    </style>
+</head>
 <body>
 
-<header>
-    <h1>Ryan Gray</h1>
-    <p>Virginia Beach, VA | 757-779-1724 | RyanGray4287@gmail.com</p>
-</header>
-
-
-
-<section id="objective">
-    <h2>Objective</h2>
-    <p>To apply my technical support experience, data management skills, and problem-solving abilities to enhance IT operations and support organizational goals. I am committed to delivering reliable solutions, learning emerging technologies, and thriving in a collaborative, fast-paced IT environment.</p>
-</section>
-
-
-<section id="education">
-    <h2>Education</h2>
-    <p><strong>University of Colorado</strong> 
-    <span class="location">Boulder, Colorado</span> <br><br>
-    Bachelor of Arts in Film Production  
-    <span class="May">May 2024</span> <br>
-    <span class="edudetail">Worked up to 25 hours per week while managing a 15-credit course load</span>
-</section>
-  
-<section id="certifications">
-    <h2>Certifications</h2>
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-        <strong>CompTIA Security+</strong>
-        <span class="September">Expires - September 2028</span>
-    </div>
-</section>
-
-<section id="homelab">
-    <h2>Technical Skills</h2>
-    <div class="grid1">
-        <div>
-            <p style=><strong>MS Windows XP/Vista/7/8/10/11</strong></p>
-           <p style=><strong>Hypervising</strong></p>
-            <p style=></p><strong>Service Installation</strong></p>
-            <p style=></p><strong>System/Network Administration</strong></p>
-        <p style=><strong>Windows Server 2016/2025</strong></p>
-        <p style=><strong>Active Directory</strong></p>
+<div class="sidebar">
+    <header>
+        <h1>Ryan Gray</h1>
+        <div class="contact-info">
+            <p>Virginia Beach, VA</p>
+            <p>757-779-1724</p>
+            <p>RyanGray4287@gmail.com</p>
         </div>
-<div>
-<p style=><strong>Centralized Logging Server</strong></p>
-<p style=><strong>Performance Monitoring & Alerting</strong></p>
- <p style=><strong>Centralized Backup Solution</strong></p>
-<p style=><strong>Containerization</strong></p>
-<p style=><strong>DNS & Port Forwarding</strong></p>
+    </header>
 
+    <section id="homelab">
+        <h2>Technical Skills</h2>
+        <p><strong>Operating Systems:</strong> Windows XP/Vista/7/8/10/11, Windows Server 2016/2025, Ubuntu & Debian</p>
+        <p><strong>Virtualization:</strong> ProxMox, Hyper-V, VMware</p>
+        <p><strong>Admin:</strong> Active Directory, Hypervising,</p>
+        <p><strong>Services:</strong> Automation Management, Centralized Logging, Monitoring & Alerting, Centralized Backups</p>
+        <p><strong>Networking:</strong> DNS, DHCP, Port Forwarding, Containerization</p>
+        <p><strong>Database:</strong> SQL/PostgreSQL, ORACLE</p>
+        <p><strong>Tools:</strong> Microsoft 365, ServiceNow, Adobe</p>
+        <p><strong>Security:</strong> Vulnerability Management, IDP/IPS, Firewalls, VPNs, NGINX, Endpoint Protection</p>
+    </section>
+  
+    <section id="skills">
+        <h2>Relevant Skills</h2>
+        <p>Thorough at documentation and process improvement.</p>
+        <p>Excellent working independently and in teams.</p>
+        <p>Highly motivated and eager to learn.</p>
+        <p>Strong analytical and problem-solving skills.</p>
+        <p>Detail-oriented with high-quality results.</p>
+    </section>
 </div>
 
-    <div>
-    <p style=><strong>SQL/PostgreSQL</strong></p>
-    <p style=><strong>Microsoft Office</strong></p>
-    <p style=><strong>ORACLE database</strong></p>
-    <p style=><strong>Troubleshooting</strong></p>
-    </div>
-    
-</ul>
-</section>
+<div class="main-content">
+    <section id="objective">
+        <h2>Objective</h2>
+        <p>To apply my technical support experience, data management skills, and problem-solving abilities to enhance IT operations and support organizational goals. I am committed to delivering reliable solutions, learning emerging technologies, and thriving in a collaborative, fast-paced IT environment.</p>
+    </section>
+
+    <section id="education">
+        <h2>Education</h2>
+        <div class="job-header">
+            <span class="job-title">University of Colorado</span>
+            <span class="location-date">Boulder, CO | May 2024</span>
+        </div>
+        <p>Bachelor of Arts in Film Production</p>
+        <p style="font-style: italic; font-size: 0.75rem;">Managed 25 hours/week work schedule with full-time course load.</p>
+    </section>
   
-<section id="skills">
-    <h2>Relevant Skills</h2>
-    <div class="grid1">
-      <div>
-        <p>Thorough at documentation and process improvement.</p>
-        <p>Excellent working independently and in a collaborative environment</p>
-        <p>Highly motivated and eager to learn new skills.</p>
-      </div>
-      <div>
-        <p>Strong analytical and problem-solving skills.</p>
-        <p>Organized and efficient in managing multiple tasks and priorities.</p>
-        <p>Detail-oriented with a focus on delivering high-quality results.</p>
-      </div>
-      <div>
-        <p>Proficient at learning new technologies and adapting to changing environments.</p>
-        <p>Strong communication skills, both written and verbal.</p>
-      </div>
-</section>
+    <section id="certifications">
+        <h2>Certifications</h2>
+        <div class="cert-row">
+            <span>CompTIA Security+</span>
+            <span style="font-weight: normal; color: #666;">Expires Sept 2028</span>
+        </div>
+    </section>
 
-<section id="experience">
-    <h2>Experience</h2>
+    <section id="experience">
+        <h2>Experience</h2>
 
-    <p class="job-title"><mark>Merchandiser – NEXCOM HQ</mark></p>
-    <p class="location-date">Virginia Beach, VA (February 2025 – Current)</p>
-    <ul>
+        <div class="job-header">
+            <span class="job-title">Merchandiser – NEXCOM HQ</span>
+            <span class="location-date">Virginia Beach, VA (Feb 2025 – Current)</span>
+        </div>
+         <ul>
       <li><strong>Data Management & Accuracy:</strong> Performed data entry for new item setup, price changes, item maintenance, and vendor returns, ensuring accuracy and adherence to company standards. Maintained UPC files and managed stock assortments.</li>
       <li><strong>Procurement & Inventory Control:</strong> Generated purchase orders, reviewed quantities, tracked shipments, and addressed shipping or billing discrepancies with accounting. Analyzed receiving reports and resolved delays or errors with vendors or store departments.</li>
       <li><strong>Vendor Relations & Negotiation:</strong> Negotiated pricing and supplier support, facilitated communication with vendors, and negotiated vendor returns to optimize profitability.</li>
@@ -105,9 +205,11 @@
       <li><strong>Collaboration & Communication:</strong> Collaborated with buyers, planners, vendors, and internal teams, ensuring accurate merchandising information and contributing to assortment planning.</li>
     </ul>
 
-  <p class="job-title"><mark>IT Support Technician – Buff Techs, Office of Information Technology</mark></p>
-<p class="location-date">University of Colorado, Boulder, CO | May 2023 – May 2024</p>
-<ul>
+        <div class="job-header">
+            <span class="job-title">IT Support Technician – Buff Techs</span>
+            <span class="location-date">Boulder, CO (May 2023 – May 2024)</span>
+        </div>
+        <ul>
   <li><strong>Technical Support & Troubleshooting:</strong> Provided first-level IT support to students, faculty, and staff, diagnosing and resolving hardware and software issues for computers, laptops, mobile devices, and other peripherals. Escalated complex problems to higher-level support teams when necessary.</li>
   <li><strong>Software Management:</strong> Installed, upgraded, and configured software applications on various devices, ensuring they were up-to-date and compatible with university IT standards.</li>
   <li><strong>Device Setup & Configuration:</strong> Assisted clients with the setup, configuration, and maintenance of computers, laptops, mobile devices, and other technology peripherals.</li>
@@ -115,7 +217,8 @@
   <li><strong>Teamwork & Collaboration:</strong> Worked effectively in a team environment, collaborating with colleagues and other IT professionals to deliver exceptional IT support.</li>
   <li><strong>Adaptability & Learning:</strong> Demonstrated ability to adapt to evolving technologies and learn new skills as needed to stay current with IT advancements.</li>
 </ul>
-</section>
+    </section>
+</div>
 
-
+</body>
 </html>
