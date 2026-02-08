@@ -2,7 +2,7 @@
     float: right;}
     .May {float: right;}
     body { font-family:"Roboto Serif"; margin: 0; padding: 0; background: #e4dfdf; color: #333; }
-    header { background: #050505; color: rgb(255, 255, 255); padding: 10px; text-align: center; }
+    header { background: #050505; color: rgb(255, 255, 255); padding: 0px; text-align: center; }
     nav { background: #0c0c0c; text-align: center; padding: 10px; }
     nav a { color: rgb(255, 255, 255); margin: 0 15px; text-decoration: none; font-weight: bold; }
     section { max-width: 800px; margin: 20px auto; padding: 20px; background: rgb(255, 255, 255); border-radius: 5px; }
@@ -45,4 +45,5 @@ nav a::after {
 
 nav a:hover::after {
   width: 100%;
+
 }
