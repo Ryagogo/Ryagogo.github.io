@@ -1,50 +1,124 @@
-    .location {
-    float: right;}
-    .May {float: right;}
-    body { font-family:"Roboto Serif"; margin: 0; padding: 0; background: #e4dfdf; color: #333; }
-    header { background: #050505; color: rgb(255, 255, 255); padding: 0px; text-align: center; }
-    nav { background: #0c0c0c; text-align: center; padding: 10px; }
-    nav a { color: rgb(255, 255, 255); margin: 0 15px; text-decoration: none; font-weight: bold; }
-    section { max-width: 800px; margin: 20px auto; padding: 20px; background: rgb(255, 255, 255); border-radius: 5px; }
-    h2 { border-bottom: 2px solid #000000; padding-bottom: 5px; text-align: center; }
-    ul { padding-left: 20px; }
-    .job-title { font-weight: bold; margin-top: 10px; }
-    .location-date { font-style: italic; font-size: 0.9em; }
-    h1 {font-family:"Hammersmith One", sans-serif; font-size: 40px}
-    
-    .edudetail {
-    display: block;      
-    margin-top: 6px;
-    text-decoration: underline;     
-  }
-.grid1 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  text-align: center;
-}
-nav a {
-  color: rgb(255, 255, 255);
-  margin: 0 15px;
-  text-decoration: none;
-  font-weight: bold;
-  position: relative; /* Add this for the animation */
-  transition: color 0.2s ease;
+/* Full Tightened CSS */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-nav a::after {
-  content: "";
-  display: block;
-  height: 2px;
-  width: 0;
-  background: #2078ff;
-  transition: width 0.3s;
-  position: absolute;
-  bottom: -4px;
-  left: 0;
+body {
+    font-family: 'Arial', sans-serif;
+    display: grid;
+    grid-template-columns: 33% 67%;
+    min-height: 100vh;
+    line-height: 1.1; /* Extra tight line height */
+    background: linear-gradient(to right, #2c3e50 33%, #ffffff 33%);
 }
 
-nav a:hover::after {
-  width: 100%;
-
+/* --- LEFT SIDEBAR (BLUE) --- */
+header, #homelab, #skills {
+    grid-column: 1;
+    color: #ffffff;
+    padding: 10px 25px;
 }
 
+header { padding-top: 30px; }
+
+header h1 {
+    font-family: 'Hammersmith One', sans-serif;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+header p {
+    font-size: 0.72rem;
+    margin-bottom: 15px;
+}
+
+header h2, #homelab h2, #skills h2 {
+    font-family: 'Hammersmith One', sans-serif;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #fff;
+    margin: 10px 0 5px 0;
+    padding-bottom: 2px;
+}
+
+#homelab p, #skills p {
+    font-size: 0.75rem;
+    margin-bottom: 3px;
+}
+
+/* --- RIGHT MAIN SECTION (WHITE) --- */
+#objective, #education, #certifications, #experience {
+    grid-column: 2;
+    padding: 0 40px; /* Removed vertical padding from all sections */
+    margin-bottom: 0;
+}
+
+#objective { padding-top: 35px; }
+
+/* Main Headings */
+#objective h2, #education h2, #certifications h2, #experience h2 {
+    font-family: 'Hammersmith One', sans-serif;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #333;
+    margin-top: 10px; /* Controlled spacing above headers */
+    margin-bottom: 4px;
+}
+
+/* THE FIX: Remove gap specifically between Certifications and Experience */
+#certifications {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+#experience {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+#experience h2 {
+    margin-top: 0; /* Snaps the Experience header to the Cert above it */
+}
+
+/* Text Styling */
+#objective p, #education p, li {
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+}
+
+.job-title {
+    font-weight: bold;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.location-date {
+    font-style: italic;
+    color: #666;
+    font-size: 0.72rem;
+    margin-bottom: 2px;
+    display: block;
+}
+
+ul {
+    margin-left: 15px;
+    margin-bottom: 5px;
+}
+
+li { margin-bottom: 1px; }
+
+/* Certifications Layout */
+#certifications div {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+
+/* Force removal of HTML-based spacing */
+br { display: none; }
