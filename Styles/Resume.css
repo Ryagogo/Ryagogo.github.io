@@ -1,6 +1,4 @@
-/* Full Tightened CSS */
-
-* {
+ {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -122,3 +120,4 @@ li { margin-bottom: 1px; }
 
 /* Force removal of HTML-based spacing */
 br { display: none; }
+
