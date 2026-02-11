@@ -55,24 +55,12 @@
             letter-spacing: 0.5px;
         }
 
-        .skill-group {
-            margin-bottom: 12px;
-        }
-
-        .skill-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #3498db; 
-            display: block;
-            margin-bottom: 2px;
-            text-transform: uppercase;
-        }
-
-        .skill-list-sidebar {
+        .sidebar p {
             font-size: 0.75rem;
             font-weight: 300;
             line-height: 1.3;
             color: #ecf0f1;
+            margin-bottom: 8px;
         }
 
         /* MAIN CONTENT */
@@ -97,11 +85,13 @@
             margin-bottom: 4px;
         }
 
-        .tech-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 5px;
+        .tech-list {
+            list-style-type: none;
+            margin-left: 0;
+        }
+
+        .tech-list li {
+            margin-bottom: 5px;
         }
 
         .job-header {
@@ -152,15 +142,13 @@
 
     <section id="relevant-skills">
         <h2>Professional Skills</h2>
-        <div class="skill-group">
-            <p class="skill-list-sidebar">Thorough with documentation and process improvement.</p>
-            <p class="skill-list-sidebar">Root Cause Analysis & Diagnostics.</p>
-            <p class="skill-list-sidebar">Excellent working independently and in teams.</p>
-            <p class="skill-list-sidebar">Disaster Recovery & Backup Planning</p>
-            <p class="skill-list-sidebar">Highly motivated and eager to learn.</p>
-            <p class="skill-list-sidebar">Strong analytical and problem-solving skills.</p>
-            <p class="skill-list-sidebar">Detail-oriented with high quality results.</p>
-        </div>
+        <p>Thorough with documentation and process improvement.</p>
+        <p>Root Cause Analysis & Diagnostics.</p>
+        <p>Excellent working independently and in teams.</p>
+        <p>Disaster Recovery & Backup Planning</p>
+        <p>Highly motivated and eager to learn.</p>
+        <p>Strong analytical and problem-solving skills.</p>
+        <p>Detail-oriented with high quality results.</p>
     </section>
 </div>
 
@@ -172,28 +160,14 @@
 
     <section id="tech-expertise">
         <h2>Technical Expertise</h2>
-        <div class="tech-grid">
-            <div class="skill-group">
-                <span class="skill-label">Systems Admin</span>
-                <p>Windows Server 2025 (AD DS, DNS, DHCP), Ubuntu/Debian Linux, Active Directory Role Management, Group Policy (GPO)</p>
-            </div>
-
-            <div class="skill-group">
-                <span class="skill-label">Virtualization & Dev</span>
-                <p>Proxmox VE, Docker/Docker-Compose, Ansible Automation, Hyper-V, VM Orchestration, Portainer</p>
-            </div>
-
-            <div class="skill-group">
-                <span class="skill-label">Networking & Security</span>
-                <p>Nginx Reverse Proxy, Tailscale VPN, Cloudflare DDoS, IPS/IDS (Suricata), OpenVAS, SSL Certificate Management</p>
-            </div>
-
-            <div class="skill-group">
-                <span class="skill-label">Tools & Productivity</span>
-                <p><strong>Admin:</strong> PowerShell, Bash, SSH, Putty, WinSCP, Wireshark, VS Code<br>
-                <strong>Enterprise:</strong> Microsoft 365 Admin, SharePoint, Teams, ServiceNow</p>
-            </div>
-        </div>
+        <ul class="tech-list">
+            <li><strong>Systems Administration:</strong> Windows Server 2025 (AD DS, DNS, DHCP), Ubuntu/Debian Linux, Active Directory Role Management, Group Policy (GPO)</li>
+            <li><strong>Virtualization & Development:</strong> Proxmox VE, Docker/Docker-Compose, Ansible Automation, Hyper-V, VM Orchestration, Portainer</li>
+            <li><strong>Networking & Security:</strong> Nginx Reverse Proxy, Tailscale VPN, Cloudflare DDoS, IPS/IDS (Suricata), OpenVAS, SSL Certificate Management</li>
+            <li><strong>Administrative Tools:</strong> PowerShell, Bash, SSH, Putty, WinSCP, Wireshark, VS Code</li>
+            <li><strong>Enterprise Applications:</strong> Microsoft 365 Admin Center, SharePoint, Teams, ServiceNow/Ticketing</li>
+            <li><strong>Specialized Media Tech:</strong> DaVinci Resolve (PostgreSQL Workflow), Adobe Creative Cloud</li>
+        </ul>
     </section>
 
     <section id="education">
