@@ -18,9 +18,10 @@
             display: grid;
             grid-template-columns: 28% 72%; 
             min-height: 100vh;
-            line-height: 1.1; /* Condensed line height */
+            line-height: 1.1;
             background: linear-gradient(to right, #2c3e50 28%, #ffffff 28%);
             color: #333;
+            -webkit-print-color-adjust: exact;
         }
 
         /* SIDEBAR */
@@ -34,13 +35,15 @@
             font-family: 'Hammersmith One', sans-serif;
             font-size: 1.5rem;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
+            color: #fff;
         }
 
         .sidebar .contact-info {
             font-size: 0.65rem;
             margin-bottom: 15px;
-            opacity: 0.9;
+            opacity: 0.8;
+            line-height: 1.2;
         }
 
         .sidebar h2 {
@@ -48,14 +51,17 @@
             font-size: 0.85rem;
             text-transform: uppercase;
             border-bottom: 1px solid rgba(255,255,255,0.2);
-            margin: 10px 0 6px 0;
+            margin: 12px 0 6px 0;
             padding-bottom: 2px;
+            letter-spacing: 0.5px;
         }
 
         .sidebar p {
-            font-size: 0.72rem;
-            margin-bottom: 5px;
+            font-size: 0.7rem;
+            font-weight: 300;
+            line-height: 1.2;
             color: #ecf0f1;
+            margin-bottom: 5px;
         }
 
         /* MAIN CONTENT */
@@ -64,14 +70,14 @@
             padding: 20px 30px;
         }
 
-        section { margin-bottom: 10px; }
+        section { margin-bottom: 8px; }
 
         h2 {
             font-family: 'Hammersmith One', sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
             text-transform: uppercase;
             border-bottom: 1.5px solid #2c3e50;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             margin-top: 4px;
         }
 
@@ -82,6 +88,7 @@
 
         .tech-list {
             list-style-type: none;
+            margin-left: 0;
         }
 
         .tech-list li {
@@ -95,35 +102,35 @@
             margin-top: 5px;
         }
 
-        .job-title { font-weight: 700; font-size: 0.85rem; }
-        .location-date { font-style: italic; color: #7f8c8d; font-size: 0.7rem; }
+        .job-title { font-weight: 700; font-size: 0.82rem; }
+        .location-date { font-style: italic; color: #666; font-size: 0.7rem; }
 
-        ul { margin-left: 14px; margin-top: 2px; }
+        ul { margin-left: 15px; margin-top: 2px; }
         li { margin-bottom: 1px; }
 
         .cert-block {
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .cert-row {
             display: flex;
             justify-content: space-between;
             font-weight: bold;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
         }
 
         .cert-detail {
-            font-size: 0.7rem;
-            color: #666;
+            font-size: 0.72rem;
+            color: #555;
             display: block;
+            margin-top: 0;
+        }
+
+        @media print {
+            body { background: linear-gradient(to right, #2c3e50 28%, #ffffff 28%) !important; }
         }
 
         br { display: none; }
-
-        /* PDF Optimization */
-        @media print {
-            body { -webkit-print-color-adjust: exact; }
-        }
     </style>
 </head>
 <body>
@@ -140,30 +147,31 @@
 
     <section id="relevant-skills">
         <h2>Professional Skills</h2>
-        <p>• Technical Documentation & Wikis</p>
-        <p>• Root Cause Analysis & Diagnostics</p>
-        <p>• Independent & Team Collaboration</p>
-        <p>• Disaster Recovery & Backups</p>
-        <p>• Analytical Problem-Solving</p>
-        <p>• Detail-Oriented Results</p>
+        <p>Thorough with documentation and process improvement.</p>
+        <p>Root Cause Analysis & Diagnostics.</p>
+        <p>Excellent working independently and in teams.</p>
+        <p>Disaster Recovery & Backup Planning</p>
+        <p>Highly motivated and eager to learn.</p>
+        <p>Strong analytical and problem-solving skills.</p>
+        <p>Detail-oriented with high quality results.</p>
     </section>
 </div>
 
 <div class="main-content">
     <section id="summary">
         <h2>Professional Summary</h2>
-        <p>Applications and IT Support professional with proven experience in deployment, configuration management, troubleshooting, and systems administration in enterprise environments. Security+ certified with expertise in Windows Server, Active Directory, and virtualization. Skilled in monitoring performance, enforcing security standards, and maintaining precise documentation to ensure operational stability.</p>
+        <p>Applications and IT Support professional with proven experience in application deployment, configuration management, troubleshooting, database support, and systems administration within enterprise environments. CompTIA Security+ certified with solid expertise in Windows Server, Active Directory, virtualization platforms, and line-of-business applications. Demonstrated ability to monitor system performance, enforce information security standards, maintain precise technical documentation, and collaborate effectively with cross-functional teams and vendors to ensure operational stability and compliance.</p>
     </section>
 
     <section id="tech-expertise">
         <h2>Technical Expertise</h2>
         <ul class="tech-list">
-            <li><strong>Systems Admin:</strong> Windows Server 2025 (AD DS, DNS, DHCP), Ubuntu/Debian, GPO Management</li>
-            <li><strong>Virtualization/Dev:</strong> Proxmox VE, Docker/Compose, Ansible Automation, Hyper-V, Portainer</li>
-            <li><strong>Network/Security:</strong> Nginx Reverse Proxy, Tailscale VPN, Cloudflare, IPS/IDS (Suricata), OpenVAS</li>
-            <li><strong>Admin Tools:</strong> PowerShell, Bash, SSH, Putty, WinSCP, Wireshark, VS Code</li>
-            <li><strong>Enterprise:</strong> Microsoft 365 Admin Center, SharePoint, Teams, ServiceNow Ticketing</li>
-            <li><strong>Specialized Tech:</strong> DaVinci Resolve (PostgreSQL Workflow), Adobe Creative Cloud</li>
+            <li><strong>Systems Administration:</strong> Windows Server 2025 (AD DS, DNS, DHCP), Ubuntu/Debian Linux, Active Directory Role Management, Group Policy (GPO)</li>
+            <li><strong>Virtualization & Development:</strong> Proxmox VE, Docker/Docker-Compose, Ansible Automation, Hyper-V, VM Orchestration, Portainer</li>
+            <li><strong>Networking & Security:</strong> Nginx Reverse Proxy, Tailscale VPN, Cloudflare DDoS, IPS/IDS (Suricata), OpenVAS, SSL Certificate Management</li>
+            <li><strong>Administrative Tools:</strong> PowerShell, Bash, SSH, Putty, WinSCP, Wireshark, VS Code</li>
+            <li><strong>Enterprise Applications:</strong> Microsoft 365 Admin Center, SharePoint, Teams, ServiceNow/Ticketing</li>
+            <li><strong>Specialized Media Tech:</strong> DaVinci Resolve (PostgreSQL Workflow), Adobe Creative Cloud</li>
         </ul>
     </section>
 
@@ -181,7 +189,7 @@
         <div class="cert-block">
             <div class="cert-row">
                 <span>CompTIA Security+</span>
-                <span style="font-weight: normal; color: #7f8c8d;">Expires Sept 2028</span>
+                <span style="font-weight: normal; color: #666;">Expires September 2028</span>
             </div>
             <span class="cert-detail">Meets IA Certification requirement (SECNAV M-5239.2)</span>
         </div>
@@ -199,10 +207,12 @@
             <span class="location-date">Feb 2025 – Current</span>
         </div>
         <ul>
-            <li>Manage enterprise systems for item setup, pricing, and vendor returns.</li>
-            <li>Audit receiving reports and coordinate discrepancy resolution with vendors.</li>
-            <li>Administer user roles and permissions within production environments.</li>
-            <li>Drive data integrity and process improvement initiatives across business units.</li>
+            <li>Managed enterprise merchandise systems including item setup, pricing updates, and vendor returns.</li>
+            <li>Analyzed reports to identify discrepancies and coordinated corrections with vendors and internal departments.</li>
+            <li>Supported data integrity and process improvement initiatives across supply chain and financial workflows.</li>
+            <li>Administered and supported enterprise merchandise systems in production environment.</li>
+            <li>Managed user roles, permissions, and application configurations.</li>
+            <li>Assisted in process improvement, documentation, and data integrity initiatives across business.</li>
         </ul>
 
         <div class="job-header">
@@ -210,11 +220,14 @@
             <span class="location-date">May 2023 – May 2024</span>
         </div>
         <ul>
-            <li>Diagnosed hardware and software issues in large-scale Windows/Mobile environments.</li>
+            <li>Installed, configured, and maintained software applications and operating systems in Windows-based environments.</li>
+            <li>Diagnosed and resolved hardware, software, and system issues; escalated complex problems when necessary.</li>
             <li>Coordinated testing and validation of system updates prior to production release.</li>
-            <li>Analyzed SQL-based reports and system logs to identify data inconsistencies.</li>
-            <li>Supported Active Directory account management and role-based access controls.</li>
-            <li>Delivered Tier 1 support and documented configurations for Tier 2 escalation.</li>
+            <li>Analyzed SQL-based reports to identify data inconsistencies.</li>
+            <li>Review system logs to distinguish application vs database errors.</li>
+            <li>Supported Active Directory account management and assisted with system updates and patches.</li>
+            <li>Monitored system performance and documented configurations and procedures.</li>
+            <li>Delivered responsive Service Desk support and worked closely with system administrators to resolve cross-functional issues.</li>
         </ul>
     </section>
 </div>
