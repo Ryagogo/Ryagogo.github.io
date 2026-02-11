@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Fundamentals Handbook</title>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .page {
+            background-color: white;
+            width: 8.5in;
+            min-height: 11in;
+            padding: 0.75in;
+            margin-bottom: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
+            line-height: 1.5;
+        }
+        .page-number {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+        }
+        h1 { text-align: center; font-size: 28px; margin-bottom: 40px; }
+        h2 { border-bottom: 2px solid #333; padding-bottom: 5px; margin-top: 25px; }
+        .toc-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        
+        /* Command Block Styling with Copy Button */
+        .command-block { 
+            background: #2d2d2d; 
+            color: #f8f8f2; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 10px 0; 
+            font-family: monospace; 
+            white-space: pre-wrap; 
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+        .copy-btn:hover { background: #666; }
+
+        ul { padding-left: 20px; }
+        .screenshot-placeholder { border: 2px dashed #ccc; padding: 40px; text-align: center; color: #999; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <h1>IT Fundamentals Handbook</h1>
+    <div class="toc-item"><span>HYPERVISORS</span><span>3</span></div>
+    <div class="toc-item"><span>PROXMOX</span><span>3</span></div>
+    <div class="toc-item"><span>CORE SERVICES</span><span>6</span></div>
+    <div class="toc-item"><span>TAILSCALE</span><span>6</span></div>
+    <div class="toc-item"><span>SSH</span><span>6</span></div>
+    <div class="toc-item"><span>KEY-BASED AUTHENTICATION</span><span>6</span></div>
+    <div class="toc-item"><span>DOCKER</span><span>9</span></div>
+    <div class="toc-item"><span>HTOP</span><span>14</span></div>
+    <div class="toc-item"><span>VIM/NANO</span><span>15</span></div>
+    <div class="toc-item"><span>NET-TOOLS</span><span>16</span></div>
+    <div class="toc-item"><span>SAMBA</span><span>17</span></div>
+    <div class="toc-item"><span>STATIC IP</span><span>20</span></div>
+    <div class="toc-item"><span>LINUX</span><span>20</span></div>
+    <div class="toc-item"><span>WINDOWS</span><span>21</span></div>
+    <div class="toc-item"><span>DNS</span><span>22</span></div>
+    <div class="toc-item"><span>WINDOWS VM</span><span>23</span></div>
+    <div class="toc-item"><span>DNS SERVER</span><span>23</span></div>
+    <div class="toc-item"><span>DHCP SERVER</span><span>23</span></div>
+    <div class="toc-item"><span>ACTIVE DIRECTORY DOMAIN SERVICE</span><span>24</span></div>
+    <div class="toc-item"><span>CENTRAL LOGGING SERVER</span><span>25</span></div>
+    <div class="toc-item"><span>CONTAINERIZATION</span><span>26</span></div>
+    <div class="toc-item"><span>KUBERNETES CLUSTER</span><span>26</span></div>
+    <div class="page-number">1</div>
+</div>
+
+<div class="page">
+    <div class="toc-item"><span>MICROK8S</span><span>26</span></div>
+    <div class="toc-item"><span>AUTOMATION</span><span>27</span></div>
+    <div class="toc-item"><span>ANSIBLE, PUPPET, CHEF</span><span>27</span></div>
+    <div class="toc-item"><span>SCRIPTING</span><span>28</span></div>
+    <div class="toc-item"><span>SECURITY HARDENING</span><span>29</span></div>
+    <div class="toc-item"><span>FIREWALL CONFIGURATION</span><span>29</span></div>
+    <div class="toc-item"><span>NETWORKING</span><span>30</span></div>
+    <div class="toc-item"><span>ALERTING</span><span>31</span></div>
+    <div class="toc-item"><span>SQL</span><span>32</span></div>
+    <div class="toc-item"><span>BASH</span><span>34</span></div>
+    <div class="toc-item"><span>POWERSHELL</span><span>ERROR! BOOKMARK NOT DEFINED.</span></div>
+    <div class="toc-item"><span>VAULTWARDEN</span><span>ERROR! BOOKMARK NOT DEFINED.</span></div>
+    <div class="toc-item"><span>HOME ASSISTANT</span><span>37</span></div>
+    <div class="toc-item"><span>PLEX</span><span>38</span></div>
+    <div class="toc-item"><span>RAID</span><span>39</span></div>
+    <div class="toc-item"><span>PI-HOLE</span><span>40</span></div>
+    <div class="toc-item"><span>HTML</span><span>41</span></div>
+    <div class="toc-item"><span>TROUBLESHOOTS</span><span>45</span></div>
+    <div class="toc-item"><span>COMMAND DICTIONARY</span><span>46</span></div>
+    <div class="page-number">2</div>
+</div>
+<div class="page">
+    <h2>Hypervisors</h2>
+    <h3>Proxmox</h3>
+    
+    <p><strong>Video Tutorial</strong></p>
+    <div style="margin: 20px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/_u8qTN3cCnQ" 
+            title="Proxmox Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <p><strong>Virtual Machines</strong></p>
+    <ol>
+        <li>Visit <a href="https://www.proxmox.com/en/">https://www.proxmox.com/en/</a> to go to the downloads page and download the "Virtual Environment" ISO.</li>
+        <li>Next you need a boot loader to properly load the ISO onto a flash drive. I prefer Rufus: <a href="https://rufus.ie/en/">https://rufus.ie/en/</a>.</li>
+        <li>Connect your USB drive to your computer and launch Rufus.</li>
+        <li>Select flash drive device and ISO image and start.</li>
+    </ol>
+
+    <div style="text-align: center; margin: 20px 0;">
+        <img src="Pictures/Projects/Hypervisor1.png" alt="Rufus Interface Configuration" style="max-width: 70%; height: auto; border: 1px solid #ccc; border-radius: 5px;">
+        <p style="font-size: 12px; color: #777; margin-top: 5px;">Rufus 49.2256 Interface</p>
+    </div>
+
+    <ol start="5">
+        <li><strong>Once image is finished:</strong>
+            <ul>
+                <li>Plug ethernet into soon to be Hypervisor Machine.</li>
+                <li>Attach flasher drive into Hypervisor Machine.</li>
+                <li>Boot to bios/uefi and change boot option #1 to the flash drive and reboot.</li>
+                
+            </ul>
+        </li>
+    </ol>
+
+    <div class="page-number">3</div>
+</div>
+
+<script>
+    // Global script to handle copy buttons for all pages
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+<div class="page">
+    <ol start="6">
+        <li><strong>Follow through with installation:</strong>
+            <ul>
+                <li>Host name and static IP are of important note[cite: 478].</li>
+            </ul>
+        </li>
+        <li>Once installation finishes. Set machine to the side. You can now log in using the web UI[cite: 479].</li>
+        <li>Log into web server by typing in URL <code>https://(static IP):8006</code>[cite: 480].</li>
+        <li>Login and select <strong>PVE</strong> and then <strong>Shell</strong>[cite: 481].</li>
+    </ol>
+
+    <p style="color: #666; font-style: italic; margin-top: 25px;"># I like to install tailscale on the host that way I can remote/connect to into the machine outside of the network[cite: 482].</p>
+    
+    <div class="command-block">
+sudo apt update && sudo apt install -y curl
+curl -fsSL https://tailscale.com/install.sh | sh</div>
+    <p style="font-size: 13px; color: #666; margin-bottom: 20px;"># This installs the latest version for your OS automatically[cite: 485].</p>
+
+    <ol start="10">
+        <li><strong>Start Tailscale service:</strong>
+            <div class="command-block">sudo tailscale up</div>
+            <p style="margin-top: 10px;"># You will see an authentication URL[cite: 488]:</p>
+            <code style="display: block; background: #f4f4f4; padding: 10px; margin: 5px 0; border-left: 3px solid #ccc;">"To authenticate, visit: https://login.tailscale.com/a/xxxxxx" [cite: 489]</code>
+        </li>
+        <li>Copy the URL from SSH output and open it on your <strong>local browser</strong>[cite: 490].</li>
+        <li>Log in with your preferred identity provider (Google, GitHub, Microsoft, etc.)[cite: 491].
+            <ul>
+                <li>Once authenticated, the machine will appear in your Tailscale admin dashboard[cite: 492].</li>
+            </ul>
+        </li>
+    </ol>
+
+    <p style="margin-top: 20px;"><strong>Check Tailscale status:</strong></p>
+    <div class="command-block">tailscale status</div>
+
+    <ol start="11" style="margin-top: 25px;">
+        <li>On the left hand side select <strong>local(PVE)</strong>[cite: 495].</li>
+        <li>Here ISO images can be uploaded and container images can be uploaded and downloaded[cite: 496].</li>
+    </ol>
+
+    <div class="page-number">4</div>
+</div>
+
+<script>
+    // Handles the copy button logic for the command blocks on this page
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+<div class="page">
+    <h2>Core Services</h2>
+    <h3>Tailscale</h3>
+    
+    <ol>
+        <li><strong>Connect to your remote server via SSH:</strong>
+            <div class="command-block">ssh user@your_server_ip</div>
+        </li>
+        <li>Ensure you have <strong>sudo privileges</strong> on the target machine.</li>
+    </ol>
+
+    <p><strong>Install Tailscale</strong></p>
+    <ol start="3">
+        <li><strong>Update package list (Debian/Ubuntu):</strong>
+            <div class="command-block">sudo apt update && sudo apt install -y curl</div>
+        </li>
+        <li><strong>Download & install Tailscale:</strong>
+            <div class="command-block">curl -fsSL https://tailscale.com/install.sh | sh</div>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;"># This installs the latest version for your OS automatically.</p>
+        </li>
+    </ol>
+
+    <p><strong>Authenticate Server</strong></p>
+    <ol start="5">
+        <li><strong>Start Tailscale service:</strong>
+            <div class="command-block">sudo tailscale up</div>
+        </li>
+        <li>You will see an authentication URL in the terminal:
+            <code style="display: block; background: #f4f4f4; padding: 10px; margin: 10px 0; border-left: 3px solid #ccc;"># "To authenticate, visit: https://login.tailscale.com/a/xxxxxx"</code>
+        </li>
+        <li>Copy the URL from the SSH output and open it in your <strong>local browser</strong>.</li>
+        <li>Log in with your preferred identity provider (Google, GitHub, Microsoft, etc.).
+            <ul>
+                <li>Once authenticated, the machine will appear in your Tailscale admin dashboard.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <div class="page-number">5</div>
+</div>
+
+<script>
+    // Handles the copy button logic for the command blocks
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+<div class="page">
+    <h2>SSH</h2>
+    
+    <p><strong>Install OpenSSH Server:</strong></p>
+    <div class="command-block">
+sudo apt update
+sudo apt upgrade
+sudo apt install openssh-server -y</div>
+
+    <p style="margin-top: 20px;"><strong>Verify it is running:</strong></p>
+    <div class="command-block">sudo systemctl status ssh</div>
+
+    <p style="margin-top: 20px;"><strong>Allow through the Firewall:</strong></p>
+    <div class="command-block">sudo ufw allow ssh</div>
+
+    <h2 style="margin-top: 40px;">Key-Based Authentication</h2>
+    
+    <p><strong>Windows Tutorial</strong></p>
+    <div style="margin: 20px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/rf1J8XSEiO0" 
+            title="Windows Key-Based Authentication Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <h3>Windows</h3>
+    <p>On your machine in command line:</p>
+    <div class="command-block">ssh-keygen -t ed25519</div>
+
+    <p style="font-size: 14px; color: #d9534f; font-weight: bold;">Note file save path location!</p>
+
+    <p style="margin-top: 15px;">If you want login username & password enter it:</p>
+    <p style="font-style: italic; color: #666;">If not just enter enter enter…</p>
+
+    <div class="page-number">6</div>
+</div>
+
+<script>
+    // Handles the copy button logic for the command blocks on this page
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+<div class="page">
+    <p><strong>On host machine:</strong></p>
+    <div class="command-block">
+Mkdir -p ~/.ssh
+Nano ~/.ssh/authorized_keys</div>
+
+    <p><strong>Paste contents of .pub file into nano authorized_keys</strong></p>
+    <div class="command-block">
+Crtl+s
+Ctrl+x
+Sudo nano /etc/ssh/sshd_config</div>
+
+    <p><strong>Set password authentication to “no”</strong></p>
+    <ul>
+        <li>Delete the # in its front</li>
+    </ul>
+
+    <div class="command-block">
+Ctrtl+S
+Ctrl+x
+Sudo systemctl restart ssh</div>
+
+    <h3 style="margin-top: 40px;">Mac</h3>
+    <div style="margin: 20px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/vpk_1gldOAE" 
+            title="Mac Key-Based Authentication Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <p>On your machine in command line:</p>
+    <div class="command-block">Ssh-keygen -t ed25519</div>
+    <p><strong>Or</strong></p>
+    <div class="command-block">Ssh-keygen rsa -b 4096</div>
+
+    <p style="font-size: 14px; color: #d9534f; font-weight: bold; margin-top: 10px;">Note file save path location!</p>
+
+    <p style="margin-top: 15px;">If you want login username & password enter it:</p>
+    <p style="font-style: italic; color: #666;">If not just enter enter enter…</p>
+
+    <div class="page-number">7</div>
+</div>
+
+<script>
+    // Handles the copy button logic for the command blocks
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+<div class="page">
+    <p><strong>On host machine:</strong></p>
+    <div class="command-block">
+Scp ~/.ssh/id_rsa.pub user@ipaddress:/home/user/.ssh/name_key.pub
+Cat ~/.ssh/name_key.pub >> ~/.ssh/authorized_keys
+Chmod 700 ~/.ssh/
+Chmod 600 ~/.ssh/*
+Nano ~/.ssh/authorized_keys</div>
+
+    <p><strong>Paste contents of .pub file into nano authorized_keys</strong></p>
+    <div class="command-block">
+Crtl+s
+Ctrl+x
+Sudo nano /etc/ssh/sshd_config</div>
+
+    <p><strong>Set password authentication to “no”</strong></p>
+    <ul>
+        <li>Delete the # in its front</li>
+    </ul>
+
+    <div class="command-block">
+Ctrtl+S
+Ctrl+x
+Sudo systemctl restart ssh</div>
+
+    <h2 style="margin-top: 40px;">Docker</h2>
+    <p><a href="https://docs.docker.com/engine/install">https://docs.docker.com/engine/install</a></p>
+
+    <div style="text-align: center; margin: 20px 0;">
+        <img src="Pictures/Projects/dockerimg1.png" alt="Docker Installation Guide" style="max-width: 80%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+    </div>
+
+    <p><strong># Add Docker's official GPG key:</strong></p>
+    <div class="command-block">
+sudo apt update
+sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc</div>
+
+    <div class="page-number">8</div>
+</div>
+
+<script>
+    // Universal copy button handler
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+
+<div class="page">
+    <p><strong># Add the repository to Apt sources:</strong></p>
+    <div class="command-block">
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update</div>
+
+    <div style="text-align: center; margin: 20px 0;">
+        <img src="Pictures/Projects/dockerimg2.png" alt="Docker Repository Setup" style="max-width: 80%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+    </div>
+
+    <p><strong>2. Install the Docker packages</strong></p>
+    <p>To install the latest version, run:</p>
+    <div class="command-block">
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</div>
+
+    <p style="margin-top: 20px;"><strong>3. Verify that the Docker Engine installation is successful by running the hello-world image.</strong></p>
+    <div class="command-block">
+sudo docker run hello-world</div>
+
+    <div style="text-align: center; margin: 20px 0;">
+        <img src="Pictures/Projects/dockerimg3.png" alt="Docker Success Verification" style="max-width: 80%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+    </div>
+
+    <p style="font-size: 14px; color: #333; background: #fff3cd; padding: 10px; border-left: 5px solid #ffecb5;">
+        This command downloads a test image and runs it in a container. When the container runs, it prints a confirmation message and exits.
+    </p>
+
+    <div class="page-number">9</div>
+</div>
+
+<script>
+    // Universal copy button handler for command blocks
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+
+<div class="page">
+    <h2>Docker Compose</h2>
+    <p><a href="https://docs.docker.com/compose/install/">https://docs.docker.com/compose/install/</a></p>
+
+    <div style="text-align: center; margin: 20px 0;">
+        <img src="Pictures/Projects/dockerimg4.png" alt="Docker Compose Installation" style="max-width: 80%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+    </div>
+
+    <p><strong>CURL</strong></p>
+    <div class="command-block">
+sudo apt install ca-certificates curl</div>
+
+    <h2 style="margin-top: 40px;">Htop</h2>
+    <p>Depending on your Linux distribution, use the corresponding command below:</p>
+    
+    <p><strong>For Ubuntu, Debian, Linux Mint, or Kali:</strong></p>
+    <div class="command-block">
+sudo apt update
+sudo apt install htop</div>
+
+    <p style="margin-top: 20px;"><strong>For CentOS, RHEL, or Rocky Linux:</strong></p>
+    <p style="font-size: 13px; color: #666;"># First, enable the EPEL repository</p>
+    <div class="command-block">
+sudo dnf install epel-release</div>
+    <p style="font-size: 13px; color: #666;"># Then install htop</p>
+    <div class="command-block">
+sudo dnf install htop</div>
+
+    <p style="margin-top: 20px;"><strong>For Fedora:</strong></p>
+    <div class="command-block">
+sudo dnf install htop</div>
+
+    <p style="margin-top: 20px;"><strong>For Arch Linux:</strong></p>
+    <div class="command-block">
+sudo pacman -S htop</div>
+
+    <div class="page-number">10</div>
+</div>
+
+<script>
+    // Universal copy button handler for all command blocks on this page
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+
+
+<div class="page">
+    <h3>How to use htop</h3>
+    <p>Once installed, simply type <code>htop</code> in your terminal to launch it. [cite: 1716]</p>
+
+    <p><strong>Quick Cheat Sheet for htop</strong></p>
+    <p>Once the interface is open, you can use these keyboard shortcuts to navigate: [cite: 1718]</p>
+    <ul>
+        <li><strong>F2 (Setup):</strong> Customize the colors, meters, and columns. [cite: 1719]</li>
+        <li><strong>F3 (Search):</strong> Find a specific process by name. [cite: 1720]</li>
+        <li><strong>F4 (Filter):</strong> Hide everything except processes matching your keyword. [cite: 1721]</li>
+        <li><strong>F5 (Tree):</strong> See the parent-child relationship between processes. [cite: 1722]</li>
+        <li><strong>F6 (Sort):</strong> Choose to sort by CPU%, Memory%, PID, etc. [cite: 1723]</li>
+        <li><strong>F9 (Kill):</strong> Send a signal (like SIGKILL) to stop a process safely. [cite: 1724]</li>
+        <li><strong>F10 (Quit):</strong> Exit the program. [cite: 1725]</li>
+    </ul>
+    <p>You can use your <strong>mouse</strong> inside htop to click on columns for sorting or to select specific processes. [cite: 1726]</p>
+
+    <h2>Vim/Nano</h2>
+    <p><strong>Installation Steps</strong></p>
+    <p>Most Linux distributions come with at least one of these pre-installed, but here is how to get them (or the full version of Vim) on your system: [cite: 1729]</p>
+    
+    <p><strong>For Ubuntu, Debian, or Raspberry Pi OS:</strong></p>
+    <div class="command-block">
+sudo apt update
+sudo apt install nano vim</div>
+
+    <p><strong>For CentOS, RHEL, or Rocky Linux:</strong></p>
+    <div class="command-block">sudo dnf install nano vim-enhanced</div>
+
+    <p><strong>For Arch Linux:</strong></p>
+    <div class="command-block">sudo pacman -S nano vim</div>
+
+    <p><strong>How to use them</strong></p>
+    <p><strong>Using Nano:</strong> [cite: 1738]</p>
+    <ul>
+        <li>To open a file: <code>nano filename.txt</code> [cite: 1739]</li>
+        <li><strong>Save:</strong> Press <strong>Ctrl + O</strong> then <strong>Enter</strong>. [cite: 1740]</li>
+        <li><strong>Exit:</strong> Press <strong>Ctrl + X</strong>. [cite: 1741]</li>
+        <li><strong>Search:</strong> Press <strong>Ctrl + W</strong>. [cite: 1742]</li>
+    </ul>
+
+    <p><strong>Using Vim:</strong> [cite: 1743]</p>
+    <ul>
+        <li>To open a file: <code>vim filename.txt</code>. Vim starts in <strong>Normal Mode</strong>. [cite: 1744]</li>
+        <li><strong>Type Text:</strong> Press <strong>i</strong> to enter <strong>Insert Mode</strong>. [cite: 1745]</li>
+        <li><strong>Stop Typing:</strong> Press <strong>Esc</strong> to return to <strong>Normal Mode</strong>. [cite: 1746]</li>
+        <li><strong>Save & Exit:</strong> In Normal Mode, type <code>:wq</code> and hit <strong>Enter</strong>. [cite: 1747]</li>
+        <li><strong>Exit without Saving:</strong> In Normal Mode, type <code>:q!</code> and hit <strong>Enter</strong>. [cite: 1748]</li>
+    </ul>
+
+    <div class="page-number">11</div>
+</div>
+
+<script>
+    // Universal copy button handler for all command blocks on this page
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+
+<div class="page">
+    <h2>Net-tools</h2>
+    <p><strong>Installation Steps</strong></p>
+    
+    <p><strong>For Ubuntu, Debian, Linux Mint, or Kali:</strong></p>
+    <div class="command-block">
+sudo apt update
+sudo apt install net-tools</div>
+
+    <p style="margin-top: 20px;"><strong>For CentOS, RHEL, Fedora, or Rocky Linux:</strong></p>
+    <div class="command-block">
+sudo dnf install net-tools</div>
+
+    <p style="margin-top: 20px;"><strong>For Arch Linux:</strong></p>
+    <div class="command-block">
+sudo pacman -S net-tools</div>
+
+    <h3 style="margin-top: 30px;">What’s inside net-tools</h3>
+    <p>Once installed, you’ll regain access to these specific commands:</p>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;">
+        <thead>
+            <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ddd;">
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Command</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">What it does</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Modern Replacement (iproute2)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>ifconfig</code></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">View/Configure network interfaces</td>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>ip addr</code></td>
+            </tr>
+            <tr style="background-color: #fafafa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>netstat -tuln</code></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">See active ports and connections</td>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>ss -tuln</code></td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>route -n</code></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">View the routing table</td>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>ip route</code></td>
+            </tr>
+            <tr style="background-color: #fafafa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>arp -a</code></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">View the ARP table (IP-to-MAC mapping)</td>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>ip neigh</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p style="margin-top: 25px;"><strong>Quick Examples</strong></p>
+    <ul>
+        <li><strong>Check your IP address:</strong> Simply type <code>ifconfig</code>. You’ll see your hardware address (MAC), your local IP (inet), and data packet statistics[cite: 1291].</li>
+        <li><strong>Check listening ports:</strong> <code>sudo netstat -plnt</code>. This shows which programs are listening on which ports (e.g., port 80 for HTTP)[cite: 1292].</li>
+        <li><strong>Check your default gateway:</strong> <code>route -n</code>[cite: 1293].</li>
+    </ul>
+
+    <p style="font-size: 13px; color: #666; font-style: italic; margin-top: 15px;">
+        Note: While net-tools is great for muscle memory, it hasn't been actively developed in years. It’s a good idea to eventually get comfortable with the <code>ip</code> command[cite: 1294, 1295].
+    </p>
+
+    <div class="page-number">12</div>
+</div>
+
+<script>
+    // Universal copy button handler
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+
+<div class="page">
+    <h2>Samba</h2>
+    
+    <p><strong>Step 1: Install Samba</strong></p>
+    <p>First, ensure your system is up to date and install the Samba package[cite: 1298].</p>
+    
+    <p><strong>For Ubuntu/Debian:</strong></p>
+    <div class="command-block">
+sudo apt update
+sudo apt install samba</div>
+
+    <p style="margin-top: 15px;"><strong>For RHEL/CentOS/Fedora:</strong></p>
+    <div class="command-block">sudo dnf install samba</div>
+
+    <p style="margin-top: 25px;"><strong>Step 2: Create the Shared Directory</strong></p>
+    <p>You need a specific folder that you want to share. While you can put this anywhere, <code>/samba/</code> is a common organized choice[cite: 1305, 1306].</p>
+    
+    <p><strong>Create the folder:</strong></p>
+    <div class="command-block">sudo mkdir -p /samba/public</div>
+    
+    <p><strong>Set permissions:</strong> To allow everyone to read and write (adjust as needed for security)[cite: 1308]:</p>
+    <div class="command-block">
+sudo chmod -R 0777 /samba/public
+sudo chown -R nobody:nogroup /samba/public</div>
+
+    <p style="margin-top: 25px;"><strong>Step 3: Configure the Samba Share</strong></p>
+    <p>Samba’s settings are stored in a single configuration file[cite: 1310].</p>
+    
+    <p><strong>Back up the original config:</strong></p>
+    <div class="command-block">sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak</div>
+    
+    <p><strong>Edit the file:</strong> <code>sudo nano /etc/samba/smb.conf</code>. Scroll to the very bottom and paste the following[cite: 1312, 1313]:</p>
+    
+    <div class="command-block">
+[PublicShare]
+comment = Samba on Ubuntu
+path = /samba/public
+browsable = yes
+read only = no
+guest ok = yes
+force user = nobody</div>
+
+    <p style="margin-top: 25px;"><strong>Step 4: Setup User Accounts (Optional but Recommended)</strong></p>
+    <p>If you want a private share instead of a guest one, you must create a Samba password for your user[cite: 1323].</p>
+    <div class="command-block">
+sudo smbpasswd -a your_username
+sudo smbpasswd -e your_username</div>
+
+    <div class="page-number">13</div>
+</div>
+
+<script>
+    // Universal copy button handler
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+
+<div class="page">
+    <p><strong>Step 5: Restart Samba & Update Firewall</strong></p>
+    <p>For the changes to take effect, restart the services[cite: 1327, 1328].</p>
+    
+    <div class="command-block">
+sudo systemctl restart smbd nmbd</div>
+
+    <p style="margin-top: 15px;">If you have a firewall (UFW) enabled, allow Samba traffic[cite: 1330]:</p>
+    <div class="command-block">
+sudo ufw allow samba</div>
+
+    <h3 style="margin-top: 30px;">Step 6: How to Access the Share [cite: 1332]</h3>
+    
+    <p><strong>From Windows:</strong></p>
+    <ol>
+        <li>Open <strong>File Explorer</strong>[cite: 1334].</li>
+        <li>In the address bar, type: <code>\\&lt;YOUR_STATIC_IP&gt;\PublicShare</code> (e.g., <code>\\192.168.38.120\PublicShare</code>)[cite: 1335].</li>
+        <li>Press <strong>Enter</strong>[cite: 1336].</li>
+    </ol>
+
+    <p style="margin-top: 20px;"><strong>From Linux:</strong></p>
+    <ol>
+        <li>Open your file manager (Nautilus, Thunar, etc.)[cite: 1338].</li>
+        <li>Select <strong>"Other Locations"</strong> or <strong>"Connect to Server"</strong>[cite: 1339].</li>
+        <li>Enter: <code>smb://192.168.38.120/PublicShare</code>[cite: 1340].</li>
+    </ol>
+
+    <h3 style="margin-top: 30px;">Summary of smb.conf Parameters [cite: 1341]</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;">
+        <thead>
+            <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ddd;">
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Parameter</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Meaning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>path</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">The actual directory on your Linux disk[cite: 1342].</td>
+            </tr>
+            <tr style="background-color: #fafafa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>browsable</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Whether the share shows up when browsing the network[cite: 1342].</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>read only</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Set to <strong>no</strong> if you want to be able to upload/delete files[cite: 1342].</td>
+            </tr>
+            <tr style="background-color: #fafafa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>guest ok</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Set to <strong>yes</strong> to allow access without a username/password[cite: 1342].</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-number">14</div>
+</div>
+
+<script>
+    // Universal copy button handler for all command blocks on this page
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+
+<div class="page">
+    <h2>Static IP</h2>
+    <h3>Linux</h3>
+    
+    <p><strong>METHOD 1: UBUNTU NETPLAN</strong></p>
+    <div style="margin: 15px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/173rk-yiXKE" 
+            title="Ubuntu Netplan Static IP Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <ol>
+        <li><strong>Find your interface name:</strong>
+            <div class="command-block">ip -c a</div>
+            <p># Or in some cases:</p>
+            <div class="command-block">ip addr</div>
+            <p style="font-size: 13px; color: #666;">Look for names like <code>eth0</code> or <code>enp0s3</code>[cite: 1349].</p>
+        </li>
+        <li><strong>Note the IP route addresses:</strong>
+            <div class="command-block">ip route</div>
+        </li>
+        <li><strong>Locate and edit the config file:</strong>
+            <div class="command-block">
+cd /etc/netplan
+ls
+sudo nano 50-cloud-init.yaml</div>
+        </li>
+        <li><strong>Insert the configuration:</strong>
+            <p>“addresses:” will be the static IP. “via” will be the IP route[cite: 1356].</p>
+            <div style="text-align: center; margin: 15px 0;">
+                <img src="Pictures/Projects/staticip.png" alt="Netplan Configuration Example" style="max-width: 85%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+        </li>
+        <li><strong>Apply changes:</strong>
+            <div class="command-block">
+sudo netplan apply
+ip -c a</div>
+            <p style="font-size: 13px; color: #666;"># Verify the change with the last command.</p>
+        </li>
+    </ol>
+
+    <p style="margin-top: 30px;"><strong>METHOD 2: DEBIAN INTERFACES</strong></p>
+    <div style="margin: 15px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/Dx3KWcbn9hM" 
+            title="Debian Interfaces Static IP Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <ol>
+        <li><strong>Find interface and route:</strong>
+            <div class="command-block">ip -c a</div>
+            <div class="command-block">ip r</div>
+        </li>
+        <li><strong>Locate the config file:</strong>
+            <div class="command-block">sudo nano /etc/network/interfaces</div>
+        </li>
+        <li><strong>Apply configuration:</strong>
+            <div style="text-align: center; margin: 15px 0;">
+                <img src="Pictures/Projects/staticipdebian.png" alt="Debian Interfaces Configuration" style="max-width: 85%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+        </li>
+        <li><strong>Restart service and verify:</strong>
+            <div class="command-block">
+sudo systemctl restart networking.service
+ip -c a</div>
+        </li>
+    </ol>
+
+    <div class="page-number">15</div>
+</div>
+
+<script>
+    // Universal copy button handler for all command blocks on this page
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+
+<div class="page">
+    <h3>Windows</h3>
+    <div style="margin: 15px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/_QnqFsWJV58" 
+            title="Windows Static IP Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <ol>
+        <li>Go to <strong>Control Panel</strong>.</li>
+        <li>Select <strong>Network and Internet</strong>.</li>
+        <li>Go to <strong>Network and Sharing Center</strong>.</li>
+        <li>Click on your active connection (e.g., <strong>Connections: Ethernet</strong>).</li>
+        <li>Select <strong>Properties</strong>.</li>
+        <li>Click on <strong>Internet Protocol Version 4 (TCP/IPv4)</strong> and select <strong>Properties</strong>.</li>
+        <li>Here a static IP, Subnet mask, and Default gateway can be manually set.</li>
+    </ol>
+
+    <h2 style="margin-top: 40px;">DNS</h2>
+    <p><strong>How to put an HTML website online</strong></p>
+    <div style="margin: 15px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/p1QU3kLFPdg?start=317" 
+            title="DNS and Website Hosting Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <p><strong>Useful Links:</strong></p>
+    <ul>
+        <li><a href="https://ap.www.namecheap.com">https://ap.www.namecheap.com</a></li>
+        <li><a href="https://mxtoolbox.com/DNSLookup.aspx">https://mxtoolbox.com/DNSLookup.aspx</a></li>
+    </ul>
+
+    <h3>Part 1: Hosting Your Website for Free (GitHub Pages)</h3>
+    <p>GitHub Pages is a free service that hosts your static files directly from a GitHub repository.</p>
+    
+    <ol>
+        <li><strong>Create a GitHub Account:</strong> Go to <a href="https://github.com">github.com</a> and sign up or log in[cite: 997].</li>
+        <li><strong>Create a New Repository:</strong> 
+            <ul>
+                <li>Click your profile icon (top right) > <strong>Your repositories</strong> > <strong>New</strong>[cite: 998].</li>
+                <li>Give it a name (e.g., <code>my-website</code>) and ensure it is set to <strong>Public</strong>[cite: 999].</li>
+            </ul>
+        </li>
+    </ol>
+
+    <div class="page-number">16</div>
+</div>
+
+<div class="page">
+    <ol start="3">
+        <li><strong>Upload Your Files:</strong>
+            <ul>
+                <li>Click <strong>"uploading an existing file"</strong>.</li>
+                <li>Drag and drop your <code>index.html</code> (and any CSS/Images) into the box.</li>
+                <li>Scroll down and click <strong>Commit changes</strong>.</li>
+            </ul>
+        </li>
+        <li><strong>Enable GitHub Pages:</strong>
+            <ul>
+                <li>Go to <strong>Settings</strong> (top tab) > <strong>Pages</strong> (left sidebar).</li>
+                <li>Under <strong>Build and deployment</strong>, ensure "Deploy from a branch" is selected and the branch is set to <strong>main</strong>.</li>
+                <li>Click <strong>Save</strong>. After a minute, you’ll see a link like: <code>https://your-username.github.io/my-website/</code>.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>Part 2: Using a Custom Domain (Namecheap)</h3>
+    <p>If you want a professional address (like <code>www.yourname.com</code>), you need to point your domain to GitHub’s servers.</p>
+
+    <ol>
+        <li><strong>Buy a Domain:</strong> Purchase one from <a href="https://www.namecheap.com">Namecheap</a>.</li>
+        <li><strong>Configure GitHub:</strong>
+            <ul>
+                <li>In your GitHub Repo <strong>Settings > Pages</strong>, scroll to <strong>Custom domain</strong>.</li>
+                <li>Type your domain (e.g., <code>yourname.com</code>) and click <strong>Save</strong>.</li>
+            </ul>
+        </li>
+        <li><strong>Configure Namecheap (DNS Records):</strong>
+            <ul>
+                <li>Log in to Namecheap > <strong>Domain List</strong> > <strong>Manage</strong> > <strong>Advanced DNS</strong>.</li>
+                <li>Add four <strong>A Records</strong> pointing to GitHub’s IP addresses:
+                    <ul style="list-style-type: none; font-family: monospace; background: #f9f9f9; padding: 10px; border-radius: 5px;">
+                        <li>185.199.108.153</li>
+                        <li>185.199.109.153</li>
+                        <li>185.199.110.153</li>
+                        <li>185.199.111.153</li>
+                    </ul>
+                </li>
+                <li>Add a <strong>CNAME Record</strong>:
+                    <ul>
+                        <li><strong>Host:</strong> <code>www</code></li>
+                        <li><strong>Value:</strong> <code>your-username.github.io</code></li>
+                    </ul>
+                    <ul>
+                <li><strong>Link Domain in GitHub:</strong></li>
+                        <li>Return to your GitHub repository <strong>Settings > Pages</strong> </li>
+                        <li>Under Custom domain, type your new domain (e.g., example.com) and click Save </li>
+            <ol start="4">
+        <li><strong>Link Domain in GitHub:</strong>
+            <ul>
+                <li>Return to your GitHub repository <strong>Settings > Pages</strong>.</li>
+                <li>Under <strong>Custom domain</strong>, type your new domain (e.g., <code>example.com</code>) and click <strong>Save</strong>.</li>
+            </ul>
+        </li>
+        <li><strong>Enable Security (HTTPS):</strong>
+            <ul>
+                <li>Once the domain is verified, check the <strong>Enforce HTTPS</strong> box. This ensures your site has the "lock" icon in the browser for security.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <div class="page-number">17</div>
+</div>
+
+<div class="page">
+    <h2>Windows Server</h2>
+    <div style="margin: 15px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/NE2nQlYcwao" 
+            title="Windows Server Setup Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <h3>Section 1: Initial Server Setup & Role Installation</h3>
+    <p>Before beginning, ensure your server has a <strong>static IP address</strong> configured (e.g., <code>192.168.49.5</code>)[cite: 73].</p>
+    
+    <ol>
+        <li><strong>Open Server Manager:</strong> Click <strong>Manage</strong> > <strong>Add Roles and Features</strong>[cite: 74].</li>
+        <li><strong>Select Installation Type:</strong> Choose <strong>Role-based or feature-based installation</strong> and select your server[cite: 75].</li>
+        <li><strong>Select Server Roles:</strong> Check the boxes for:
+            <ul>
+                <li>Active Directory Domain Services (AD DS)[cite: 76].</li>
+                <li>DHCP Server[cite: 76].</li>
+                <li>DNS Server[cite: 76].</li>
+                <li><em>Note: Click "Add Features" whenever prompted for management tools[cite: 77].</em></li>
+            </ul>
+        </li>
+        <li><strong>Install:</strong> Follow the prompts and click <strong>Install</strong>[cite: 77].</li>
+        <li><strong>Promote to Domain Controller:</strong> Once installed, click the <strong>notification flag</strong> and select <strong>Promote this server to a domain controller</strong>[cite: 78].</li>
+        <li><strong>Deployment:</strong> Select <strong>Add a new forest</strong> and enter your <strong>Root domain name</strong> (e.g., <code>mylab.local</code>)[cite: 79].</li>
+        <li><strong>Configuration:</strong> Set a <strong>Directory Services Restore Mode (DSRM)</strong> password and complete the wizard[cite: 80].</li>
+        <li>The server will automatically reboot after installation.</li>
+    </ol>
+
+    <div class="page-number">18</div>
+</div>
+
+<div class="page">
+    <h3>Section 2: DNS - Configuring Lookup Zones</h3>
+    <p>Active Directory creates Forward Lookup Zones automatically, but you must manually configure the Reverse Lookup Zone.</p>
+
+    <p><strong>Configuring Reverse Lookup Zones:</strong></p>
+    <ol start="9">
+        <li><strong>Open DNS Manager:</strong> Go to <strong>Tools > DNS</strong>[cite: 82].</li>
+        <li><strong>Create New Zone:</strong> Right-click <strong>Reverse Lookup Zones</strong> > <strong>New Zone</strong>[cite: 83].</li>
+        <li>Select <strong>Primary Zone</strong> and check <strong>"Store the zone in Active Directory"</strong>[cite: 84].</li>
+        <li><strong>Replication Scope:</strong> Select <strong>"To all DNS servers running on domain controllers in this domain"</strong>[cite: 85].</li>
+        <li>Select <strong>IPv4 Reverse Lookup Zone</strong>[cite: 86].</li>
+        <li><strong>Network ID:</strong> Enter the first three octets of your network (e.g., <code>192.168.49</code>)[cite: 86].</li>
+        <li><strong>Dynamic Updates:</strong> Choose <strong>Allow only secure dynamic updates</strong>[cite: 87].</li>
+        <li><strong>Add Pointer (PTR) Record:</strong>
+            <ul>
+                <li>Right-click your new zone > <strong>New Pointer (PTR)</strong>[cite: 87].</li>
+                <li>Browse to find your <strong>Host (A) record</strong> in the Forward Lookup Zone to map the IP to the Hostname[cite: 88].</li>
+            </ul>
+        </li>
+        <li><strong>Final DNS Tweak:</strong> In your Ethernet adapter settings, change the <strong>Preferred DNS server</strong> from <code>127.0.0.1</code> to the server's actual static IP (<code>192.168.49.5</code>)[cite: 89].</li>
+    </ol>
+
+    <div class="page-number">19</div>
+</div>
+
+<div class="page">
+    <h3>Section 3: DHCP - Post-Install & Scope Configuration</h3>
+    
+    <ol start="18">
+        <li><strong>Post-Deployment:</strong> Click the <strong>notification flag</strong> in Server Manager and select <strong>Complete DHCP configuration</strong>[cite: 90].
+            <ul>
+                <li>This creates security groups and authorizes the server in Active Directory[cite: 91].</li>
+            </ul>
+        </li>
+        <li><strong>Open DHCP Manager:</strong> Go to <strong>Tools > DHCP</strong>[cite: 92].</li>
+        <li><strong>Create New Scope:</strong> Right-click <strong>IPv4</strong> > <strong>New Scope</strong>[cite: 92].</li>
+        <li><strong>Name:</strong> Provide a name (e.g., <code>Scope1</code>)[cite: 93].</li>
+        <li><strong>IP Range:</strong> Enter <strong>Start</strong> (e.g., <code>.20</code>) and <strong>End</strong> (e.g., <code>.250</code>) addresses[cite: 93].</li>
+        <li><strong>Lease Duration:</strong> Set to desired time (e.g., <code>8 hours</code>)[cite: 94].</li>
+        <li><strong>Configure DHCP Options:</strong>
+            <ul>
+                <li><strong>Router (Default Gateway):</strong> Add your gateway IP (e.g., <code>192.168.49.1</code>)[cite: 95].</li>
+                <li><strong>DNS Server:</strong> Ensure your <strong>Domain Controller IP</strong> is listed[cite: 96].</li>
+            </ul>
+        </li>
+        <li><strong>Activate:</strong> Select <strong>Yes, I want to activate this scope now</strong>[cite: 97].</li>
+    </ol>
+
+    <h3>Section 4: Joining a Client to the Domain</h3>
+    <ol start="26">
+        <li><strong>Client Network Check:</strong> On a Windows 10 PC, ensure the adapter is set to <strong>"Obtain IP address automatically"</strong>[cite: 98].</li>
+        <li>Run <code>ipconfig /all</code> to verify it received an IP from the new DHCP server[cite: 99].</li>
+        <li><strong>Join Domain:</strong>
+            <ul>
+                <li>Go to <strong>Settings > System > About > Join a domain</strong>[cite: 100].</li>
+                <li>Enter the domain name (<code>mylab.local</code>) and provide <strong>Domain Administrator credentials</strong>[cite: 101].</li>
+                <li>Restart the client computer[cite: 101].</li>
+            </ul>
+        </li>
+        <li><strong>Verify:</strong> In Server Manager, go to <strong>Active Directory Users and Computers > Computers</strong> to see the newly joined client listed[cite: 102].</li>
+    </ol>
+
+    <div class="page-number">20</div>
+</div>
