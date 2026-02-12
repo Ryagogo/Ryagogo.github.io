@@ -16,10 +16,10 @@
         body {
             font-family: 'Roboto', sans-serif;
             display: grid;
-            grid-template-columns: 26% 74%; 
+            grid-template-columns: 25% 75%; 
             min-height: 100vh;
             line-height: 1.05; /* Tightened line height */
-            background: linear-gradient(to right, #2c3e50 26%, #ffffff 26%);
+            background: linear-gradient(to right, #2c3e50 25%, #ffffff 25%);
             color: #333;
             -webkit-print-color-adjust: exact;
         }
@@ -33,14 +33,14 @@
 
         .sidebar h1 {
             font-family: 'Hammersmith One', sans-serif;
-            font-size: 1.3rem;
+            font-size: 1.3rem; /* Scaled down header */
             text-transform: uppercase;
             margin-bottom: 2px;
             color: #fff;
         }
 
         .sidebar .contact-info {
-            font-size: 0.6rem;
+            font-size: 0.6rem; /* Scaled down text */
             margin-bottom: 10px;
             opacity: 0.8;
             line-height: 1.1;
@@ -51,8 +51,8 @@
             font-size: 0.8rem;
             text-transform: uppercase;
             border-bottom: 1px solid rgba(255,255,255,0.2);
-            margin: 10px 0 4px 0;
-            padding-bottom: 1px;
+            margin: 8px 0 4px 0; /* Reduced margins */
+            padding-bottom: 2px;
             letter-spacing: 0.5px;
         }
 
@@ -67,14 +67,14 @@
         /* MAIN CONTENT */
         .main-content {
             grid-column: 2;
-            padding: 15px 20px; /* Reduced padding */
+            padding: 15px 20px; /* Reduced side padding */
         }
 
-        section { margin-bottom: 6px; } /* Reduced section gap */
+        section { margin-bottom: 5px; } /* Tightened section spacing */
 
         h2 {
             font-family: 'Hammersmith One', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.85rem; /* Scaled down section headers */
             text-transform: uppercase;
             border-bottom: 1.2px solid #2c3e50;
             margin-bottom: 3px;
@@ -82,7 +82,7 @@
         }
 
         p, li {
-            font-size: 0.72rem; /* Reduced font size */
+            font-size: 0.72rem; /* Reduced base font size */
             margin-bottom: 1px;
         }
 
@@ -111,14 +111,15 @@
         }
 
         .cert-detail {
-            font-size: 0.65rem;
+            font-size: 0.68rem;
             color: #555;
             display: block;
+            margin-top: 0;
         }
 
         @media print {
-            body { background: linear-gradient(to right, #2c3e50 26%, #ffffff 26%) !important; }
-            @page { margin: 0; }
+            body { background: linear-gradient(to right, #2c3e50 25%, #ffffff 25%) !important; }
+            @page { margin: 0; } /* Forces browser to use full sheet */
         }
 
         br { display: none; }
@@ -149,7 +150,7 @@
 <div class="main-content">
     <section id="objective">
         <h2>Professional Summary</h2>
-        <p>IT professional with proven experience in application deployment, configuration management, troubleshooting, database support, and systems administration within enterprise environments. CompTIA Security+ certified with solid expertise in Windows Server, Active Directory, virtualization platforms, and line-of-business applications. Demonstrated ability to monitor system performance, enforce information security standards, maintain precise technical documentation, and collaborate effectively with cross-functional teams.</p>
+        <p>IT professional with proven experience in application deployment, configuration management, troubleshooting, database support, and systems administration within enterprise environments. CompTIA Security+ certified with solid expertise in Windows Server, Active Directory, virtualization platforms, and line-of-business applications. Demonstrated ability to monitor system performance, enforce information security standards, maintain precise technical documentation, and collaborate effectively with cross-functional teams and vendors to ensure operational stability and compliance.</p>
     </section>
 
     <section id="education">
@@ -179,14 +180,14 @@
 
     <section id="homelab">
         <h2>Technical Skills</h2>
-        <p><strong>OS:</strong> Windows XP/Vista/7/8/10/11, Windows Server 2016/2025, Ubuntu & Debian</p>
-        <p><strong>Virt & Infra:</strong> ProxMox, Hyper-V, VMware, VM provisioning and management</p>
-        <p><strong>Identity & Admin:</strong> Active Directory (users/groups, GPOs), Hypervising</p>
-        <p><strong>Enterprise Ops:</strong> Automation, logging, monitoring/alerting, backup/recovery</p>
-        <p><strong>Networking:</strong> DNS, DHCP, TCP/IP, VPN, troubleshooting, containerization</p>
+        <p><strong>Operating Systems:</strong> Windows XP/Vista/7/8/10/11, Windows Server 2016/2025, Ubuntu & Debian</p>
+        <p><strong>Virtualization & Infrastructure:</strong> ProxMox, Hyper-V, VMware, virtual machine provisioning and management</p>
+        <p><strong>Identity & Systems Administration:</strong> Active Directory (user/group management, GPOs), Hypervising</p>
+        <p><strong>Enterprise Services & Operations:</strong> Automation, centralized logging, monitoring & alerting, backup and recovery</p>
+        <p><strong>Networking:</strong> DNS, DHCP, TCP/IP, port forwarding, VPN, basic troubleshooting, containerization</p>
         <p><strong>Database:</strong> SQL, PostgreSQL, Oracle</p>
-        <p><strong>Productivity Tools:</strong> ServiceNow, Microsoft 365 Suite, Adobe Suite</p>
-        <p><strong>Security/IA:</strong> Vulnerability mgt, IDS/IPS, firewalls, endpoint protection, SSL, NGINX</p>
+        <p><strong>IT Service & Productivity Tools:</strong> ServiceNow, Microsoft 365 Suite, Adobe Suite</p>
+        <p><strong>Cybersecurity & IA:</strong> Vulnerability management, IDS/IPS, firewalls, endpoint protection, SSL/TLS, NGINX</p>
     </section>
 
     <section id="experience">
@@ -196,12 +197,12 @@
             <span class="location-date">Virginia Beach, VA (Feb 2025 – Current)</span>
         </div>
         <ul>
-            <li><strong>Enterprise Application Support:</strong> Maintained merchandise management systems, ensuring accurate item setup and pricing configurations.</li>
-            <li><strong>System Configuration:</strong> Managed item master records and UPC files, ensuring compliance with internal controls and data integrity.</li>
-            <li><strong>Business Systems Analysis:</strong> Conducted sales/inventory analysis to support seasonal planning using system reporting tools.</li>
-            <li><strong>Issue Resolution:</strong> Investigated discrepancies in reports and billing; coordinated with vendors to resolve data-related issues.</li>
-            <li><strong>Systems Liaison:</strong> Acted as point of contact for corporate stakeholders for system updates and promotional configurations.</li>
-            <li><strong>Process Documentation:</strong> Validated system parameters to ensure accurate promotional execution across retail locations.</li>
+            <li><strong>Enterprise Application Support:</strong> Maintained merchandise management systems, ensuring accurate item setup and pricing.</li>
+            <li><strong>System Configuration:</strong> Managed item master records and UPC files, ensuring compliance with data integrity standards.</li>
+            <li><strong>Business Systems Analysis:</strong> Conducted inventory analysis and leveraged reporting tools for procurement decisions.</li>
+            <li><strong>Issue Resolution:</strong> Investigated discrepancies in billing and system data; coordinated with vendors to resolve issues.</li>
+            <li><strong>Systems Liaison:</strong> Acted as point of contact for system updates and data changes impacting store operations.</li>
+            <li><strong>Process Improvement:</strong> Supported promotional rollouts by validating system parameters across retail locations.</li>
         </ul>
 
         <div class="job-header">
@@ -209,12 +210,12 @@
             <span class="location-date">Boulder, CO (May 2023 – May 2024)</span>
         </div>
         <ul>
-            <li><strong>App Configuration:</strong> Maintained software applications across Windows/macOS, ensuring compatibility with enterprise standards.</li>
-            <li><strong>Technical Troubleshooting:</strong> Diagnosed application-level issues and escalated complex cases to higher-tier support.</li>
-            <li><strong>Access Support:</strong> Assisted users with account-related issues and software configuration per IT security protocols.</li>
-            <li><strong>Monitoring:</strong> Documented incidents and tracked recurring issues to enhance application stability.</li>
-            <li><strong>Service Desk Ops:</strong> Resolved support tickets within defined SLAs, prioritizing business-impacting issues.</li>
-            <li><strong>Policy Compliance:</strong> Followed cybersecurity and information assurance practices for managing systems.</li>
+            <li><strong>Application Installation:</strong> Installed and maintained software across Windows and macOS environments.</li>
+            <li><strong>Technical Troubleshooting:</strong> Diagnosed application issues and escalated complex cases to higher-tier support.</li>
+            <li><strong>User Account Support:</strong> Assisted users with account configuration in alignment with IT security protocols.</li>
+            <li><strong>System Documentation:</strong> Documented incidents and provided feedback for system improvements and stability.</li>
+            <li><strong>Service Desk Operations:</strong> Resolved support tickets within defined SLAs, prioritizing business-impacting issues.</li>
+            <li><strong>Security Compliance:</strong> Followed cybersecurity practices when deploying applications and managing systems.</li>
         </ul>
     </section>
 </div>
