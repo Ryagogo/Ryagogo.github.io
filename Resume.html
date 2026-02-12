@@ -16,10 +16,10 @@
         body {
             font-family: 'Roboto', sans-serif;
             display: grid;
-            grid-template-columns: 22% 78%; 
+            grid-template-columns: 24% 76%; 
             min-height: 100vh;
-            line-height: 1.02;
-            background: linear-gradient(to right, #2c3e50 22%, #ffffff 22%);
+            line-height: 1.02; /* Ultra-tight leading to save vertical space */
+            background: linear-gradient(to right, #2c3e50 24%, #ffffff 24%);
             color: #333;
             -webkit-print-color-adjust: exact;
         }
@@ -33,7 +33,7 @@
 
         .sidebar h1 {
             font-family: 'Hammersmith One', sans-serif;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             text-transform: uppercase;
             margin-bottom: 2px;
             color: #fff;
@@ -41,7 +41,7 @@
 
         .sidebar .contact-info {
             font-size: 0.6rem;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             opacity: 0.8;
             line-height: 1.05;
         }
@@ -69,7 +69,7 @@
             padding: 12px 20px;
         }
 
-        section { margin-bottom: 4px; }
+        section { margin-bottom: 4px; } /* Reduced section spacing */
 
         h2 {
             font-family: 'Hammersmith One', sans-serif;
@@ -81,8 +81,8 @@
         }
 
         p, li {
-            font-size: 0.72rem;
-            margin-bottom: 1px;
+            font-size: 0.72rem; /* Scaled down slightly for 1-page fit */
+            margin-bottom: 0px;
         }
 
         .job-header {
@@ -93,10 +93,10 @@
         }
 
         .job-title { font-weight: 700; font-size: 0.75rem; }
-        .location-date { font-style: italic; color: #555; font-size: 0.65rem; }
+        .location-date { font-style: italic; color: #666; font-size: 0.65rem; }
 
-        ul { margin-left: 10px; margin-top: 1px; }
-        li { margin-bottom: 0px; }
+        ul { margin-left: 10px; margin-top: 0px; }
+        li { margin-bottom: 0px; padding-bottom: 1px; }
 
         .cert-block { margin-bottom: 2px; }
 
@@ -114,8 +114,8 @@
         }
 
         @media print {
-            body { background: linear-gradient(to right, #2c3e50 22%, #ffffff 22%) !important; }
-            @page { margin: 0.1in; }
+            body { background: linear-gradient(to right, #2c3e50 24%, #ffffff 24%) !important; }
+            @page { margin: 0.15in; }
         }
 
         br { display: none; }
@@ -144,9 +144,9 @@
 </div>
 
 <div class="main-content">
-    <section id="summary">
+    <section id="objective">
         <h2>Professional Summary</h2>
-        <p>IT professional with proven experience in application deployment, configuration management, troubleshooting, database support, and systems administration within enterprise environments. CompTIA Security+ certified with solid expertise in Windows Server, Active Directory, virtualization platforms, and line-of-business applications. Demonstrated ability to monitor system performance, enforce information security standards, and collaborate effectively with cross-functional teams and vendors.</p>
+        <p>IT professional with proven experience in application deployment, configuration management, troubleshooting, database support, and systems administration within enterprise environments. CompTIA Security+ certified with solid expertise in Windows Server, Active Directory, virtualization platforms, and line-of-business applications. Demonstrated ability to monitor system performance, enforce information security standards, maintain precise technical documentation, and collaborate effectively with cross-functional teams and vendors.</p>
     </section>
 
     <section id="education">
@@ -155,7 +155,8 @@
             <span class="job-title">University of Colorado</span>
             <span class="location-date">Boulder, CO | May 2024</span>
         </div>
-        <p>Bachelor of Arts in Film Production. Managed 25 hours/week work schedule with full-time course load.</p>
+        <p>Bachelor of Arts in Film Production</p>
+        <p style="font-style: italic; font-size: 0.65rem;">Managed 25 hours/week work schedule with full-time course load.</p>
     </section>
   
     <section id="certifications">
@@ -163,34 +164,42 @@
         <div class="cert-block">
             <div class="cert-row">
                 <span>CompTIA Security+</span>
-                <span style="font-weight: normal; color: #555;">Expires September 2028</span>
+                <span style="font-weight: normal; color: #666;">Expires September 2028</span>
             </div>
-            <span class="cert-detail">Meets IA Certification requirement (SECNAV M-5239.2).</span>
+            <span class="cert-detail">Meets IA Certification requirement (SECNAV M-5239.2)</span>
         </div>
         <div class="cert-block">
             <span class="cert-row" style="font-size: 0.72rem;">OS/Computing Environment (OS/CE) Certification</span>
-            <span class="cert-detail">Eligible / Obtaining as Required.</span>
+            <span class="cert-detail">Eligible / Obtaining as Required</span>
         </div>
     </section>
 
     <section id="homelab">
         <h2>Technical Skills</h2>
-        <p><strong>OS:</strong> Windows XP-11, Server 2016/2025, Ubuntu, Debian. <strong>Virtualization:</strong> ProxMox, Hyper-V, VMware.</p>
-        <p><strong>Identity:</strong> Active Directory (GPOs). <strong>Operations:</strong> Automation, logging, monitoring, backup/recovery.</p>
-        <p><strong>Networking:</strong> DNS, DHCP, TCP/IP, VPN, NGINX. <strong>Database:</strong> SQL, PostgreSQL, Oracle.</p>
-        <p><strong>Cyber:</strong> Vulnerability management, IDS/IPS, firewalls, endpoint protection, SSL/TLS.</p>
+        <p><strong>Operating Systems:</strong> Windows XP/Vista/7/8/10/11, Windows Server 2016/2025, Ubuntu & Debian</p>
+        <p><strong>Virtualization & Infrastructure:</strong> ProxMox, Hyper-V, VMware, VM provisioning and management</p>
+        <p><strong>Identity & Systems Admin:</strong> Active Directory (user/group management, GPOs), Hypervising</p>
+        <p><strong>Enterprise Operations:</strong> Automation, centralized logging, monitoring & alerting, backup/recovery</p>
+        <p><strong>Networking:</strong> DNS, DHCP, TCP/IP, port forwarding, VPN, troubleshooting, containerization</p>
+        <p><strong>Database:</strong> SQL, PostgreSQL, Oracle</p>
+        <p><strong>Service & Productivity:</strong> ServiceNow, Microsoft 365 Suite, Adobe Suite</p>
+        <p><strong>Cybersecurity:</strong> Vulnerability management, IDS/IPS, firewalls, endpoint protection, SSL/TLS, NGINX</p>
     </section>
 
     <section id="experience">
         <h2>Experience</h2>
+
         <div class="job-header">
             <span class="job-title">Merchandiser – NEXCOM HQ</span>
             <span class="location-date">Virginia Beach, VA (Feb 2025 – Current)</span>
         </div>
         <ul>
-            <li><strong>App Support & Data:</strong> Maintained systems, item setup, pricing, and master records compliant with controls.</li>
-            <li><strong>Analysis & Resolution:</strong> Used reporting tools for inventory analysis; resolved billing and data discrepancies.</li>
-            <li><strong>Liaison:</strong> Contact for corporate stakeholders on system updates and promotional data impacting operations.</li>
+            <li><strong>Enterprise Application Support:</strong> Maintained merchandise systems, item setup, and pricing configurations.</li>
+            <li><strong>Data Governance:</strong> Managed item master records and UPC files, ensuring compliance with internal controls.</li>
+            <li><strong>Business Systems Analysis:</strong> Conducted inventory analysis and leveraged reporting tools for procurement.</li>
+            <li><strong>Issue Resolution:</strong> Investigated billing discrepancies and coordinated with vendors to resolve data issues.</li>
+            <li><strong>Systems Liaison:</strong> Point of contact for corporate stakeholders for system updates and promotional data.</li>
+            <li><strong>Process Improvement:</strong> Validated system parameters to ensure accurate execution across retail locations.</li>
         </ul>
 
         <div class="job-header">
@@ -198,9 +207,12 @@
             <span class="location-date">Boulder, CO (May 2023 – May 2024)</span>
         </div>
         <ul>
-            <li><strong>Support:</strong> Installed/maintained software on Windows/macOS; diagnosed and resolved technical issues.</li>
-            <li><strong>Access & Docs:</strong> Assisted with user accounts and software access; documented incidents to enhance stability.</li>
-            <li><strong>Operations:</strong> Resolved tickets within SLAs; followed cybersecurity practices for application deployment.</li>
+            <li><strong>Application Configuration:</strong> Installed and maintained software across Windows and macOS environments.</li>
+            <li><strong>Technical Troubleshooting:</strong> Diagnosed application-level issues and hardware/software malfunctions.</li>
+            <li><strong>User Access Support:</strong> Managed accounts and software access in alignment with IT security protocols.</li>
+            <li><strong>Documentation:</strong> Tracked recurring issues and provided feedback to enhance application stability.</li>
+            <li><strong>Service Desk Operations:</strong> Resolved support tickets within defined SLAs, prioritizing business impact.</li>
+            <li><strong>Security Compliance:</strong> Followed IA practices when deploying applications and managing systems.</li>
         </ul>
     </section>
 </div>
