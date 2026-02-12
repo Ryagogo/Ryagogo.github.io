@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
+      <style>
         * {
             box-sizing: border-box;
             margin: 0;
@@ -16,10 +16,10 @@
         body {
             font-family: 'Roboto', sans-serif;
             display: grid;
-            grid-template-columns: 25% 75%; 
+            grid-template-columns: 28% 72%; 
             min-height: 100vh;
-            line-height: 1.05; /* Tightened line height */
-            background: linear-gradient(to right, #2c3e50 25%, #ffffff 25%);
+            line-height: 1.1;
+            background: linear-gradient(to right, #2c3e50 28%, #ffffff 28%);
             color: #333;
             -webkit-print-color-adjust: exact;
         }
@@ -28,98 +28,106 @@
         .sidebar {
             grid-column: 1;
             color: #ffffff;
-            padding: 15px 12px; /* Reduced padding */
+            padding: 20px 15px;
         }
 
         .sidebar h1 {
             font-family: 'Hammersmith One', sans-serif;
-            font-size: 1.3rem; /* Scaled down header */
+            font-size: 1.5rem;
             text-transform: uppercase;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
             color: #fff;
         }
 
         .sidebar .contact-info {
-            font-size: 0.6rem; /* Scaled down text */
-            margin-bottom: 10px;
+            font-size: 0.65rem;
+            margin-bottom: 15px;
             opacity: 0.8;
-            line-height: 1.1;
+            line-height: 1.2;
         }
 
         .sidebar h2 {
             font-family: 'Hammersmith One', sans-serif;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             border-bottom: 1px solid rgba(255,255,255,0.2);
-            margin: 8px 0 4px 0; /* Reduced margins */
+            margin: 12px 0 6px 0;
             padding-bottom: 2px;
             letter-spacing: 0.5px;
         }
 
         .sidebar p {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 300;
-            line-height: 1.1;
+            line-height: 1.2;
             color: #ecf0f1;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
 
         /* MAIN CONTENT */
         .main-content {
             grid-column: 2;
-            padding: 15px 20px; /* Reduced side padding */
+            padding: 20px 30px;
         }
 
-        section { margin-bottom: 5px; } /* Tightened section spacing */
+        section { margin-bottom: 8px; }
 
         h2 {
             font-family: 'Hammersmith One', sans-serif;
-            font-size: 0.85rem; /* Scaled down section headers */
+            font-size: 0.95rem;
             text-transform: uppercase;
-            border-bottom: 1.2px solid #2c3e50;
-            margin-bottom: 3px;
-            margin-top: 2px;
+            border-bottom: 1.5px solid #2c3e50;
+            margin-bottom: 4px;
+            margin-top: 4px;
         }
 
         p, li {
-            font-size: 0.72rem; /* Reduced base font size */
-            margin-bottom: 1px;
+            font-size: 0.78rem;
+            margin-bottom: 2px;
+        }
+
+        .tech-list {
+            list-style-type: none;
+            margin-left: 0;
+        }
+
+        .tech-list li {
+            margin-bottom: 3px;
         }
 
         .job-header {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-top: 3px;
+            margin-top: 5px;
         }
 
-        .job-title { font-weight: 700; font-size: 0.75rem; }
-        .location-date { font-style: italic; color: #666; font-size: 0.65rem; }
+        .job-title { font-weight: 700; font-size: 0.82rem; }
+        .location-date { font-style: italic; color: #666; font-size: 0.7rem; }
 
-        ul { margin-left: 12px; margin-top: 1px; }
-        li { margin-bottom: 0px; }
+        ul { margin-left: 15px; margin-top: 2px; }
+        li { margin-bottom: 1px; }
 
         .cert-block {
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
 
         .cert-row {
             display: flex;
             justify-content: space-between;
             font-weight: bold;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
         }
 
         .cert-detail {
-            font-size: 0.68rem;
+            font-size: 0.72rem;
             color: #555;
             display: block;
             margin-top: 0;
         }
 
         @media print {
-            body { background: linear-gradient(to right, #2c3e50 25%, #ffffff 25%) !important; }
-            @page { margin: 0; } /* Forces browser to use full sheet */
+            body { background: linear-gradient(to right, #2c3e50 28%, #ffffff 28%) !important; }
         }
 
         br { display: none; }
@@ -137,6 +145,15 @@
         </div>
     </header>
 
+    <section id="education">
+        <h2>Education</h2>
+        <div class="job-header">
+            <span class="job-title">University of Colorado</span>
+            <span class="location-date">Boulder, CO | May 2024</span>
+        </div>
+        <p>Bachelor of Arts in Film Production</p>
+        <p style="font-style: italic; font-size: 0.75rem;">Managed 25 hours/week work schedule with full-time course load.</p>
+  
     <section id="skills">
         <h2>Relevant Skills</h2>
         <p>Thorough at documentation and process improvement.</p>
@@ -153,15 +170,7 @@
         <p>IT professional with proven experience in application deployment, configuration management, troubleshooting, database support, and systems administration within enterprise environments. CompTIA Security+ certified with solid expertise in Windows Server, Active Directory, virtualization platforms, and line-of-business applications. Demonstrated ability to monitor system performance, enforce information security standards, maintain precise technical documentation, and collaborate effectively with cross-functional teams and vendors to ensure operational stability and compliance.</p>
     </section>
 
-    <section id="education">
-        <h2>Education</h2>
-        <div class="job-header">
-            <span class="job-title">University of Colorado</span>
-            <span class="location-date">Boulder, CO | May 2024</span>
-        </div>
-        <p>Bachelor of Arts in Film Production</p>
-        <p style="font-style: italic; font-size: 0.68rem;">Managed 25 hours/week work schedule with full-time course load.</p>
-    </section>
+    
   
     <section id="certifications">
         <h2>Certifications</h2>
@@ -173,50 +182,51 @@
             <span class="cert-detail">Meets IA Certification requirement (SECNAV M-5239.2)</span>
         </div>
         <div class="cert-block">
-            <span class="cert-row" style="font-size: 0.72rem;">OS/Computing Environment (OS/CE) Certification</span>
+            <span class="cert-row" style="font-size: 0.78rem;">OS/Computing Environment (OS/CE) Certification</span>
             <span class="cert-detail">Eligible / Obtaining as Required</span>
         </div>
     </section>
 
-    <section id="homelab">
+<section id="homelab">
         <h2>Technical Skills</h2>
         <p><strong>Operating Systems:</strong> Windows XP/Vista/7/8/10/11, Windows Server 2016/2025, Ubuntu & Debian</p>
         <p><strong>Virtualization & Infrastructure:</strong> ProxMox, Hyper-V, VMware, virtual machine provisioning and management</p>
-        <p><strong>Identity & Systems Administration:</strong> Active Directory (user/group management, GPOs), Hypervising</p>
-        <p><strong>Enterprise Services & Operations:</strong> Automation, centralized logging, monitoring & alerting, backup and recovery</p>
-        <p><strong>Networking:</strong> DNS, DHCP, TCP/IP, port forwarding, VPN, basic troubleshooting, containerization</p>
+        <p><strong>Identity & Systems Administration:</strong> Active Directory (user/group management,GPOs), Hypervising</p>
+        <p><strong>Enterprise Services & Operations:</strong> Automation management, centralized logging, monitoring & alerting systems, backup and recovery solutions</p>
+        <p><strong>Networking:</strong> DNS, DHCP, TCP/IP, port forwarding, VPN configuration, basic network troubleshooting, containerization concepts</p>
         <p><strong>Database:</strong> SQL, PostgreSQL, Oracle</p>
         <p><strong>IT Service & Productivity Tools:</strong> ServiceNow, Microsoft 365 Suite, Adobe Suite</p>
-        <p><strong>Cybersecurity & IA:</strong> Vulnerability management, IDS/IPS, firewalls, endpoint protection, SSL/TLS, NGINX</p>
+        <p><strong>Cybersecurity & Information Assurance:</strong> Vulnerability management, IDS/IPS, firewalls, endpoint protection, SSL/TLS, secure remote access (VPN), NGINX configuration</p>
     </section>
 
     <section id="experience">
         <h2>Experience</h2>
+
         <div class="job-header">
             <span class="job-title">Merchandiser – NEXCOM HQ</span>
             <span class="location-date">Virginia Beach, VA (Feb 2025 – Current)</span>
         </div>
-        <ul>
-            <li><strong>Enterprise Application Support:</strong> Maintained merchandise management systems, ensuring accurate item setup and pricing.</li>
-            <li><strong>System Configuration:</strong> Managed item master records and UPC files, ensuring compliance with data integrity standards.</li>
-            <li><strong>Business Systems Analysis:</strong> Conducted inventory analysis and leveraged reporting tools for procurement decisions.</li>
-            <li><strong>Issue Resolution:</strong> Investigated discrepancies in billing and system data; coordinated with vendors to resolve issues.</li>
-            <li><strong>Systems Liaison:</strong> Acted as point of contact for system updates and data changes impacting store operations.</li>
-            <li><strong>Process Improvement:</strong> Supported promotional rollouts by validating system parameters across retail locations.</li>
-        </ul>
+         <ul>
+      <li><strong>Enterprise Application Support:</strong> Maintained and updated merchandise management systems, ensuring accurate item setup, pricing configurations, and vendor data within enterprise retail and POS systems.</li>
+      <li><strong>System Configuration & Data Governance:</strong> Managed item master records, UPC files, stock assortments, and pricing structures, ensuring compliance with internal controls and data integrity standards.</li>
+      <li><strong>Business Systems Analysis:</strong> Conducted historical sales and inventory analysis to support seasonal planning and merchandise commitments; leveraged system reporting tools to inform procurement and operational decisions.</li>
+      <li><strong>Issue Identification & Resolution:</strong> Investigated discrepancies in receiving reports, billing, and system data; coordinated with accounting, vendors, and internal teams to resolve application or data-related issues.</li>
+      <li><strong>Cross-Functional Systems Liaison:</strong> Acted as point of contact between merchandising, vendors, and corporate stakeholders for system updates, promotional configurations, and data changes impacting store operations.</li>
+      <li><strong>Process Improvement & Documentation:</strong>Supported promotional rollouts by validating system parameters and ensuring accurate execution across retail locations.</li>
+    </ul>
 
         <div class="job-header">
             <span class="job-title">IT Support Technician – Buff Techs</span>
             <span class="location-date">Boulder, CO (May 2023 – May 2024)</span>
         </div>
         <ul>
-            <li><strong>Application Installation:</strong> Installed and maintained software across Windows and macOS environments.</li>
-            <li><strong>Technical Troubleshooting:</strong> Diagnosed application issues and escalated complex cases to higher-tier support.</li>
-            <li><strong>User Account Support:</strong> Assisted users with account configuration in alignment with IT security protocols.</li>
-            <li><strong>System Documentation:</strong> Documented incidents and provided feedback for system improvements and stability.</li>
-            <li><strong>Service Desk Operations:</strong> Resolved support tickets within defined SLAs, prioritizing business-impacting issues.</li>
-            <li><strong>Security Compliance:</strong> Followed cybersecurity practices when deploying applications and managing systems.</li>
-        </ul>
+  <li><strong>Application Installation & Configuration:</strong> Installed, configured, and maintained software applications across Windows and macOS environments, ensuring compatibility with enterprise standards.</li>
+  <li><strong>Technical Application Troubleshooting:</strong> Diagnosed application-level issues, distinguished between hardware, OS, and software-related problems, and escalated complex cases to higher-tier support teams.</li>
+  <li><strong>User Account & Access Support:</strong> Assisted users with account-related issues and software access configuration in alignment with IT security protocols.</li>
+  <li><strong>System Monitoring & Documentation:</strong> Documented incidents, tracked recurring issues, and provided feedback for system improvements to enhance application stability.</li>
+  <li><strong>Service Desk Operations:</strong> Responded to and resolved support tickets within defined SLAs, prioritizing business-impacting issues.</li>
+  <li><strong>Security & Policy Compliance:</strong> Followed institutional cybersecurity and information assurance practices when deploying applications and managing systems.</li>
+</ul>
     </section>
 </div>
 
