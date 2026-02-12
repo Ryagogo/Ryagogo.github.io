@@ -18,7 +18,7 @@
             display: grid;
             grid-template-columns: 26% 74%; 
             min-height: 100vh;
-            line-height: 1.05; /* Tightened line height */
+            line-height: 1.05;
             background: linear-gradient(to right, #2c3e50 26%, #ffffff 26%);
             color: #333;
             -webkit-print-color-adjust: exact;
@@ -33,14 +33,14 @@
 
         .sidebar h1 {
             font-family: 'Hammersmith One', sans-serif;
-            font-size: 1.3rem; /* Slightly smaller name */
+            font-size: 1.3rem;
             text-transform: uppercase;
             margin-bottom: 2px;
             color: #fff;
         }
 
         .sidebar .contact-info {
-            font-size: 0.62rem;
+            font-size: 0.6rem;
             margin-bottom: 12px;
             opacity: 0.8;
             line-height: 1.1;
@@ -57,7 +57,7 @@
         }
 
         .sidebar p {
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             font-weight: 300;
             line-height: 1.1;
             color: #ecf0f1;
@@ -70,7 +70,7 @@
             padding: 15px 25px;
         }
 
-        section { margin-bottom: 6px; } /* Reduced section gap */
+        section { margin-bottom: 6px; }
 
         h2 {
             font-family: 'Hammersmith One', sans-serif;
@@ -82,7 +82,7 @@
         }
 
         p, li {
-            font-size: 0.72rem; /* Reduced font size to ensure fit */
+            font-size: 0.72rem;
             margin-bottom: 1px;
         }
 
@@ -97,7 +97,7 @@
         .location-date { font-style: italic; color: #666; font-size: 0.65rem; }
 
         ul { margin-left: 12px; margin-top: 1px; }
-        li { margin-bottom: 1px; }
+        li { margin-bottom: 0px; }
 
         .cert-block {
             margin-bottom: 3px;
@@ -119,7 +119,7 @@
 
         @media print {
             body { background: linear-gradient(to right, #2c3e50 26%, #ffffff 26%) !important; }
-            @page { margin: 0.2in; }
+            @page { margin: 0.1in; }
         }
 
         br { display: none; }
@@ -137,7 +137,15 @@
         </div>
     </header>
 
-   
+    <section id="education">
+        <h2>Education</h2>
+        <div class="job-header">
+            <span class="job-title">University of Colorado</span>
+            <span class="location-date">Boulder, CO | May 2024</span>
+        </div>
+        <p>Bachelor of Arts in Film Production</p>
+        <p style="font-style: italic; font-size: 0.65rem;">Managed 25 hours/week work schedule with full-time course load.</p>
+    </section>
   
     <section id="skills">
         <h2>Relevant Skills</h2>
@@ -154,15 +162,7 @@
         <h2>Professional Summary</h2>
         <p>IT professional with proven experience in application deployment, configuration management, troubleshooting, database support, and systems administration within enterprise environments. CompTIA Security+ certified with solid expertise in Windows Server, Active Directory, virtualization platforms, and line-of-business applications. Demonstrated ability to monitor system performance, enforce information security standards, maintain precise technical documentation, and collaborate effectively with cross-functional teams and vendors to ensure operational stability and compliance.</p>
     </section>
- <section id="education">
-        <h2>Education</h2>
-        <div class="job-header">
-            <span class="job-title">University of Colorado</span>
-            <span class="location-date">Boulder, CO | May 2024</span>
-        </div>
-        <p>Bachelor of Arts in Film Production</p>
-        <p style="font-style: italic; font-size: 0.65rem;">Managed 25 hours/week work schedule with full-time course load.</p>
-    </section>
+
     <section id="certifications">
         <h2>Certifications</h2>
         <div class="cert-block">
@@ -183,8 +183,8 @@
         <p><strong>Operating Systems:</strong> Windows XP/Vista/7/8/10/11, Windows Server 2016/2025, Ubuntu & Debian</p>
         <p><strong>Virtualization & Infrastructure:</strong> ProxMox, Hyper-V, VMware, VM provisioning and management</p>
         <p><strong>Identity & Systems Administration:</strong> Active Directory (user/group management, GPOs), Hypervising</p>
-        <p><strong>Enterprise Services & Operations:</strong> Automation, centralized logging, monitoring & alerting, backup and recovery</p>
-        <p><strong>Networking:</strong> DNS, DHCP, TCP/IP, port forwarding, VPN, basic troubleshooting, containerization</p>
+        <p><strong>Enterprise Services & Operations:</strong> Automation management, centralized logging, monitoring & alerting, backup/recovery</p>
+        <p><strong>Networking:</strong> DNS, DHCP, TCP/IP, port forwarding, VPN, troubleshooting, containerization</p>
         <p><strong>Database:</strong> SQL, PostgreSQL, Oracle</p>
         <p><strong>IT Service & Productivity Tools:</strong> ServiceNow, Microsoft 365 Suite, Adobe Suite</p>
         <p><strong>Cybersecurity & IA:</strong> Vulnerability management, IDS/IPS, firewalls, endpoint protection, SSL/TLS, NGINX</p>
