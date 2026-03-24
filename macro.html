@@ -1,124 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Excel System Processor (High Capacity)</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        body { font-family: sans-serif; padding: 40px; background: #f0f2f5; }
-        .card { max-width: 600px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: auto; text-align: center; }
-        .file-box { border: 2px dashed #007bff; padding: 20px; margin: 20px 0; border-radius: 8px; }
-        button { background: #28a745; color: white; border: none; padding: 14px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
-        #status { margin-top: 20px; padding: 12px; border-radius: 4px; display: none; font-size: 14px; white-space: pre-wrap; }
-        .err { background: #fce8e6; color: #d93025; display: block !important; }
-        .ok { background: #e6f4ea; color: #137333; display: block !important; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ryan | Excel Tool</title>
+  <link rel="stylesheet" href="Styles/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .tool-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 40px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .file-input-wrapper {
+      border: 2px dashed #2078ff;
+      padding: 40px;
+      border-radius: 8px;
+      margin: 20px 0;
+      background: #f8fbff;
+    }
+    .process-btn {
+      background: #2078ff;
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .process-btn:hover { background: #1656c3; }
+    .process-btn:disabled { background: #ccc; cursor: not-allowed; }
+    #status-msg { margin-top: 20px; font-weight: bold; color: #333; }
+  </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>High-Capacity Processor</h2>
-    <p>Optimized for large files (Sheet2 to Sheet1)</p>
-    <div class="file-box">
-        <input type="file" id="fileInput" accept=".xlsx, .xlsm, .xlsb" />
+  <header>
+    <div>
+      <span class="logo"><span style="color:#2078ff;">■</span> Ryan Gray</span>
+      <span style="margin-left:18px; font-size:20px; color:#ffffff;">/ Merchandiser</span>
     </div>
-    <button onclick="process()">Process Large File</button>
-    <div id="status"></div>
-</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="cover.html">Cover Letter</a>
+      <a href="Resume.html">Resume</a>
+      <a href="Projects.html">Projects</a>
+      <a href="contact.html">Contact</a>
+      <a class="active" href="macro.html">Macro</a>
+    </nav>
+  </header>
 
-<script>
-async function process() {
-    const input = document.getElementById('fileInput');
-    const status = document.getElementById('status');
-    if (!input.files[0]) return;
+  <main class="main-content" style="display: block;">
+    <div class="tool-container">
+      <h1>Excel System Processor</h1>
+      <p>Upload your workbook to process <b>Sheet2</b> using <b>Sheet1</b> lookups.</p>
+      
+      <div class="file-input-wrapper">
+        <input type="file" id="fileInput" accept=".xlsx, .xlsm" />
+      </div>
+      
+      <button class="process-btn" id="runBtn" onclick="startProcessing()">Process & Download</button>
+      <div id="status-msg">Ready to process.</div>
+    </div>
+  </main>
 
-    status.innerText = "Initializing... (This may take a moment for large files)";
-    status.className = "ok";
+  <footer>
+    <div class="footer-col"><div>&copy; 2026 Ryan Gray</div></div>
+    <div class="footer-col"><div>Call<br><span style="color:#ffffff;">757-779-1724</span></div></div>
+    <div class="footer-col"><div>Write<br><span style="color:#ffffff;">ryangray4287@gmail.com</span></div></div>
+  </footer>
 
-    const file = input.files[0];
-    const reader = new FileReader();
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    reader.onload = function(e) {
-        try {
-            const data = new Uint8Array(e.target.result);
-            // 'dense: true' uses a more memory-efficient internal representation
-            const wb = XLSX.read(data, { type: 'array', dense: true, cellDates: true });
+  <script>
+    function startProcessing() {
+      const fileInput = document.getElementById('fileInput');
+      const btn = document.getElementById('runBtn');
+      const status = document.getElementById('status-msg');
+      
+      if (!fileInput.files[0]) return alert("Please select a file first.");
 
-            const findS = (n) => {
-                const name = wb.SheetNames.find(sn => sn.trim().toUpperCase() === n.toUpperCase());
-                return name ? wb.Sheets[name] : null;
-            };
+      btn.disabled = true;
+      status.innerText = "Initializing Background Worker...";
 
-            const s2 = findS("Sheet2");
-            const s1 = findS("Sheet1");
+      // Create worker from blob to keep it in one file
+      const workerCode = document.getElementById('worker-script').textContent;
+      const blob = new Blob([workerCode], { type: 'application/javascript' });
+      const worker = new Worker(URL.createObjectURL(blob));
 
-            if (!s2 || !s1) throw new Error("Missing Sheet1 or Sheet2");
+      worker.postMessage(fileInput.files[0]);
 
-            // Convert to JSON sparingly
-            const sheet1Rows = XLSX.utils.sheet_to_json(s1, { header: 1 });
-            let sheet2Rows = XLSX.utils.sheet_to_json(s2, { header: 1 });
+      worker.onmessage = function(e) {
+        if (e.data.type === 'progress') {
+          status.innerText = e.data.msg;
+        } else if (e.data.type === 'done') {
+          status.innerText = "Processing Complete! Downloading...";
+          XLSX.writeFile(e.data.wb, "Processed_System_Report.xlsx");
+          btn.disabled = false;
+        } else if (e.data.type === 'error') {
+          status.innerText = "Error: " + e.data.msg;
+          btn.disabled = false;
+        }
+      };
+    }
+  </script>
 
-            // Right-to-left deletion indices
-            const toDel = [30, 29, 28, 27, 25, 24, 23, 22, 21, 20, 16, 13, 12, 11, 10, 8, 7, 6, 5, 3, 1].sort((a,b)=>b-a);
+  <script id="worker-script" type="text/plain">
+    importScripts('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+
+    self.onmessage = async function(e) {
+      try {
+        const file = e.data;
+        const arrayBuffer = await file.arrayBuffer();
+        
+        // Load workbook in dense mode for memory efficiency
+        const wb = XLSX.read(arrayBuffer, { type: 'array', dense: true, cellDates: true });
+        
+        const s2Name = wb.SheetNames.find(n => n.toUpperCase().trim() === "SHEET2");
+        const s1Name = wb.SheetNames.find(n => n.toUpperCase().trim() === "SHEET1");
+
+        if (!s2Name || !s1Name) throw new Error("Could not find Sheet1 or Sheet2 tabs.");
+
+        const s2Rows = XLSX.utils.sheet_to_json(wb.Sheets[s2Name], { header: 1 });
+        const s1Rows = XLSX.utils.sheet_to_json(wb.Sheets[s1Name], { header: 1 });
+
+        // Build Map for O(1) Search Speed
+        const lookupMap = new Map();
+        s1Rows.forEach(r => { if(r[0]) lookupMap.set(String(r[0]).trim(), r); });
+
+        // VBA Column Deletion Indices (Descending)
+        const toDelete = [30, 29, 28, 27, 25, 24, 23, 22, 21, 20, 16, 13, 12, 11, 10, 8, 7, 6, 5, 3, 1].sort((a,b)=>b-a);
+
+        let processedData = [];
+
+        for (let i = 0; i < s2Rows.length; i++) {
+          let row = [...s2Rows[i]];
+          
+          // Delete Columns
+          toDelete.forEach(idx => { if(idx < row.length) row.splice(idx, 1); });
+          
+          // Insert 3 Columns
+          let newRow = [null, null, null, ...row];
+
+          if (i >= 2) { // Logic starts at Row 3 (Index 2)
+            // Text to Columns simulation
+            if (typeof newRow[4] === 'string') newRow[4] = newRow[4].split(',')[0];
             
-            // Map Sheet1 into a 'Dictionary' for O(1) lookup speed (Massive performance boost)
-            const s1Map = new Map();
-            sheet1Rows.forEach(row => {
-                if (row[0]) s1Map.set(String(row[0]).trim(), row);
-            });
+            const keyE = String(newRow[4] || "").trim();
+            const keyH = String(newRow[7] || "").trim();
 
-            let finalData = [];
-            for (let i = 0; i < sheet2Rows.length; i++) {
-                let row = sheet2Rows[i];
-
-                if (i < 2) { // Headers
-                    toDel.forEach(idx => { if(idx < row.length) row.splice(idx, 1); });
-                    finalData.push([null, null, null, ...row]);
-                    continue;
-                }
-
-                // Process data row
-                toDel.forEach(idx => { if(idx < row.length) row.splice(idx, 1); });
-                let newRow = [null, null, null, ...row];
-
-                // Text to columns Col E
-                if (typeof newRow[4] === 'string') newRow[4] = newRow[4].split(',')[0];
-                const keyE = String(newRow[4] || "").trim();
-                const keyH = String(newRow[7] || "").trim();
-
-                const matchE = s1Map.get(keyE);
-                if (matchE) {
-                    newRow[1] = matchE[1]; // B
-                    newRow[2] = matchE[2]; // C
-                    newRow[9] = matchE[6] || 0; // J
-                    newRow[10] = matchE[7] || 0; // K
-                }
-
-                const matchH = s1Map.get(keyH);
-                if (matchH) newRow[8] = matchH[1]; // I
-
-                newRow[11] = (Number(newRow[9]) || 0) - (Number(newRow[10]) || 0);
-
-                // Filter logic: Keep only if Column L is not blank
-                if (newRow[11] !== null && newRow[11] !== undefined && String(newRow[11]).trim() !== "") {
-                    finalData.push(newRow);
-                }
+            const matchE = lookupMap.get(keyE);
+            if (matchE) {
+              newRow[1] = matchE[1]; // B
+              newRow[2] = matchE[2]; // C
+              newRow[9] = matchE[6] || 0; // J
+              newRow[10] = matchE[7] || 0; // K
             }
 
-            const newWs = XLSX.utils.aoa_to_sheet(finalData);
-            const newWb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(newWb, newWs, "Output");
-            XLSX.writeFile(newWb, "Processed_Result.xlsx");
+            const matchH = lookupMap.get(keyH);
+            if (matchH) newRow[8] = matchH[1]; // I
 
-            status.innerText = "Success! File Downloaded.";
-        } catch (err) {
-            status.innerText = "Memory Error: " + err.message + "\nTry a smaller file or close other browser tabs.";
-            status.className = "err";
+            newRow[11] = (Number(newRow[9]) || 0) - (Number(newRow[10]) || 0);
+
+            // Filter: Delete row if Col L is blank
+            if (newRow[11] === null || newRow[11] === undefined || String(newRow[11]).trim() === "") continue;
+          }
+
+          processedData.push(newRow);
+          if (i % 500 === 0) self.postMessage({type: 'progress', msg: 'Processing row ' + i + '...'});
         }
-    };
 
-    reader.readAsArrayBuffer(file);
-}
-</script>
+        const newWs = XLSX.utils.aoa_to_sheet(processedData);
+        const newWb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(newWb, newWs, "Processed");
+
+        self.postMessage({type: 'done', wb: newWb});
+      } catch (err) {
+        self.postMessage({type: 'error', msg: err.message});
+      }
+    };
+  </script>
 </body>
 </html>
