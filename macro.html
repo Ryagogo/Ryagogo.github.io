@@ -2,113 +2,119 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Excel System Processor</title>
+    <title>Excel Fast Processor (Named Tabs)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background: #f0f2f5; }
-        .card { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background: #eceff1; }
+        .card { max-width: 700px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin: auto; }
         h2 { color: #1a73e8; margin-top: 0; }
-        input { margin: 20px 0; display: block; width: 100%; }
+        .file-input { border: 2px dashed #cfd8dc; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0; }
         button { background: #1a73e8; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
         button:hover { background: #1557b0; }
-        #status { margin-top: 20px; font-size: 0.9em; color: #555; border-left: 3px solid #1a73e8; padding-left: 10px; }
+        #status { margin-top: 20px; padding: 10px; border-radius: 4px; font-size: 0.9em; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e9; color: #2e7d32; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Data Processor</h2>
-    <p>Upload your <strong>.xlsx</strong> or <strong>.xlsm</strong> file containing the <strong>REPORT</strong> and <strong>MAIN</strong> tabs.</p>
+    <h2>System Data Processor</h2>
+    <p>Upload your workbook containing <b>REPORT</b>, <b>MAIN</b>, and <b>Sheet2</b>.</p>
     
-    <input type="file" id="upload" accept=".xlsx, .xlsm" />
-    <button onclick="processExcel()">Run Process</button>
+    <div class="file-input">
+        <input type="file" id="upload" accept=".xlsx, .xls, .xlsm" />
+    </div>
     
-    <div id="status">Ready.</div>
+    <button onclick="processExcel()">Run Process & Export</button>
+    
+    <div id="status"></div>
 </div>
 
 <script>
 async function processExcel() {
-    const status = document.getElementById('status');
     const fileInput = document.getElementById('upload');
-    
-    if (!fileInput.files[0]) return alert("Please select a file.");
+    const status = document.getElementById('status');
+    status.className = '';
+    status.innerText = "Reading file...";
+
+    if (!fileInput.files[0]) {
+        status.innerText = "Error: Please select a file.";
+        status.className = 'error';
+        return;
+    }
 
     try {
-        status.innerHTML = "Reading file...";
         const data = await fileInput.files[0].arrayBuffer();
         const workbook = XLSX.read(data);
 
-        // --- VALIDATE TABS ---
-        if (!workbook.Sheets["REPORT"] || !workbook.Sheets["MAIN"]) {
-            throw new Error("Missing tabs! Ensure your file has 'REPORT' and 'MAIN' sheets.");
+        // 1. Verify required sheets exist
+        const required = ["REPORT", "MAIN", "Sheet2"];
+        for (let name of required) {
+            if (!workbook.SheetNames.includes(name)) {
+                throw new Error(`Sheet tab named "${name}" not found!`);
+            }
         }
 
-        status.innerHTML = "Processing logic...";
-        
-        // Convert Sheets to Arrays (AOAs)
+        // 2. Convert sheets to 2D Arrays (Headers: 1 ensures it's an array of arrays)
         let reportData = XLSX.utils.sheet_to_json(workbook.Sheets["REPORT"], { header: 1 });
         const mainData = XLSX.utils.sheet_to_json(workbook.Sheets["MAIN"], { header: 1 });
-        const sheet2Data = workbook.Sheets["Sheet2"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Sheet2"], { header: 1 }) : [];
+        const sheet2Data = XLSX.utils.sheet_to_json(workbook.Sheets["Sheet2"], { header: 1 });
 
-        // --- 1. DELETE COLUMNS (VBA: B, D, F:G, H:I, K:L, M:N, Q:Q, U:V, W:X, Y:Z, AB:AC, AD:AE) ---
-        // Indices are 0-based. We delete from right-to-left to prevent index shifting.
-        const delIdx = [30, 29, 28, 27, 25, 24, 23, 22, 21, 20, 16, 13, 12, 11, 10, 8, 7, 6, 5, 3, 1].sort((a,b) => b-a);
-
-        let rows = reportData.map(row => {
-            let r = [...row];
-            delIdx.forEach(i => { if(i < r.length) r.splice(i, 1); });
-            // --- 2. INSERT 3 COLUMNS (A, B, C) ---
-            return [null, null, null, ...r];
+        // --- STEP: DELETE SPECIFIC COLUMNS (VBA: B, D, F, G, H, I, K, L, M, N, Q, U, V, W, X, Y, Z, AB, AC, AD, AE) ---
+        // Indices are 0-based. We delete from right to left to prevent index shifting.
+        const colsToDelete = [30, 29, 28, 27, 25, 24, 23, 22, 21, 20, 16, 13, 12, 11, 10, 8, 7, 6, 5, 3, 1].sort((a,b) => b-a);
+        
+        let processed = reportData.map(row => {
+            let newRow = [...row];
+            colsToDelete.forEach(idx => { if(idx < newRow.length) newRow.splice(idx, 1); });
+            // --- STEP: INSERT 3 EMPTY COLUMNS AT A, B, C ---
+            return [null, null, null, ...newRow];
         });
 
-        // --- 3-10. PROCESSING LOOP ---
-        for (let i = 2; i < rows.length; i++) {
-            let row = rows[i];
+        // --- STEP: LOOKUPS & CALCULATIONS (Starts at Row 3 / Index 2) ---
+        for (let i = 2; i < processed.length; i++) {
+            let row = processed[i];
             let eVal = row[4]; // Column E
             let hVal = row[7]; // Column H
 
-            // VLOOKUP simulated for MAIN
+            // VLOOKUP in MAIN
             const mainMatch = mainData.find(r => r[0] == eVal);
             if (mainMatch) {
-                row[1] = mainMatch[1]; // Col B (MAIN Col B)
-                row[2] = mainMatch[2]; // Col C (MAIN Col C)
-                row[9] = mainMatch[6] || 0; // Col J (MAIN Col G)
-                row[10] = mainMatch[7] || 0; // Col K (MAIN Col H)
+                row[1] = mainMatch[1]; // MAIN Col B
+                row[2] = mainMatch[2]; // MAIN Col C
+                row[9] = mainMatch[6] || 0; // MAIN Col G
+                row[10] = mainMatch[7] || 0; // MAIN Col H
             }
 
-            // VLOOKUP simulated for Sheet2
+            // VLOOKUP in Sheet2
             const s2Match = sheet2Data.find(r => r[0] == hVal);
-            if (s2Match) row[8] = s2Match[1]; // Col I
+            if (s2Match) row[8] = s2Match[1]; // Sheet2 Col B
 
-            // Calculate J - K
+            // Calculate J - K = L
             row[11] = (Number(row[9]) || 0) - (Number(row[10]) || 0);
         }
 
-        // --- 8. FILTER (Delete rows where Col L is blank/0) ---
-        rows = rows.filter((row, idx) => {
+        // --- STEP: FILTER BLANKS IN COLUMN L ---
+        processed = processed.filter((row, idx) => {
             if (idx < 2) return true; // Keep headers
-            return row[11] !== null && row[11] !== undefined && row[11] !== "" && row[11] !== 0;
+            return row[11] !== null && row[11] !== undefined && row[11] !== "";
         });
 
-        // --- EXPORT ---
-        status.innerHTML = "Generating download...";
-        const newWs = XLSX.utils.aoa_to_sheet(rows);
-        
-        // Apply basic column widths (Simulating AutoFit)
-        newWs['!cols'] = Array(12).fill({ wch: 15 });
-
+        // 3. Export to New Workbook
+        const newWs = XLSX.utils.aoa_to_sheet(processed);
         const newWb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(newWb, newWs, "Processed_Report");
-        XLSX.writeFile(newWb, "Final_Process_Complete.xlsx");
-        
-        status.innerHTML = "Success! File downloaded.";
+        XLSX.writeFile(newWb, "Final_System_Output.xlsx");
+
+        status.innerText = "Success! File processed and downloaded.";
+        status.className = 'success';
 
     } catch (err) {
-        status.innerHTML = `<span style="color:red">Error: ${err.message}</span>`;
-        console.error(err);
+        status.innerText = "Error: " + err.message;
+        status.className = 'error';
     }
 }
 </script>
-
 </body>
 </html>
