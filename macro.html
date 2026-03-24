@@ -2,30 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Excel System Processor</title>
+    <title>Excel System Processor (High Capacity)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; padding: 40px; background: #f0f2f5; }
+        body { font-family: sans-serif; padding: 40px; background: #f0f2f5; }
         .card { max-width: 600px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: auto; text-align: center; }
-        .file-box { border: 2px dashed #007bff; padding: 30px; margin: 20px 0; border-radius: 8px; background: #f8f9ff; }
-        button { background: #007bff; color: white; border: none; padding: 14px 30px; border-radius: 6px; cursor: pointer; font-size: 16px; width: 100%; font-weight: bold; }
-        button:hover { background: #0056b3; }
-        #status { margin-top: 20px; padding: 12px; border-radius: 4px; display: none; }
-        .err { background: #fce8e6; color: #d93025; display: block !important; border: 1px solid #f5c2c7; }
-        .ok { background: #e6f4ea; color: #137333; display: block !important; border: 1px solid #badbcc; }
+        .file-box { border: 2px dashed #007bff; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        button { background: #28a745; color: white; border: none; padding: 14px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        #status { margin-top: 20px; padding: 12px; border-radius: 4px; display: none; font-size: 14px; white-space: pre-wrap; }
+        .err { background: #fce8e6; color: #d93025; display: block !important; }
+        .ok { background: #e6f4ea; color: #137333; display: block !important; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>System Data Processor</h2>
-    <p>Target: <b>Sheet2</b> | Lookup: <b>Sheet1</b></p>
-    
+    <h2>High-Capacity Processor</h2>
+    <p>Optimized for large files (Sheet2 to Sheet1)</p>
     <div class="file-box">
         <input type="file" id="fileInput" accept=".xlsx, .xlsm, .xlsb" />
     </div>
-    
-    <button onclick="process()">Process & Export</button>
+    <button onclick="process()">Process Large File</button>
     <div id="status"></div>
 </div>
 
@@ -33,101 +30,95 @@
 async function process() {
     const input = document.getElementById('fileInput');
     const status = document.getElementById('status');
-    
-    if (!input.files[0]) {
-        showStatus("Please select an Excel file.", "err");
-        return;
-    }
+    if (!input.files[0]) return;
 
-    try {
-        showStatus("Processing... please wait.", "ok");
-        
-        const data = await input.files[0].arrayBuffer();
-        const wb = XLSX.read(data, { cellDates: true, cellNF: true });
+    status.innerText = "Initializing... (This may take a moment for large files)";
+    status.className = "ok";
 
-        // helper to get sheets
-        const getSheetData = (name) => {
-            const sheetName = wb.SheetNames.find(n => n.trim().toUpperCase() === name.toUpperCase());
-            return sheetName ? XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1 }) : null;
-        };
+    const file = input.files[0];
+    const reader = new FileReader();
 
-        let sheet2Rows = getSheetData("Sheet2");
-        let sheet1Rows = getSheetData("Sheet1");
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            // 'dense: true' uses a more memory-efficient internal representation
+            const wb = XLSX.read(data, { type: 'array', dense: true, cellDates: true });
 
-        if (!sheet2Rows) throw new Error("Could not find 'Sheet2'");
-        if (!sheet1Rows) throw new Error("Could not find 'Sheet1'");
+            const findS = (n) => {
+                const name = wb.SheetNames.find(sn => sn.trim().toUpperCase() === n.toUpperCase());
+                return name ? wb.Sheets[name] : null;
+            };
 
-        // 1. DELETE SPECIFIC COLUMNS (VBA: B, D, F:G, H:I, K:L, M:N, Q:Q, U:V, W:X, Y:Z, AB:AC, AD:AE)
-        // These are indices before the 3-column insertion
-        const toDelete = [30, 29, 28, 27, 25, 24, 23, 22, 21, 20, 16, 13, 12, 11, 10, 8, 7, 6, 5, 3, 1].sort((a,b)=>b-a);
-        
-        let cleanedRows = sheet2Rows.map(row => {
-            let r = [...row];
-            toDelete.forEach(idx => { if(idx < r.length) r.splice(idx, 1); });
-            // 2. INSERT 3 NEW COLUMNS (A, B, C)
-            return [null, null, null, ...r];
-        });
+            const s2 = findS("Sheet2");
+            const s1 = findS("Sheet1");
 
-        // 3. TEXT TO COLUMNS & VLOOKUP LOGIC
-        // After cleaning and inserting, your "Column E" data is now at index 4.
-        for (let i = 2; i < cleanedRows.length; i++) {
-            let row = cleanedRows[i];
+            if (!s2 || !s1) throw new Error("Missing Sheet1 or Sheet2");
 
-            // Text to Columns (Comma) on Column E
-            if (row[4] && typeof row[4] === 'string') {
-                row[4] = row[4].split(',')[0];
+            // Convert to JSON sparingly
+            const sheet1Rows = XLSX.utils.sheet_to_json(s1, { header: 1 });
+            let sheet2Rows = XLSX.utils.sheet_to_json(s2, { header: 1 });
+
+            // Right-to-left deletion indices
+            const toDel = [30, 29, 28, 27, 25, 24, 23, 22, 21, 20, 16, 13, 12, 11, 10, 8, 7, 6, 5, 3, 1].sort((a,b)=>b-a);
+            
+            // Map Sheet1 into a 'Dictionary' for O(1) lookup speed (Massive performance boost)
+            const s1Map = new Map();
+            sheet1Rows.forEach(row => {
+                if (row[0]) s1Map.set(String(row[0]).trim(), row);
+            });
+
+            let finalData = [];
+            for (let i = 0; i < sheet2Rows.length; i++) {
+                let row = sheet2Rows[i];
+
+                if (i < 2) { // Headers
+                    toDel.forEach(idx => { if(idx < row.length) row.splice(idx, 1); });
+                    finalData.push([null, null, null, ...row]);
+                    continue;
+                }
+
+                // Process data row
+                toDel.forEach(idx => { if(idx < row.length) row.splice(idx, 1); });
+                let newRow = [null, null, null, ...row];
+
+                // Text to columns Col E
+                if (typeof newRow[4] === 'string') newRow[4] = newRow[4].split(',')[0];
+                const keyE = String(newRow[4] || "").trim();
+                const keyH = String(newRow[7] || "").trim();
+
+                const matchE = s1Map.get(keyE);
+                if (matchE) {
+                    newRow[1] = matchE[1]; // B
+                    newRow[2] = matchE[2]; // C
+                    newRow[9] = matchE[6] || 0; // J
+                    newRow[10] = matchE[7] || 0; // K
+                }
+
+                const matchH = s1Map.get(keyH);
+                if (matchH) newRow[8] = matchH[1]; // I
+
+                newRow[11] = (Number(newRow[9]) || 0) - (Number(newRow[10]) || 0);
+
+                // Filter logic: Keep only if Column L is not blank
+                if (newRow[11] !== null && newRow[11] !== undefined && String(newRow[11]).trim() !== "") {
+                    finalData.push(newRow);
+                }
             }
 
-            const lookupValE = String(row[4] || "").trim(); // E3
-            const lookupValH = String(row[7] || "").trim(); // H3
+            const newWs = XLSX.utils.aoa_to_sheet(finalData);
+            const newWb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(newWb, newWs, "Output");
+            XLSX.writeFile(newWb, "Processed_Result.xlsx");
 
-            // VLOOKUP(E3, Sheet1!A:C, 2, FALSE) -> Result into Col B (Index 1)
-            // VLOOKUP(E3, Sheet1!A:C, 3, FALSE) -> Result into Col C (Index 2)
-            const matchMain = sheet1Rows.find(r => String(r[0] || "").trim() === lookupValE);
-            if (matchMain) {
-                row[1] = matchMain[1]; // MAIN Col B
-                row[2] = matchMain[2]; // MAIN Col C
-                row[9] = matchMain[6] || 0; // MAIN Col G (J)
-                row[10] = matchMain[7] || 0; // MAIN Col H (K)
-            }
-
-            // VLOOKUP(H3, Sheet1!A:B, 2, FALSE) -> Result into Col I (Index 8)
-            const matchS2 = sheet1Rows.find(r => String(r[0] || "").trim() === lookupValH);
-            if (matchS2) {
-                row[8] = matchS2[1];
-            }
-
-            // 10. Calculate J - K = L (Index 11)
-            row[11] = (Number(row[9]) || 0) - (Number(row[10]) || 0);
+            status.innerText = "Success! File Downloaded.";
+        } catch (err) {
+            status.innerText = "Memory Error: " + err.message + "\nTry a smaller file or close other browser tabs.";
+            status.className = "err";
         }
+    };
 
-        // 8. FILTER COLUMN L FOR BLANKS AND DELETE ROWS
-        let finalRows = cleanedRows.filter((row, idx) => {
-            if (idx < 2) return true; // Keep headers
-            const val = row[11];
-            // Only keep rows where Column L is NOT empty/null
-            return val !== null && val !== undefined && String(val).trim() !== "";
-        });
-
-        // 7. AutoFit & Export
-        const newWs = XLSX.utils.aoa_to_sheet(finalRows);
-        const newWb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(newWb, newWs, "Processed_Data");
-        
-        XLSX.writeFile(newWb, "Final_Process_Output.xlsx");
-        showStatus("Complete! Processed file downloaded.", "ok");
-
-    } catch (e) {
-        showStatus("Error: " + e.message, "err");
-    }
-}
-
-function showStatus(msg, type) {
-    const status = document.getElementById('status');
-    status.innerText = msg;
-    status.className = type;
+    reader.readAsArrayBuffer(file);
 }
 </script>
-
 </body>
 </html>
