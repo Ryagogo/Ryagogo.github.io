@@ -2,131 +2,111 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Fast Processor</title>
+    <title>Excel System Processor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 40px; line-height: 1.6; background: #f4f7f6; }
-        .container { max-width: 600px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: auto; }
-        h2 { color: #2c3e50; }
-        input[type="file"] { margin: 20px 0; }
-        button { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #219150; }
-        #status { margin-top: 20px; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background: #f0f2f5; }
+        .card { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { color: #1a73e8; margin-top: 0; }
+        input { margin: 20px 0; display: block; width: 100%; }
+        button { background: #1a73e8; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+        button:hover { background: #1557b0; }
+        #status { margin-top: 20px; font-size: 0.9em; color: #555; border-left: 3px solid #1a73e8; padding-left: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Excel System Processor</h2>
-    <p>Upload your workbook. This will process the active sheet and handle the column logic automatically.</p>
+<div class="card">
+    <h2>Data Processor</h2>
+    <p>Upload your <strong>.xlsx</strong> or <strong>.xlsm</strong> file containing the <strong>REPORT</strong> and <strong>MAIN</strong> tabs.</p>
     
-    <input type="file" id="upload" accept=".xlsx, .xls, .xlsm, .csv" />
-    <br>
-    <button onclick="processExcel()">Process and Download</button>
+    <input type="file" id="upload" accept=".xlsx, .xlsm" />
+    <button onclick="processExcel()">Run Process</button>
     
-    <div id="status"></div>
+    <div id="status">Ready.</div>
 </div>
 
 <script>
 async function processExcel() {
-    const fileInput = document.getElementById('upload');
     const status = document.getElementById('status');
+    const fileInput = document.getElementById('upload');
     
-    if (!fileInput.files[0]) {
-        alert("Please select a file first!");
-        return;
-    }
+    if (!fileInput.files[0]) return alert("Please select a file.");
 
-    status.innerText = "Processing... please wait.";
-    const file = fileInput.files[0];
-    const data = await file.arrayBuffer();
-    const workbook = XLSX.utils.book_new();
-    const reader = XLSX.read(data);
-    
-    // Get the first sheet
-    const sheetName = reader.SheetNames[0];
-    let worksheet = reader.Sheets[sheetName];
-    
-    // Convert sheet to JSON for easier manipulation (Array of Arrays)
-    let rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    try {
+        status.innerHTML = "Reading file...";
+        const data = await fileInput.files[0].arrayBuffer();
+        const workbook = XLSX.read(data);
 
-    // --- 1. DELETE SPECIFIC COLUMNS ---
-    // VBA: B, D, F:G, H:I, K:L, M:N, Q:Q, U:V, W:X, Y:Z, AB:AC, AD:AE
-    // Note: We map these to indices (0-based) and delete from right-to-left
-    const colsToDelete = [30, 29, 28, 27, 25, 24, 23, 22, 21, 20, 16, 13, 12, 11, 10, 8, 7, 6, 5, 3, 1];
-    
-    rows = rows.map(row => {
-        let newRow = [...row];
-        colsToDelete.forEach(idx => {
-            if (idx < newRow.length) newRow.splice(idx, 1);
-        });
-        return newRow;
-    });
-
-    // --- 2. INSERT 3 NEW COLUMNS AT A, B, C ---
-    rows = rows.map(row => {
-        return [null, null, null, ...row];
-    });
-
-    // --- 3. TEXT TO COLUMNS (COMMA) ON COLUMN E (Index 4) ---
-    rows = rows.map(row => {
-        if (row[4] && typeof row[4] === 'string') {
-            const parts = row[4].split(',');
-            row[4] = parts[0]; // Take the first part, effectively splitting it
+        // --- VALIDATE TABS ---
+        if (!workbook.Sheets["REPORT"] || !workbook.Sheets["MAIN"]) {
+            throw new Error("Missing tabs! Ensure your file has 'REPORT' and 'MAIN' sheets.");
         }
-        return row;
-    });
 
-    // --- 5 & 10. APPLY FORMULAS / LOGIC ---
-    // JavaScript handles the logic row by row instead of writing "=VLOOKUP..."
-    // Note: VLOOKUPs require the secondary sheets (MAIN, Sheet2) to be in the same file
-    const mainSheet = reader.Sheets["MAIN"];
-    const sheet2 = reader.Sheets["Sheet2"];
-    
-    // Helper to simulate VLOOKUP
-    const vlookup = (val, targetSheet, colIdx) => {
-        if (!val || !targetSheet) return "";
-        const data = XLSX.utils.sheet_to_json(targetSheet, { header: 1 });
-        const match = data.find(r => r[0] == val);
-        return match ? match[colIdx - 1] : "";
-    };
+        status.innerHTML = "Processing logic...";
+        
+        // Convert Sheets to Arrays (AOAs)
+        let reportData = XLSX.utils.sheet_to_json(workbook.Sheets["REPORT"], { header: 1 });
+        const mainData = XLSX.utils.sheet_to_json(workbook.Sheets["MAIN"], { header: 1 });
+        const sheet2Data = workbook.Sheets["Sheet2"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Sheet2"], { header: 1 }) : [];
 
-    for (let i = 2; i < rows.length; i++) { // Starting from Row 3 (Index 2)
-        let row = rows[i];
-        let eVal = row[4]; // Column E
-        let hVal = row[7]; // Column H
+        // --- 1. DELETE COLUMNS (VBA: B, D, F:G, H:I, K:L, M:N, Q:Q, U:V, W:X, Y:Z, AB:AC, AD:AE) ---
+        // Indices are 0-based. We delete from right-to-left to prevent index shifting.
+        const delIdx = [30, 29, 28, 27, 25, 24, 23, 22, 21, 20, 16, 13, 12, 11, 10, 8, 7, 6, 5, 3, 1].sort((a,b) => b-a);
+
+        let rows = reportData.map(row => {
+            let r = [...row];
+            delIdx.forEach(i => { if(i < r.length) r.splice(i, 1); });
+            // --- 2. INSERT 3 COLUMNS (A, B, C) ---
+            return [null, null, null, ...r];
+        });
+
+        // --- 3-10. PROCESSING LOOP ---
+        for (let i = 2; i < rows.length; i++) {
+            let row = rows[i];
+            let eVal = row[4]; // Column E
+            let hVal = row[7]; // Column H
+
+            // VLOOKUP simulated for MAIN
+            const mainMatch = mainData.find(r => r[0] == eVal);
+            if (mainMatch) {
+                row[1] = mainMatch[1]; // Col B (MAIN Col B)
+                row[2] = mainMatch[2]; // Col C (MAIN Col C)
+                row[9] = mainMatch[6] || 0; // Col J (MAIN Col G)
+                row[10] = mainMatch[7] || 0; // Col K (MAIN Col H)
+            }
+
+            // VLOOKUP simulated for Sheet2
+            const s2Match = sheet2Data.find(r => r[0] == hVal);
+            if (s2Match) row[8] = s2Match[1]; // Col I
+
+            // Calculate J - K
+            row[11] = (Number(row[9]) || 0) - (Number(row[10]) || 0);
+        }
+
+        // --- 8. FILTER (Delete rows where Col L is blank/0) ---
+        rows = rows.filter((row, idx) => {
+            if (idx < 2) return true; // Keep headers
+            return row[11] !== null && row[11] !== undefined && row[11] !== "" && row[11] !== 0;
+        });
+
+        // --- EXPORT ---
+        status.innerHTML = "Generating download...";
+        const newWs = XLSX.utils.aoa_to_sheet(rows);
         
-        // Simulating the VLOOKUPs from your VBA
-        row[1] = vlookup(eVal, mainSheet, 2); // Col B
-        row[2] = vlookup(eVal, mainSheet, 3); // Col C
-        row[8] = vlookup(hVal, sheet2, 2);    // Col I
-        row[9] = vlookup(eVal, mainSheet, 7) || 0; // Col J
-        row[10] = vlookup(eVal, mainSheet, 8) || 0; // Col K
+        // Apply basic column widths (Simulating AutoFit)
+        newWs['!cols'] = Array(12).fill({ wch: 15 });
+
+        const newWb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(newWb, newWs, "Processed_Report");
+        XLSX.writeFile(newWb, "Final_Process_Complete.xlsx");
         
-        // Step 10: Calculate J - K in Column L (Index 11)
-        row[11] = (Number(row[9]) || 0) - (Number(row[10]) || 0);
+        status.innerHTML = "Success! File downloaded.";
+
+    } catch (err) {
+        status.innerHTML = `<span style="color:red">Error: ${err.message}</span>`;
+        console.error(err);
     }
-
-    // --- 8. FILTER COLUMN L FOR BLANKS AND DELETE ---
-    // Filter out rows where Column L (Index 11) is empty/null
-    rows = rows.filter((row, index) => {
-        if (index < 2) return true; // Keep headers/top rows
-        return row[11] !== null && row[11] !== undefined && row[11] !== "";
-    });
-
-    // Convert back to worksheet
-    const newWs = XLSX.utils.aoa_to_sheet(rows);
-
-    // --- 6. APPLY FORMATTING (Partial support in SheetJS Community) ---
-    // Note: Basic SheetJS doesn't apply colors/borders without the Pro version, 
-    // but we can set cell types.
-
-    // Export the file
-    XLSX.utils.book_append_sheet(workbook, newWs, "Processed_Data");
-    XLSX.writeFile(workbook, "Processed_Report.xlsx");
-    
-    status.innerText = "Done! File downloaded.";
 }
 </script>
 
