@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Data Cleanup Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 600px; margin: auto; background: #f4f7f6; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; }
+        input[type="file"] { margin: 20px 0; }
+        button { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #219150; }
+        #status { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Data Cleanup V64545</h2>
+    <p>Upload your Excel file to apply column shifts, deduplication, and filtering.</p>
+    
+    <input type="file" id="upload" accept=".xlsx, .xls, .csv" />
+    <br>
+    <button onclick="processData()">Clean & Download</button>
+
+    <div id="status"></div>
+</div>
+
+<script>
+function processData() {
+    const fileInput = document.getElementById('upload');
+    const status = document.getElementById('status');
+    
+    if (!fileInput.files[0]) {
+        alert("Please select a file first!");
+        return;
+    }
+
+    status.innerText = "Processing...";
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        
+        // Convert sheet to 2D Array (Rows and Columns)
+        // This makes it much faster than cell-by-cell manipulation
+        let rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        if (rows.length === 0) {
+            status.innerText = "Error: Sheet is empty.";
+            return;
+        }
+
+        // --- STEP 1 & 2: Delete Columns and Shift ---
+        // VBA logic: Delete I, then B, then A. Move D to A.
+        // In JS arrays, it's easier to just map the columns we want to keep.
+        
+        const deleteCodes = [640, 795, 797, 717, 646, 722, 930, 941];
+        
+        let processedRows = rows.map(row => {
+            // Original Indices (0-based): A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9, K=10
+            // Your VBA moves D to A, and removes the original A, B, and I.
+            // After those deletions/moves, your new row structure should be:
+            // New A = Old D
+            // New B = Old C
+            // New C = Old E... and so on.
+            
+            let newRow = [];
+            newRow[0] = row[3];  // Old Col D moves to New Col A
+            newRow[1] = row[2];  // Old Col C
+            newRow[2] = row[4];  // Old Col E
+            newRow[3] = row[5];  // Old Col F
+            newRow[4] = row[6];  // Old Col G
+            newRow[5] = row[7];  // Old Col H
+            newRow[6] = row[9];  // Old Col J
+            newRow[7] = row[10]; // Old Col K (Now in New Col H position)
+            
+            // Add remaining columns if they exist
+            if (row.length > 11) {
+                newRow.push(...row.slice(11));
+            }
+            return newRow;
+        });
+
+        // --- STEP 4: Deduplicate based on New Column A ---
+        const seen = new Set();
+        processedRows = processedRows.filter((row, index) => {
+            if (index === 0) return true; // Keep header
+            const val = row[0];
+            if (seen.has(val)) return false;
+            seen.add(val);
+            return true;
+        });
+
+        // --- STEP 5: Row Deletion Loop (Criteria in New Column D) ---
+        // Note: In the new mapping, Old Col G is now index 4. 
+        // Based on your VBA, criteria was on Col D. In the new map, Old D is at index 0.
+        // Adjust the index [0] below if the "Case" check should be on a different column.
+        processedRows = processedRows.filter((row, index) => {
+            if (index === 0) return true; // Keep header
+            const criteriaVal = parseInt(row[3]); // Adjust index if criteria is in different col
+            return !deleteCodes.includes(criteriaVal);
+        });
+
+        // --- EXPORT ---
+        const newSheet = XLSX.utils.aoa_to_sheet(processedRows);
+        const newWorkbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(newWorkbook, newSheet, "Cleaned Data");
+        
+        XLSX.writeFile(newWorkbook, "Cleaned_Data_V64545.xlsx");
+        status.innerText = "Cleanup Complete! File downloaded.";
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+</script>
+
+</body>
+</html>
