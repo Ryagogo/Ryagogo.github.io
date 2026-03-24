@@ -1,0 +1,49 @@
+<%@ Master Language="C#" AutoEventWireup="true" %>
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="DataCleanup Tool — server-side Excel data processing" />
+    <title>
+        <asp:ContentPlaceHolder ID="TitleContent" runat="server">DataCleanup Tool</asp:ContentPlaceHolder>
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link href="~/Content/site.css" rel="stylesheet" type="text/css" />
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+</head>
+<body>
+    <form runat="server">
+
+        <!-- Top nav -->
+        <nav class="topnav">
+            <div class="topnav-inner">
+                <a href="~/Default.aspx" runat="server" class="brand">
+                    <span class="brand-icon">⚙</span>
+                    <span class="brand-name">DataCleanup<span class="brand-ver">// v1.0</span></span>
+                </a>
+                <div class="nav-links">
+                    <a href="~/Default.aspx" runat="server" class="nav-link">Home</a>
+                    <a href="~/DataCleanup.aspx" runat="server" class="nav-link nav-link-cta">Run Cleanup</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page content -->
+        <main class="main-content">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <span class="footer-copy">DataCleanup Tool &copy; <%= DateTime.UtcNow.Year %></span>
+                <span class="footer-build">ASP.NET Web Forms &middot; .NET 4.8</span>
+            </div>
+        </footer>
+
+    </form>
+    <script src="~/Scripts/site.js" runat="server"></script>
+    <asp:ContentPlaceHolder ID="ScriptContent" runat="server" />
+</body>
+</html>
