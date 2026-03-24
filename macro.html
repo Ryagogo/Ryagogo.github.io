@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Data Cleanup Tool</title>
+    <title>Excel Fast Processor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 600px; margin: auto; background: #f4f7f6; }
-        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        body { font-family: sans-serif; padding: 40px; line-height: 1.6; background: #f4f7f6; }
+        .container { max-width: 600px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: auto; }
         h2 { color: #2c3e50; }
         input[type="file"] { margin: 20px 0; }
         button { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
@@ -18,18 +18,18 @@
 <body>
 
 <div class="container">
-    <h2>Data Cleanup V64545</h2>
-    <p>Upload your Excel file to apply column shifts, deduplication, and filtering.</p>
+    <h2>Excel System Processor</h2>
+    <p>Upload your workbook. This will process the active sheet and handle the column logic automatically.</p>
     
     <input type="file" id="upload" accept=".xlsx, .xls, .csv" />
     <br>
-    <button onclick="processData()">Clean & Download</button>
-
+    <button onclick="processExcel()">Process and Download</button>
+    
     <div id="status"></div>
 </div>
 
 <script>
-function processData() {
+async function processExcel() {
     const fileInput = document.getElementById('upload');
     const status = document.getElementById('status');
     
@@ -38,86 +38,95 @@ function processData() {
         return;
     }
 
-    status.innerText = "Processing...";
+    status.innerText = "Processing... please wait.";
     const file = fileInput.files[0];
-    const reader = new FileReader();
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.utils.book_new();
+    const reader = XLSX.read(data);
+    
+    // Get the first sheet
+    const sheetName = reader.SheetNames[0];
+    let worksheet = reader.Sheets[sheetName];
+    
+    // Convert sheet to JSON for easier manipulation (Array of Arrays)
+    let rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-    reader.onload = function(e) {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        
-        // Convert sheet to 2D Array (Rows and Columns)
-        // This makes it much faster than cell-by-cell manipulation
-        let rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    // --- 1. DELETE SPECIFIC COLUMNS ---
+    // VBA: B, D, F:G, H:I, K:L, M:N, Q:Q, U:V, W:X, Y:Z, AB:AC, AD:AE
+    // Note: We map these to indices (0-based) and delete from right-to-left
+    const colsToDelete = [30, 29, 28, 27, 25, 24, 23, 22, 21, 20, 16, 13, 12, 11, 10, 8, 7, 6, 5, 3, 1];
+    
+    rows = rows.map(row => {
+        let newRow = [...row];
+        colsToDelete.forEach(idx => {
+            if (idx < newRow.length) newRow.splice(idx, 1);
+        });
+        return newRow;
+    });
 
-        if (rows.length === 0) {
-            status.innerText = "Error: Sheet is empty.";
-            return;
+    // --- 2. INSERT 3 NEW COLUMNS AT A, B, C ---
+    rows = rows.map(row => {
+        return [null, null, null, ...row];
+    });
+
+    // --- 3. TEXT TO COLUMNS (COMMA) ON COLUMN E (Index 4) ---
+    rows = rows.map(row => {
+        if (row[4] && typeof row[4] === 'string') {
+            const parts = row[4].split(',');
+            row[4] = parts[0]; // Take the first part, effectively splitting it
         }
+        return row;
+    });
 
-        // --- STEP 1 & 2: Delete Columns and Shift ---
-        // VBA logic: Delete I, then B, then A. Move D to A.
-        // In JS arrays, it's easier to just map the columns we want to keep.
-        
-        const deleteCodes = [640, 795, 797, 717, 646, 722, 930, 941];
-        
-        let processedRows = rows.map(row => {
-            // Original Indices (0-based): A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9, K=10
-            // Your VBA moves D to A, and removes the original A, B, and I.
-            // After those deletions/moves, your new row structure should be:
-            // New A = Old D
-            // New B = Old C
-            // New C = Old E... and so on.
-            
-            let newRow = [];
-            newRow[0] = row[3];  // Old Col D moves to New Col A
-            newRow[1] = row[2];  // Old Col C
-            newRow[2] = row[4];  // Old Col E
-            newRow[3] = row[5];  // Old Col F
-            newRow[4] = row[6];  // Old Col G
-            newRow[5] = row[7];  // Old Col H
-            newRow[6] = row[9];  // Old Col J
-            newRow[7] = row[10]; // Old Col K (Now in New Col H position)
-            
-            // Add remaining columns if they exist
-            if (row.length > 11) {
-                newRow.push(...row.slice(11));
-            }
-            return newRow;
-        });
-
-        // --- STEP 4: Deduplicate based on New Column A ---
-        const seen = new Set();
-        processedRows = processedRows.filter((row, index) => {
-            if (index === 0) return true; // Keep header
-            const val = row[0];
-            if (seen.has(val)) return false;
-            seen.add(val);
-            return true;
-        });
-
-        // --- STEP 5: Row Deletion Loop (Criteria in New Column D) ---
-        // Note: In the new mapping, Old Col G is now index 4. 
-        // Based on your VBA, criteria was on Col D. In the new map, Old D is at index 0.
-        // Adjust the index [0] below if the "Case" check should be on a different column.
-        processedRows = processedRows.filter((row, index) => {
-            if (index === 0) return true; // Keep header
-            const criteriaVal = parseInt(row[3]); // Adjust index if criteria is in different col
-            return !deleteCodes.includes(criteriaVal);
-        });
-
-        // --- EXPORT ---
-        const newSheet = XLSX.utils.aoa_to_sheet(processedRows);
-        const newWorkbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(newWorkbook, newSheet, "Cleaned Data");
-        
-        XLSX.writeFile(newWorkbook, "Cleaned_Data_V64545.xlsx");
-        status.innerText = "Cleanup Complete! File downloaded.";
+    // --- 5 & 10. APPLY FORMULAS / LOGIC ---
+    // JavaScript handles the logic row by row instead of writing "=VLOOKUP..."
+    // Note: VLOOKUPs require the secondary sheets (MAIN, Sheet2) to be in the same file
+    const mainSheet = reader.Sheets["MAIN"];
+    const sheet2 = reader.Sheets["Sheet2"];
+    
+    // Helper to simulate VLOOKUP
+    const vlookup = (val, targetSheet, colIdx) => {
+        if (!val || !targetSheet) return "";
+        const data = XLSX.utils.sheet_to_json(targetSheet, { header: 1 });
+        const match = data.find(r => r[0] == val);
+        return match ? match[colIdx - 1] : "";
     };
 
-    reader.readAsArrayBuffer(file);
+    for (let i = 2; i < rows.length; i++) { // Starting from Row 3 (Index 2)
+        let row = rows[i];
+        let eVal = row[4]; // Column E
+        let hVal = row[7]; // Column H
+        
+        // Simulating the VLOOKUPs from your VBA
+        row[1] = vlookup(eVal, mainSheet, 2); // Col B
+        row[2] = vlookup(eVal, mainSheet, 3); // Col C
+        row[8] = vlookup(hVal, sheet2, 2);    // Col I
+        row[9] = vlookup(eVal, mainSheet, 7) || 0; // Col J
+        row[10] = vlookup(eVal, mainSheet, 8) || 0; // Col K
+        
+        // Step 10: Calculate J - K in Column L (Index 11)
+        row[11] = (Number(row[9]) || 0) - (Number(row[10]) || 0);
+    }
+
+    // --- 8. FILTER COLUMN L FOR BLANKS AND DELETE ---
+    // Filter out rows where Column L (Index 11) is empty/null
+    rows = rows.filter((row, index) => {
+        if (index < 2) return true; // Keep headers/top rows
+        return row[11] !== null && row[11] !== undefined && row[11] !== "";
+    });
+
+    // Convert back to worksheet
+    const newWs = XLSX.utils.aoa_to_sheet(rows);
+
+    // --- 6. APPLY FORMATTING (Partial support in SheetJS Community) ---
+    // Note: Basic SheetJS doesn't apply colors/borders without the Pro version, 
+    // but we can set cell types.
+
+    // Export the file
+    XLSX.utils.book_append_sheet(workbook, newWs, "Processed_Data");
+    XLSX.writeFile(workbook, "Processed_Report.xlsx");
+    
+    status.innerText = "Done! File downloaded.";
 }
 </script>
 
