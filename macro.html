@@ -3,32 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Column Remover Tool</title>
+    <title>Retail Data Processor</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
-        h2 { color: #1a73e8; margin-top: 0; }
-        p { color: #5f6368; font-size: 0.9rem; }
-        .upload-area { border: 2px dashed #dadce0; padding: 2rem; border-radius: 8px; margin: 1.5rem 0; cursor: pointer; transition: border 0.3s; }
-        .upload-area:hover { border-color: #1a73e8; }
-        button { background-color: #1a73e8; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; font-size: 1rem; }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
-        #status { margin-top: 1rem; font-size: 0.85rem; color: #188038; }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f8f9fa; }
+        .card { background: white; padding: 2.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
+        h2 { color: #202124; margin-bottom: 10px; }
+        .instructions { color: #70757a; font-size: 0.9rem; margin-bottom: 25px; }
+        .upload-section { border: 2px dashed #4285f4; padding: 30px; border-radius: 10px; background: #f1f3f4; cursor: pointer; margin-bottom: 20px; transition: 0.3s; }
+        .upload-section:hover { background: #e8f0fe; }
+        button { background-color: #34a853; color: white; border: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.1rem; transition: 0.2s; }
+        button:hover { background-color: #2d8e47; }
+        button:disabled { background-color: #dadce0; cursor: not-allowed; }
+        #status { margin-top: 15px; font-weight: 500; color: #1967d2; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Excel Column Cleaner</h2>
-    <p>Upload your file to remove columns B, D, F, G, H, I, K, L, M, N, Q, U, V, W, X, Y, Z, AB, AC, AD, and AE.</p>
+    <h2>RMS10 Export Formatter</h2>
+    <p class="instructions">Upload your raw file. This will remove specific columns and format the data to match your visual template.</p>
     
-    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+    <div class="upload-section" onclick="document.getElementById('fileInput').click()">
         <input type="file" id="fileInput" accept=".xlsx, .xls" style="display:none">
-        <span id="fileName">Click to select .xlsx file</span>
+        <span id="fileName">Select Excel File</span>
     </div>
     
-    <button id="processBtn" disabled>Process & Download</button>
+    <button id="processBtn" disabled>Generate Cleaned Export</button>
     <div id="status"></div>
 </div>
 
@@ -38,8 +39,7 @@
     const fileName = document.getElementById('fileName');
     const status = document.getElementById('status');
 
-    // List of columns to DELETE (converted to 0-based indices)
-    // B=1, D=3, F=5, G=6, H=7, I=8, K=10, L=11, M=12, N=13, Q=16, U=20, V=21, W=22, X=23, Y=24, Z=25, AB=27, AC=28, AD=29, AE=30
+    // These correspond to B, D, F, G, H, I, K, L, M, N, Q, U, V, W, X, Y, Z, AB, AC, AD, AE
     const columnsToDelete = [1, 3, 5, 6, 7, 8, 10, 11, 12, 13, 16, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30];
 
     fileInput.addEventListener('change', (e) => {
@@ -52,32 +52,53 @@
     processBtn.addEventListener('click', () => {
         const file = fileInput.files[0];
         const reader = new FileReader();
-
-        status.innerText = "Processing...";
+        status.innerText = "Processing Data...";
 
         reader.onload = (e) => {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
 
-            // Convert sheet to 2D Array (Rows and Columns)
-            let rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                // Convert to 2D Array
+                let rawRows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-            // Process rows: Filter out the indices in our "delete" list
-            const processedRows = rows.map(row => {
-                return row.filter((_, index) => !columnsToDelete.includes(index));
-            });
+                // Find the actual header row (in case there's text like "This is RMS10 data" at the top)
+                let startRow = 0;
+                for (let i = 0; i < rawRows.length; i++) {
+                    if (rawRows[i].includes("Location") || rawRows[i].includes("Item")) {
+                        startRow = i;
+                        break;
+                    }
+                }
 
-            // Create new workbook with the cleaned data
-            const newWorksheet = XLSX.utils.aoa_to_sheet(processedRows);
-            const newWorkbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, "FilteredData");
+                // Filter rows and remove columns
+                const processedRows = rawRows.slice(startRow).map(row => {
+                    return row.filter((_, index) => !columnsToDelete.includes(index));
+                });
 
-            // Trigger Download
-            XLSX.writeFile(newWorkbook, "Cleaned_File.xlsx");
-            
-            status.innerText = "Success! File downloaded.";
+                // Generate new sheet
+                const newWorksheet = XLSX.utils.aoa_to_sheet(processedRows);
+                
+                // Optional: Adjust column widths roughly for better visibility on export
+                newWorksheet['!cols'] = [
+                    {wch: 10}, {wch: 12}, {wch: 40}, {wch: 15}, 
+                    {wch: 6}, {wch: 10}, {wch: 10}, {wch: 10}, 
+                    {wch: 12}, {wch: 10}
+                ];
+
+                const newWorkbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, "RMS10_Cleaned");
+
+                // Download
+                XLSX.writeFile(newWorkbook, "RMS10_Processed_Report.xlsx");
+                
+                status.innerText = "Success! File Downloaded.";
+            } catch (err) {
+                console.error(err);
+                status.innerText = "Error processing file. Check console.";
+            }
         };
 
         reader.readAsArrayBuffer(file);
