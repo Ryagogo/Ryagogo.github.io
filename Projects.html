@@ -112,7 +112,7 @@
             margin-bottom: 20px;
             border-bottom: 2px solid var(--code-border);
             padding-bottom: 5px;
-            scroll-margin-top: 20px; /* Provides padding when skipping via anchor link */
+            scroll-margin-top: 20px;
         }
 
         h3 {
@@ -178,13 +178,19 @@
             background-color: #f7fafc;
         }
 
+        /* Container for Copyable Code Blocks */
+        .code-wrapper {
+            position: relative;
+            margin: 15px 0 25px 0;
+        }
+
         pre {
             background-color: var(--code-bg);
             border: 1px solid var(--code-border);
             border-left: 4px solid var(--secondary-color);
             border-radius: 4px;
             padding: 15px;
-            margin: 15px 0 25px 0;
+            margin: 0;
             overflow-x: auto;
         }
 
@@ -199,6 +205,35 @@
             padding: 2px 6px;
             border-radius: 4px;
             color: #db2777;
+        }
+
+        /* User Friendly Copy Button Styling */
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: #ffffff;
+            border: 1px solid var(--code-border);
+            border-radius: 4px;
+            color: var(--text-color);
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--toc-bg);
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .copy-btn.copied {
+            background-color: #48bb78;
+            border-color: #48bb78;
+            color: #ffffff;
         }
 
         .comment {
@@ -216,7 +251,6 @@
             font-style: italic;
         }
 
-        /* Adjustments for responsive viewports */
         @media (max-width: 768px) {
             body { display: block; }
             .sidebar-nav { position: relative; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--code-border); }
@@ -226,7 +260,6 @@
 </head>
 <body>
 
-    <!-- SIDEBAR NAVIGATION MENU PANEL -->
     <nav class="sidebar-nav">
         <h3>Handbook Links</h3>
         <ul>
@@ -292,7 +325,6 @@
         </ul>
     </nav>
 
-    <!-- CENTRAL WORKSPACE LAYOUT CONTAINER -->
     <div class="main-container">
         <h1>IT Fundamentals Handbook</h1>
 
@@ -316,7 +348,6 @@
         <img src="Pictures/Projects/Hypervisor1.png" alt="Rufus Interface Configuration" style="max-width: 70%; height: auto; border: 1px solid #ccc; border-radius: 5px;">
         <p style="font-size: 12px; color: #777; margin-top: 5px;">Rufus 49.2256 Interface</p>
     </div>
-                
                 <p>Once image is finished…</p>
                 <ul>
                     <li>Plug ethernet into soon to be Hypervisor Machine.</li>
@@ -332,6 +363,8 @@
                 <p>Log into web server by typing in URL: <code>https://(static IP):8006</code></p>
                 <p>Login and select PVE and then Shell.</p>
 
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code><span class="comment"># I like to install tailscale on the host that way I can remote/connect to into the machine outside of the network.</span>
 sudo apt update && sudo apt install -y curl
 curl -fsSL https://tailscale.com/install.sh | sh
@@ -339,13 +372,18 @@ curl -fsSL https://tailscale.com/install.sh | sh
 <span class="comment"># This installs the latest version for your OS automatically.
 # Start Tailscale service:</span>
 sudo tailscale up</code></pre>
+                </div>
 
                 <p>You will see an authentication URL: <code class="comment">"To authenticate, visit: https://login.tailscale.com/a/xxxxxx"</code></p>
                 <p>Copy the URL from SSH output and open it on your <strong>local browser</strong>.</p>
                 <p>Log in with your preferred identity provider (Google, GitHub, Microsoft, etc.)</p>
                 <p>Once authenticated, the machine will appear in your Tailscale admin dashboard.</p>
                 <p>Check Tailscale status:</p>
+                
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>tailscale status</code></pre>
+                </div>
 
                 <p>On the left hand side select local(PVE). Here ISO images can be uploaded and container images can be uploaded and downloaded.</p>
             </div>
@@ -357,19 +395,31 @@ sudo tailscale up</code></pre>
             <div id="tailscale">
                 <h3>Tailscale</h3>
                 <p>Connect to your remote server via SSH:</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>ssh user@your_server_ip</code></pre>
+                </div>
                 <p>Ensure you have sudo privileges on the target machine.</p>
                 
                 <h4>Install Tailscale</h4>
                 <p>Update package list (Debian/Ubuntu):</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>sudo apt update && sudo apt install -y curl</code></pre>
+                </div>
                 <p>Download & install Tailscale:</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>curl -fsSL https://tailscale.com/install.sh | sh</code></pre>
+                </div>
                 <p>This installs the latest version for your OS automatically.</p>
                 
                 <h4>Authenticate Server</h4>
                 <p>Start Tailscale service:</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>sudo tailscale up</code></pre>
+                </div>
                 <p>You will see an authentication URL: <code class="comment">"To authenticate, visit: https://login.tailscale.com/a/xxxxxx"</code></p>
                 <p>Copy the URL from SSH output and open it on your <strong>local browser</strong>.</p>
                 <ul>
@@ -381,77 +431,138 @@ sudo tailscale up</code></pre>
             <div id="ssh">
                 <h3>SSH</h3>
                 <p>Install OpenSSH Server:</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>sudo apt update
 sudo apt upgrade
 sudo apt install openssh-server -y</code></pre>
+                </div>
                 
                 <p>Verify it is running:</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>sudo systemctl status ssh</code></pre>
+                </div>
                 
                 <p>Allow through the Firewall:</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>sudo ufw allow ssh</code></pre>
+                </div>
             </div>
 
             <div id="key-auth">
                 <h3>Key-Based Authentication</h3>
+                <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/rf1J8XSEiO0" 
+            title="Windows Key-Based Authentication Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
                 <p>Windows Video: <a href="https://www.youtube.com/watch?v=rf1J8XSEiO0" target="_blank">https://www.youtube.com/watch?v=rf1J8XSEiO0</a></p>
                 
                 <h4>Windows</h4>
                 <p>On your machine in command line:</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>ssh-keygen -t ed25519</code></pre>
+                </div>
                 <p>Note file save path location!</p>
                 <p>If you want login username & password enter it. If not just enter enter enter…</p>
                 
                 <p>On host machine:</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>mkdir -p ~/.ssh
 nano ~/.ssh/authorized_keys</code></pre>
+                </div>
                 <p>Paste contents of .pub file into nano authorized_keys</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>Ctrl+o <span class="comment">(Then Enter to Save)</span>
 Ctrl+x <span class="comment">(To Exit)</span></code></pre>
+                </div>
 
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>sudo nano /etc/ssh/sshd_config</code></pre>
+                </div>
                 <p>Set password authentication to “no”. Delete the # in its front.</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>Ctrl+o
 Ctrl+x
 sudo systemctl restart ssh</code></pre>
+                </div>
 
                 <h4>Mac</h4>
+                <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/vpk_1gldOAE" 
+            title="Mac Key-Based Authentication Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
                 <p>Mac Guide: <a href="https://www.youtube.com/watch?v=vpk_1gldOAE&list=LL&index=2" target="_blank">https://www.youtube.com/watch?v=vpk_1gldOAE&list=LL&index=2</a></p>
                 <p>On your machine in command line:</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>ssh-keygen -t ed25519</code></pre>
+                </div>
                 <p>Or</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>ssh-keygen rsa -b 4096</code></pre>
+                </div>
                 <p>Note file save path location!</p>
                 <p>If you want login username & password enter it. If not just enter enter enter…</p>
                 
                 <p>On host machine:</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>scp ~/.ssh/id_rsa.pub user@ipaddress:/home/user/.ssh/name_key.pub
 cat ~/.ssh/name_key.pub >> ~/.ssh/authorized_keys
 chmod 700 ~/.ssh/
 chmod 600 ~/.ssh/*
 nano ~/.ssh/authorized_keys</code></pre>
+                </div>
                 <p>Paste contents of .pub file into nano authorized_keys</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>Ctrl+o
 Ctrl+x
 sudo nano /etc/ssh/sshd_config</code></pre>
+                </div>
                 <p>Set password authentication to “no”. Delete the # in its front.</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn">Copy</button>
 <pre><code>Ctrl+o
 Ctrl+x
 sudo systemctl restart ssh</code></pre>
+                </div>
             </div>
         </div>
 
         <div id="docker">
             <h2>Docker</h2>
             <p>Documentation: <a href="https://docs.docker.com/engine/install" target="_blank">https://docs.docker.com/engine/install</a></p>
+             <div style="text-align: center; margin: 20px 0;">
+        <img src="Pictures/Projects/dockerimg1.png" alt="Docker Installation Guide" style="max-width: 80%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+    </div>
             <p># Add Docker's official GPG key:</p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo apt update
 sudo apt install ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc</code></pre>
+            </div>
             
             <p># Add the repository to Apt sources:</p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo tee /etc/apt/sources.list.d/docker.sources &lt;&lt;EOF
 Types: deb
 URIs: https://download.docker.com/linux/ubuntu
@@ -459,44 +570,70 @@ Suites: $(. /etc/os-release &amp;&amp; echo "${UBUNTU_CODENAME:-$VERSION_CODENAM
 Components: stable
 Signed-By: /etc/apt/keyrings/docker.asc
 EOF</code></pre>
+<div style="text-align: center; margin: 20px 0;">
+        <img src="Pictures/Projects/dockerimg2.png" alt="Docker Repository Setup" style="max-width: 80%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+    </div>
+            </div>
 
             <p>Install the Docker packages:</p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo apt update
 sudo systemctl status docker
 sudo systemctl start docker
 sudo docker run hello-world</code></pre>
+<div style="text-align: center; margin: 20px 0;">
+        <img src="Pictures/Projects/dockerimg3.png" alt="Docker Success Verification" style="max-width: 80%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+    </div>
+            </div>
         </div>
 
         <div id="docker-compose">
             <h2>Docker Compose</h2>
             <p>Documentation: <a href="https://docs.docker.com/compose/install/" target="_blank">https://docs.docker.com/compose/install/</a></p>
-            <div class="placeholder-section">Detailed usage mapping specifications pending.</div>
-        </div>
+             <div style="text-align: center; margin: 20px 0;">
+        <img src="Pictures/Projects/dockerimg4.png" alt="Docker Compose Installation" style="max-width: 80%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+    </div>
 
         <div id="curl">
             <h2>CURL</h2>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo apt install ca-certificates curl</code></pre>
+            </div>
         </div>
 
         <div id="htop">
             <h2>Htop</h2>
             <p>Depending on your Linux distribution, use the corresponding command below:</p>
             <p><strong>For Ubuntu, Debian, Linux Mint, or Kali:</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo apt update
 sudo apt install htop</code></pre>
+            </div>
             
             <p><strong>For CentOS, RHEL, or Rocky Linux:</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code><span class="comment"># First, enable the EPEL repository</span>
 sudo dnf install epel-release
 <span class="comment"># Then install htop</span>
 sudo dnf install htop</code></pre>
+            </div>
             
             <p><strong>For Fedora:</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo dnf install htop</code></pre>
+            </div>
             
             <p><strong>For Arch Linux:</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo pacman -S htop</code></pre>
+            </div>
 
             <h4>How to use htop</h4>
             <p>Once installed, simply type <code>htop</code> in your terminal to launch it.</p>
@@ -517,12 +654,21 @@ sudo dnf install htop</code></pre>
             <h2>Vim/Nano</h2>
             <h4>Installation Steps</h4>
             <p><strong>For Ubuntu, Debian, or Raspberry Pi OS:</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo apt update
 sudo apt install nano vim</code></pre>
+            </div>
             <p><strong>For CentOS, RHEL, or Rocky Linux:</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo dnf install nano vim-enhanced</code></pre>
+            </div>
             <p><strong>For Arch Linux:</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo pacman -S nano vim</code></pre>
+            </div>
 
             <h4>How to use them</h4>
             <p><strong>Using Nano:</strong></p>
@@ -546,12 +692,21 @@ sudo apt install nano vim</code></pre>
             <h2>Net-tools</h2>
             <h4>Installation Steps</h4>
             <p><strong>For Ubuntu, Debian, Linux Mint, or Kali:</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo apt update
 sudo apt install net-tools</code></pre>
+            </div>
             <p><strong>For CentOS, RHEL, Fedora, or Rocky Linux:</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo dnf install net-tools</code></pre>
+            </div>
             <p><strong>For Arch Linux:</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo pacman -S net-tools</code></pre>
+            </div>
 
             <h4>What’s inside net-tools</h4>
             <table>
@@ -586,23 +741,39 @@ sudo apt install net-tools</code></pre>
                 </tbody>
             </table>
         </div>
+        <p><strong>Quick Examples</strong></p>
+        <li><Strong>Check your IP address:</Strong>
+          <p>Simply type ifconfig. You’ll see your hardware address (MAC), your local IP (inet), and data packet statistics</p></li>
+          <li><Strong>Check listening ports:</Strong><p>sudo netstat -plnt. This shows which programs are listening on which ports (e.g., port 80 for HTTP)</p></li>
+          <li><strong>Check your default gateway:</strong><p>route -n</p></li>
 
         <div id="samba">
             <h2>Samba</h2>
             <p><strong>Step 1: Install Samba</strong></p>
             <p>For Ubuntu/Debian:</p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo apt update
 sudo apt install samba</code></pre>
+            </div>
 
             <p><strong>Step 2: Create the Shared Directory</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo mkdir -p /samba/public
 sudo chmod -R 0777 /samba/public
 sudo chown -R nobody:nogroup /samba/public</code></pre>
+            </div>
 
             <p><strong>Step 3: Configure the Samba Share</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
 sudo nano /etc/samba/smb.conf</code></pre>
+            </div>
             <p>Add your share details at the bottom:</p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>[PublicShare]
 comment = Samba on Ubuntu
 path = /samba/public
@@ -610,63 +781,389 @@ browsable = yes
 read only = no
 guest ok = yes
 force user = nobody</code></pre>
-
-            <p><strong>Step 4: Restart Samba</strong></p>
+            </div>
+            <p><strong>Step 4: Setup User Accounts (Optional but Recommended)</strong></p>
+    <p>If you want a private share instead of a guest one, you must create a Samba password for your user.</p>
+    <div class="command-block">
+      <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
+      <pre><code>sudo smbpasswd -a your_username
+sudo smbpasswd -e your_username</code></pre>
+</div>
+            <p><strong>Step 5: Restart Samba</strong></p>
+            <div class="code-wrapper">
+                <button class="copy-btn">Copy</button>
 <pre><code>sudo systemctl restart smbd nmbd
 sudo ufw allow samba</code></pre>
+            </div>
+<p><Strong>Step 6: How to Access the Share</Strong></p>
+    
+    <p><strong>From Windows:</strong></p>
+    <ol>
+        <li>Open <strong>File Explorer</strong></li>
+        <li>In the address bar, type: <code>\\&lt;YOUR_STATIC_IP&gt;\PublicShare</code> (e.g., <code>\\192.168.38.120\PublicShare</code>)</li>
+        <li>Press <strong>Enter</strong></li>
+    </ol>
+
+    <p style="margin-top: 20px;"><strong>From Linux:</strong></p>
+    <ol>
+        <li>Open your file manager (Nautilus, Thunar, etc.)</li>
+        <li>Select <strong>"Other Locations"</strong> or <strong>"Connect to Server"</strong></li>
+        <li>Enter: <code>smb://192.168.38.120/PublicShare</code></li>
+    </ol>
+
+    <h3 style="margin-top: 30px;">Summary of smb.conf Parameters</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;">
+        <thead>
+            <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ddd;">
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Parameter</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Meaning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>path</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">The actual directory on your Linux disk</td>
+            </tr>
+            <tr style="background-color: #fafafa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>browsable</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Whether the share shows up when browsing the network</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>read only</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Set to <strong>no</strong> if you want to be able to upload/delete files</td>
+            </tr>
+            <tr style="background-color: #fafafa;">
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>guest ok</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">Set to <strong>yes</strong> to allow access without a username/password</td>
+            </tr>
+        </tbody>
+    </table>
+
+    
+</div>
+
+<script>
+    // Universal copy button handler for all command blocks on this page
+    document.querySelectorAll('.command-block').forEach((block) => {
+        if (!block.querySelector('.copy-btn')) {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            block.appendChild(button);
+
+            button.addEventListener('click', () => {
+                const code = block.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = 'Copied!';
+                    setTimeout(() => button.innerText = 'Copy', 2000);
+                });
+            });
+        }
+    });
+</script>
+            </div>
         </div>
 
         <div id="static-ip">
             <h2>Static IP</h2>
             
             <div id="linux-static">
-                <h3>Linux Setup</h3>
-                <p><strong>METHOD 1 UBUNTU NETPLAN:</strong></p>
-<pre><code>ip -c a
+<p><strong>METHOD 1: UBUNTU NETPLAN</strong></p>
+            </div>
+    <div style="margin: 15px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/173rk-yiXKE" 
+            title="Ubuntu Netplan Static IP Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <ol>
+        <li><strong>Find your interface name:</strong>
+            <pre><code>ip -c a</code></pre>
+            <p># Or in some cases:</p>
+            <pre><code>ip addr</code></pre>
+            <p style="font-size: 13px; color: #666;">Look for names like <code>eth0</code> or <code>enp0s3</code></p>
+        </li>
+        <li><strong>Note the IP route addresses:</strong>
+            <pre><code>ip route</code></pre>
+        </li>
+        <li><strong>Locate and edit the config file:</strong>
+            <div class="command-block">
 cd /etc/netplan
-sudo nano 50-cloud-init.yaml</code></pre>
-                <p>Update network configuration parameters fields, then execute:</p>
-<pre><code>sudo netplan apply
-ip -c a</code></pre>
-
-                <p><strong>METHOD 2 DEBIAN INTERFACES:</strong></p>
-<pre><code>sudo nano /etc/network/interfaces
-sudo systemctl restart networking.service</code></pre>
+ls
+sudo nano 50-cloud-init.yaml</div>
+        </li>
+        <li><strong>Insert the configuration:</strong>
+            <p>“addresses:” will be the static IP. “via” will be the IP route</p>
+            <div style="text-align: center; margin: 15px 0;">
+                <img src="Pictures/Projects/staticip.png" alt="Netplan Configuration Example" style="max-width: 85%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
             </div>
+        </li>
+        <li><strong>Apply changes:</strong>
+            <div class="command-block">
+sudo netplan apply
+ip -c a</div>
+            <p style="font-size: 13px; color: #666;"># Verify the change with the last command.</p>
+        </li>
+    </ol>
 
+    <p style="margin-top: 30px;"><strong>METHOD 2: DEBIAN INTERFACES</strong></p>
+    <div style="margin: 15px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/Dx3KWcbn9hM" 
+            title="Debian Interfaces Static IP Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <ol>
+        <li><strong>Find interface and route:</strong>
+            <div class="command-block">ip -c a</div>
+            <div class="command-block">ip r</div>
+        </li>
+        <li><strong>Locate the config file:</strong>
+            <div class="command-block">sudo nano /etc/network/interfaces</div>
+        </li>
+        <li><strong>Apply configuration:</strong>
+            <div style="text-align: center; margin: 15px 0;">
+                <img src="Pictures/Projects/staticipdebian.png" alt="Debian Interfaces Configuration" style="max-width: 85%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+        </li>
+        <li><strong>Restart service and verify:</strong>
+            <div class="command-block">
+sudo systemctl restart networking.service
+ip -c a</div>
             <div id="windows-static">
-                <h3>Windows Setup</h3>
-                <p>Configure mapping fields via: Control Panel &gt; Network and Sharing Center &gt; Change Adapter Settings &gt; IPv4 Properties.</p>
+                <h3>Windows</h3>
             </div>
-        </div>
+    <div style="margin: 15px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/_QnqFsWJV58" 
+            title="Windows Static IP Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <ol>
+        <li>Go to <strong>Control Panel</strong>.</li>
+        <li>Select <strong>Network and Internet</strong>.</li>
+        <li>Go to <strong>Network and Sharing Center</strong>.</li>
+        <li>Click on your active connection (e.g., <strong>Connections: Ethernet</strong>).</li>
+        <li>Select <strong>Properties</strong>.</li>
+        <li>Click on <strong>Internet Protocol Version 4 (TCP/IPv4)</strong> and select <strong>Properties</strong>.</li>
+        <li>Here a static IP, Subnet mask, and Default gateway can be manually set.</li>
+    </ol>
 
         <div id="dns">
-            <h2>DNS</h2>
-            <div class="placeholder-section">Section content mapping structures pending initialization.</div>
+<h2 style="margin-top: 40px;">DNS</h2>
         </div>
+    <div id="website-online">
+<p><strong>How to put an HTML website online</strong></p>
+    </div>
+    <div style="margin: 15px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/watch?v=p1QU3kLFPdg" 
+            title="DNS and Website Hosting Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
 
-        <div id="website-online">
-            <h2>How to put an HTML website online</h2>
-            <h4>Part 1: Hosting Your Website for Free (GitHub Pages)</h4>
-            <ol>
-                <li>Create repository on GitHub set to Public.</li>
-                <li>Drag loose elements (index.html, asset items) into files grid context space. Commit changes.</li>
-                <li>Navigate Settings &gt; Pages, toggle branch target configuration definitions over to main, and hit Save.</li>
-            </ol>
-            <h4>Part 2: Setting Up a Custom Domain (Namecheap)</h4>
-            <ol>
-                <li>Map infrastructure configuration strings targets by defining 4 A Records pointing to GitHub IP ranges.</li>
-                <li>Bind a functional CNAME record setting host tracking labels as www mapping onto the destination target username URL.</li>
-            </ol>
-        </div>
+    <p><strong>Useful Links:</strong></p>
+    <ul>
+        <li><a href="https://ap.www.namecheap.com">https://ap.www.namecheap.com</a></li>
+        <li><a href="https://mxtoolbox.com/DNSLookup.aspx">https://mxtoolbox.com/DNSLookup.aspx</a></li>
+    </ul>
 
-        <div id="windows-server">
-            <h2>Windows Server</h2>
-            <h4>Section 1: Initial Server Setup & Role Installation</h4>
-            <p>Install Active Directory Domain Services, DHCP Server, and DNS Server roles via Server Manager wizard interfaces layouts configurations blocks.</p>
-            <h4>Section 2: DNS - Configuring Lookup Zones</h4>
-            <p>Add primary Active Directory-integrated Reverse Lookup Zone mappings arrays to bind local subnet IPs down cleanly onto domain host identities.</p>
-        </div>
+    <h3>Part 1: Hosting Your Website for Free (GitHub Pages)</h3>
+    <p>GitHub Pages is a free service that hosts your static files directly from a GitHub repository.</p>
+    
+    <ol>
+        <li><strong>Create a GitHub Account:</strong> Go to <a href="https://github.com">github.com</a> and sign up or log in</li>
+        <li><strong>Create a New Repository:</strong> 
+            <ul>
+                <li>Click your profile icon (top right) > <strong>Your repositories</strong> > <strong>New</strong></li>
+                <li>Give it a name (e.g., <code>my-website</code>) and ensure it is set to <strong>Public</strong></li>
+            </ul>
+        </li>
+    </ol>
+
+    
+
+
+        <li><strong>Upload Your Files:</strong>
+            <ul>
+                <li>Click <strong>"uploading an existing file"</strong>.</li>
+                <li>Drag and drop your <code>index.html</code> (and any CSS/Images) into the box.</li>
+                <li>Scroll down and click <strong>Commit changes</strong>.</li>
+            </ul>
+        </li>
+        <li><strong>Enable GitHub Pages:</strong>
+            <ul>
+                <li>Go to <strong>Settings</strong> (top tab) > <strong>Pages</strong> (left sidebar).</li>
+                <li>Under <strong>Build and deployment</strong>, ensure "Deploy from a branch" is selected and the branch is set to <strong>main</strong>.</li>
+                <li>Click <strong>Save</strong>. After a minute, you’ll see a link like: <code>https://your-username.github.io/my-website/</code>.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>Part 2: Using a Custom Domain (Namecheap)</h3>
+    <p>If you want a professional address (like <code>www.yourname.com</code>), you need to point your domain to GitHub’s servers.</p>
+
+    <ol>
+        <li><strong>Buy a Domain:</strong> Purchase one from <a href="https://www.namecheap.com">Namecheap</a>.</li>
+        <li><strong>Configure GitHub:</strong>
+            <ul>
+                <li>In your GitHub Repo <strong>Settings > Pages</strong>, scroll to <strong>Custom domain</strong>.</li>
+                <li>Type your domain (e.g., <code>yourname.com</code>) and click <strong>Save</strong>.</li>
+            </ul>
+        </li>
+        <li><strong>Configure Namecheap (DNS Records):</strong>
+            <ul>
+                <li>Log in to Namecheap > <strong>Domain List</strong> > <strong>Manage</strong> > <strong>Advanced DNS</strong>.</li>
+                <li>Add four <strong>A Records</strong> pointing to GitHub’s IP addresses:
+                    <ul style="list-style-type: none; font-family: monospace; background: #f9f9f9; padding: 10px; border-radius: 5px;">
+                        <li>185.199.108.153</li>
+                        <li>185.199.109.153</li>
+                        <li>185.199.110.153</li>
+                        <li>185.199.111.153</li>
+                    </ul>
+                </li>
+                <li>Add a <strong>CNAME Record</strong>:
+                    <ul>
+                        <li><strong>Host:</strong> <code>www</code></li>
+                        <li><strong>Value:</strong> <code>your-username.github.io</code></li>
+                    </ul>
+                    <ul>
+                <li><strong>Link Domain in GitHub:</strong></li>
+                        <li>Return to your GitHub repository <strong>Settings > Pages</strong> </li>
+                        <li>Under Custom domain, type your new domain (e.g., example.com) and click Save </li>
+            <ol start="4">
+        <li><strong>Link Domain in GitHub:</strong>
+            <ul>
+                <li>Return to your GitHub repository <strong>Settings > Pages</strong>.</li>
+                <li>Under <strong>Custom domain</strong>, type your new domain (e.g., <code>example.com</code>) and click <strong>Save</strong>.</li>
+            </ul>
+        </li>
+        <li><strong>Enable Security (HTTPS):</strong>
+            <ul>
+                <li>Once the domain is verified, check the <strong>Enforce HTTPS</strong> box. This ensures your site has the "lock" icon in the browser for security.</li>
+            </ul>
+        </li>
+    </ol>
+
+        
+    <div id="windows-server">
+<h2>Windows Server</h2>
+    </div>
+    <div style="margin: 15px 0; text-align: center;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/NE2nQlYcwao" 
+            title="Windows Server Setup Tutorial" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <h3>Section 1: Initial Server Setup & Role Installation</h3>
+    <p>Before beginning, ensure your server has a <strong>static IP address</strong> configured (e.g., <code>192.168.49.5</code>)</p>
+    
+    <ol>
+        <li><strong>Open Server Manager:</strong> Click <strong>Manage</strong> > <strong>Add Roles and Features</strong></li>
+        <li><strong>Select Installation Type:</strong> Choose <strong>Role-based or feature-based installation</strong> and select your server</li>
+        <li><strong>Select Server Roles:</strong> Check the boxes for:
+            <ul>
+                <li>Active Directory Domain Services (AD DS)</li>
+                <li>DHCP Server</li>
+                <li>DNS Server</li>
+                <li><em>Note: Click "Add Features" whenever prompted for management tools.</em></li>
+            </ul>
+        </li>
+        <li><strong>Install:</strong> Follow the prompts and click <strong>Install</strong></li>
+        <li><strong>Promote to Domain Controller:</strong> Once installed, click the <strong>notification flag</strong> and select <strong>Promote this server to a domain controller</strong></li>
+        <li><strong>Deployment:</strong> Select <strong>Add a new forest</strong> and enter your <strong>Root domain name</strong> (e.g., <code>mylab.local</code>)</li>
+        <li><strong>Configuration:</strong> Set a <strong>Directory Services Restore Mode (DSRM)</strong> password and complete the wizard</li>
+        <li>The server will automatically reboot after installation.</li>
+    </ol>
+
+    
+</div>
+
+<div class="page">
+    <h3>Section 2: DNS - Configuring Lookup Zones</h3>
+    <p>Active Directory creates Forward Lookup Zones automatically, but you must manually configure the Reverse Lookup Zone.</p>
+
+    <p><strong>Configuring Reverse Lookup Zones:</strong></p>
+    <ol start="9">
+        <li><strong>Open DNS Manager:</strong> Go to <strong>Tools > DNS</strong></li>
+        <li><strong>Create New Zone:</strong> Right-click <strong>Reverse Lookup Zones</strong> > <strong>New Zone</strong></li>
+        <li>Select <strong>Primary Zone</strong> and check <strong>"Store the zone in Active Directory"</strong></li>
+        <li><strong>Replication Scope:</strong> Select <strong>"To all DNS servers running on domain controllers in this domain"</strong></li>
+        <li>Select <strong>IPv4 Reverse Lookup Zone</strong></li>
+        <li><strong>Network ID:</strong> Enter the first three octets of your network (e.g., <code>192.168.49</code>).</li>
+        <li><strong>Dynamic Updates:</strong> Choose <strong>Allow only secure dynamic updates</strong></li>
+        <li><strong>Add Pointer (PTR) Record:</strong>
+            <ul>
+                <li>Right-click your new zone > <strong>New Pointer (PTR)</strong></li>
+                <li>Browse to find your <strong>Host (A) record</strong> in the Forward Lookup Zone to map the IP to the Hostname</li>
+            </ul>
+        </li>
+        <li><strong>Final DNS Tweak:</strong> In your Ethernet adapter settings, change the <strong>Preferred DNS server</strong> from <code>127.0.0.1</code> to the server's actual static IP (<code>192.168.49.5</code>)</li>
+    </ol>
+
+    
+</div>
+
+<div class="page">
+    <h3>Section 3: DHCP - Post-Install & Scope Configuration</h3>
+    
+    <ol start="18">
+        <li><strong>Post-Deployment:</strong> Click the <strong>notification flag</strong> in Server Manager and select <strong>Complete DHCP configuration</strong>
+            <ul>
+                <li>This creates security groups and authorizes the server in Active Directory</li>
+            </ul>
+        </li>
+        <li><strong>Open DHCP Manager:</strong> Go to <strong>Tools > DHCP</strong></li>
+        <li><strong>Create New Scope:</strong> Right-click <strong>IPv4</strong> > <strong>New Scope</strong></li>
+        <li><strong>Name:</strong> Provide a name (e.g., <code>Scope1</code>)</li>
+        <li><strong>IP Range:</strong> Enter <strong>Start</strong> (e.g., <code>.20</code>) and <strong>End</strong> (e.g., <code>.250</code>) addresses</li>
+        <li><strong>Lease Duration:</strong> Set to desired time (e.g., <code>8 hours</code>)</li>
+        <li><strong>Configure DHCP Options:</strong>
+            <ul>
+                <li><strong>Router (Default Gateway):</strong> Add your gateway IP (e.g., <code>192.168.49.1</code>)</li>
+                <li><strong>DNS Server:</strong> Ensure your <strong>Domain Controller IP</strong> is listed</li>
+            </ul>
+        </li>
+        <li><strong>Activate:</strong> Select <strong>Yes, I want to activate this scope now</strong></li>
+    </ol>
+
+    <h3>Section 4: Joining a Client to the Domain</h3>
+    <ol start="26">
+        <li><strong>Client Network Check:</strong> On a Windows 10 PC, ensure the adapter is set to <strong>"Obtain IP address automatically"</strong></li>
+        <li>Run <code>ipconfig /all</code> to verify it received an IP from the new DHCP server</li>
+        <li><strong>Join Domain:</strong>
+            <ul>
+                <li>Go to <strong>Settings > System > About > Join a domain</strong></li>
+                <li>Enter the domain name (<code>mylab.local</code>) and provide <strong>Domain Administrator credentials</strong></li>
+                <li>Restart the client computer</li>
+            </ul>
+        </li>
+        <li><strong>Verify:</strong> In Server Manager, go to <strong>Active Directory Users and Computers > Computers</strong> to see the newly joined client listed</li>
+    </ol>
+
+    
+</div>
+
 
         <div id="ntp">
             <h2>Network Time Protocol (NTP) Server</h2>
@@ -812,5 +1309,46 @@ sudo systemctl restart networking.service</code></pre>
         </div>
     </div>
 
+    <script>
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', async () => {
+                const codeBlock = button.nextElementSibling.querySelector('code');
+                if (!codeBlock) return;
+                
+                // Fetch the raw inner text line-by-line
+                const lines = codeBlock.innerText.split('\n');
+                
+                // Clean the payload: remove comment lines and strip away trailing inline comments
+                const cleanLines = lines.map(line => {
+                    const trimmed = line.trim();
+                    // If the entire line is a shell comment, drop it entirely
+                    if (trimmed.startsWith('#')) {
+                        return '';
+                    }
+                    // If there is an inline comment, strip the comment portion off
+                    if (line.includes('#')) {
+                        const parts = line.split('#');
+                        return parts[0].trimEnd();
+                    }
+                    return line;
+                }).filter(line => line !== ''); // Filter out newly created empty lines
+
+                const textToCopy = cleanLines.join('\n');
+
+                try {
+                    await navigator.clipboard.writeText(textToCopy);
+                    button.textContent = 'Copied!';
+                    button.classList.add('copied');
+                    
+                    setTimeout(() => {
+                        button.textContent = 'Copy';
+                        button.classList.remove('copied');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy text safely: ', err);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
