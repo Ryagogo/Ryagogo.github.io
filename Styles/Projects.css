@@ -1,4 +1,4 @@
-<style>
+
         :root {
             --bg-color: #ffffff;
             --text-color: #2c3e50;
@@ -250,4 +250,4 @@
             .sidebar-nav { position: relative; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--code-border); }
             .main-container { margin-left: 0; padding: 20px; }
         }
-    </style>
+    
