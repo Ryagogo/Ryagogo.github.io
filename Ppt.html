@@ -91,7 +91,7 @@
     <div class="logo">📊</div>
     <div>
       <h1>Ad Tracker Tool Workspace</h1>
-      <div class="subtitle">Target Pipeline Asset: <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">/Files/AD Tracker - Template.xlsm</span></div>
+      <div class="subtitle">Target Pipeline Asset: <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">/Files/AdTracker.xlsm</span></div>
     </div>
   </header>
 
@@ -144,8 +144,8 @@
 </div>
 
 <script>
-// File path starting with /Files and nothing before
-const LOCAL_TEMPLATE_PATH = "/Files/AD Tracker - Template.xlsm";
+// Configuration variable set directly to your precise layout route
+const LOCAL_TEMPLATE_PATH = "/Files/AdTracker.xlsm";
 
 let pptxFiles = [];
 let allItems = [];
@@ -328,11 +328,11 @@ async function doExport() {
   log('── Initiating template fetch & inject loop ──', 'info');
   
   try {
-    log(`Attempting read at custom layout target: ${LOCAL_TEMPLATE_PATH}`, 'info');
+    log(`Attempting read at root target layout: ${LOCAL_TEMPLATE_PATH}`, 'info');
     
     const response = await fetch(LOCAL_TEMPLATE_PATH);
     if (!response.ok) {
-      throw new Error(`Could not find template file at ${LOCAL_TEMPLATE_PATH}. Please check your root environment directories.`);
+      throw new Error(`Could not find template file at ${LOCAL_TEMPLATE_PATH}. Please check your web environment directory structures.`);
     }
     
     log('Template successfully buffered. Parsing structural layout mapping...', 'ok');
