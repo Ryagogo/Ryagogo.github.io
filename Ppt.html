@@ -91,7 +91,7 @@
     <div class="logo">📊</div>
     <div>
       <h1>Ad Tracker Tool Workspace</h1>
-      <div class="subtitle">Automatic Target Link: <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">./files/AD Tracker - Template.xlsm</span></div>
+      <div class="subtitle">Automatic Target Link: <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">./Files/Ad Tracker - Template.xlsm</span></div>
     </div>
   </header>
 
@@ -144,8 +144,8 @@
 </div>
 
 <script>
-// Relative Template Path Configuration
-const LOCAL_TEMPLATE_PATH = "files/AD Tracker - Template.xlsm";
+// Relative Template Path Configuration - set to capitalized 'Files/' directory layout
+const LOCAL_TEMPLATE_PATH = "Files/Ad Tracker - Template.xlsm";
 
 let pptxFiles = [];
 let allItems = [];
@@ -330,10 +330,9 @@ async function doExport() {
   try {
     log(`Attempting automated read at relative path: ./${LOCAL_TEMPLATE_PATH}`, 'info');
     
-    // Smoothly request the file from the adjacent files/ directory
     const response = await fetch(LOCAL_TEMPLATE_PATH);
     if (!response.ok) {
-      throw new Error(`Could not find template file at ./${LOCAL_TEMPLATE_PATH}. Please ensure the 'files' folder is in the same directory as this HTML file.`);
+      throw new Error(`Could not find template file at ./${LOCAL_TEMPLATE_PATH}. Please ensure the 'Files' folder is in the same directory as this HTML file.`);
     }
     
     log('Template successfully buffered. Parsing structural layout mapping...', 'ok');
