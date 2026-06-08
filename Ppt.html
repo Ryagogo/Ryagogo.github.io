@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ad Tracker Tool Workspace</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a23;
+    --surface2: #1e2330;
+    --border: #2a3040;
+    --accent: #3b82f6;
+    --accent2: #6366f1;
+    --green: #22c55e;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 40px 24px; }
+  .container { max-width: 960px; margin: 0 auto; }
+  
+  header { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .logo { width: 44px; height: 44px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; line-height: 1; }
+  .subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+  .card-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+
+  .drop-zone { border: 1.5px dashed var(--border); border-radius: 8px; padding: 24px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface2); position: relative; }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: rgba(59, 130, 246, 0.06); }
+  .drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .drop-icon { font-size: 26px; margin-bottom: 6px; }
+  .drop-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .drop-text strong { color: var(--text); }
+
+  .file-list { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .file-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; font-size: 12px; }
+  .file-info { flex: 1; min-width: 0; }
+  .file-name { font-family: var(--mono); font-size: 11px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-week { font-size: 11px; color: var(--accent); margin-top: 2px; }
+  .file-status { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 500; flex-shrink: 0; }
+  .status-ok { background: rgba(34,197,94,0.15); color: var(--green); }
+  .status-error { background: rgba(239,68,68,0.15); color: var(--red); }
+  .remove-btn { background: none; border: none; color: var(--muted); cursor: pointer; padding: 2px; font-size: 14px; line-height: 1; flex-shrink: 0; }
+  .remove-btn:hover { color: var(--red); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th { background: var(--surface2); padding: 9px 12px; text-align: left; font-weight: 500; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 8px 12px; border-bottom: 1px solid rgba(42,48,64,0.6); vertical-align: middle; }
+  .col-rin { font-family: var(--mono); color: var(--accent); font-size: 11px; }
+  .col-week { font-family: var(--mono); }
+  .col-desc { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; }
+
+  .actions { display: flex; gap: 12px; align-items: center; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px; }
+  .btn { display: flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-ghost { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .actions-note { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+  .log { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-family: var(--mono); font-size: 11px; line-height: 1.8; max-height: 140px; overflow-y: auto; display: none; margin-bottom: 24px; }
+  .log.visible { display: block; }
+  .log-line.ok { color: var(--green); }
+  .log-line.err { color: var(--red); }
+  .log-line.info { color: var(--accent); }
+  .dupe-row td { opacity: 0.5; }
+  .dupe-badge { font-size: 9px; font-family: var(--mono); background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); border-radius: 3px; padding: 1px 5px; margin-left: 6px; }
+  
+  .tag-ae { color: #818cf8; } .tag-fe { color: #fb923c; } .tag-email { color: #34d399; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo">📊</div>
+    <div>
+      <h1>Ad Tracker Tool Workspace</h1>
+      <div class="subtitle">Automatic Target Link: <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">./files/AD Tracker - Template.xlsm</span></div>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="card-label">Source PowerPoints Workspace</div>
+    <div class="drop-zone" id="pptxDrop">
+      <input type="file" id="pptxInput" accept=".pptx" multiple>
+      <div class="drop-icon">📎</div>
+      <div class="drop-text">
+        <strong>Drop your weekly PPTX files here</strong><br>
+        Multiple files are parsed and extracted simultaneously.
+      </div>
+    </div>
+    <div class="file-list" id="fileList"></div>
+  </div>
+
+  <div class="log" id="logPanel"></div>
+
+  <div class="card" style="padding:16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:13px; font-weight:500;">Extracted Items Stream Queue</span>
+      <span class="badge" id="countBadge">0 items</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>RIN</th>
+            <th>Ad Week</th>
+            <th>Type</th>
+            <th>Item Description</th>
+            <th>VPN</th>
+            <th>Retail</th>
+            <th>Source File</th>
+          </tr>
+        </thead>
+        <tbody id="previewBody">
+          <tr><td colspan="7" class="empty-state">Staging queue idle. Drop source presentation materials into workspace.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="exportBtn" disabled>⬇ Export to Excel Sheet (.xlsm)</button>
+    <button class="btn btn-ghost" id="clearBtn">✕ Clear Queue</button>
+    <span class="actions-note" id="actionsNote">Awaiting processing parameters...</span>
+  </div>
+
+</div>
+
+<script>
+// Relative Template Path Configuration
+const LOCAL_TEMPLATE_PATH = "files/AD Tracker - Template.xlsm";
+
+let pptxFiles = [];
+let allItems = [];
+
+function log(msg, type = '') {
+  const panel = document.getElementById('logPanel');
+  panel.classList.add('visible');
+  const d = document.createElement('div');
+  d.className = 'log-line ' + type;
+  d.textContent = msg;
+  panel.appendChild(d);
+  panel.scrollTop = panel.scrollHeight;
+}
+
+function parseAdWeek(filename) {
+  const base = filename.replace(/\.pptx$/i, '');
+  const m = base.match(/^(\d+)_([^_]+(?:_[A-Z]+)*)/i);
+  if (!m) return { week: '??', type: 'UNK', code: 'WKUNKNOWN' };
+  const weekNum = m[1].padStart(2, '0');
+  const upper = base.toUpperCase();
+  let suffix = 'AE'; 
+  if (upper.includes('_AE_') || upper.endsWith('_AE')) suffix = 'AE';
+  else if (upper.includes('_FE_') || upper.endsWith('_FE')) suffix = 'FE';
+  else if (upper.includes('_EMAIL_') || upper.endsWith('_EMAIL')) suffix = 'X';
+  else if (upper.includes('_SF_') || upper.endsWith('_SF')) suffix = 'SF';
+  else if (upper.includes('_DD_') || upper.endsWith('_DD')) suffix = 'DD';
+  else {
+    const second = m[2].split('_')[0].toUpperCase();
+    if (second === 'AE') suffix = 'AE';
+    else if (second === 'FE') suffix = 'FE';
+    else if (second === 'EMAIL') suffix = 'X';
+    else suffix = second.substring(0, 3);
+  }
+  return { week: weekNum, type: suffix, code: `WK${parseInt(weekNum)}${suffix}` };
+}
+
+function rinIsValid(rin) {
+  if (!rin) return false;
+  const r = String(rin).trim();
+  if (!r || r.toUpperCase().includes('TBD') || r.toUpperCase().includes('NEW ITEM')) return false;
+  return /^\d{6,10}$/.test(r.replace(/\D/g, '')) || /^\d+$/.test(r);
+}
+
+async function parsePPTX(file) {
+  const zip = await JSZip.loadAsync(file);
+  const items = [];
+  const slideFiles = Object.keys(zip.files)
+    .filter(k => /^ppt\/slides\/slide\d+\.xml$/.test(k))
+    .sort((a, b) => parseInt(a.match(/\d+/)[0]) - parseInt(b.match(/\d+/)[0]));
+
+  for (const sf of slideFiles) {
+    const xmlStr = await zip.files[sf].async('string');
+    const doc = new DOMParser().parseFromString(xmlStr, 'application/xml');
+    const shapes = doc.querySelectorAll('sp');
+    
+    shapes.forEach(shape => {
+      const paragraphs = shape.querySelectorAll('p');
+      let shapeLines = [];
+      paragraphs.forEach(p => {
+        let lineText = '';
+        p.querySelectorAll('t').forEach(t => { lineText += t.textContent; });
+        lineText = lineText.trim();
+        if (lineText) shapeLines.push(lineText);
+      });
+      if (shapeLines.length === 0) return;
+
+      let currentItem = null;
+      let structuralDesc = '';
+      
+      for (let i = 0; i < shapeLines.length; i++) {
+        const line = shapeLines[i];
+        const rinMatch = line.match(/^RIN:\s*(.+)$/i);
+        const vpnMatch = line.match(/^VPN:\s*(.+)$/i);
+        const retailMatch = line.match(/^Retail:\s*(.+)$/i);
+        const promoMatch = line.match(/^(?:Promo|Save):\s*(.+)$/i);
+        const isLabel = rinMatch || vpnMatch || retailMatch || promoMatch;
+
+        if (vpnMatch) {
+          if (currentItem) items.push(currentItem);
+          currentItem = { rin: '', vpn: vpnMatch[1].trim(), retail: '', promo: '', desc: structuralDesc || (i > 0 && !shapeLines[i-1].match(/^(?:RIN|Retail|Promo|Save):/i) ? shapeLines[i-1] : '') };
+        } else if (rinMatch) {
+          if (!currentItem) { currentItem = { rin: rinMatch[1].trim(), vpn: '', retail: '', promo: '', desc: structuralDesc }; }
+          else { currentItem.rin = rinMatch[1].trim(); }
+        } else if (retailMatch && currentItem) { currentItem.retail = retailMatch[1].trim(); }
+        else if (promoMatch && currentItem) { currentItem.promo = promoMatch[1].trim(); }
+        else if (!isLabel) { if (!currentItem) { structuralDesc = (structuralDesc ? structuralDesc + " " : "") + line; } }
+      }
+      if (currentItem) items.push(currentItem);
+    });
+  }
+  return items.filter(item => item.rin || item.vpn);
+}
+
+async function processPPTXFile(file) {
+  const info = parseAdWeek(file.name);
+  log(`Processing ${file.name} → ${info.code}`, 'info');
+  try {
+    const items = await parsePPTX(file);
+    const valid = items.filter(i => rinIsValid(i.rin));
+    log(`  Parsed ${items.length} elements (${valid.length} unique items verified)`, valid.length ? 'ok' : '');
+    return { file, name: file.name, adWeek: info.code, weekType: info.type, items: valid, status: 'ok' };
+  } catch (e) {
+    log(`  Extraction error: ${e.message}`, 'err');
+    return { file, name: file.name, adWeek: info.code, weekType: info.type, items: [], status: 'error' };
+  }
+}
+
+function rebuildAll() {
+  allItems = [];
+  const seen = new Set();
+  for (const pf of pptxFiles) {
+    for (const item of pf.items) {
+      const key = `${item.rin}__${pf.adWeek}`;
+      item._adWeek = pf.adWeek; item._weekType = pf.weekType; item._source = pf.name;
+      item._dupe = seen.has(key);
+      seen.add(key);
+      allItems.push(item);
+    }
+  }
+  renderPreview();
+  updateActions();
+}
+
+function renderPreview() {
+  const tbody = document.getElementById('previewBody');
+  const countBadge = document.getElementById('countBadge');
+  if (allItems.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Staging queue idle. Drop source presentation materials into workspace.</td></tr>';
+    countBadge.textContent = '0 items'; countBadge.className = 'badge'; return;
+  }
+  const uniqueCount = allItems.filter(i => !i._dupe).length;
+  countBadge.textContent = `${uniqueCount} items ready`;
+  countBadge.className = 'badge green';
+
+  tbody.innerHTML = allItems.map(item => {
+    const typeClass = { AE: 'tag-ae', FE: 'tag-fe', X: 'tag-email' }[item._weekType] || '';
+    return `<tr class="${item._dupe ? 'dupe-row' : ''}">
+      <td class="col-rin">${item.rin}${item._dupe ? '<span class="dupe-badge">DUPLICATE</span>' : ''}</td>
+      <td class="col-week"><span class="${typeClass}">${item._adWeek}</span></td>
+      <td><span class="${typeClass}" style="font-size:10px; font-family:var(--mono);">${item._weekType}</span></td>
+      <td class="col-desc" title="${escHtml(item.desc)}">${escHtml(item.desc) || '—'}</td>
+      <td style="font-family:var(--mono); font-size:11px;">${escHtml(item.vpn) || '—'}</td>
+      <td>${escHtml(item.retail) || '—'}</td>
+      <td style="color:var(--muted); font-size:11px; font-family:var(--mono); max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escHtml(item._source)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function escHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+function renderFileList() {
+  const list = document.getElementById('fileList');
+  if (pptxFiles.length === 0) { list.innerHTML = ''; return; }
+  list.innerHTML = pptxFiles.map((pf, i) => `
+    <div class="file-item">
+      <span class="file-icon">📄</span>
+      <div class="file-info">
+        <div class="file-name">${escHtml(pf.name)}</div>
+        <div class="file-week">${pf.adWeek} · ${pf.items.length} items</div>
+      </div>
+      <span class="file-status ${pf.status === 'ok' ? 'status-ok' : 'status-error'}">${pf.status === 'ok' ? 'PARSED' : 'FAILED'}</span>
+      <button class="remove-btn" onclick="removeFile(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function removeFile(i) { pptxFiles.splice(i, 1); renderFileList(); rebuildAll(); }
+
+function updateActions() {
+  const btn = document.getElementById('exportBtn');
+  const note = document.getElementById('actionsNote');
+  const valid = allItems.filter(i => !i._dupe).length;
+  
+  if (valid === 0) { btn.disabled = true; note.textContent = "Awaiting processing parameters..."; }
+  else { btn.disabled = false; note.textContent = `Staged pipeline ready for ${valid} entities.`; }
+}
+
+async function doExport() {
+  if (allItems.length === 0) return;
+  log('── Initiating local template fetch & inject loop ──', 'info');
+  
+  try {
+    log(`Attempting automated read at relative path: ./${LOCAL_TEMPLATE_PATH}`, 'info');
+    
+    // Smoothly request the file from the adjacent files/ directory
+    const response = await fetch(LOCAL_TEMPLATE_PATH);
+    if (!response.ok) {
+      throw new Error(`Could not find template file at ./${LOCAL_TEMPLATE_PATH}. Please ensure the 'files' folder is in the same directory as this HTML file.`);
+    }
+    
+    log('Template successfully buffered. Parsing structural layout mapping...', 'ok');
+    const arrayBuffer = await response.arrayBuffer();
+    
+    const uniqueItems = allItems.filter(i => !i._dupe);
+    const workbook = XLSX.read(arrayBuffer, { type: 'array', bookVBA: true, cellStyles: true });
+    const sheetName = workbook.SheetNames.find(n => n.toLowerCase() === 'template') || workbook.SheetNames[0];
+    const ws = workbook.Sheets[sheetName];
+    const startRow = 5;
+
+    uniqueItems.forEach((item, idx) => {
+      const row = startRow + idx;
+      XLSX.utils.sheet_add_aoa(ws, [[item.rin]], { origin: `A${row}` });
+      XLSX.utils.sheet_add_aoa(ws, [[item._adWeek]], { origin: `B${row}` });
+      if (item.vpn) XLSX.utils.sheet_add_aoa(ws, [[item.vpn]], { origin: `G${row}` });
+      if (item.desc) XLSX.utils.sheet_add_aoa(ws, [[item.desc]], { origin: `H${row}` });
+      if (item.retail) {
+         const val = item.retail.replace(/[$,]/g, '');
+         const num = parseFloat(val);
+         XLSX.utils.sheet_add_aoa(ws, [[isNaN(num) ? item.retail : num]], { origin: `J${row}` });
+      }
+    });
+
+    const wbOut = XLSX.write(workbook, { bookType: 'xlsm', type: 'array', bookVBA: true });
+    const blob = new Blob([wbOut], { type: 'application/vnd.ms-excel.sheet.macroEnabled.12' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `AD_Tracker_Finalized_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.xlsm`;
+    a.click();
+    URL.revokeObjectURL(url);
+    log(`✓ Active items written into template structure successfully. Export complete!`, 'ok');
+  } catch (err) {
+    log(`Pipeline Exception: ${err.message}`, 'err');
+    alert(`File Read Error:\n${err.message}`);
+  }
+}
+
+async function handlePPTXFiles(files) {
+  const pptxOnly = files.filter(f => f.name.toLowerCase().endsWith('.pptx'));
+  for (const file of pptxOnly) {
+    if (pptxFiles.find(p => p.name === file.name)) continue;
+    const result = await processPPTXFile(file);
+    pptxFiles.push(result);
+  }
+  renderFileList(); rebuildAll();
+}
+
+function bindDragDrop(zone, onFiles) {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag-over'); onFiles([...e.dataTransfer.files]); });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const pptxDropZone = document.getElementById('pptxDrop');
+  bindDragDrop(pptxDropZone, handlePPTXFiles);
+  document.getElementById('pptxInput').addEventListener('change', e => handlePPTXFiles([...e.target.files]));
+  
+  document.getElementById('exportBtn').addEventListener('click', doExport);
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    pptxFiles = []; allItems = []; renderFileList(); renderPreview();
+    document.getElementById('logPanel').innerHTML = ''; document.getElementById('logPanel').classList.remove('visible');
+    updateActions();
+  });
+});
+</script>
+</body>
+</html>
