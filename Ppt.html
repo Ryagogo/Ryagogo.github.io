@@ -91,7 +91,7 @@
     <div class="logo">📊</div>
     <div>
       <h1>Ad Tracker Tool Workspace</h1>
-      <div class="subtitle">Target Pipeline Asset: <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">/Files/AdTracker.xlsm</span></div>
+      <div class="subtitle">Data Staging Generation Hub</div>
     </div>
   </header>
 
@@ -136,7 +136,7 @@
   </div>
 
   <div class="actions">
-    <button class="btn btn-primary" id="exportBtn" disabled>⬇ Export to Excel Sheet (.xlsm)</button>
+    <button class="btn btn-primary" id="exportBtn" disabled>⬇ Download Staging Data File</button>
     <button class="btn btn-ghost" id="clearBtn">✕ Clear Queue</button>
     <span class="actions-note" id="actionsNote">Awaiting processing parameters...</span>
   </div>
@@ -144,9 +144,6 @@
 </div>
 
 <script>
-// Configuration variable set directly to your precise layout route
-const LOCAL_TEMPLATE_PATH = "/Files/AdTracker.xlsm";
-
 let pptxFiles = [];
 let allItems = [];
 
@@ -325,50 +322,38 @@ function updateActions() {
 
 async function doExport() {
   if (allItems.length === 0) return;
-  log('── Initiating template fetch & inject loop ──', 'info');
   
   try {
-    log(`Attempting read at root target layout: ${LOCAL_TEMPLATE_PATH}`, 'info');
-    
-    const response = await fetch(LOCAL_TEMPLATE_PATH);
-    if (!response.ok) {
-      throw new Error(`Could not find template file at ${LOCAL_TEMPLATE_PATH}. Please check your web environment directory structures.`);
-    }
-    
-    log('Template successfully buffered. Parsing structural layout mapping...', 'ok');
-    const arrayBuffer = await response.arrayBuffer();
-    
     const uniqueItems = allItems.filter(i => !i._dupe);
-    const workbook = XLSX.read(arrayBuffer, { type: 'array', bookVBA: true, cellStyles: true });
-    const sheetName = workbook.SheetNames.find(n => n.toLowerCase() === 'template') || workbook.SheetNames[0];
-    const ws = workbook.Sheets[sheetName];
-    const startRow = 5;
-
-    uniqueItems.forEach((item, idx) => {
-      const row = startRow + idx;
-      XLSX.utils.sheet_add_aoa(ws, [[item.rin]], { origin: `A${row}` });
-      XLSX.utils.sheet_add_aoa(ws, [[item._adWeek]], { origin: `B${row}` });
-      if (item.vpn) XLSX.utils.sheet_add_aoa(ws, [[item.vpn]], { origin: `G${row}` });
-      if (item.desc) XLSX.utils.sheet_add_aoa(ws, [[item.desc]], { origin: `H${row}` });
-      if (item.retail) {
-         const val = item.retail.replace(/[$,]/g, '');
-         const num = parseFloat(val);
-         XLSX.utils.sheet_add_aoa(ws, [[isNaN(num) ? item.retail : num]], { origin: `J${row}` });
-      }
+    
+    // Construct structured matrix row mapping
+    const aoa = [["RIN", "Ad Week", "VPN", "Description", "Retail"]];
+    uniqueItems.forEach(item => {
+      const cleanRetail = item.retail ? parseFloat(item.retail.replace(/[$,]/g, '')) : '';
+      aoa.push([
+        item.rin,
+        item._adWeek,
+        item.vpn || '',
+        item.desc || '',
+        isNaN(cleanRetail) ? item.retail : cleanRetail
+      ]);
     });
 
-    const wbOut = XLSX.write(workbook, { bookType: 'xlsm', type: 'array', bookVBA: true });
-    const blob = new Blob([wbOut], { type: 'application/vnd.ms-excel.sheet.macroEnabled.12' });
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "StagingData");
+
+    const wbOut = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbOut], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `AD_Tracker_Finalized_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.xlsm`;
+    a.download = `Ad_Tracker_Staging.xlsx`;
     a.click();
     URL.revokeObjectURL(url);
-    log(`✓ Active items written into template structure successfully. Export complete!`, 'ok');
+    log(`✓ Staging file exported successfully. Ready to import into your Macro Master template.`, 'ok');
   } catch (err) {
     log(`Pipeline Exception: ${err.message}`, 'err');
-    alert(`File Sync Connection Error:\n${err.message}`);
   }
 }
 
@@ -392,9 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const pptxDropZone = document.getElementById('pptxDrop');
   bindDragDrop(pptxDropZone, handlePPTXFiles);
   document.getElementById('pptxInput').addEventListener('change', e => handlePPTXFiles([...e.target.files]));
-  
   document.getElementById('exportBtn').addEventListener('click', doExport);
-
   document.getElementById('clearBtn').addEventListener('click', () => {
     pptxFiles = []; allItems = []; renderFileList(); renderPreview();
     document.getElementById('logPanel').innerHTML = ''; document.getElementById('logPanel').classList.remove('visible');
