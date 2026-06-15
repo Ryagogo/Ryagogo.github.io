@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Cleanup Tool</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0c0e0f;
+    --surface: #141618;
+    --surface2: #1c1f21;
+    --border: #2a2d30;
+    --accent: #00e5a0;
+    --accent2: #00b87a;
+    --warn: #ffb547;
+    --danger: #ff5252;
+    --text: #e8eaeb;
+    --muted: #6b7074;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 80px;
+  }
+
+  /* Grid overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 760px;
+  }
+
+  /* Header */
+  header {
+    margin-bottom: 52px;
+  }
+  .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--accent);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tag::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+    color: var(--text);
+  }
+  h1 span { color: var(--accent); }
+  .subtitle {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 1.5px dashed var(--border);
+    border-radius: 12px;
+    padding: 48px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    background: var(--surface);
+    position: relative;
+    margin-bottom: 28px;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(0,229,160,.04);
+  }
+  .upload-zone input[type=file] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .upload-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px;
+    background: rgba(0,229,160,.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .upload-icon svg { width: 24px; height: 24px; stroke: var(--accent); }
+  .upload-label {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .upload-hint {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .file-chosen {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* Process steps */
+  .steps {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+  }
+  .steps-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    font-size: 13.5px;
+    color: var(--muted);
+    transition: color .3s;
+  }
+  .step.active { color: var(--text); }
+  .step.done { color: var(--accent); }
+  .step-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background .3s, border-color .3s, color .3s;
+  }
+  .step.done .step-num {
+    background: rgba(0,229,160,.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .step.active .step-num {
+    background: rgba(0,229,160,.08);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Button */
+  .btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    color: #0c0e0f;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn:hover:not(:disabled) { background: var(--accent2); }
+  .btn:active:not(:disabled) { transform: scale(.99); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+  }
+  .btn-outline:hover:not(:disabled) { background: rgba(0,229,160,.08); }
+
+  /* Log */
+  .log-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.8;
+    min-height: 80px;
+    max-height: 260px;
+    overflow-y: auto;
+    display: none;
+    margin-bottom: 28px;
+  }
+  .log-box.visible { display: block; }
+  .log-line { color: var(--muted); }
+  .log-line.ok { color: var(--accent); }
+  .log-line.warn { color: var(--warn); }
+  .log-line.err { color: var(--danger); }
+
+  /* Stats chips */
+  .stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    display: none;
+  }
+  .stats.visible { display: flex; }
+  .chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .chip-val {
+    font-size: 22px;
+    font-family: var(--sans);
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    line-height: 1.2;
+  }
+  .chip-label { color: var(--muted); }
+
+  /* Spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(12,14,15,.3);
+    border-top-color: #0c0e0f;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: none;
+  }
+  .btn.loading .spinner { display: block; }
+  .btn.loading .btn-text { display: none; }
+
+  scrollbar-color: var(--border) var(--surface);
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="tag">Excel Processor</div>
+    <h1>Data<br><span>Cleanup Tool</span></h1>
+    <p class="subtitle">
+      Upload your .xlsx file &rarr; cleanup runs in-browser &rarr; download the result.<br>
+      No data leaves your machine.
+    </p>
+  </header>
+
+  <!-- Upload -->
+  <div class="upload-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".xlsx,.xls">
+    <div class="upload-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+    </div>
+    <div class="upload-label">Drop your Excel file here</div>
+    <div class="upload-hint">or click to browse &mdash; .xlsx / .xls</div>
+    <div class="file-chosen" id="fileChosen"></div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="steps-title">Processing Pipeline</div>
+    <div class="step-list">
+      <div class="step" id="s1"><div class="step-num" id="sn1">01</div><div>Delete columns J, E, B, A (original positions, right→left)</div></div>
+      <div class="step" id="s2"><div class="step-num" id="sn2">02</div><div>Move column D to column A position</div></div>
+      <div class="step" id="s3"><div class="step-num" id="sn3">03</div><div>Split column A on tab delimiter (Text-to-Columns)</div></div>
+      <div class="step" id="s4"><div class="step-num" id="sn4">04</div><div>Deduplicate rows based on column A</div></div>
+      <div class="step" id="s5"><div class="step-num" id="sn5">05</div><div>Filter column D — keep only specified 20 values</div></div>
+    </div>
+  </div>
+
+  <!-- Stats (hidden until done) -->
+  <div class="stats" id="stats">
+    <div class="chip"><span class="chip-val" id="statIn">—</span><span class="chip-label">rows in</span></div>
+    <div class="chip"><span class="chip-val" id="statDedupe">—</span><span class="chip-label">removed duplicates</span></div>
+    <div class="chip"><span class="chip-val" id="statFilter">—</span><span class="chip-label">filtered out</span></div>
+    <div class="chip"><span class="chip-val" id="statOut">—</span><span class="chip-label">rows out</span></div>
+  </div>
+
+  <!-- Log -->
+  <div class="log-box" id="logBox"></div>
+
+  <!-- Buttons -->
+  <button class="btn" id="runBtn" disabled>
+    <div class="spinner"></div>
+    <span class="btn-text">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;margin-top:-2px"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Run Cleanup
+    </span>
+  </button>
+  <button class="btn btn-outline" id="downloadBtn" disabled>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;margin-top:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Download Cleaned File
+  </button>
+
+</div>
+
+<script>
+const fileInput  = document.getElementById('fileInput');
+const dropZone   = document.getElementById('dropZone');
+const fileChosen = document.getElementById('fileChosen');
+const runBtn     = document.getElementById('runBtn');
+const downloadBtn= document.getElementById('downloadBtn');
+const logBox     = document.getElementById('logBox');
+const statsEl    = document.getElementById('stats');
+
+const KEEP_VALUES = new Set([551,632,811,815,816,817,821,823,826,838,850,851,853,854,857,859,860,861,863,864]);
+
+let processedWB = null;
+let originalName = 'output';
+
+// ── Drag & drop ───────────────────────────────────────────────────────────────
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) handleFile(fileInput.files[0]);
+});
+
+function handleFile(file) {
+  originalName = file.name.replace(/\.(xlsx?)/i, '');
+  fileChosen.textContent = '📄 ' + file.name;
+  fileChosen.style.display = 'block';
+  runBtn.disabled = false;
+  processedWB = null;
+  downloadBtn.disabled = true;
+  clearLog();
+  statsEl.classList.remove('visible');
+  resetSteps();
+}
+
+// ── Logging ───────────────────────────────────────────────────────────────────
+function log(msg, type='') {
+  logBox.classList.add('visible');
+  const d = document.createElement('div');
+  d.className = 'log-line' + (type ? ' ' + type : '');
+  d.textContent = '› ' + msg;
+  logBox.appendChild(d);
+  logBox.scrollTop = logBox.scrollHeight;
+}
+function clearLog() {
+  logBox.innerHTML = '';
+  logBox.classList.remove('visible');
+}
+
+// ── Step indicators ───────────────────────────────────────────────────────────
+function resetSteps() {
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById('s'+i).className = 'step';
+    document.getElementById('sn'+i).textContent = String(i).padStart(2,'0');
+  }
+}
+function stepActive(n) { document.getElementById('s'+n).className = 'step active'; }
+function stepDone(n)   {
+  const el = document.getElementById('s'+n);
+  el.className = 'step done';
+  document.getElementById('sn'+n).textContent = '✓';
+}
+
+// ── Main processing ───────────────────────────────────────────────────────────
+runBtn.addEventListener('click', async () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  clearLog();
+  statsEl.classList.remove('visible');
+  resetSteps();
+  runBtn.classList.add('loading');
+  runBtn.disabled = true;
+  downloadBtn.disabled = true;
+  processedWB = null;
+
+  try {
+    const buf = await file.arrayBuffer();
+    const wb  = XLSX.read(buf, { type: 'array', cellDates: true });
+    const wsName = wb.SheetNames[0];
+    let data = XLSX.utils.sheet_to_json(wb.Sheets[wsName], { header: 1, defval: '' });
+
+    log('Loaded sheet: ' + wsName + '  (' + (data.length - 1) + ' data rows)');
+    const rowsIn = data.length - 1;
+
+    // ── Step 1: Delete columns J(9), E(4), B(1), A(0) right→left ────────────
+    stepActive(1);
+    await tick();
+    // Indices are 0-based. Original: J=9, E=4, B=1, A=0. Delete right→left.
+    const toDel = [9, 4, 1, 0].sort((a,b) => b - a);
+    data = data.map(row => {
+      const r = [...row];
+      toDel.forEach(ci => r.splice(ci, 1));
+      return r;
+    });
+    log('Step 1 — deleted columns J, E, B, A', 'ok');
+    stepDone(1);
+
+    // ── Step 2: Move current col D (idx 3) to col A (idx 0) ─────────────────
+    stepActive(2);
+    await tick();
+    data = data.map(row => {
+      const r = [...row];
+      const colD = r.splice(3, 1)[0];  // remove from position 3
+      r.unshift(colD);                  // prepend as new col A
+      return r;
+    });
+    log('Step 2 — moved column D → column A', 'ok');
+    stepDone(2);
+
+    // ── Step 3: Text-to-Columns on col A (split on tab) ──────────────────────
+    stepActive(3);
+    await tick();
+    let splitCount = 0;
+    data = data.map(row => {
+      const cellA = String(row[0] ?? '');
+      if (cellA.includes('\t')) {
+        const parts = cellA.split('\t');
+        splitCount++;
+        return [...parts, ...row.slice(1)];
+      }
+      return row;
+    });
+    log('Step 3 — text-to-columns on col A' + (splitCount ? ' (' + splitCount + ' cells split)' : ' (no tabs found)'), 'ok');
+    stepDone(3);
+
+    // ── Step 4: Deduplicate by col A (keep first occurrence) ─────────────────
+    stepActive(4);
+    await tick();
+    const header   = data[0];
+    const body     = data.slice(1);
+    const seen     = new Set();
+    const deduped  = [];
+    body.forEach(row => {
+      const key = String(row[0] ?? '').trim();
+      if (!seen.has(key)) { seen.add(key); deduped.push(row); }
+    });
+    const dupRemoved = body.length - deduped.length;
+    log('Step 4 — removed ' + dupRemoved + ' duplicate row(s) by column A', 'ok');
+    stepDone(4);
+
+    // ── Step 5: Filter col D (idx 3) to keep only KEEP_VALUES ────────────────
+    stepActive(5);
+    await tick();
+    const beforeFilter = deduped.length;
+    const filtered = deduped.filter(row => {
+      const val = row[3];
+      const num = typeof val === 'number' ? val : Number(val);
+      return KEEP_VALUES.has(num);
+    });
+    const filtRemoved = beforeFilter - filtered.length;
+    log('Step 5 — kept ' + filtered.length + ' row(s) matching allowed values in column D (removed ' + filtRemoved + ')', 'ok');
+    stepDone(5);
+
+    const finalData = [header, ...filtered];
+    log('');
+    log('✓ Cleanup complete — ' + filtered.length + ' rows remaining.', 'ok');
+    log('Please verify column H data before using the file.', 'warn');
+
+    // ── Rebuild workbook ──────────────────────────────────────────────────────
+    const newWs = XLSX.utils.aoa_to_sheet(finalData);
+    const newWb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(newWb, newWs, wsName);
+    processedWB = newWb;
+
+    // Stats
+    document.getElementById('statIn').textContent = rowsIn;
+    document.getElementById('statDedupe').textContent = dupRemoved;
+    document.getElementById('statFilter').textContent = filtRemoved;
+    document.getElementById('statOut').textContent = filtered.length;
+    statsEl.classList.add('visible');
+
+    downloadBtn.disabled = false;
+
+  } catch(err) {
+    log('Error: ' + err.message, 'err');
+    console.error(err);
+  }
+
+  runBtn.classList.remove('loading');
+  runBtn.disabled = false;
+});
+
+// ── Download ──────────────────────────────────────────────────────────────────
+downloadBtn.addEventListener('click', () => {
+  if (!processedWB) return;
+  XLSX.writeFile(processedWB, originalName + '_cleaned.xlsx');
+});
+
+// ── Utility ───────────────────────────────────────────────────────────────────
+function tick() { return new Promise(r => setTimeout(r, 60)); }
+</script>
+</body>
+</html>
