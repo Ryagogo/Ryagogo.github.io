@@ -171,27 +171,6 @@ tr:nth-child(even) {
     background-color: #f7fafc;
 }
 
-/* Container for Copyable Code Blocks */
-.code-wrapper {
-    position: relative;
-    margin: 15px 0 25px 0;
-}
-
-pre {
-    background-color: var(--code-bg);
-    border: 1px solid var(--code-border);
-    border-left: 4px solid var(--secondary-color);
-    border-radius: 4px;
-    padding: 15px;
-    margin: 0;
-    overflow-x: auto;
-}
-
-code {
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    font-size: 14px;
-    color: var(--code-text);
-}
 
 p code {
     background-color: #edf2f7;
@@ -200,33 +179,7 @@ p code {
     color: #db2777;
 }
 
-/* User Friendly Copy Button Styling */
-.copy-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background-color: #ffffff;
-    border: 1px solid var(--code-border);
-    border-radius: 4px;
-    color: var(--text-color);
-    padding: 4px 8px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    transition: all 0.2s;
-}
 
-.copy-btn:hover {
-    background-color: var(--toc-bg);
-    border-color: var(--secondary-color);
-    color: var(--secondary-color);
-}
-
-.copy-btn.copied {
-    background-color: #48bb78;
-    border-color: #48bb78;
-    color: #ffffff;
 }
 
 .comment {
