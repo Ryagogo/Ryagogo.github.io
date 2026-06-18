@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ryan Gray — Merchandiser</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --charcoal: #111827;
+      --charcoal2: #1F2937;
+      --cobalt: #2563EB;
+      --cobalt-muted: #1D4ED8;
+      --amber: #D97706;
+      --warm-white: #FAFAF8;
+      --surface: #FFFFFF;
+      --muted: #6B7280;
+      --border: #E5E7EB;
+      --text: #111827;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--warm-white);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 60px;
+      background: rgba(17,24,39,0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .nav-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-logo span { color: var(--cobalt); }
+
+    .nav-links {
+      display: flex;
+      gap: 2px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .nav-links a.active { color: #fff; }
+
+    /* HERO */
+    .hero {
+      background: var(--charcoal);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 56px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(37,99,235,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,99,235,0.06) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .hero-bg-glow {
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      border: 1px solid rgba(217,119,6,0.35);
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+      width: fit-content;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--amber);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero-name {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(80px, 13vw, 180px);
+      font-weight: 700;
+      line-height: 0.88;
+      color: #fff;
+      letter-spacing: -0.03em;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 36px;
+    }
+
+    .hero-name .line2 {
+      color: transparent;
+      -webkit-text-stroke: 1.5px rgba(255,255,255,0.25);
+    }
+
+    .hero-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-tagline p {
+      max-width: 480px;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.55);
+      font-weight: 300;
+    }
+
+    .hero-tagline p strong {
+      color: rgba(255,255,255,0.9);
+      font-weight: 400;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cobalt);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover { background: var(--cobalt-muted); transform: translateY(-1px); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: rgba(255,255,255,0.65);
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
+
+    /* STATS STRIP */
+    .stats-strip {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .stat-item {
+      padding: 28px 32px;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat-item:last-child { border-right: none; }
+
+    .stat-num {
+      font-family: 'Fraunces', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .stat-num span { color: var(--cobalt); font-size: 1.4rem; }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* BODY */
+    .body-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 32px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 56px;
+      align-items: start;
+    }
+
+    /* ABOUT */
+    .about-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cobalt);
+      margin-bottom: 16px;
+    }
+
+    .about-heading {
+      font-family: 'Fraunces', serif;
+      font-size: 2.4rem;
+      font-weight: 300;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    .about-heading strong { font-weight: 700; }
+
+    .about-body {
+      font-size: 0.97rem;
+      line-height: 1.85;
+      color: #4B5563;
+    }
+
+    .about-body p + p { margin-top: 18px; }
+
+    /* BENTO */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .bento-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 20px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+
+    .bento-card:hover {
+      border-color: var(--cobalt);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(37,99,235,0.1);
+    }
+
+    .bento-card.wide {
+      grid-column: span 2;
+      flex-direction: row;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .bento-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #EEF2FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: var(--cobalt);
+      flex-shrink: 0;
+    }
+
+    .bento-card.amber-accent .bento-icon {
+      background: #FEF3C7;
+      color: var(--amber);
+    }
+
+    .bento-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .bento-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .bento-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .bento-arrow {
+      margin-top: auto;
+      color: var(--cobalt);
+      font-size: 0.85rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .bento-card:hover .bento-arrow { opacity: 1; }
+
+    .bento-card.wide .bento-arrow {
+      margin-top: 0;
+      margin-left: auto;
+      opacity: 0.35;
+    }
+
+    .bento-card.wide:hover .bento-arrow { opacity: 1; }
+
+    /* PROFILE ASIDE */
+    .profile-aside { position: sticky; top: 80px; }
+
+    .profile-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .profile-img-strip {
+      width: 100%;
+      height: 210px;
+      background: var(--charcoal2);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .profile-img-strip img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    .profile-body { padding: 20px 24px 24px; }
+
+    .profile-name {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .profile-role {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .profile-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 18px 0;
+    }
+
+    .profile-info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: #374151;
+      margin-bottom: 10px;
+    }
+
+    .profile-info-row i {
+      color: var(--cobalt);
+      width: 16px;
+      text-align: center;
+    }
+
+    .profile-socials {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .profile-socials a {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .profile-socials a:hover {
+      border-color: var(--cobalt);
+      color: var(--cobalt);
+      background: #EEF2FF;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--charcoal);
+      padding: 40px 56px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .footer-copy {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+      margin-top: 4px;
+    }
+
+    .footer-contact { display: flex; gap: 32px; }
+
+    .footer-contact-item { display: flex; flex-direction: column; gap: 3px; }
+
+    .footer-contact-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .footer-contact-value {
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .footer-socials { display: flex; gap: 10px; }
+
+    .footer-socials a {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .footer-socials a:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 28px 48px; min-height: auto; }
+      .hero-bottom { flex-direction: column; align-items: flex-start; }
+      .stats-inner { grid-template-columns: 1fr 1fr; }
+      .stat-item:nth-child(2) { border-right: none; }
+      .body-content { grid-template-columns: 1fr; padding: 40px 20px; gap: 40px; }
+      .profile-aside { position: static; }
+      footer { padding: 32px 20px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+      .footer-contact { flex-direction: column; gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">R<span>.</span>Gray</div>
+    <ul class="nav-links">
+      <li><a class="active" href="#">Home</a></li>
+      <li><a href="cover.html">Cover Letter</a></li>
+      <li><a href="Resume.html">Resume</a></li>
+      <li><a href="macro.html">Macro</a></li>
+      <li><a href="Projects.html">IT Projects</a></li>
+      <li><a href="Handbook.html">Handbook</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-bg-glow"></div>
+
+    <div class="hero-badge">
+      Available for new opportunities
+    </div>
+
+    <div class="hero-name">
+      Ryan<br>
+      <span class="line2">Gray</span>
+    </div>
+
+    <div class="hero-bottom">
+      <div class="hero-tagline">
+        <p>
+          <strong>Merchandiser based in Norfolk, VA.</strong> I build systems that keep shelves organized, vendors aligned, and buying teams moving. I also built this site myself.
+        </p>
+      </div>
+      <div class="hero-actions">
+        <a href="Resume.html" class="btn-primary">
+          <i class="fas fa-file-alt"></i> View Resume
+        </a>
+        <a href="contact.html" class="btn-ghost">
+          Get in touch <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats-strip">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-num">5<span>+</span></div>
+        <div class="stat-label">Years in Retail</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100<span>%</span></div>
+        <div class="stat-label">Self-built Site</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">&#8734;</div>
+        <div class="stat-label">Attention to Detail</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">757</div>
+        <div class="stat-label">Norfolk, VA</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-content">
+
+    <div>
+      <div class="about-eyebrow">About Me</div>
+      <h2 class="about-heading">
+        A merchandiser who takes<br>
+        <strong>ownership seriously.</strong>
+      </h2>
+      <div class="about-body">
+        <p>
+          I built this website myself — handling every aspect of its design and code — to give you a real look at who I am beyond a résumé. It's a deliberate choice. I wanted to show, not just tell, that I take initiative and follow through.
+        </p>
+        <p>
+          As a merchandiser, I care about the details that most people walk past: how product is positioned, how information flows between vendors and buyers, and how small process improvements compound into measurable results.
+        </p>
+        <p>
+          Explore the sections below to see my background, the tools I've built for buying teams, and projects that show how I think and work.
+        </p>
+      </div>
+
+      <div style="margin-top: 44px;">
+        <div class="about-eyebrow">Explore</div>
+        <div class="bento-grid" style="margin-top: 14px;">
+
+          <a class="bento-card" href="Resume.html">
+            <div class="bento-icon"><i class="fas fa-file-alt"></i></div>
+            <div>
+              <div class="bento-label">Document</div>
+              <div class="bento-title">Resume</div>
+              <div class="bento-desc">Full work history and skills overview</div>
+            </div>
+            <div class="bento-arrow"><i class="fas fa-arrow-right"></i></div>
+          </a>
+
+          <a class="bento-card" href="cover.html">
+            <div class="bento-icon"><i class="fas fa-pen-nib"></i></div>
+            <div>
+              <div class="bento-label">Letter</div>
+              <div class="bento-title">Cover Letter</div>
+              <div class="bento-desc">My story in my own words</div>
+            </div>
+            <div class="bento-arrow"><i class="fas fa-arrow-right"></i></div>
+          </a>
+
+          <a class="bento-card amber-accent" href="macro.html">
+            <div class="bento-icon"><i class="fas fa-code"></i></div>
+            <div>
+              <div class="bento-label">Tools</div>
+              <div class="bento-title">Macros</div>
+              <div class="bento-desc">Excel &amp; workflow tools I've built</div>
+            </div>
+            <div class="bento-arrow"><i class="fas fa-arrow-right"></i></div>
+          </a>
+
+          <a class="bento-card" href="Projects.html">
+            <div class="bento-icon"><i class="fas fa-laptop-code"></i></div>
+            <div>
+              <div class="bento-label">Portfolio</div>
+              <div class="bento-title">IT Projects</div>
+              <div class="bento-desc">Tech work and internal tools</div>
+            </div>
+            <div class="bento-arrow"><i class="fas fa-arrow-right"></i></div>
+          </a>
+
+          <a class="bento-card wide" href="Handbook.html">
+            <div class="bento-icon" style="width:44px;height:44px;font-size:1.1rem;"><i class="fas fa-book-open"></i></div>
+            <div>
+              <div class="bento-label">Reference</div>
+              <div class="bento-title">Merchandiser Handbook</div>
+              <div class="bento-desc">A comprehensive guide to how I approach the role</div>
+            </div>
+            <div class="bento-arrow"><i class="fas fa-arrow-right"></i></div>
+          </a>
+
+        </div>
+      </div>
+    </div>
+
+    <aside class="profile-aside">
+      <div class="profile-card">
+        <div class="profile-img-strip">
+          <img src="Pictures/Profile2.jpg" alt="Ryan Gray">
+        </div>
+        <div class="profile-body">
+          <div class="profile-name">Ryan Gray</div>
+          <div class="profile-role">Merchandiser &middot; Norfolk, VA</div>
+          <div class="profile-divider"></div>
+          <div class="profile-info-row">
+            <i class="fas fa-phone"></i>
+            <span>757-779-1724</span>
+          </div>
+          <div class="profile-info-row">
+            <i class="fas fa-envelope"></i>
+            <span>ryangray4287@gmail.com</span>
+          </div>
+          <div class="profile-info-row">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Norfolk, Virginia</span>
+          </div>
+          <div class="profile-socials">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo">Ryan Gray</div>
+        <div class="footer-copy">&copy; 2025 &middot; All rights reserved</div>
+      </div>
+      <div class="footer-contact">
+        <div class="footer-contact-item">
+          <div class="footer-contact-label">Call</div>
+          <div class="footer-contact-value">757-779-1724</div>
+        </div>
+        <div class="footer-contact-item">
+          <div class="footer-contact-label">Write</div>
+          <div class="footer-contact-value">ryangray4287@gmail.com</div>
+        </div>
+      </div>
+      <div class="footer-socials">
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
