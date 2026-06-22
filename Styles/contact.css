@@ -113,3 +113,10 @@ nav a:hover::after {
     border-radius: 6px;
     transition: color 0.2s, background 0.2s;
 }
+  .nav-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
