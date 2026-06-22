@@ -7,7 +7,7 @@
 body {
     font-family: 'Arial', sans-serif;
     display: grid;
-    grid-template-columns: 33% 67%;
+    grid-template-columns: 50% 80%;
     min-height: 100vh;
     line-height: 1.1; /* Extra tight line height */
     background: linear-gradient(to right, #2c3e50 33%, #ffffff 33%);
