@@ -13,6 +13,10 @@
             padding: 0;
         }
 
+        html, body {
+            height: 100%; /* Force the document to take up the full window height */
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
             display: grid;
@@ -32,7 +36,6 @@
         }
 
         .sidebar h1 {
-
             font-family: 'Hammersmith One', sans-serif;
             font-size: 1.3rem;
             text-transform: uppercase;
@@ -58,7 +61,6 @@
         }
 
         .sidebar p {
-
             font-size: 1.2rem;
             font-weight: 300;
             line-height: 2;
@@ -66,18 +68,28 @@
             margin-bottom: 4px;
         }
 
-        /* MAIN CONTENT */
-        .main-content {
-	margin-left: 30px;
-        margin-top: 20px;
-	margin-right: 30px;
-			margin-bottom: 20px;
-            border: 2px solid;
+        /* RIGHT SIDE FLEX WRAPPER */
+        .main-wrapper {
             grid-column: 2;
-            padding: 15px 25px;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 30px 20px 30px; /* Top, Right, Bottom, Left spacing */
+            height: 100%;
         }
 
-        section { margin-bottom: 6px; }
+        /* MAIN CONTENT BOX */
+        .main-content {
+            flex: 1; /* Automatically stretches to fill the wrapper completely to the bottom */
+            border: 2px solid #2c3e50;
+            padding: 15px 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Spreads sections out evenly if desired */
+        }
+
+        section { 
+            margin-bottom: 6px; 
+        }
 
         h2 {
             font-family: 'Hammersmith One', sans-serif;
@@ -114,6 +126,7 @@
             display: flex;
             justify-content: space-between;
             font-weight: bold;
+            font-weight: bold;
             font-size: 0.75rem;
         }
 
@@ -128,14 +141,6 @@
             body { background: linear-gradient(to right, #2c3e50 26%, #ffffff 26%) !important; }
             @page { margin: 0.1in; }
         }
-		     
-		.boxed {
-     	display: flex;
-        flex: 1;
-	}
-
-
-
 
         br { display: none; }
     </style>
@@ -161,76 +166,79 @@
         <p>Detail-oriented with high-quality results.</p>
     </section>
 </div>
-<div class="boxed">
-<div class="main-content">
-    <section id="objective">
-        <h2>Professional Summary</h2>
-        <p>IT and merchandising professional with experience in troubleshooting, data procurement, application deployment, configuration management, database support, and system administration within enterprise environments. CompTIA Security+ certified with solid expertise in Windows Server, Active Directory, virtualization platforms, and line-of-business applications. Demonstrated ability to monitor system performance, enforce information security standards, maintain precise technical documentation, and collaborate effectively with cross-functional teams and vendors to ensure operational stability and compliance.</p>
-    </section>
-<section id="education">
-        <h2>Education</h2>
-        <div class="job-header">
-            <span class="job-title">University of Colorado</span>
-            <span class="location-date">Boulder, CO | May 2024</span>
-        </div>
-        <p>Bachelor of Arts in Film Production</p>
-        <p style="font-style: italic; font-size: 0.65rem;">Managed 25 hours/week work schedule with full-time course load.</p>
-    </section>
-    <section id="certifications">
-        <h2>Certifications</h2>
-        <div class="cert-block">
-            <div class="cert-row">
-                <span>CompTIA Security+</span>
-                <span style="font-weight: normal; color: #666;">Expires September 2028</span>
+
+<div class="main-wrapper">
+    <div class="main-content">
+        <section id="objective">
+            <h2>Professional Summary</h2>
+            <p>IT and merchandising professional with experience in troubleshooting, data procurement, application deployment, configuration management, database support, and system administration within enterprise environments. CompTIA Security+ certified with solid expertise in Windows Server, Active Directory, virtualization platforms, and line-of-business applications. Demonstrated ability to monitor system performance, enforce information security standards, maintain precise technical documentation, and collaborate effectively with cross-functional teams and vendors to ensure operational stability and compliance.</p>
+        </section>
+        
+        <section id="education">
+            <h2>Education</h2>
+            <div class="job-header">
+                <span class="job-title">University of Colorado</span>
+                <span class="location-date">Boulder, CO | May 2024</span>
             </div>
-            <span class="cert-detail">Meets IA Certification requirement (SECNAV M-5239.2)</span>
-        </div>
-        <div class="cert-block">
-            <span class="cert-row" style="font-size: 0.72rem;">OS/Computing Environment (OS/CE) Certification</span>
-            <span class="cert-detail">Eligible / Obtaining as Required</span>
-        </div>
-    </section>
+            <p>Bachelor of Arts in Film Production</p>
+            <p style="font-style: italic; font-size: 0.65rem;">Managed 25 hours/week work schedule with full-time course load.</p>
+        </section>
+        
+        <section id="certifications">
+            <h2>Certifications</h2>
+            <div class="cert-block">
+                <div class="cert-row">
+                    <span>CompTIA Security+</span>
+                    <span style="font-weight: normal; color: #666;">Expires September 2028</span>
+                </div>
+                <span class="cert-detail">Meets IA Certification requirement (SECNAV M-5239.2)</span>
+            </div>
+            <div class="cert-block">
+                <span class="cert-row" style="font-size: 0.72rem;">OS/Computing Environment (OS/CE) Certification</span>
+                <span class="cert-detail">Eligible / Obtaining as Required</span>
+            </div>
+        </section>
 
-    <section id="homelab">
-        <h2>Technical Skills</h2>
-        <p><strong>Operating Systems:</strong> Windows XP/Vista/7/8/10/11, Windows Server 2016/2025, Ubuntu & Debian</p>
-        <p><strong>Virtualization & Infrastructure:</strong> ProxMox, Hyper-V, VMware, VM provisioning and management</p>
-        <p><strong>Identity & Systems Administration:</strong> Active Directory (user/group management, GPOs), Hypervising</p>
-        <p><strong>Enterprise Services & Operations:</strong> Automation management, centralized logging, monitoring & alerting, backup/recovery</p>
-        <p><strong>Networking:</strong> DNS, DHCP, TCP/IP, port forwarding, VPN, troubleshooting, containerization</p>
-        <p><strong>Database:</strong> SQL, PostgreSQL, Oracle</p>
-        <p><strong>IT Service & Productivity Tools:</strong> ServiceNow, Microsoft 365 Suite, Adobe Suite</p>
-        <p><strong>Cybersecurity & IA:</strong> Vulnerability management, IDS/IPS, firewalls, endpoint protection, SSL/TLS, NGINX</p>
-    </section>
+        <section id="homelab">
+            <h2>Technical Skills</h2>
+            <p><strong>Operating Systems:</strong> Windows XP/Vista/7/8/10/11, Windows Server 2016/2025, Ubuntu & Debian</p>
+            <p><strong>Virtualization & Infrastructure:</strong> ProxMox, Hyper-V, VMware, VM provisioning and management</p>
+            <p><strong>Identity & Systems Administration:</strong> Active Directory (user/group management, GPOs), Hypervising</p>
+            <p><strong>Enterprise Services & Operations:</strong> Automation management, centralized logging, monitoring & alerting, backup/recovery</p>
+            <p><strong>Networking:</strong> DNS, DHCP, TCP/IP, port forwarding, VPN, troubleshooting, containerization</p>
+            <p><strong>Database:</strong> SQL, PostgreSQL, Oracle</p>
+            <p><strong>IT Service & Productivity Tools:</strong> ServiceNow, Microsoft 365 Suite, Adobe Suite</p>
+            <p><strong>Cybersecurity & IA:</strong> Vulnerability management, IDS/IPS, firewalls, endpoint protection, SSL/TLS, NGINX</p>
+        </section>
 
-    <section id="experience">
-        <h2>Experience</h2>
-        <div class="job-header">
-            <span class="job-title">Merchandiser – NEXCOM HQ</span>
-            <span class="location-date">Virginia Beach, VA (Feb 2025 – Current)</span>
-        </div>
-        <ul>
-            <li><strong>Data Management & Accuracy:</strong> Performed data entry for new item setup, price changes, item maintenance, and vendor returns, ensuring accuracy and adherence to company standards. Maintained UPC files and managed stock assortments.</li>
-            <li><strong>Procurement & Inventory Control:</strong> Generated purchase orders, reviewed quantities, tracked shipments, and addressed shipping or billing discrepancies with accounting. Analyzed receiving reports and resolved delays or errors with vendors or store departments.</li>
-            <li><strong>Vendor Relations & Negotiation:</strong> Negotiated pricing and supplier support, facilitated communication with vendors, and negotiated vendor returns to optimize protability.</li>
-            <li><strong>Collaboration & Communication:</strong> Collaborated with buyers, planners, vendors, and internal teams, ensuring accurate merchandising information and contributing to assortment planning.</li>
-            <li><strong>Process Improvement & Documentation:</strong> Documented processes and created optimized tools to maximize effeciency and accuracy of tasks.</li>
-        </ul>
+        <section id="experience">
+            <h2>Experience</h2>
+            <div class="job-header">
+                <span class="job-title">Merchandiser – NEXCOM HQ</span>
+                <span class="location-date">Virginia Beach, VA (Feb 2025 – Current)</span>
+            </div>
+            <ul>
+                <li><strong>Data Management & Accuracy:</strong> Performed data entry for new item setup, price changes, item maintenance, and vendor returns, ensuring accuracy and adherence to company standards. Maintained UPC files and managed stock assortments.</li>
+                <li><strong>Procurement & Inventory Control:</strong> Generated purchase orders, reviewed quantities, tracked shipments, and addressed shipping or billing discrepancies with accounting. Analyzed receiving reports and resolved delays or errors with vendors or store departments.</li>
+                <li><strong>Vendor Relations & Negotiation:</strong> Negotiated pricing and supplier support, facilitated communication with vendors, and negotiated vendor returns to optimize protability.</li>
+                <li><strong>Collaboration & Communication:</strong> Collaborated with buyers, planners, vendors, and internal teams, ensuring accurate merchandising information and contributing to assortment planning.</li>
+                <li><strong>Process Improvement & Documentation:</strong> Documented processes and created optimized tools to maximize effeciency and accuracy of tasks.</li>
+            </ul>
 
-        <div class="job-header">
-            <span class="job-title">IT Support Technician – Buff Techs</span>
-            <span class="location-date">Boulder, CO (May 2022 – May 2024)</span>
-        </div>
-        <ul>
-            <li><strong>Application Installation & Configuration:</strong> Installed, configured, and maintained software applications across Windows and macOS environments, ensuring compatibility with enterprise standards.</li>
-            <li><strong>Technical Application Troubleshooting:</strong> Diagnosed application-level issues, distinguished between hardware, OS, and software-related problems, and escalated complex cases to higher-tier support teams.</li>
-            <li><strong>User Account & Access Support:</strong> Assisted users with account-related issues and software access configuration in alignment with IT security protocols.</li>
-            <li><strong>System Monitoring & Documentation:</strong> Documented incidents, tracked recurring issues, and provided feedback for system improvements to enhance application stability.</li>
-            <li><strong>Service Desk Operations:</strong> Responded to and resolved support tickets within defined SLAs, prioritizing business-impacting issues.</li>
-            <li><strong>Security & Policy Compliance:</strong> Followed institutional cybersecurity and information assurance practices when deploying applications and managing systems.</li>
-        </ul>
-    </section>
-</div>
+            <div class="job-header">
+                <span class="job-title">IT Support Technician – Buff Techs</span>
+                <span class="location-date">Boulder, CO (May 2022 – May 2024)</span>
+            </div>
+            <ul>
+                <li><strong>Application Installation & Configuration:</strong> Installed, configured, and maintained software applications across Windows and macOS environments, ensuring compatibility with enterprise standards.</li>
+                <li><strong>Technical Application Troubleshooting:</strong> Diagnosed application-level issues, distinguished between hardware, OS, and software-related problems, and escalated complex cases to higher-tier support teams.</li>
+                <li><strong>User Account & Access Support:</strong> Assisted users with account-related issues and software access configuration in alignment with IT security protocols.</li>
+                <li><strong>System Monitoring & Documentation:</strong> Documented incidents, tracked recurring issues, and provided feedback for system improvements to enhance application stability.</li>
+                <li><strong>Service Desk Operations:</strong> Responded to and resolved support tickets within defined SLAs, prioritizing business-impacting issues.</li>
+                <li><strong>Security & Policy Compliance:</strong> Followed institutional cybersecurity and information assurance practices when deploying applications and managing systems.</li>
+            </ul>
+        </section>
+    </div>
 </div>
 
 </body>
