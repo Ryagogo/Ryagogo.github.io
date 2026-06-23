@@ -538,51 +538,6 @@
 /* ── OVERLAY & LAYOUT for mobile ── */
 
 /* Ensure the overlay covers the exact dynamic viewport size */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 80;
-}
-
-@media (max-width: 1800px) {
-  :root { 
-    --sidebar-w: 260px; 
-  }
-
-  /* 1. Fix the body/html zooming adjustments */
-  html, body {
-    max-width: 100%;
-    overflow-x: hidden; /* Prevents awkward horizontal scrolling when zoomed */
-  }
-
-  /* 2. Keep Header Visible (Add this or adapt to your actual header ID/class) */
-  #header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 100; /* Must be higher than sidebar and overlay */
-  }
-
-  /* 3. Adjust Main to not get buried under the fixed header */
-  #main { 
-    margin-left: 0; 
-    padding: 80px 20px 60px; /* Top padding should match your header height */
-    min-height: 100dvh; /* Adapts to mobile browser bars zooming */
-  }
-
-  /* 4. Ensure Sidebar goes all the way down */
-  #sidebar { 
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    height: 100dvh; /* Takes full dynamic height of the mobile screen */
-    width: var(--sidebar-w);
-    z-index: 90; /* Sits above overlay, below header if preferred */
-    overflow-y: auto; /* Allows sidebar content to scroll if it's too long */
-    transform: translateX(-100%);
 
 
 
