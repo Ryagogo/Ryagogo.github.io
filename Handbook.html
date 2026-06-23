@@ -535,41 +535,29 @@
   .chip-blue { background: var(--accent-pale); color: var(--accent); border: 1px solid #b8d8ef; }
   .chip-green { background: #edfaf3; color: #1e8449; border: 1px solid #a9dfbf; }
 
- /* ── OVERLAY for mobile ── */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 80;
-}
+/* ── OVERLAY for mobile ── */
 
-/* Changed from 1800px to 900px to trigger only on mobile/tablets */
-@media (max-width: 900px) {
-  :root { 
-    --sidebar-w: 260px; 
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 80;
+
   }
-  #main { 
-    margin-left: 0; 
-    padding: 24px 20px 60px; 
-  }
-  #sidebar { 
-    transform: translateX(-100%); 
-  }
-  #sidebar.open { 
-    transform: translateX(0); 
-  }
-  .sidebar-overlay.open { 
-    display: block; 
-  }
-  #menu-toggle { 
-    display: flex; 
-    align-items: center; 
-  }
-  .two-col { 
-    grid-template-columns: 1fr; 
-  }
-}
+
+  @media (max-width: 900px) {
+    :root { --sidebar-w: 260px; }
+    #main { margin-left: 0; padding: 24px 20px 60px; }
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    #menu-toggle { display: flex; align-items: center; }
+    .two-col { grid-template-columns: 1fr; }
+
+  } 
+
+
 
 /* ── FFPO TABLE ── */	
 table {
