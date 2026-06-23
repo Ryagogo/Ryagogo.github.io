@@ -894,7 +894,7 @@ body {
 
 /* ── Price Change ── */
 
-}
+
 
 body {
         margin: 15px;
@@ -1786,6 +1786,7 @@ body {
             gap: 8px;
         }
 	
+ 
 
 header {
     display: flex;
@@ -1823,6 +1824,8 @@ header {
     }
 
 
+
+
 </style>
 </head>
 <body>
@@ -1831,23 +1834,20 @@ header {
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
 
 <!-- TOP BAR -->
-  
 <header id="topbar">
 
   <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
 	<a href="https://intranet.nexad.nexweb.us/Pages/default.aspx"; target="_blank"><span class="logo-badge">NEXCOM</span></a>
   <h1>Merchandiser Duties Handbook</h1 > <a href="Files/Merchandiser-Duties-Handbook.v2.docx" download>Merchandiser Duties Handbook.v2</a>
-
- <div class="nav-links">
-      <a href="index">Home</a>
-      <a href="Resume">Résumé</a>
-      <a href="cover">Cover Letter</a>
-      <a href="Projects">IT Notes</a>
-      <a href="Coding">Projects</a>
-      <a href="contact">Contact</a>
- </div>
-    
-   
+	
+    <div class="nav-links">
+      <li><a href="index">Home</a></li>
+      <li><a href="Resume">Résumé</a></li>
+      <li><a href="cover">Cover Letter</a></li>
+      <li><a href="Projects">IT Notes</a></li>
+      <li><a href="Coding">Projects</a></li>
+      <li><a href="contact">Contact</a></li>
+    </div>
 
   
 </header>
@@ -5031,6 +5031,73 @@ If a range of cells are selected, then, this option is ignored.</li>
 
 
 
+<!-- RANGING ITEMS -->
+<section class="section" id="ranging-items">
+  <h2 class="section-title">Ranging Items</h2>
+</section>
+
+<!-- SERIALIZATION -->
+<section class="section" id="serialization">
+  <h2 class="section-title">Serialization</h2>
+
+  <div class="sub-section" id="single-items">
+    <h3 class="sub-section-title">Single Items — Serialization of a Single Item</h3>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>It is recommended that if the item is NOT ranged for all locations or all Stores, a Location List should be created prior to moving forward.</div></div>
+    <ol class="steps">
+      <li>In RMS navigate to Tasks › Items › Manage Items</li>
+      <li>Enter the Transaction Item Number (RIN#) and press Search.</li>
+      <li>Review Results, click on the RIN# to open the details screen.</li>
+      <li>Navigate to "More Actions" › "Locations".</li>
+      <li>Review the "Item Locations" Screen for all necessary locations.</li>
+      <li>If a location needs to be Added, select the Green + and proceed with step 7. Otherwise skip to step 10.</li>
+      <li>In "Add Location" screen, select the level of location (typically "Store" or "Location List").</li>
+      <li>Enter the appropriate store number or location list. Select "OK" or "OK and Add Another".</li>
+      <li>Once all locations are added, you'll return to "Item Locations" Screen.</li>
+      <li>Select "More Actions" › "Mass Change" › "Location Attributes".</li>
+      <li>On the "Apply Updates to" panel, click the Green + and select the appropriate location scope.</li>
+      <li>In the Location section, select "Location List" (preferred), "All Stores", or a single "Store".</li>
+      <li>Click "OK".</li>
+      <li>On the right panel, scroll to the "UIN" Section.</li>
+      <li>Under UIN Type, select <strong>"Serial Number"</strong>.</li>
+      <li>Under UIN Label, select <strong>"Serial Number"</strong>.</li>
+      <li>Capture Time: select <strong>"Sale"</strong>.</li>
+      <li>Click "Save and Close".</li>
+      <li>If a Warning Pop-up appears, select "Yes".</li>
+      <li>Select "Save and Close" a second time.</li>
+      <li>Select "Save and Close" a third time.</li>
+      <li>Select "Done" at the Item Search Page. <strong>END.</strong></li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="mass-items">
+    <h3 class="sub-section-title">Mass Items</h3>
+    <ol class="steps">
+      <li>In RMS, navigate to Foundation Data › Items › Manage Item List.</li>
+      <li>Enter the Item list number and press "Search".</li>
+      <li>Locate the item list in Results. Example # 642902.</li>
+      <li>Highlight the row. <strong>Do not</strong> open the item list by selecting the Item List number.</li>
+      <li>Select the "Actions" button above the Item List column header.</li>
+      <li>Navigate to "Mass Change" › "Item / Locations".</li>
+      <li>"Apply Updates to" screen will open. Click the Green +.</li>
+      <li>Select the appropriate location scope (Location List preferred; All Stores, Store if needed).</li>
+      <li>Select "OK".</li>
+      <li>Stores will populate on the left-hand side.</li>
+      <li>On the right panel, locate "Primary Supplier Site" and "Primary Country".</li>
+      <li>Enter the Primary Supplier Number — <span class="chip chip-red">critical: if incorrect, Serialization will not work</span>.</li>
+      <li>Enter the Primary Country for the Supplier.</li>
+      <li>Navigate down to the "UIN" Section.</li>
+      <li>UIN Type → <strong>Serial Number</strong></li>
+      <li>UIN Label → <strong>Serial Number</strong></li>
+      <li>Capture Time → <strong>Sale</strong></li>
+      <li>Click "Save and Close" to save all adjustments.</li>
+      <li>Click "Done" at the Item List Search Screen.</li>
+    </ol>
+  </div>
+
+</section>
+
+
+<!-- STORE LOCATIONS -->
   <div class="section" id="store-locations">
     <h3 class="section-title">Store Locations</h3>
     <p><a href="Files/Store-Locations.xlsx">Store Locations Download</a></p>
@@ -8273,71 +8340,6 @@ If a range of cells are selected, then, this option is ignored.</li>
         }
     });
 </script>  </div>
-</section>
-
-<!-- RANGING ITEMS -->
-<section class="section" id="ranging-items">
-  <h2 class="section-title">Ranging Items</h2>
-</section>
-
-<!-- SERIALIZATION -->
-<section class="section" id="serialization">
-  <h2 class="section-title">Serialization</h2>
-
-  <div class="sub-section" id="single-items">
-    <h3 class="sub-section-title">Single Items — Serialization of a Single Item</h3>
-    <div class="callout tip"><span class="callout-icon">💡</span><div>It is recommended that if the item is NOT ranged for all locations or all Stores, a Location List should be created prior to moving forward.</div></div>
-    <ol class="steps">
-      <li>In RMS navigate to Tasks › Items › Manage Items</li>
-      <li>Enter the Transaction Item Number (RIN#) and press Search.</li>
-      <li>Review Results, click on the RIN# to open the details screen.</li>
-      <li>Navigate to "More Actions" › "Locations".</li>
-      <li>Review the "Item Locations" Screen for all necessary locations.</li>
-      <li>If a location needs to be Added, select the Green + and proceed with step 7. Otherwise skip to step 10.</li>
-      <li>In "Add Location" screen, select the level of location (typically "Store" or "Location List").</li>
-      <li>Enter the appropriate store number or location list. Select "OK" or "OK and Add Another".</li>
-      <li>Once all locations are added, you'll return to "Item Locations" Screen.</li>
-      <li>Select "More Actions" › "Mass Change" › "Location Attributes".</li>
-      <li>On the "Apply Updates to" panel, click the Green + and select the appropriate location scope.</li>
-      <li>In the Location section, select "Location List" (preferred), "All Stores", or a single "Store".</li>
-      <li>Click "OK".</li>
-      <li>On the right panel, scroll to the "UIN" Section.</li>
-      <li>Under UIN Type, select <strong>"Serial Number"</strong>.</li>
-      <li>Under UIN Label, select <strong>"Serial Number"</strong>.</li>
-      <li>Capture Time: select <strong>"Sale"</strong>.</li>
-      <li>Click "Save and Close".</li>
-      <li>If a Warning Pop-up appears, select "Yes".</li>
-      <li>Select "Save and Close" a second time.</li>
-      <li>Select "Save and Close" a third time.</li>
-      <li>Select "Done" at the Item Search Page. <strong>END.</strong></li>
-    </ol>
-  </div>
-
-  <div class="sub-section" id="mass-items">
-    <h3 class="sub-section-title">Mass Items</h3>
-    <ol class="steps">
-      <li>In RMS, navigate to Foundation Data › Items › Manage Item List.</li>
-      <li>Enter the Item list number and press "Search".</li>
-      <li>Locate the item list in Results. Example # 642902.</li>
-      <li>Highlight the row. <strong>Do not</strong> open the item list by selecting the Item List number.</li>
-      <li>Select the "Actions" button above the Item List column header.</li>
-      <li>Navigate to "Mass Change" › "Item / Locations".</li>
-      <li>"Apply Updates to" screen will open. Click the Green +.</li>
-      <li>Select the appropriate location scope (Location List preferred; All Stores, Store if needed).</li>
-      <li>Select "OK".</li>
-      <li>Stores will populate on the left-hand side.</li>
-      <li>On the right panel, locate "Primary Supplier Site" and "Primary Country".</li>
-      <li>Enter the Primary Supplier Number — <span class="chip chip-red">critical: if incorrect, Serialization will not work</span>.</li>
-      <li>Enter the Primary Country for the Supplier.</li>
-      <li>Navigate down to the "UIN" Section.</li>
-      <li>UIN Type → <strong>Serial Number</strong></li>
-      <li>UIN Label → <strong>Serial Number</strong></li>
-      <li>Capture Time → <strong>Sale</strong></li>
-      <li>Click "Save and Close" to save all adjustments.</li>
-      <li>Click "Done" at the Item List Search Screen.</li>
-    </ol>
-  </div>
-
 </section>
 
 <!-- SOM CHANGE -->
