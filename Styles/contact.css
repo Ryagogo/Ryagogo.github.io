@@ -103,6 +103,7 @@ nav a:hover::after {
 }
 
 .nav-links a {
+    font-family: 'Inter', sans-serif;
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.06em;
