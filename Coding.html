@@ -41,6 +41,7 @@
 
   /* ── SIDEBAR ── */
   #sidebar {
+    margin-top: 63px;
     width: var(--sidebar-width);
     min-width: var(--sidebar-width);
     background: var(--bg-sidebar);
@@ -131,12 +132,20 @@
   }
 
   #topbar {
-    background: #0d0f13;
-    border-bottom: 1px solid #2a2d35;
-    padding: 14px 40px;
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 50;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: Space-between;
+    padding: 0 48px;
+    height: 65px;
+    background: #000000;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   #topbar h1 {
@@ -149,6 +158,7 @@
   }
 
   #content {
+    margin-top: 100px;
     padding: 36px 48px 60px;
     max-width: 1800px;
   }
@@ -904,6 +914,49 @@ td.red-border-cell:nth-child(4) {
     color: #ffffff !important; /* Forces text to white inside selection */
 }
 
+.nav-links a {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+
+  .nav-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+  .nav-links {
+      display: flex;
+      gap: 2px;
+      list-style: none;
+    }
+
+.nav-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    padding: 0 48px;
+    height: 60px;
+    background: rgba(17, 24, 39, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
 
 
 
@@ -918,7 +971,7 @@ td.red-border-cell:nth-child(4) {
     <h2>Navigation</h2>
     <span>Important Files &amp; Macros</span>
   </div>
-  <nav>
+  <nav id=nav-header>
 
     <a class="has-sub"; href="#promotion-macro">Promotion;<span class="chevron">▶</span></a>
     <div class="sub-group">
@@ -988,10 +1041,24 @@ td.red-border-cell:nth-child(4) {
 <!-- MAIN AREA -->
 <div id="main">
 
+<header>
+
   <div id="topbar">
     <h1>Important Files and Macros</h1>
+<nav>
+     <ul class="nav-links">
+      <li><a href="index">Home</a></li>
+      <li><a href="Resume">Résumé</a></li>
+      <li><a href="cover">Cover Letter</a></li>
+      <li><a href="Handbook">Merchandising</a></li>
+      <li><a href="Projects">IT Notes</a></li>
+
+      <li><a href="contact">Contact</a></li>
+    </ul>
+  </nav>
   </div>
 
+</header>
   <div id="content">
 
     <!-- PROMOTION MACRO -->
