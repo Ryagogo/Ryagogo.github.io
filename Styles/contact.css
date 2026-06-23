@@ -120,3 +120,9 @@ nav a:hover::after {
       color: #fff;
       letter-spacing: -0.01em;
     }
+
+  .nav-links {
+      display: flex;
+      gap: 2px;
+      list-style: none;
+    }
