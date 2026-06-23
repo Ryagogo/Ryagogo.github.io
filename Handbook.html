@@ -1786,22 +1786,13 @@ body {
             gap: 8px;
         }
 	
- 
+
+header {
+    display: flex;
+    
 }
 
-.nav-links a {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.55);
-    text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    transition: color 0.2s, background 0.2s;
-}
-  .nav-logo {
+.nav-logo {
       font-family: 'Fraunces', serif;
       font-size: 1.1rem;
       font-weight: 700;
@@ -1809,23 +1800,30 @@ body {
       letter-spacing: -0.01em;
     }
 
-  .nav-links {
+    .nav-logo span { color: var(--cobalt); }
+
+    .nav-links {
+      margin-left: auto;
+      justify-content: flex-end;
       display: flex;
       gap: 2px;
       list-style: none;
     }
-ul.nav-links {
-    display: flex !important;       /* Forces it to be a flex container */
-    justify-content: flex-end;     /* Pushes items to the right */
-    gap: 12px;                     /* Space between links */
-    list-style: none;              /* Removes bullet points */
-    width: 100%;                   /* Ensures it stretches across the nav bar */
-}
+
+    .nav-links a {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
 
 
-
-
-    }</style>
+</style>
 </head>
 <body>
 
@@ -1833,20 +1831,23 @@ ul.nav-links {
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
 
 <!-- TOP BAR -->
+  
 <header id="topbar">
 
   <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
 	<a href="https://intranet.nexad.nexweb.us/Pages/default.aspx"; target="_blank"><span class="logo-badge">NEXCOM</span></a>
   <h1>Merchandiser Duties Handbook</h1 > <a href="Files/Merchandiser-Duties-Handbook.v2.docx" download>Merchandiser Duties Handbook.v2</a>
-	
-    <ul class="nav-links">
-      <li><a href="index">Home</a></li>
-      <li><a href="Resume">Résumé</a></li>
-      <li><a href="cover">Cover Letter</a></li>
-      <li><a href="Projects">IT Notes</a></li>
-      <li><a href="Coding">Projects</a></li>
-      <li><a href="contact">Contact</a></li>
-    </ul>
+
+ <div class="nav-links">
+      <a href="index">Home</a>
+      <a href="Resume">Résumé</a>
+      <a href="cover">Cover Letter</a>
+      <a href="Projects">IT Notes</a>
+      <a href="Coding">Projects</a>
+      <a href="contact">Contact</a>
+ </div>
+    
+   
 
   
 </header>
