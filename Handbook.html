@@ -40,7 +40,6 @@
     top: 0; left: 0; right: 0;
     height: var(--header-h);
     background: var(--navy);
-    display: flex;
     align-items: center;
     padding: 0 24px;
     z-index: 100;
@@ -1788,21 +1787,40 @@ body {
         }
 	
  
-	.nav-links {
+}
+
+.nav-links a {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+}
+  .nav-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+  .nav-links {
       display: flex;
       gap: 2px;
       list-style: none;
-	  font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.55);
-      text-decoration: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: color 0.2s, background 0.2s;
     }
-	
+ul.nav-links {
+    display: flex !important;       /* Forces it to be a flex container */
+    justify-content: flex-end;     /* Pushes items to the right */
+    gap: 12px;                     /* Space between links */
+    list-style: none;              /* Removes bullet points */
+    width: 100%;                   /* Ensures it stretches across the nav bar */
+}
 
 
 
