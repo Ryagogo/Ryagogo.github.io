@@ -1808,7 +1808,13 @@ body {
       gap: 2px;
       list-style: none;
     }
-
+	
+ul.nav-links {
+    display: flex !important;       /* Forces it to be a flex container */
+    justify-content: flex-end;     /* Pushes items to the right */
+    gap: 12px;                     /* Space between links */
+    list-style: none;              /* Removes bullet points */
+    width: 100%;                   /* Ensures it stretches across the nav bar */
 
 
     }</style>
