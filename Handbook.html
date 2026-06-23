@@ -1807,6 +1807,22 @@ body {
       list-style: none;
     }
 
+	nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 60px;
+    background: rgba(17, 24, 39, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
 
     }</style>
 </head>
@@ -1821,6 +1837,7 @@ body {
   <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
 	<a href="https://intranet.nexad.nexweb.us/Pages/default.aspx"; target="_blank"><span class="logo-badge">NEXCOM</span></a>
   <h1>Merchandiser Duties Handbook</h1 > <a href="Files/Merchandiser-Duties-Handbook.v2.docx" download>Merchandiser Duties Handbook.v2</a>
+	<nav>
     <ul class="nav-links">
       <li><a href="index">Home</a></li>
       <li><a href="Resume">Résumé</a></li>
