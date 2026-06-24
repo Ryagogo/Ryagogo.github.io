@@ -23,6 +23,7 @@ body {
 
 /* Fixed Left Navigation Bar Layout */
 .sidebar-nav {
+    margin-top: 100px;
     position: fixed;
     top: 0;
     left: 0;
@@ -77,9 +78,10 @@ body {
 
 /* Main Content Panel Layout */
 .main-container {
+    margin-top: 150px;
     margin-left: var(--nav-width);
     flex-grow: 1;
-    max-width: 900px;
+    max-width: 1800px;
     padding: 40px 50px;
     box-sizing: border-box;
 }
@@ -277,3 +279,72 @@ p code {
             color: #9aa0a6;
             font-style: italic;
         }
+
+ .nav-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-logo span { color: var(--cobalt); }
+
+    .nav-links {
+      margin-left: auto;
+      display: flex;
+      gap: 2px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .nav-links a.active { color: #fff; }
+
+ #topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    background: #0d1b2a;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    gap: 16px;
+  }
+
+#topbar h6 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.02em;
+</style>
+
+<header id="topbar">
+
+  
+	
+  <h6>IT Fundamentals Handbook</h6 >
+	
+    <div class="nav-links">
+      <li><a href="index">Home</a></li>
+      <li><a href="Resume">Résumé</a></li>
+      <li><a href="cover">Cover Letter</a></li>
+      <li><a href="Projects">IT Notes</a></li>
+      <li><a href="Coding">Projects</a></li>
+      <li><a href="contact">Contact</a></li>
+    </div>
+
+  
