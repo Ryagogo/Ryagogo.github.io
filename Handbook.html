@@ -558,18 +558,22 @@
     ul.nav-links { display: none !important; }
 	  
 
-#sidebar {
-      transform: translateX(-100%);
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      height: 100vh;
-      width: var(--sidebar-w);
-      padding-top: var(--header-h);
-      z-index: 200;
-      overflow-y: auto;
-      transition: transform 0.3s ease;
+ #sidebar {
+        position: fixed;
+        top: var(--header-h);
+        left: 0;
+        bottom: 0;                     /* stretch to the viewport bottom */
+        width: var(--sidebar-w);
+        height: auto;                  /* allow fixed top/bottom to define height */
+        background: var(--navy-mid);
+        overflow-y: auto;
+        z-index: 200;
+        padding: 16px 0 40px;
+        /* account for device safe area on phones with notches */
+        padding-bottom: calc(40px + env(safe-area-inset-bottom, 0));
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        will-change: transform;
     }
     #sidebar.open {
       transform: translateX(0);
