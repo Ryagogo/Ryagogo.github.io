@@ -388,8 +388,8 @@
   .address-box .field-label { font-weight: 600; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
 
   /* ── STATUS BOXES (Jenn's reports) ── */
-  .status-good { background: #edfaf3; border: 2px solid var(--green); border-radius: 6px; padding: 10px 14px; font-size: 12.5px; }
-  .status-bad { background: #fff5f5; border: 2px solid var(--red); border-radius: 6px; padding: 10px 14px; font-size: 12.5px; }
+  .status-good { background: #ffffff; border: 2px solid var(--green); border-radius: 6px; padding: 10px 14px; font-size: 12.5px; }
+  .status-bad { background: #d5efff; border: 2px solid var(--red); border-radius: 6px; padding: 10px 14px; font-size: 12.5px; }
   .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
 
   /* ── TRACKER TABLE ── */
@@ -9054,6 +9054,27 @@ If a range of cells are selected, then, this option is ignored.</li>
   
 </section>
 
+<style>
+.daily-sales-bad {
+    height: 25px;
+    margin-top: -9.8px;
+    margin-left: -14px;
+    margin-right: -14px;
+    margin-bottom: -18px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 0px 15px;
+    display: flex;
+    background: #212d59;
+   
+}
+
+.status-check {
+display: flex;
+justify-content: space-between;
+}
+</style>
+
 <!-- WEEKLY REPORTS -->
 <section class="sub-section" id="jenn-reports">
   <h2 class="section-title">Weekly Reports</h2>
@@ -9062,42 +9083,65 @@ If a range of cells are selected, then, this option is ignored.</li>
     <h3 class="sub-section-title">1. Weekly Retail Detail</h3>
     <div class="callout info"><span class="callout-icon">ℹ</span><div>Before running any reports, visit <a href="https://intranet.nexad.nexweb.us/M/MS/Pages/Reports.aspx">https://intranet.nexad.nexweb.us/M/MS/Pages/Reports.aspx</a> and ensure RDW/QS Sales are updated through Saturday of the previous week.</div></div>
     <div class="status-grid">
-      <div class="status-good"><strong>Status: OK</strong><br>Daily Reports updated through: Sat, 01-Oct-22<br>RDW/QS Sales updated through: Sat, 01-Oct-22<br>Missing Sales: None</div>
-      <div class="status-bad"><strong>Status: Action Required</strong><br>Daily Reports updated through: Tue, 20-Sep-22<br>RDW/QS Sales updated through: Sat, 24-Sep-22<br>Missing Sales: 9/21, 9/23, 9/24 - 781 Web Store<br>9/22-9/24 - Known ORPOS/X-Store Txn Issues Being Worked</div>
+      <div class="status-good"><strong>Status:</strong><br>Daily Reports updated through: Sat, 01-Oct-22<br></br>RDW/QS Sales updated through: Sat, 01-Oct-22<br>Missing Sales: None</div>
+      <div class="status-bad"><strong><div class=daily-sales-bad><p style="color: yellow";>DAILY SALES UPDATE:</p></strong><p style="color: white";>&nbsp;MON, 22 JUN</p></div>
+<br><strong>Status Check</strong><br><div class=status-check>Missing Sales:<span>781 MYNAVYEXCHANGE.COM</span></div><br><strong>Business Impacts</strong><div class=status-check>ONGOING - <span>BAHRAIN - ONLY SUN/TUE/THU</span></div></div>
     </div>
     <ol class="steps">
       <li>Open QuantiSense</li>
-      <li>Search "bakerje" to locate my folders</li>
-      <li>Open "My Reports"</li>
-      <li>Run "Weekly Retail Detail" for appropriate week (takes a few minutes)</li>
-      <li>Export results to Excel, save to G:\Code_M\Code_MG1\MG1 15D Monthly and Weekly Reports\2026\<span>2. March</span></li>
+      <li>Select “Shared Reports”</li>
+      <li>Select "Weekly Retail Detail"</li>
+      <li>Set “Attribute Qualification” to appropriate groups: 205, 208, 210, 211, 212, 214, 215, 218, 219, 226, 227, 244, 252, 255, 257 and run report (it will take a few minutes)</li>
+      <li>Export report results to Excel, save report to G:\Code_M\Code_MG1\MG1 15D Monthly and Weekly Reports\2026\</span></li>
       <li>Email to Lisa Colvin, Tony Lynch, <span>Brooke Allen</span>, and Jason Wilmoth</li>
-      <li>Separately email to Karen Reno-Cobb, <span>Eliot Fitzpatrick</span>, Tom Dunbar, <span>Jayla Pricer</span>, and Chad Taylor</li>
+      <li>Separately, email to Karen Reno-Cobb, Eliot Fitzpatrick, Tom Dunbar, Jayla Pricer, Tabatha Hanrahan, and Chad Taylor</li>
     </ol>
   </div>
 
   <div class="sub-section">
     <h3 class="sub-section-title">2. Vendor Reports</h3>
     <ol class="steps">
-      <li>Open QuantiSense, search "bakerje", open "My Reports"</li>
-      <li>Run "Weekly Vendor Sales Report" (no filter changes needed)</li>
+      <li>Open QuantiSense</li>
+      <li>Search “bakerje” to locate my folders</li>
+      <li>Open “My Reports”</li>
+      <li>Run “Weekly Vendor Sales Report” (you don’t have to change any filters or criteria)</li>
       <li>Select vendor from the dropdown menu</li>
-      <li>Export to Excel</li>
+      <li>Export to Excel (you can save it anywhere, you’ll just be copying and pasting the data)</span></li>
       <li>Adjust column width/heights for readability</li>
-      <li>Find vendor file at G:\Code_M\Code_MG1\Group 257\Vendor Reports\<span>2026 Vendor Reports</span></li>
-      <li>Add tab to master report with correct dates</li>
+      <li>Find appropriate vendor file at G:\Code_M\Code_MG1\Group 257\Vendor Reports\2026 Vendor Reports</li>
+      <li>Add tab to master report from file with correct dates</li>
       <li>Copy data from exported report to new tab</li>
-      <li>Save and close, repeat with all vendors (see list)</li>
-      <li>Email each file to respective vendor group</li>
-    </ol>
+
+    
     <div class="callout info"><span class="callout-icon">ℹ</span><div>
       <strong>Special cases:</strong><br>
-      <strong>Acer &amp; Asus</strong> — pull from Synnex: filter row 6 in Synnex report, search for brand in Cell B6.<br>
-      <strong>WD</strong> — pull from Ingram Micro: filter row 8, filter Cell A6 to RINs: 19650397, 19650398, 19650399, 19650400, 19650401, 13660370.<br>
-      <strong>Sandisk</strong> — pull from Ingram Micro: filter Cell B6 for "Sandisk" AND "Western Digital".
-    </div></div>
-   
+      <strong>Acer &amp; Asus</strong> — subsets of Synnex. For these:<br>1. Filter row 6 in the Synnex report<br>2. Select filter in Cell B6, search for the appropriate brand<br>3. This should filter the results to only the brand<br> 4. Copy to master report as before required<br></br>
+      
+      <strong>WD & Sandisk</strong> — subsets of Ingram Micro.<br>1.	For WD:<br>Filter row 8 of the Ingram Micro report<br>Select filter in Cell A6<br>Filter to the below RINs:<br>19650397<br>19650398<br>19650399<br>19650400<br>19650401<br>13660370<br>Copy to master report as before<br></br>2. For Sandisk:<br>Select filter in Cell B6, search for “Sandisk” and copy to master report as before<br>ADDITIONALLY, search for “Western Digital” and copy to master as before<br>
+    </div>
+
+</div>
+   <li>Save and close, repeat with all vendors in file (see list below)</li>
+<li>Email each file to their respective vendor group as below</li>
+</ol>
   </div>
+ <div class="callout info"><span class="callout-icon">ℹ</span><div>
+<strong>Acer</strong> – pull from Synnex<br>
+<strong>Amazfit</strong> – 80341941 (Zepp North America, Inc)<br>
+<strong>Asus</strong> – pull from Synnex<br>
+<strong>Centon</strong> – 504865<br>
+<strong>D&H</strong> – 7911209 <br>
+<strong>iBuyPower</strong> – 46871849 (American Future Technology)<br>
+<strong>Ingram Micro</strong> – 4919486 <br>
+<strong>Samsung</strong> – 7948<br>
+<strong>Sandisk</strong> – pull from Ingram Micro<br>
+<strong>SPA</strong> – 89144831<br>
+<strong>Starlink</strong> – 148265713 (Petra Industries, LLC)<br>
+<strong>Synnex</strong> - 112375758<br>
+<strong>Ultrahuman</strong> – 68073601 (Deal Rise, LLC.)<br>
+<strong>Western Digital</strong> – pull from Ingram Micro<br>
+
+
 </section>
 
 <!-- CT PEOPLE OF CONTACT -->
