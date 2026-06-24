@@ -40,6 +40,7 @@
     top: 0; left: 0; right: 0;
     height: var(--header-h);
     background: var(--navy);
+    display: flex;
     align-items: center;
     padding: 0 24px;
     z-index: 100;
@@ -534,9 +535,45 @@
   .chip-blue { background: var(--accent-pale); color: var(--accent); border: 1px solid #b8d8ef; }
   .chip-green { background: #edfaf3; color: #1e8449; border: 1px solid #a9dfbf; }
 
-/* ── OVERLAY & LAYOUT for mobile ── */
+/* ── OVERLAY ── */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 80;
+  }
+  .sidebar-overlay.open { display: block; }
 
-/* Ensure the overlay covers the exact dynamic viewport size */
+/* ── MOBILE ── */
+  @media (max-width: 900px) {
+    #menu-toggle { display: block; }
+
+    #topbar {
+      padding: 0 16px;
+      gap: 10px;
+    }
+    #topbar h1 { font-size: 14px; }
+    #topbar .tagline { display: none; }
+    ul.nav-links { display: none !important; }
+
+    #sidebar {
+      transform: translateX(-100%);
+    }
+    #sidebar.open {
+      transform: translateX(0);
+    }
+
+    #main {
+      margin-left: 0;
+      padding: 24px 18px 60px;
+    }
+
+    .section { padding: 22px 20px; }
+    .two-col { grid-template-columns: 1fr; }
+    .status-grid { grid-template-columns: 1fr; }
+    .address-box .form-grid { grid-template-columns: 1fr; }
+  }
 
 
 
@@ -894,7 +931,7 @@ body {
 
 /* ── Price Change ── */
 
-
+}
 
 body {
         margin: 15px;
@@ -1787,7 +1824,6 @@ body {
         }
 	
  
-
 header {
     display: flex;
     
@@ -1826,7 +1862,7 @@ header {
 
 
 
-</style>
+  </style>
 </head>
 <body>
 
@@ -1855,7 +1891,7 @@ header {
 <!-- SIDEBAR NAV -->
 <nav id="sidebar">
 <div class="nav-section">
-    <div class="nav-section-header"; href="#ad-database" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)">
       AD Database <span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -1882,6 +1918,7 @@ header {
   </div>
 
 
+  <a class="nav-top-link" href="#ad-database">AD Database</a>
   <a class="nav-top-link" href="#asset-worksheet">Asset Worksheet</a>
   <a class="nav-top-link" href="#case-pack">Case Pack Change</a>
   <a class="nav-top-link" href="#change-forms">Change Forms</a>
