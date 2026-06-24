@@ -23,7 +23,7 @@ body {
 
 /* Fixed Left Navigation Bar Layout */
 .sidebar-nav {
-    margin-top: 100px;
+    margin-top: 60px;
     position: fixed;
     top: 0;
     left: 0;
@@ -315,7 +315,7 @@ p code {
  #topbar {
     position: fixed;
     top: 0; left: 0; right: 0;
-    height: var(--header-h);
+    height: 60px;
     background: #0d1b2a;
     display: flex;
     align-items: center;
