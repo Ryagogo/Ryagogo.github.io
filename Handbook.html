@@ -98,6 +98,51 @@
   #sidebar::-webkit-scrollbar { width: 4px; }
   #sidebar::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
 
+  /* ── SIDEBAR SEARCH ── */
+  #sidebar-search-wrap {
+    padding: 12px 14px 10px;
+    position: sticky;
+    top: 0;
+    background: var(--navy-mid);
+    z-index: 10;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  #sidebar-search {
+    width: 100%;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 7px 32px 7px 10px;
+    font-size: 12.5px;
+    color: #d4eaf5;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  #sidebar-search::placeholder { color: #5a7a93; }
+  #sidebar-search:focus {
+    border-color: var(--accent);
+    background: rgba(0,0,0,0.35);
+  }
+  #sidebar-search-wrap .search-icon {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4a6a85;
+    font-size: 13px;
+    pointer-events: none;
+  }
+  #sidebar-search-wrap { position: sticky; top: 0; }
+  .search-no-results {
+    display: none;
+    padding: 10px 20px;
+    font-size: 12px;
+    color: #5a7a93;
+    font-style: italic;
+  }
+  .nav-search-hidden { display: none !important; }
+
   .nav-section {
     margin-bottom: 2px;
   }
@@ -1907,6 +1952,14 @@ header {
 
 <!-- SIDEBAR NAV -->
 <nav id="sidebar">
+
+<!-- SIDEBAR SEARCH BAR -->
+<div id="sidebar-search-wrap" style="position:relative;">
+  <input type="text" id="sidebar-search" placeholder="Search sections…" autocomplete="off" oninput="filterNav(this.value)">
+  <span class="search-icon">⌕</span>
+</div>
+<div id="search-no-results" class="search-no-results">No results found.</div>
+
 <div class="nav-section">
     <div class="nav-section-header"; href="#ad-database" onclick="toggleNav(this)">
       AD Database <span class="chevron">▶</span>
@@ -9237,6 +9290,71 @@ justify-content: space-between;
       if (window.innerWidth <= 900) closeSidebar();
     });
   });
+
+  // ── SIDEBAR SEARCH ──
+  function filterNav(query) {
+    const q = query.trim().toLowerCase();
+    const noResults = document.getElementById('search-no-results');
+
+    const topLinks = document.querySelectorAll('#sidebar .nav-top-link');
+    const sections = document.querySelectorAll('#sidebar .nav-section');
+
+    let anyVisible = false;
+
+    topLinks.forEach(link => {
+      const text = link.textContent.toLowerCase();
+      const match = !q || text.includes(q);
+      link.classList.toggle('nav-search-hidden', !match);
+      if (match) anyVisible = true;
+    });
+
+    sections.forEach(section => {
+      const header = section.querySelector('.nav-section-header');
+      const subLinksWrap = section.querySelector('.nav-sub-links');
+      if (!header || !subLinksWrap) return;
+
+      const subLinks = subLinksWrap.querySelectorAll('a');
+      const headerText = header.textContent.toLowerCase();
+      let sectionVisible = false;
+
+      if (!q) {
+        section.classList.remove('nav-search-hidden');
+        subLinks.forEach(a => a.classList.remove('nav-search-hidden'));
+        subLinksWrap.classList.remove('open');
+        header.classList.remove('open');
+        anyVisible = true;
+        return;
+      }
+
+      if (headerText.includes(q)) {
+        section.classList.remove('nav-search-hidden');
+        subLinks.forEach(a => a.classList.remove('nav-search-hidden'));
+        subLinksWrap.classList.add('open');
+        header.classList.add('open');
+        sectionVisible = true;
+      } else {
+        let anySubMatch = false;
+        subLinks.forEach(a => {
+          const match = a.textContent.toLowerCase().includes(q);
+          a.classList.toggle('nav-search-hidden', !match);
+          if (match) anySubMatch = true;
+        });
+
+        if (anySubMatch) {
+          section.classList.remove('nav-search-hidden');
+          subLinksWrap.classList.add('open');
+          header.classList.add('open');
+          sectionVisible = true;
+        } else {
+          section.classList.add('nav-search-hidden');
+        }
+      }
+
+      if (sectionVisible) anyVisible = true;
+    });
+
+    noResults.style.display = anyVisible ? 'none' : 'block';
+  }
 </script>
 </section>
 
