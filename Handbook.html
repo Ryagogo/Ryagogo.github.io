@@ -8979,21 +8979,68 @@ If a range of cells are selected, then, this option is ignored.</li>
 <!-- APPLE POs -->
 <section class="sub-section" id="apple-pos">
   <h2 class="section-title">Apple PO's</h2>
+<h3>Data Cleanup</h3><br>
   <ol class="steps">
-    <li>COPY and paste as values top portion.</li>
-    <li>Remove blank rows below.</li>
-    <li>Delete red totals columns. They are zero and not needed.</li>
-    <li>In 9830 delete 437 &amp; 715</li>
-    <li>Redo totals formula (left to right)</li>
-    <li>Delete zeros on top portion.</li>
-    <li>Find and replace blanks in po induction and put x in blank columns and rows.</li>
-    <li>Reverse finds all "x's" and replace with blanks.</li>
-    <li>Disto qnty messes up so copy data back in</li>
-    <li>Fix location quantity (Gray up top) slide formula across.</li>
-    <li>PO update — change date to current.</li>
-    <li>Click more actions › inventory management.</li>
-    <li>Level to blank, save save save.</li>
-  </ol>
+
+<li>In the Allocation file received from the Inventory Planner…</li>
+<li>Select all cells in sections labeled 9830, 9840, 9950, Totals, and Direct. Include RINs and Pricing, but do NOT include sum total rows below or left of the tables.</li>
+<li>Use Ctrl+F to find all blank cells and replace them with “x.”</li>
+<li>Select all those cells again and replace all “x” with blank cells. This removes artifacts which will cause problems with importing later.</li>
+<li>Delete all blank rows with no RINs or allocation quantities.</li>
+<li>In the section labeled Direct:<br>Delete any column with a red “0” total below the table.<br>Delete any row with a red “0” total to the left of the table.</li>
+<li>In the sum row below the section labeled 9830, copy the formula in column D to all of the other cells in that sum row (columns D-P)</li>
+<li>In the section labeled 9830:<br>Delete the columns for locations 437 and 715<br>Delete any columns with a red “0” total below the table.<br>Delete any row with a red “0” total to the left of the table.<br><strong>NOTE:</strong> if you right click and select “delete row” to remove the data, make sure any surrounding data is returned to its original position before proceeding.</li>
+<li>In the section labeled 9840:<br>Delete any rows or columns containing no allocation quantities<br><strong>NOTE:</strong> the sum formulas below this section are not aligned! Move the formulas to the correct locations or ignore them entirely.</li>
+<li>10.	In the section labeled 9950:<br>Delete any rows containing no allocation quantities</li><br> </ol>
+<h3>Transferring to the PO Induction Template</h3><br>
+<p>I am approaching this instruction assuming that you already know how to use the PO induction form. If you don’t, take that training before you attempt this. Before we begin:</p>
+
+  <ol class="steps">
+<li>Apple POs for 226 and 257 must be processed on separate allocation templates to allow for appropriate tracking by group by the Financial Planner.</li>
+<li>Weekly Apple POs will be processed under buyer number 430 and Supplier Site 2725.</li>
+<li>All CONUS locations are DIRECT shipped, while OCONUS locations are Cross Docked according to the needs of the specific location.</li>
+<li>Unless told otherwise, no product from the Weekly Apple POs will be DC Stocked.</li>
+<li>A separate PO Family ID must be used for each Warehouse, but all Direct orders may use one ID. For example:<br>226062300 – 9830 XDK orders<br>226062301 – 9840 XDK orders<br>226062302 – 9950 XDK orders</li>
+<li>The Not Before Date should be the date the PO is submitted. The Not After Date should be roughly 30 days later, but must always be a Friday to allow for the week end date to populate correctly.</li><br></ol>
+<p>Template Information: (<span style="color: green">GREEN</span> items remain the same for the whole template, <span style="color: red">RED</span> items will not)</p>
+
+
+<div class=apple-po-table>
+<ol class="steps">
+<li><span style="color: green">Buyer ID:</span> 430</li>
+<li><span style="color: red">PO Family ID:</span> any nine-digit number</li>
+<li><span style="color: red">PO Type:</span> 1 for XDK orders (9830, 9840, and 9950), 0 for Direct</li>
+<li><span style="color: green">Order Type:</span> BRB</li>
+<li><span style="color: green">EDI Indicator:</span> Y</li>
+<li><span style="color: green">Pre Mark Indicator:</span> N</li>
+<li><span style="color: green">Include On Order:</span> Y</li>
+<li><span style="color: green">Supplier Site:</span> 2725</li>
+<li><span style="color: red">Item ID:</span> copy RINs from Allocation template</li>
+<li><span style="color: green">NRF Color Code:</span> 000</li>
+<li><span style="color: green">Size:</span> 0000</li>
+<li><span style="color: green">Not Before Date:</span> date of PO upload</li>
+<li><span style="color: green">Not After Date:</span> roughly 30 days in the future, always a Friday</li>
+<li><span style="color: red">Total Qty:</span> calculate from Allocation template</li>
+<li><span style="color: red">Location Type:</span> WAREHOUSE for XDK Orders, STORE for Direct Orders</li>
+<li><span style="color: red">Process Type:</span> Cross Dock for XDK Orders, leave blank for Direct Orders</li>
+<li><span style="color: red">Ship to Warehouse:</span> 9830, 9840, or 9950 for XDK Orders, leave blank for Direct Orders</li>
+<li>Copy the locations and allocated quantities from the Allocation template</li>
+<li>Once template has been filled out, save as an Excel Macro-Enabled Workbook to this folder: G:\Code_M\Code_MG1\Group 257\PO INDUCTIONS\2026\EXCEL</li>
+<li>Return to PO Template and select Populate Template in the top left</li>
+<li>Review populated template sheets for accuracy and make any corrections needed</li>
+<li>Save as an Open Document Spreadsheet (.ods) in this folder: G:\Code_M\Code_MG1\Group 257\PO INDUCTIONS\2026\ODS</li>
+</ol>
+</div>
+<h3>Upload and Approval</h3><br>
+<ol class="steps">
+<li>Upload the PO in RMSv16 to the RMS tables</li>
+<li>If the subsequent notification reads “data upload request completed with warnings,” the PO has uploaded successfully.<br>***If the notification reads “data upload request completed with errors,” there was a problem with the upload that will need to be addressed before approval</li>
+<li>The most common error involves an order not meeting the MOQ. This can be resolved as follows:<br>Open the affected PO<br>Select the dropdown next to “More Actions”<br>Select “Inventory Management”<br>Scroll down to “Minimum Constraints” and change “Level” from “Order Level” to blank.<br>Confirm, then save and close the page and the PO.<br>For other errors, follow standard PO troubleshooting.<br>If the notification reads “data upload request completed successfully,” it did not. Usually this is because the template was not populated using the “Populate Template” button before uploading.</li>
+<li>Select the notification to reach the “Data Loading Status” page, then select “View Issues” at the top of the page.</li>
+<li>On the subsequent page, export the table to excel using either the Actions menu or the Export button at the top of the screen.</li>
+<li>Open the exported file (an error will appear notifying that the file format does not match the file extension, select “Yes” to proceed)</li>
+<li>Utilize the “Remove Duplicates” function on the Data tab on column B to create a list of uploaded PO numbers</li>
+<li>Copy the list of PO numbers and email them to the Financial Planner for approval.</li>
  
 </section>
 
