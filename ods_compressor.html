@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ODS Compressor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root {
+    --bg: #f6f7f5;
+    --card: #ffffff;
+    --ink: #1c1f1e;
+    --muted: #6b7370;
+    --accent: #2f6f4e;
+    --accent-hover: #255a3f;
+    --border: #e3e5e1;
+    --good: #2f6f4e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    max-width: 480px;
+    width: 100%;
+  }
+  h1 {
+    font-size: 1.3rem;
+    margin: 0 0 6px;
+    font-weight: 600;
+  }
+  p.sub {
+    color: var(--muted);
+    margin: 0 0 28px;
+    font-size: 0.92rem;
+    line-height: 1.4;
+  }
+  #dropzone {
+    border: 1.5px dashed var(--border);
+    border-radius: 10px;
+    padding: 36px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  #dropzone.drag {
+    border-color: var(--accent);
+    background: #f0f6f2;
+  }
+  #dropzone p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  #dropzone strong {
+    color: var(--ink);
+  }
+  input[type="file"] { display: none; }
+  .status {
+    margin-top: 24px;
+    display: none;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .row:last-child { border-bottom: none; }
+  .row .label { color: var(--muted); }
+  .row .value { font-weight: 600; }
+  .savings {
+    color: var(--good);
+  }
+  button#downloadBtn {
+    width: 100%;
+    margin-top: 20px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: none;
+  }
+  button#downloadBtn:hover { background: var(--accent-hover); }
+  .error {
+    color: #b3261e;
+    font-size: 0.88rem;
+    margin-top: 16px;
+    display: none;
+  }
+  .spinner {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>ODS Compressor</h1>
+    <p class="sub">Drop in a .ods spreadsheet and it'll be repacked with maximum compression to shrink the file size, right in your browser. Nothing is uploaded anywhere.</p>
+
+    <div id="dropzone">
+      <p><strong>Click to choose a file</strong><br>or drag and drop an .ods file here</p>
+      <input type="file" id="fileInput" accept=".ods">
+    </div>
+
+    <div class="spinner" id="spinner">Compressing…</div>
+
+    <div class="status" id="status">
+      <div class="row"><span class="label">File</span><span class="value" id="fname">—</span></div>
+      <div class="row"><span class="label">Original size</span><span class="value" id="origSize">—</span></div>
+      <div class="row"><span class="label">Compressed size</span><span class="value" id="newSize">—</span></div>
+      <div class="row"><span class="label">Reduction</span><span class="value savings" id="savings">—</span></div>
+    </div>
+
+    <button id="downloadBtn">Download compressed file</button>
+    <div class="error" id="error"></div>
+  </div>
+
+<script>
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const statusEl = document.getElementById('status');
+const spinner = document.getElementById('spinner');
+const downloadBtn = document.getElementById('downloadBtn');
+const errorEl = document.getElementById('error');
+
+let compressedBlob = null;
+let outFileName = 'compressed.ods';
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('drag');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+async function handleFile(file) {
+  errorEl.style.display = 'none';
+  statusEl.style.display = 'none';
+  downloadBtn.style.display = 'none';
+
+  if (!file.name.toLowerCase().endsWith('.ods')) {
+    errorEl.textContent = 'Please choose a .ods file.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  spinner.style.display = 'block';
+
+  try {
+    const originalSize = file.size;
+    const arrayBuffer = await file.arrayBuffer();
+    const original = await JSZip.loadAsync(arrayBuffer);
+
+    const zip = new JSZip();
+
+    // The ODF "mimetype" entry must stay uncompressed and be added first.
+    const mimetypeEntry = original.file('mimetype');
+    const mimetypeContent = mimetypeEntry
+      ? await mimetypeEntry.async('string')
+      : 'application/vnd.oasis.opendocument.spreadsheet';
+    zip.file('mimetype', mimetypeContent, { compression: 'STORE' });
+
+    const entries = Object.keys(original.files);
+    for (const relPath of entries) {
+      if (relPath === 'mimetype') continue;
+      const entry = original.files[relPath];
+      if (entry.dir) continue;
+      const content = await entry.async('uint8array');
+      zip.file(relPath, content, {
+        compression: 'DEFLATE',
+        compressionOptions: { level: 9 }
+      });
+    }
+
+    compressedBlob = await zip.generateAsync({
+      type: 'blob',
+      mimeType: 'application/vnd.oasis.opendocument.spreadsheet',
+      compression: 'DEFLATE',
+      compressionOptions: { level: 9 }
+    });
+
+    outFileName = file.name.replace(/\.ods$/i, '') + '_compressed.ods';
+
+    const newSize = compressedBlob.size;
+    const reduction = originalSize > 0 ? (100 * (1 - newSize / originalSize)) : 0;
+
+    document.getElementById('fname').textContent = file.name;
+    document.getElementById('origSize').textContent = formatBytes(originalSize);
+    document.getElementById('newSize').textContent = formatBytes(newSize);
+    document.getElementById('savings').textContent =
+      reduction > 0 ? '−' + reduction.toFixed(1) + '%' : 'No further reduction possible';
+
+    statusEl.style.display = 'block';
+    downloadBtn.style.display = 'block';
+  } catch (err) {
+    console.error(err);
+    errorEl.textContent = 'Could not process that file: ' + err.message;
+    errorEl.style.display = 'block';
+  } finally {
+    spinner.style.display = 'none';
+  }
+}
+
+downloadBtn.addEventListener('click', () => {
+  if (!compressedBlob) return;
+  const url = URL.createObjectURL(compressedBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = outFileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>
