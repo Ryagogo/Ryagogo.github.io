@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ryan Gray — Resume</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root{
+        --ink:        #1c2733;
+        --ink-soft:   #46525e;
+        --rule:       #c7ccd1;
+        --rule-light: #e4e7ea;
+        --accent:     #8a6a3e;
+        --paper:      #ffffff;
+        --panel:      #f5f4f1;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body{
+        font-family: 'Inter', sans-serif;
+        color: var(--ink);
+        background: #e9e7e2;
+        line-height: 1.5;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .page{
+        max-width: 1180px;
+        margin: 32px auto;
+        background: var(--paper);
+        box-shadow: 0 1px 3px rgba(28,39,51,0.12), 0 8px 24px rgba(28,39,51,0.08);
+    }
+
+    /* ===== HEADER ===== */
+    header{
+        padding: 46px 64px 30px;
+        border-bottom: 3px solid var(--ink);
+    }
+
+    header .name-row{
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 10px 24px;
+    }
+
+    h1{
+        font-family: 'Source Serif 4', serif;
+        font-weight: 600;
+        font-size: 2.5rem;
+        letter-spacing: 0.2px;
+        color: var(--ink);
+    }
+
+    .role-tag{
+        font-size: 0.95rem;
+        color: var(--ink-soft);
+        margin-top: 2px;
+        font-weight: 500;
+    }
+
+    .contact-info{
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        text-align: right;
+        line-height: 1.7;
+        white-space: nowrap;
+    }
+
+    /* ===== LAYOUT ===== */
+    .content{
+        display: grid;
+        grid-template-columns: 280px 1fr;
+    }
+
+    .rail{
+        padding: 34px 36px 40px 64px;
+        border-right: 1px solid var(--rule-light);
+        background: var(--panel);
+    }
+
+    .main{
+        padding: 34px 64px 46px 44px;
+    }
+
+    section{ margin-bottom: 26px; }
+    .rail section{ margin-bottom: 28px; }
+
+    h2{
+        font-family: 'Inter', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 1.1px;
+        text-transform: uppercase;
+        color: var(--accent);
+        border-bottom: 1px solid var(--rule);
+        padding-bottom: 6px;
+        margin-bottom: 12px;
+    }
+
+    /* ---- rail content ---- */
+    .rail p, .rail li{ font-size: 0.83rem; color: var(--ink-soft); }
+
+    .skill-group{ margin-bottom: 12px; }
+    .skill-group:last-child{ margin-bottom: 0; }
+    .skill-group .label{
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 2px;
+    }
+
+    .cert-item{ margin-bottom: 12px; }
+    .cert-item:last-child{ margin-bottom: 0; }
+    .cert-name{ font-size: 0.83rem; font-weight: 700; color: var(--ink); display: block; }
+    .cert-meta{ font-size: 0.74rem; color: var(--ink-soft); display: block; margin-top: 1px; }
+    .cert-sub{ font-size: 0.72rem; color: #74808b; display: block; margin-top: 2px; font-style: italic; }
+
+    .edu-school{ font-size: 0.85rem; font-weight: 700; color: var(--ink); }
+    .edu-loc{ font-size: 0.74rem; color: var(--ink-soft); margin-top: 1px; }
+    .edu-degree{ font-size: 0.83rem; color: var(--ink-soft); margin-top: 6px; }
+    .edu-note{ font-size: 0.74rem; color: #74808b; font-style: italic; margin-top: 6px; }
+
+    /* ---- main content ---- */
+    .summary p{ font-size: 0.92rem; color: var(--ink-soft); line-height: 1.65; }
+
+    .job{ margin-bottom: 22px; }
+    .job:last-child{ margin-bottom: 0; }
+
+    .job-header{
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+        border-bottom: 1px solid var(--rule-light);
+        padding-bottom: 4px;
+        margin-bottom: 8px;
+    }
+
+    .job-title{ font-size: 1rem; font-weight: 700; color: var(--ink); }
+    .job-dates{ font-size: 0.78rem; color: var(--ink-soft); white-space: nowrap; font-style: italic; }
+
+    .job ul{ margin-left: 18px; }
+    .job li{
+        font-size: 0.87rem;
+        color: var(--ink-soft);
+        margin-bottom: 6px;
+        line-height: 1.55;
+    }
+    .job li:last-child{ margin-bottom: 0; }
+    .job li strong{ color: var(--ink); font-weight: 700; }
+
+    @media print {
+        body{ background: var(--paper); }
+        .page{ margin: 0; box-shadow: none; max-width: none; }
+        @page{ margin: 0.35in; }
+    }
+
+    @media (max-width: 700px){
+        .content{ grid-template-columns: 1fr; }
+        .rail{ border-right: none; border-bottom: 1px solid var(--rule-light); padding: 28px 24px; }
+        .main{ padding: 28px 24px; }
+        header{ padding: 32px 24px 24px; }
+        .contact-info{ text-align: left; }
+        .name-row{ flex-direction: column; align-items: flex-start; }
+    }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+    <header>
+        <div class="name-row">
+            <div>
+                <h1>Ryan Gray</h1>
+                <div class="role-tag">Supply Chain Systems Technician · Oracle RMS &amp; Enterprise Support</div>
+            </div>
+            <div class="contact-info">
+                Virginia Beach, VA<br>
+                757-779-1724<br>
+                RyanGray4287@gmail.com
+            </div>
+        </div>
+    </header>
+
+    <div class="content">
+
+        <aside class="rail">
+
+            <section id="skills-summary">
+                <h2>Core Strengths</h2>
+                <p>Thorough at documentation and process improvement.</p>
+                <p style="margin-top:6px;">Excellent working independently and in teams.</p>
+                <p style="margin-top:6px;">Highly motivated and eager to learn.</p>
+                <p style="margin-top:6px;">Strong analytical and problem-solving skills.</p>
+                <p style="margin-top:6px;">Detail-oriented with high-quality results.</p>
+            </section>
+
+            <section id="technical-skills">
+                <h2>Technical Skills</h2>
+                <div class="skill-group">
+                    <span class="label">Operating Systems</span>
+                    Windows XP/Vista/7/8/10/11, Windows Server 2016/2025, Ubuntu &amp; Debian
+                </div>
+                <div class="skill-group">
+                    <span class="label">Virtualization &amp; Infrastructure</span>
+                    ProxMox, Hyper-V, VMware, VM provisioning and management
+                </div>
+                <div class="skill-group">
+                    <span class="label">Identity &amp; Systems Admin</span>
+                    Active Directory (user/group management, GPOs), Hypervising
+                </div>
+                <div class="skill-group">
+                    <span class="label">Enterprise Services</span>
+                    Automation management, centralized logging, monitoring &amp; alerting, backup/recovery
+                </div>
+                <div class="skill-group">
+                    <span class="label">Networking</span>
+                    DNS, DHCP, TCP/IP, port forwarding, VPN, troubleshooting, containerization
+                </div>
+                <div class="skill-group">
+                    <span class="label">Database</span>
+                    SQL, PostgreSQL, Oracle
+                </div>
+                <div class="skill-group">
+                    <span class="label">IT Service &amp; Productivity</span>
+                    ServiceNow, Microsoft 365 Suite, Adobe Suite
+                </div>
+                <div class="skill-group">
+                    <span class="label">Cybersecurity &amp; IA</span>
+                    Vulnerability management, IDS/IPS, firewalls, endpoint protection, SSL/TLS, NGINX
+                </div>
+            </section>
+
+            <section id="certifications">
+                <h2>Certifications</h2>
+                <div class="cert-item">
+                    <span class="cert-name">CompTIA Security+</span>
+                    <span class="cert-meta">Expires September 2028</span>
+                    <span class="cert-sub">Meets IA Certification requirement (SECNAV M-5239.2)</span>
+                </div>
+                <div class="cert-item">
+                    <span class="cert-name">OS/Computing Environment (OS/CE) Certification</span>
+                    <span class="cert-meta">Eligible / Obtaining as Required</span>
+                </div>
+            </section>
+
+            <section id="education">
+                <h2>Education</h2>
+                <div class="edu-school">University of Colorado</div>
+                <div class="edu-loc">Boulder, CO &nbsp;|&nbsp; May 2024</div>
+                <div class="edu-degree">Bachelor of Arts in Film Production</div>
+                <div class="edu-note">Managed 25 hours/week work schedule with full-time course load.</div>
+            </section>
+
+        </aside>
+
+        <main class="main">
+
+            <section id="objective" class="summary">
+                <h2>Professional Summary</h2>
+                <p>Information Technology Specialist (Information Security / Customer Support) with experience in enterprise systems administration, access control management, and end-user technical support across complex organizational environments. CompTIA Security+ certified with hands-on expertise in Windows Server, Active Directory, system variable maintenance, and line-of-business software support. Skilled in managing IT customer support workflows, developing Standard Operating Procedures (SOPs), conducting user training, and serving as a key liaison between business operations and IT engineering. Proven ability to uphold data integrity, enforce information security policies, and ensure optimal service delivery in support of mission-critical operations.</p>
+            </section>
+
+            <section id="experience">
+                <h2>Experience</h2>
+
+                <div class="job">
+                    <div class="job-header">
+                        <span class="job-title">Supply Chain Systems Tech — NEXCOM HQ (NF-03)</span>
+                        <span class="job-dates">Virginia Beach, VA &nbsp;|&nbsp; June 2026 – Current</span>
+                    </div>
+                    <ul>
+                        <li><strong>Information Security &amp; Access Control:</strong> Administer system variable configurations, supplier management files, and user access permissions within the enterprise Oracle Retail Merchandising System (RMS). Enforce strict data integrity and access control protocols to maintain compliance with organizational security standards.</li>
+                        <li><strong>Customer Support &amp; Service Delivery:</strong> Oversee and manage end-user technical support requests, utilizing ticketing workflows to monitor performance, resolve complex system application issues, and eliminate operational bottlenecks within established service-level agreements (SLAs).</li>
+                        <li><strong>System Administration &amp; Technical Support:</strong> Serve as the primary IT Liaison between the Merchandising unit and the IT department. Perform system configuration checks, monitor performance, and troubleshoot complex software errors in Oracle Retail Merchandising System (RMS), Active Directory, and line-of-business application environments.</li>
+                        <li><strong>Team Supervision &amp; Workflow Management:</strong> Supervise, train, and direct the daily operations of Code M (Merchandising) users. Schedule work streams, prioritize tasks, and ensure high-accuracy data processing across cross-functional team operations.</li>
+                        <li><strong>SOP Development &amp; Technical Communication:</strong> Author, document, and maintain comprehensive Standard Operating Procedures (SOPs) and technical documentation. Conduct technical guidance and formal training sessions for non-technical end-users to ensure smooth operational transitions and policy compliance.</li>
+                        <li><strong>Troubleshooting &amp; Reporting:</strong> Utilize advanced Microsoft Excel functions to analyze system metrics, design custom reports, identify root causes of recurring system errors, and propose strategic technical adjustments to enhance system reliability.</li>
+                        <li><strong>Virtualization &amp; Patch Testing:</strong> Design, configure, and maintain virtual machine (VM) test environments to rigorously simulate production setups, execute vulnerability scans, and test new software patches, system updates, and configurations prior to enterprise deployment.</li>
+                        <li><strong>Database &amp; Advanced SQL Operations:</strong> Execute complex SQL queries, scripts, and data extractions against relational databases (Oracle RMS / Microsoft SQL) to conduct root-cause analysis, validate data integrity, troubleshoot system bugs, and support heavy data reporting needs.</li>
+                    </ul>
+                </div>
+
+                <div class="job">
+                    <div class="job-header">
+                        <span class="job-title">Merchandiser — NEXCOM HQ</span>
+                        <span class="job-dates">Virginia Beach, VA &nbsp;|&nbsp; Feb 2025 – June 2026</span>
+                    </div>
+                    <ul>
+                        <li><strong>Data Management &amp; Accuracy:</strong> Performed data entry for new item setup, price changes, item maintenance, and vendor returns, ensuring accuracy and adherence to company standards. Maintained UPC files and managed stock assortments.</li>
+                        <li><strong>Procurement &amp; Inventory Control:</strong> Generated purchase orders, reviewed quantities, tracked shipments, and addressed shipping or billing discrepancies with accounting. Analyzed receiving reports and resolved delays or errors with vendors or store departments.</li>
+                        <li><strong>Vendor Relations &amp; Negotiation:</strong> Negotiated pricing and supplier support, facilitated communication with vendors, and negotiated vendor returns to optimize profitability.</li>
+                        <li><strong>Collaboration &amp; Communication:</strong> Collaborated with buyers, planners, vendors, and internal teams, ensuring accurate merchandising information and contributing to assortment planning.</li>
+                        <li><strong>Process Improvement &amp; Documentation:</strong> Documented processes and created optimized tools to maximize efficiency and accuracy of tasks.</li>
+                    </ul>
+                </div>
+
+                <div class="job">
+                    <div class="job-header">
+                        <span class="job-title">IT Support Technician — Buff Techs</span>
+                        <span class="job-dates">Boulder, CO &nbsp;|&nbsp; May 2022 – May 2024</span>
+                    </div>
+                    <ul>
+                        <li><strong>Application Installation &amp; Configuration:</strong> Installed, configured, and maintained software applications across Windows and macOS environments, ensuring compatibility with enterprise standards.</li>
+                        <li><strong>Technical Application Troubleshooting:</strong> Diagnosed application-level issues, distinguished between hardware, OS, and software-related problems, and escalated complex cases to higher-tier support teams.</li>
+                        <li><strong>User Account &amp; Access Support:</strong> Assisted users with account-related issues and software access configuration in alignment with IT security protocols.</li>
+                        <li><strong>System Monitoring &amp; Documentation:</strong> Documented incidents, tracked recurring issues, and provided feedback for system improvements to enhance application stability.</li>
+                        <li><strong>Service Desk Operations:</strong> Responded to and resolved support tickets within defined SLAs, prioritizing business-impacting issues.</li>
+                        <li><strong>Security &amp; Policy Compliance:</strong> Followed institutional cybersecurity and information assurance practices when deploying applications and managing systems.</li>
+                    </ul>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+</div>
+
+</body>
+</html>
