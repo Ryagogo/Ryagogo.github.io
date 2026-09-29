@@ -117,10 +117,35 @@
   <a class="nav-top-link" href="#networking">Networking</a>
   <a class="nav-top-link" href="#alerting">Alerting</a>
   <a class="nav-top-link" href="#sql">SQL</a>
-  <a class="nav-top-link" href="#nginx">NGINX</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">NGINX <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#nginx">Overview &amp; Video</a>
+      <a class="nav-sub-link" href="#nginx-prereqs">Before You Start</a>
+      <a class="nav-sub-link" href="#nginx-install">Install Nginx Proxy Manager</a>
+      <a class="nav-sub-link" href="#nginx-wildcard-cert">Wildcard SSL (Cloudflare)</a>
+      <a class="nav-sub-link" href="#nginx-proxy-host">Add a Proxy Host</a>
+      <a class="nav-sub-link" href="#nginx-maintenance">Updating &amp; Troubleshooting</a>
+    </div>
+  </div>
   <a class="nav-top-link" href="#bash">Bash</a>
   <a class="nav-top-link" href="#powershell">PowerShell</a>
-  <a class="nav-top-link" href="#vault-warden">Vault Warden</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Vault Warden <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#vault-warden">Overview &amp; Video</a>
+      <a class="nav-sub-link" href="#vw-prereqs">Before You Start</a>
+      <a class="nav-sub-link" href="#vw-tailscale">Connect to Tailscale</a>
+      <a class="nav-sub-link" href="#vw-dns">Cloudflare DNS Record</a>
+      <a class="nav-sub-link" href="#vw-install">Deploy Vaultwarden</a>
+      <a class="nav-sub-link" href="#vw-proxy">Proxy Host in NPM</a>
+      <a class="nav-sub-link" href="#vw-account">Account &amp; Two-Step Login</a>
+      <a class="nav-sub-link" href="#vw-using">Using the Vault</a>
+      <a class="nav-sub-link" href="#vw-apps">Mobile App &amp; Chrome</a>
+      <a class="nav-sub-link" href="#vw-admin">Admin Page</a>
+      <a class="nav-sub-link" href="#vw-maintenance">Backups &amp; Updates</a>
+    </div>
+  </div>
   <a class="nav-top-link" href="#home-assistant">Home Assistant</a>
   <a class="nav-top-link" href="#plex">Plex</a>
   <div class="nav-section">
@@ -1457,7 +1482,288 @@ ip -c a</code></pre>
 
         <div id="nginx">
             <h2>NGINX</h2>
-            <div class="placeholder-section">Section detailing reverse proxy rules pending configuration.</div>
+            <p>NGINX is a web server most often used as a <strong>reverse proxy</strong>: it receives every request on ports 80/443, handles HTTPS, and forwards each request to the right app based on its domain name (for example <code>vault.tail.example.com</code> → Vaultwarden on port 1776). This guide uses <strong>Nginx Proxy Manager</strong> (NPM), which runs NGINX in Docker with an easy web interface and free Let’s Encrypt certificates.</p>
+            <p>These steps follow the first half of the video tutorial in the <a href="#vault-warden">Vault Warden</a> section, where NPM is the reverse proxy for a private, Tailscale-only Vaultwarden server.</p>
+                <iframe class="video-embed" src="https://www.youtube.com/embed/AwJXizTdth0"
+                    title="Self-host Bitwarden for free with Vaultwarden, Nginx Proxy Manager and Tailscale" loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/AwJXizTdth0" target="_blank" rel="noopener">https://youtu.be/AwJXizTdth0</a></p>
+
+            <div id="nginx-prereqs">
+                <h3>Before You Start</h3>
+                <ul>
+                    <li>An Ubuntu server you can reach over SSH (see <a href="#ssh">SSH</a>). The video starts from a freshly cloned Ubuntu VM.</li>
+                    <li>Docker Engine installed from Docker’s official apt repository (see <a href="#docker">Docker</a>).</li>
+                    <li>A domain name whose DNS is managed by <strong>Cloudflare</strong> (other DNS providers work too; the steps are similar).</li>
+                </ul>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=51" target="_blank" rel="noopener">▶ Watch this step (0:51)</a></p>
+                <p>Confirm Docker and the Compose plugin are installed:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker --version
+sudo docker compose version</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="nginx-install">
+                <h3>Install Nginx Proxy Manager</h3>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=82" target="_blank" rel="noopener">▶ Watch this step (1:22)</a></p>
+                <h4>Step 1: Create a folder for your Docker apps</h4>
+                <p>Keep every app in its own folder under <code>~/docker</code>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkdir -p ~/docker/npm
+cd ~/docker/npm</code></pre>
+                    </div>
+                </div>
+                <h4>Step 2: Create the Compose file</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nano docker-compose.yml</code></pre>
+                    </div>
+                </div>
+                <p>Paste the following. NPM runs in <strong>host network mode</strong>, so it listens directly on the server’s ports 80, 443 and 81 and can reach other apps at <code>127.0.0.1</code>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>services:
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: npm
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt</code></pre>
+                    </div>
+                </div>
+                <p>Save with <code>Ctrl + O</code>, <code>Enter</code>, and exit with <code>Ctrl + X</code>.</p>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>Optional: GoAccess traffic stats.</strong> The video’s Compose file also includes a GoAccess container that reads NPM’s logs and shows who is visiting your sites. It is not required; skip it if you do not want it. To add it, paste this under <code>services:</code> (indented two spaces, like <code>npm:</code>) and open <code>http://SERVER-IP:7880</code> afterwards.</div></div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>  goaccess:
+    image: xavierh/goaccess-for-nginxproxymanager:latest
+    container_name: goaccess
+    restart: unless-stopped
+    ports:
+      - '7880:7880'
+    environment:
+      - TZ=America/New_York
+      - SKIP_ARCHIVED_LOGS=False
+      - LOG_TYPE=NPM
+    volumes:
+      - ./data/logs:/opt/log</code></pre>
+                    </div>
+                </div>
+                <h4>Step 3: Start it</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker compose up -d
+sudo docker compose ps</code></pre>
+                    </div>
+                </div>
+                <p>The first start pulls the images, then the status shows <strong>running</strong>.</p>
+                <h4>Step 4: Log in and create your admin account</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=235" target="_blank" rel="noopener">▶ Watch this step (3:55)</a></p>
+                <p>Open <code>http://localhost:81</code> on the server, or <code>http://SERVER-IP:81</code> from another computer on your network.</p>
+                <ul>
+                    <li>Log in with the default <strong>Email:</strong> <code>admin@example.com</code> and <strong>Password:</strong> <code>changeme</code>.</li>
+                    <li>NPM immediately asks you to change the name, email and password. Use your real email and a strong password.</li>
+                    <li>Newer versions of NPM skip the default login and ask you to create the admin account on the first visit instead.</li>
+                </ul>
+            </div>
+
+            <div id="nginx-wildcard-cert">
+                <h3>Get a Wildcard SSL Certificate (Cloudflare DNS Challenge)</h3>
+                <p>Because the apps will only be reachable over Tailscale, Let’s Encrypt cannot reach the server to verify it. Instead, NPM proves you own the domain by creating a DNS record through Cloudflare’s API (a <strong>DNS challenge</strong>). One <strong>wildcard</strong> certificate for <code>*.tail.example.com</code> then covers every private app: <code>vault.tail.example.com</code>, and anything you add later.</p>
+                <h4>Step 1: Create a Cloudflare API token</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=401" target="_blank" rel="noopener">▶ Watch this step (6:41)</a></p>
+                <ol>
+                    <li>Log in to <a href="https://dash.cloudflare.com" target="_blank" rel="noopener">dash.cloudflare.com</a>.</li>
+                    <li>Go to <strong>My Profile → API Tokens → Create Token</strong>.</li>
+                    <li>Next to <strong>Edit zone DNS</strong>, click <strong>Use template</strong>.</li>
+                    <li>Under <strong>Zone Resources</strong>, choose <strong>Include → Specific zone → your domain</strong>.</li>
+                    <li>Click <strong>Continue to summary</strong>, then <strong>Create Token</strong>.</li>
+                    <li>Copy the token and keep it somewhere safe for the next step. Cloudflare only shows it once.</li>
+                </ol>
+                <h4>Step 2: Request the certificate in NPM</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=366" target="_blank" rel="noopener">▶ Watch this step (6:06)</a></p>
+                <p>In NPM, go to <strong>SSL Certificates → Add SSL Certificate → Let’s Encrypt</strong> and fill in:</p>
+                <table>
+                    <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>Domain Names</td><td><code>*.tail.example.com</code> (type it, then press Enter)</td></tr>
+                        <tr><td>Email Address for Let’s Encrypt</td><td>your email</td></tr>
+                        <tr><td>Use a DNS Challenge</td><td><strong>On</strong></td></tr>
+                        <tr><td>DNS Provider</td><td>Cloudflare</td></tr>
+                        <tr><td>Credentials File Content</td><td>replace the example token with yours (see below)</td></tr>
+                        <tr><td>I Agree to the Let’s Encrypt Terms</td><td>On</td></tr>
+                    </tbody>
+                </table>
+                <p>The <strong>Credentials File Content</strong> box should contain exactly one line with your token:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>ini</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>dns_cloudflare_api_token = PASTE-YOUR-CLOUDFLARE-TOKEN-HERE</code></pre>
+                    </div>
+                </div>
+                <p>Click <strong>Save</strong>. After a minute the certificate appears in the list with an expiry date. NPM renews it automatically.</p>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Replace <code>example.com</code> with your own domain everywhere on this page. The <code>tail</code> part is just a label that groups your Tailscale-only apps; you can pick another word, but keep it the same everywhere.</div></div>
+            </div>
+
+            <div id="nginx-proxy-host">
+                <h3>Add a Proxy Host</h3>
+                <p>Each app gets its own proxy host. The <a href="#vw-proxy">Vault Warden</a> section shows the exact values for Vaultwarden.</p>
+                <ol>
+                    <li>Go to <strong>Hosts → Proxy Hosts → Add Proxy Host</strong>.</li>
+                    <li><strong>Details</strong> tab: enter the full domain (e.g. <code>app.tail.example.com</code>), Scheme <code>http</code>, Forward Hostname <code>127.0.0.1</code> (NPM is in host mode), and the port the app is published on.</li>
+                    <li><strong>SSL</strong> tab: choose the <code>*.tail.example.com</code> wildcard certificate, and turn on <strong>Force SSL</strong>, <strong>HTTP/2 Support</strong> and <strong>HSTS Enabled</strong>.</li>
+                    <li>Click <strong>Save</strong>.</li>
+                </ol>
+            </div>
+
+            <div id="nginx-maintenance">
+                <h3>Updating and Troubleshooting</h3>
+                <h4>Update Nginx Proxy Manager</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/docker/npm
+sudo docker compose pull
+sudo docker compose up -d
+sudo docker image prune -f</code></pre>
+                    </div>
+                </div>
+                <h4>View the logs</h4>
+                <p>Follow the logs live (press <code>Ctrl + C</code> to stop):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/docker/npm
+sudo docker compose logs -f</code></pre>
+                    </div>
+                </div>
+                <h4>NPM will not start: “address already in use”</h4>
+                <p>Something else (often Apache or a regular NGINX install) is already using port 80 or 443. Find it and turn it off:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo ss -tulpn | grep -E ":80 |:443 "</code></pre>
+                    </div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo systemctl disable --now apache2
+sudo systemctl disable --now nginx</code></pre>
+                    </div>
+                </div>
+                <h4>The certificate request fails</h4>
+                <ul>
+                    <li>Check the API token was created from the <strong>Edit zone DNS</strong> template and includes your domain.</li>
+                    <li>Check the credentials line has no extra spaces or quotes around the token.</li>
+                    <li>Wait a few minutes and try again; Let’s Encrypt limits repeated failed attempts.</li>
+                </ul>
+                <h4>502 Bad Gateway</h4>
+                <p>NPM cannot reach the app. Check the app is running and published on the port you entered:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker ps</code></pre>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="bash">
@@ -1472,7 +1778,431 @@ ip -c a</code></pre>
 
         <div id="vault-warden">
             <h2>Vault Warden</h2>
-            <div class="placeholder-section">Section defining deployment parameters pending installation.</div>
+            <p><strong>Vaultwarden</strong> is a free, lightweight, open-source server for the <strong>Bitwarden</strong> password manager. It works with all the official Bitwarden apps, including the mobile app and the Chrome extension. In this setup it gets a custom domain and a real SSL certificate, but it is <strong>never exposed to the internet</strong>: it is only reachable from devices on your <strong>Tailscale</strong> network.</p>
+                <iframe class="video-embed" src="https://www.youtube.com/embed/AwJXizTdth0"
+                    title="Self-host Bitwarden for free with Vaultwarden, Nginx Proxy Manager and Tailscale" loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/AwJXizTdth0" target="_blank" rel="noopener">https://youtu.be/AwJXizTdth0</a></p>
+                <table>
+                    <thead><tr><th>Piece</th><th>Used for</th></tr></thead>
+                    <tbody>
+                        <tr><td>Server</td><td>Ubuntu with Docker</td></tr>
+                        <tr><td>Reverse proxy</td><td><a href="#nginx">Nginx Proxy Manager</a> (host mode)</td></tr>
+                        <tr><td>SSL</td><td>Wildcard <code>*.tail.example.com</code> certificate via Cloudflare DNS challenge</td></tr>
+                        <tr><td>Private network</td><td><a href="#tailscale">Tailscale</a></td></tr>
+                        <tr><td>Vault address</td><td><code>https://vault.tail.example.com</code> (only works on your tailnet)</td></tr>
+                    </tbody>
+                </table>
+
+            <div id="vw-prereqs">
+                <h3>Before You Start</h3>
+                <ul>
+                    <li>Docker installed (see <a href="#docker">Docker</a>).</li>
+                    <li><a href="#nginx-install">Nginx Proxy Manager installed</a> and the <a href="#nginx-wildcard-cert">wildcard certificate</a> issued.</li>
+                </ul>
+            </div>
+
+            <div id="vw-tailscale">
+                <h3>Connect the Server to Tailscale</h3>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=273" target="_blank" rel="noopener">▶ Watch this step (4:33)</a></p>
+                <p>Tailscale puts your server and your devices on a private, encrypted WireGuard network (your <strong>tailnet</strong>) so you can reach the vault from anywhere without opening any ports.</p>
+                <ol>
+                    <li>Create a free account at <a href="https://tailscale.com" target="_blank" rel="noopener">tailscale.com</a>.</li>
+                    <li>In the admin console, click <strong>Add device → Linux server</strong>.</li>
+                    <li>Set the auth key expiry to <strong>1 day</strong> (it is only used now), then click <strong>Generate install script</strong> and copy it.</li>
+                    <li>Paste the script into the server’s terminal and run it. It looks like the commands below.</li>
+                </ol>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up</code></pre>
+                    </div>
+                </div>
+                <p>Back in the Tailscale admin console under <strong>Machines</strong>, the server now appears with a Tailscale IP address starting with <code>100.</code>. You can also print it on the server:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>tailscale ip -4</code></pre>
+                    </div>
+                </div>
+                <p>Copy this IP. The DNS record in the next step points to it.</p>
+            </div>
+
+            <div id="vw-dns">
+                <h3>Point the Domain at Your Tailscale IP</h3>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=472" target="_blank" rel="noopener">▶ Watch this step (7:52)</a></p>
+                <p>This public DNS record points to a private Tailscale address, so it only leads anywhere for devices that are on your tailnet. Everyone else gets nowhere.</p>
+                <ol>
+                    <li>In Cloudflare, open your domain and go to <strong>DNS → Records → Add record</strong>.</li>
+                    <li>Fill in the record using the table below, then click <strong>Save</strong>.</li>
+                </ol>
+                <table>
+                    <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>Type</td><td><code>A</code></td></tr>
+                        <tr><td>Name</td><td><code>*.tail</code></td></tr>
+                        <tr><td>IPv4 address</td><td>your server’s Tailscale IP (<code>100.x.y.z</code>)</td></tr>
+                        <tr><td>Proxy status</td><td><strong>DNS only</strong> (grey cloud, not proxied)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="vw-install">
+                <h3>Deploy Vaultwarden</h3>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=510" target="_blank" rel="noopener">▶ Watch this step (8:30)</a></p>
+                <h4>Step 1: Create a folder</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkdir -p ~/docker/vault
+cd ~/docker/vault</code></pre>
+                    </div>
+                </div>
+                <h4>Step 2: Create the Compose file</h4>
+                <p>This is the Compose example from the Vaultwarden GitHub page, with two changes: the port is mapped to <strong>1776</strong> (NPM already uses 80), and <code>DOMAIN</code> is set to your vault address.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nano docker-compose.yml</code></pre>
+                    </div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: "https://vault.tail.example.com"
+    volumes:
+      - ./vw-data/:/data/
+    ports:
+      - 1776:80</code></pre>
+                    </div>
+                </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Optional hardening: change the port line to <code>- 127.0.0.1:1776:80</code>. Vaultwarden is then only reachable through NPM (which forwards to <code>127.0.0.1</code>), not directly on port 1776 from your local network.</div></div>
+                <h4>Step 3: Start it</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker compose up -d
+sudo docker compose ps</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vw-proxy">
+                <h3>Create the Proxy Host in NPM</h3>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=592" target="_blank" rel="noopener">▶ Watch this step (9:52)</a></p>
+                <p>In Nginx Proxy Manager go to <strong>Hosts → Proxy Hosts → Add Proxy Host</strong>:</p>
+                <table>
+                    <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>Domain Names</td><td><code>vault.tail.example.com</code></td></tr>
+                        <tr><td>Scheme</td><td><code>http</code></td></tr>
+                        <tr><td>Forward Hostname / IP</td><td><code>127.0.0.1</code> (NPM runs in host mode)</td></tr>
+                        <tr><td>Forward Port</td><td><code>1776</code></td></tr>
+                        <tr><td>Websockets Support</td><td>On (recommended: lets devices sync instantly)</td></tr>
+                        <tr><td>SSL tab → SSL Certificate</td><td>the <code>*.tail.example.com</code> wildcard</td></tr>
+                        <tr><td>SSL tab → options</td><td>Force SSL, HTTP/2 Support, HSTS Enabled</td></tr>
+                    </tbody>
+                </table>
+                <p>Click <strong>Save</strong>, then browse to <code>https://vault.tail.example.com</code> from the server. You should see the Vaultwarden login page with a padlock.</p>
+            </div>
+
+            <div id="vw-account">
+                <h3>Create Your Account and Turn On Two-Step Login</h3>
+                <h4>Step 1: Create your account</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=666" target="_blank" rel="noopener">▶ Watch this step (11:06)</a></p>
+                <p>On the login page click <strong>Create account</strong>, enter your email, name and a strong <strong>master password</strong>, then log in.</p>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Your master password <strong>cannot be recovered</strong>, not even from the admin page. Store it somewhere safe.</div></div>
+                <h4>Step 2: Two-step login with an authenticator app</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=690" target="_blank" rel="noopener">▶ Watch this step (11:30)</a></p>
+                <ol>
+                    <li>Go to <strong>Settings → Security → Two-step login</strong>.</li>
+                    <li>Next to <strong>Authenticator app</strong>, click <strong>Manage</strong> and enter your master password.</li>
+                    <li>Scan the QR code with an authenticator app (Microsoft Authenticator, Google Authenticator, etc.).</li>
+                    <li>Type the 6-digit code from the app and click <strong>Turn on</strong>.</li>
+                    <li>Click <strong>View recovery code</strong>, write it down, and keep it somewhere safe. It is the only way back in if you lose your phone.</li>
+                </ol>
+                <h4>Step 3: Test it from another computer</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=761" target="_blank" rel="noopener">▶ Watch this step (12:41)</a></p>
+                <ol>
+                    <li>On your PC, <strong>disconnect</strong> from Tailscale and open <code>https://vault.tail.example.com</code>. It should not load. This is what anyone outside your tailnet sees.</li>
+                    <li><strong>Connect</strong> to Tailscale and reload. The login page appears.</li>
+                    <li>Log in with your master password and the authenticator code.</li>
+                </ol>
+            </div>
+
+            <div id="vw-using">
+                <h3>Using the Vault</h3>
+                <h4>Add a login</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=829" target="_blank" rel="noopener">▶ Watch this step (13:49)</a></p>
+                <ol>
+                    <li>Click <strong>New item → Login</strong>.</li>
+                    <li>Enter a <strong>Name</strong> (e.g. your bank), <strong>Username</strong>, and click the generate icon to create a strong <strong>Password</strong>.</li>
+                    <li>Add the website under <strong>URI</strong> (e.g. <code>https://www.chase.com</code>) so the browser extension can autofill it.</li>
+                    <li>Click <strong>Save</strong>. The site’s logo appears next to the item.</li>
+                </ol>
+                <h4>Set password generator rules</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=928" target="_blank" rel="noopener">▶ Watch this step (15:28)</a></p>
+                <p>Go to <strong>Tools → Generator</strong>, set the length (e.g. <strong>20</strong>) and turn on <strong>special characters</strong>. New passwords use these settings.</p>
+                <h4>Organize with folders</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=952" target="_blank" rel="noopener">▶ Watch this step (15:52)</a></p>
+                <p>Click <strong>New → Folder</strong> (e.g. <em>Finance</em>), then edit an item and choose the folder.</p>
+                <h4>Share passwords with an Organization</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=1140" target="_blank" rel="noopener">▶ Watch this step (19:00)</a></p>
+                <ol>
+                    <li>Click <strong>New organization</strong> and name it (e.g. <em>Family</em>).</li>
+                    <li>Invite family members; each needs their own account on your Vaultwarden server.</li>
+                    <li>When creating an item, set <strong>Owner</strong> to the organization. Everyone in it can see that item (e.g. a shared Netflix login), while your personal items stay private.</li>
+                </ol>
+            </div>
+
+            <div id="vw-apps">
+                <h3>Mobile App and Chrome Extension</h3>
+                <p>Both use the official Bitwarden apps. The device must be <strong>connected to Tailscale</strong> to reach your server.</p>
+                <h4>Mobile app</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=973" target="_blank" rel="noopener">▶ Watch this step (16:13)</a></p>
+                <ol>
+                    <li>Install the Tailscale app on your phone and connect to your tailnet.</li>
+                    <li>Install <strong>Bitwarden</strong> from the App Store or Google Play.</li>
+                    <li>On the login screen, change the server (region) option to <strong>Self-hosted</strong>.</li>
+                    <li>Enter <code>https://vault.tail.example.com</code> as the Server URL and tap <strong>Save</strong>.</li>
+                    <li>Log in with your email, master password and authenticator code.</li>
+                </ol>
+                <h4>Chrome extension</h4>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=1033" target="_blank" rel="noopener">▶ Watch this step (17:13)</a></p>
+                <ol>
+                    <li>Install <strong>Bitwarden Password Manager</strong> from the Chrome Web Store and pin it to the toolbar.</li>
+                    <li>Choose <strong>Self-hosted</strong>, enter <code>https://vault.tail.example.com</code>, and save.</li>
+                    <li>Log in with your email, master password and authenticator code.</li>
+                    <li>Visit a saved site to autofill your login, or create a login on a new site and let Bitwarden offer to save it.</li>
+                </ol>
+            </div>
+
+            <div id="vw-admin">
+                <h3>Enable the Server Admin Page</h3>
+                <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=1200" target="_blank" rel="noopener">▶ Watch this step (20:00)</a></p>
+                <p>The admin page at <code>/admin</code> manages the whole server: view and delete users, and reset a user’s two-step login if they lose their phone. It is off until you give it a password.</p>
+                <h4>Step 1: Generate a hashed admin token</h4>
+                <p>With Vaultwarden running, run the hash tool inside the container and type a strong admin password twice:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/docker/vault
+sudo docker exec -it vaultwarden /vaultwarden hash</code></pre>
+                    </div>
+                </div>
+                <p>It prints a line starting with <code>ADMIN_TOKEN=</code>. Copy the <strong>whole line</strong>.</p>
+                <h4>Step 2: Save it in a .env file</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nano .env</code></pre>
+                    </div>
+                </div>
+                <p>Paste the line. It looks like this (yours will be longer), including the single quotes:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>env</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>ADMIN_TOKEN='$argon2id$v=19$m=65540,t=3,p=4$PASTE-YOUR-HASH-HERE'</code></pre>
+                    </div>
+                </div>
+                <p>Save, exit, and make the file private:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>chmod 600 .env</code></pre>
+                    </div>
+                </div>
+                <h4>Step 3: Add it to the Compose file</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nano docker-compose.yml</code></pre>
+                    </div>
+                </div>
+                <p>Add the <code>ADMIN_TOKEN</code> line inside the <code>environment:</code> block, so it reads:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>    environment:
+      DOMAIN: "https://vault.tail.example.com"
+      ADMIN_TOKEN: ${ADMIN_TOKEN}</code></pre>
+                    </div>
+                </div>
+                <h4>Step 4: Restart and log in</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker compose down
+sudo docker compose up -d</code></pre>
+                    </div>
+                </div>
+                <p>Go to <code>https://vault.tail.example.com/admin</code> and enter the admin password you typed in Step 1 (the plain password, not the hash).</p>
+            </div>
+
+            <div id="vw-maintenance">
+                <h3>Backups and Updates</h3>
+                <h4>Back up the vault</h4>
+                <p>Everything lives in <code>vw-data</code>. Stop the container briefly so the database is consistent, archive the folder, then start it again:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/docker/vault
+sudo docker compose stop
+sudo tar -czf ~/vaultwarden-backup-$(date +%F).tar.gz -C ~/docker/vault vw-data .env docker-compose.yml
+sudo docker compose start
+ls -lh ~/vaultwarden-backup-*.tar.gz</code></pre>
+                    </div>
+                </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Copy backups off the server (another machine, a NAS, or cloud storage). See <a href="#raid">RAID</a> for protecting against a failed disk.</div></div>
+                <h4>Restore from a backup</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/docker/vault
+sudo docker compose down
+sudo tar -xzf ~/vaultwarden-backup-YYYY-MM-DD.tar.gz -C ~/docker/vault
+sudo docker compose up -d</code></pre>
+                    </div>
+                </div>
+                <h4>Update Vaultwarden</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/docker/vault
+sudo docker compose pull
+sudo docker compose up -d
+sudo docker image prune -f</code></pre>
+                    </div>
+                </div>
+                <h4>Troubleshooting</h4>
+                <ul>
+                    <li><strong>The site does not load anywhere</strong>: check the device is connected to Tailscale, and that the <code>*.tail</code> A record points to the server’s current Tailscale IP (<code>tailscale ip -4</code>).</li>
+                    <li><strong>Certificate warning in the browser</strong>: the proxy host is not using the wildcard certificate, or the domain is not under <code>tail.example.com</code>.</li>
+                    <li><strong>502 Bad Gateway</strong>: Vaultwarden is not running or not on port 1776. Run <code>sudo docker ps</code>.</li>
+                    <li><strong>Admin page says the token is invalid</strong>: make sure the whole <code>ADMIN_TOKEN='...'</code> line is in <code>.env</code> with its single quotes, then run <code>sudo docker compose down</code> and <code>sudo docker compose up -d</code>.</li>
+                    <li><strong>Devices do not sync instantly</strong>: turn on <strong>Websockets Support</strong> on the proxy host in NPM.</li>
+                </ul>
+            </div>
         </div>
 
         <div id="home-assistant">

@@ -289,7 +289,7 @@ strong { font-weight: 600; }
 ul, ol { margin: 0 0 12px 22px; }
 li { margin-bottom: 4px; }
 
-p code, li code {
+p code, li code:not(pre code) {
   font-family: 'DM Mono', monospace;
   font-size: 12.5px;
   background: var(--surface2);
@@ -369,6 +369,33 @@ html[data-theme="dark"] .callout.info { background: #10263a; color: #b9daf5; }
 html[data-theme="dark"] .callout.tip { background: #2a2210; color: #f0d59a; }
 html[data-theme="dark"] .callout code { background: rgba(255,255,255,0.08); }
 
+/* ── EMBEDDED VIDEOS ── */
+.video-embed {
+  display: block;
+  width: 100%;
+  max-width: 800px;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
+  border-radius: 8px;
+  margin: 8px 0 12px;
+  background: #000;
+}
+
+/* Links that jump to a moment in the embedded video */
+.video-step { margin: -2px 0 10px; }
+.video-step a {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--accent-pale);
+  color: var(--accent);
+}
+.video-step a:hover { text-decoration: none; filter: brightness(0.97); }
+html[data-theme="dark"] .video-step a { color: #9ccbee; }
+
 /* ── OVERLAY ── */
 .sidebar-overlay {
   display: none;
@@ -427,7 +454,7 @@ html[data-theme="dark"] .main-container > div { background: #151d27; box-shadow:
 html[data-theme="dark"] h2 { color: #e8eef5; }
 html[data-theme="dark"] h3 { color: #c9d6e3; }
 html[data-theme="dark"] #topbar .logo-badge { background: #2e7dbe; }
-html[data-theme="dark"] p code, html[data-theme="dark"] li code { color: #e8eef5; }
+html[data-theme="dark"] p code, html[data-theme="dark"] li code:not(pre code) { color: #e8eef5; }
 html[data-theme="dark"] td { background: #151d27; }
 html[data-theme="dark"] tr:nth-child(even) td { background: #111820; }
 html[data-theme="dark"] .comment { color: #9aa5b4; }
