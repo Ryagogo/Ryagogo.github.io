@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Styles/Projects.css">
     <title>IT Fundamentals Handbook</title>
     <link rel="stylesheet" href="Styles/site.css">
@@ -13,85 +14,126 @@
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+<!-- TOP BAR -->
 <header id="topbar">
-  <span class="topbar-title">IT Fundamentals Handbook</span>
-    <nav aria-label="Main"><ul class="nav-links">
-      <li><a href="index">Home</a></li>
-      <li><a href="Resume">Résumé</a></li>
-      <li><a href="cover">Cover Letter</a></li>
-      <li><a href="Handbook">Merchandising</a></li>
-      <li><a href="Coding">Projects</a></li>
-      <li><a href="contact">Contact</a></li>
-    </ul></nav>
+  <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Open section menu" aria-controls="sidebar" aria-expanded="false">☰</button>
+  <span class="logo-badge">IT</span>
+  <h1>IT Fundamentals Handbook</h1>
+  <nav aria-label="Main"><ul class="nav-links">
+    <li><a href="index">Home</a></li>
+    <li><a href="Resume">Résumé</a></li>
+    <li><a href="cover">Cover Letter</a></li>
+    <li><a href="Handbook">Merchandising</a></li>
+    <li><a href="Coding">Projects</a></li>
+    <li><a href="contact">Contact</a></li>
+  </ul></nav>
 </header>
 
-    <nav class="sidebar-nav" aria-label="Handbook sections">
-        <h3>Handbook Links</h3>
-        <ul>
-            <li><a href="#hypervisors">Hypervisors</a></li>
-            <li class="nav-sub-1"><a href="#proxmox">Proxmox</a></li>
-            
-            <li><a href="#core-services">Core Services</a></li>
-            <li class="nav-sub-1"><a href="#tailscale">Tailscale</a></li>
-            <li class="nav-sub-1"><a href="#ssh">SSH</a></li>
-            <li class="nav-sub-1"><a href="#key-auth">Key Authentication</a></li>
-            
-            <li><a href="#docker">Docker</a></li>
-            <li><a href="#docker-compose">Docker Compose</a></li>
-            <li><a href="#curl">CURL</a></li>
-            <li><a href="#htop">Htop</a></li>
-            <li><a href="#vim-nano">Vim/Nano</a></li>
-            <li><a href="#net-tools">Net-tools</a></li>
-            <li><a href="#samba">Samba</a></li>
-            
-            <li><a href="#static-ip">Static IP</a></li>
-            <li class="nav-sub-1"><a href="#linux-static">Linux Setup</a></li>
-            <li class="nav-sub-1"><a href="#windows-static">Windows Setup</a></li>
-            
-            <li><a href="#dns">DNS</a></li>
-            <li><a href="#website-online">Deploy HTML Site</a></li>
-            <li><a href="#windows-server">Windows Server</a></li>
-            <li><a href="#ntp">NTP Server</a></li>
-            <li><a href="#central-logging">Central Logging</a></li>
-            
-            <li><a href="#containerization">Containerization</a></li>
-            <li class="nav-sub-1"><a href="#k8s-cluster">Kubernetes Cluster</a></li>
-            <li class="nav-sub-2"><a href="#minikube">Minikube</a></li>
-            <li class="nav-sub-2"><a href="#kubeadm">Kubeadm</a></li>
-            <li class="nav-sub-2"><a href="#microk8s">MicroK8s</a></li>
-            
-            <li><a href="#automation">Automation</a></li>
-            <li class="nav-sub-1"><a href="#config-mgmt">Configuration Tools</a></li>
-            
-            <li><a href="#scripting">Scripting</a></li>
-            
-            <li><a href="#security-hardening">Security Hardening</a></li>
-            <li class="nav-sub-1"><a href="#firewall-config">Firewall Setup</a></li>
-            <li class="nav-sub-1"><a href="#ids-ips">IDS/IPS Systems</a></li>
-            <li class="nav-sub-1"><a href="#vulnerability-scan">Vulnerability Scan</a></li>
-            
-            <li><a href="#networking">Networking</a></li>
-            <li><a href="#alerting">Alerting</a></li>
-            <li><a href="#sql">SQL</a></li>
-            <li><a href="#nginx">NGINX</a></li>
-            <li><a href="#bash">Bash</a></li>
-            <li><a href="#powershell">PowerShell</a></li>
-            <li><a href="#vault-warden">Vault Warden</a></li>
-            <li><a href="#home-assistant">Home Assistant</a></li>
-            <li><a href="#plex">Plex</a></li>
-            <li><a href="#raid">RAID</a></li>
-            <li><a href="#pi-hole">Pi-Hole</a></li>
-            <li><a href="#html-section">HTML</a></li>
-            <li><a href="#gpg">GPG</a></li>
-            <li><a href="#backups">Backups</a></li>
-            <li><a href="#mac-addresses">MAC Addresses</a></li>
-            <li><a href="#troubleshoots">Troubleshoots</a></li>
-            <li><a href="#command-dictionary">Command Dictionary</a></li>
-        </ul>
-    </nav>
+<!-- OVERLAY -->
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar" aria-label="Handbook sections">
+
+  <!-- SEARCH -->
+  <div id="sidebar-search-wrap" style="position:relative;">
+    <input type="search" id="sidebar-search" placeholder="Search sections…" aria-label="Search sections" autocomplete="off" oninput="filterNav(this.value)">
+    <span class="search-icon" aria-hidden="true">⌕</span>
+  </div>
+  <div id="search-no-results" class="search-no-results">No results found.</div>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Hypervisors <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#hypervisors">Overview</a>
+      <a class="nav-sub-link" href="#proxmox">Proxmox</a>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Core Services <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#core-services">Overview</a>
+      <a class="nav-sub-link" href="#tailscale">Tailscale</a>
+      <a class="nav-sub-link" href="#ssh">SSH</a>
+      <a class="nav-sub-link" href="#key-auth">Key Authentication</a>
+    </div>
+  </div>
+
+  <a class="nav-top-link" href="#docker">Docker</a>
+  <a class="nav-top-link" href="#docker-compose">Docker Compose</a>
+  <a class="nav-top-link" href="#curl">CURL</a>
+  <a class="nav-top-link" href="#htop">Htop</a>
+  <a class="nav-top-link" href="#vim-nano">Vim/Nano</a>
+  <a class="nav-top-link" href="#net-tools">Net-tools</a>
+  <a class="nav-top-link" href="#samba">Samba</a>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Static IP <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#static-ip">Overview</a>
+      <a class="nav-sub-link" href="#linux-static">Linux Setup</a>
+      <a class="nav-sub-link" href="#windows-static">Windows Setup</a>
+    </div>
+  </div>
+
+  <a class="nav-top-link" href="#dns">DNS</a>
+  <a class="nav-top-link" href="#website-online">Deploy HTML Site</a>
+  <a class="nav-top-link" href="#windows-server">Windows Server</a>
+  <a class="nav-top-link" href="#ntp">NTP Server</a>
+  <a class="nav-top-link" href="#central-logging">Central Logging</a>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Containerization <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#containerization">Overview</a>
+      <a class="nav-sub-link" href="#k8s-cluster">Kubernetes Cluster</a>
+      <a class="nav-sub-link2" href="#minikube">Minikube</a>
+      <a class="nav-sub-link2" href="#kubeadm">Kubeadm</a>
+      <a class="nav-sub-link2" href="#microk8s">MicroK8s</a>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Automation <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#automation">Overview</a>
+      <a class="nav-sub-link" href="#config-mgmt">Configuration Tools</a>
+    </div>
+  </div>
+
+  <a class="nav-top-link" href="#scripting">Scripting</a>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Security Hardening <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#security-hardening">Overview</a>
+      <a class="nav-sub-link" href="#firewall-config">Firewall Setup</a>
+      <a class="nav-sub-link" href="#ids-ips">IDS/IPS Systems</a>
+      <a class="nav-sub-link" href="#vulnerability-scan">Vulnerability Scan</a>
+    </div>
+  </div>
+
+  <a class="nav-top-link" href="#networking">Networking</a>
+  <a class="nav-top-link" href="#alerting">Alerting</a>
+  <a class="nav-top-link" href="#sql">SQL</a>
+  <a class="nav-top-link" href="#nginx">NGINX</a>
+  <a class="nav-top-link" href="#bash">Bash</a>
+  <a class="nav-top-link" href="#powershell">PowerShell</a>
+  <a class="nav-top-link" href="#vault-warden">Vault Warden</a>
+  <a class="nav-top-link" href="#home-assistant">Home Assistant</a>
+  <a class="nav-top-link" href="#plex">Plex</a>
+  <a class="nav-top-link" href="#raid">RAID</a>
+  <a class="nav-top-link" href="#pi-hole">Pi-Hole</a>
+  <a class="nav-top-link" href="#html-section">HTML</a>
+  <a class="nav-top-link" href="#gpg">GPG</a>
+  <a class="nav-top-link" href="#backups">Backups</a>
+  <a class="nav-top-link" href="#mac-addresses">MAC Addresses</a>
+  <a class="nav-top-link" href="#troubleshoots">Troubleshoots</a>
+  <a class="nav-top-link" href="#command-dictionary">Command Dictionary</a>
+</nav>
 
     <main class="main-container" id="main">
-        <h1>IT Fundamentals Handbook</h1>
 
         <div id="hypervisors">
             <h2>Hypervisors</h2>
@@ -1506,6 +1548,97 @@ ip -c a</code></pre>
                 }
             });
         });
+    </script>
+    <script>
+  function toggleNav(header) {
+    const links = header.nextElementSibling;
+    const isOpen = links.classList.contains('open');
+    links.classList.toggle('open', !isOpen);
+    header.classList.toggle('open', !isOpen);
+    header.setAttribute('aria-expanded', String(!isOpen));
+  }
+
+  function toggleSidebar() {
+    const open = document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open', open);
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', String(open));
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
+  }
+
+  // Highlight the sidebar link for the section on screen
+  const navLinks = document.querySelectorAll('#sidebar a[href^="#"]');
+  const targets = [...navLinks].map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  targets.forEach(t => observer.observe(t));
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      const subLinks = link.closest('.nav-sub-links');
+      if (subLinks) {
+        subLinks.classList.add('open');
+        subLinks.previousElementSibling.classList.add('open');
+        subLinks.previousElementSibling.setAttribute('aria-expanded', 'true');
+      }
+      if (window.innerWidth <= 900) closeSidebar();
+    });
+  });
+
+  // Sidebar search
+  function filterNav(query) {
+    const q = query.trim().toLowerCase();
+    const noResults = document.getElementById('search-no-results');
+    let anyVisible = false;
+
+    document.querySelectorAll('#sidebar .nav-top-link').forEach(link => {
+      const match = !q || link.textContent.toLowerCase().includes(q);
+      link.classList.toggle('nav-search-hidden', !match);
+      if (match) anyVisible = true;
+    });
+
+    document.querySelectorAll('#sidebar .nav-section').forEach(section => {
+      const header = section.querySelector('.nav-section-header');
+      const wrap = section.querySelector('.nav-sub-links');
+      const subLinks = wrap.querySelectorAll('a');
+
+      if (!q) {
+        section.classList.remove('nav-search-hidden');
+        subLinks.forEach(a => a.classList.remove('nav-search-hidden'));
+        wrap.classList.remove('open');
+        header.classList.remove('open');
+        header.setAttribute('aria-expanded', 'false');
+        anyVisible = true;
+        return;
+      }
+
+      const headerMatch = header.textContent.toLowerCase().includes(q);
+      let anySubMatch = false;
+      subLinks.forEach(a => {
+        const match = headerMatch || a.textContent.toLowerCase().includes(q);
+        a.classList.toggle('nav-search-hidden', !match);
+        if (match) anySubMatch = true;
+      });
+      section.classList.toggle('nav-search-hidden', !anySubMatch);
+      wrap.classList.toggle('open', anySubMatch);
+      header.classList.toggle('open', anySubMatch);
+      header.setAttribute('aria-expanded', String(anySubMatch));
+      if (anySubMatch) anyVisible = true;
+    });
+
+    noResults.style.display = anyVisible ? 'none' : 'block';
+  }
     </script>
 </body>
 </html>
