@@ -342,6 +342,33 @@ tr:nth-child(even) td { background: var(--surface); }
   font-style: italic;
 }
 
+/* ── CALLOUT BOXES ── */
+.callout {
+  border-radius: 7px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13.5px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.callout.warn { background: #fff5f5; border-left: 4px solid #d63031; color: #8b2020; }
+.callout.info { background: #eef7ff; border-left: 4px solid var(--accent); color: #1a4a6e; }
+.callout.tip { background: #fffbea; border-left: 4px solid var(--gold); color: #6b4a10; }
+.callout code {
+  font-family: 'DM Mono', monospace;
+  font-size: 12.5px;
+  background: rgba(0,0,0,0.06);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+html[data-theme="dark"] .callout.warn { background: #2a1416; color: #f3b1b1; }
+html[data-theme="dark"] .callout.info { background: #10263a; color: #b9daf5; }
+html[data-theme="dark"] .callout.tip { background: #2a2210; color: #f0d59a; }
+html[data-theme="dark"] .callout code { background: rgba(255,255,255,0.08); }
+
 /* ── OVERLAY ── */
 .sidebar-overlay {
   display: none;
