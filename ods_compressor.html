@@ -112,30 +112,51 @@
     color: var(--muted);
     font-size: 0.88rem;
   }
+  #dropzone:focus-visible { border-color: var(--accent); }
+  @media (max-width: 480px) {
+    body { padding: 16px; }
+    .card { padding: 24px 20px; }
+    .row { gap: 12px; }
+    .row .value { text-align: right; overflow-wrap: anywhere; }
+  }
+  html[data-theme="dark"] {
+    --bg: #0f1311;
+    --card: #171c1a;
+    --ink: #e4e8e6;
+    --muted: #a3aca8;
+    --accent: #2f6f4e;
+    --accent-hover: #3a8560;
+    --border: #2c3431;
+    --good: #6cc796;
+  }
+  html[data-theme="dark"] #dropzone.drag { background: #1b2a22; }
+  html[data-theme="dark"] .error { color: #ff8a80; }
 </style>
+<link rel="stylesheet" href="Styles/site.css">
+<script src="Scripts/site.js"></script>
 </head>
 <body>
-  <div class="card">
+  <main class="card">
     <h1>ODS Compressor</h1>
     <p class="sub">Drop in a .ods spreadsheet and it'll be repacked with maximum compression to shrink the file size, right in your browser. Nothing is uploaded anywhere.</p>
 
-    <div id="dropzone">
+    <div id="dropzone" role="button" tabindex="0" aria-label="Choose an .ods file to compress">
       <p><strong>Click to choose a file</strong><br>or drag and drop an .ods file here</p>
-      <input type="file" id="fileInput" accept=".ods">
+      <input type="file" id="fileInput" accept=".ods" aria-label="ODS file">
     </div>
 
-    <div class="spinner" id="spinner">Compressing…</div>
+    <div class="spinner" id="spinner" role="status">Compressing…</div>
 
-    <div class="status" id="status">
+    <div class="status" id="status" aria-live="polite">
       <div class="row"><span class="label">File</span><span class="value" id="fname">—</span></div>
       <div class="row"><span class="label">Original size</span><span class="value" id="origSize">—</span></div>
       <div class="row"><span class="label">Compressed size</span><span class="value" id="newSize">—</span></div>
       <div class="row"><span class="label">Reduction</span><span class="value savings" id="savings">—</span></div>
     </div>
 
-    <button id="downloadBtn">Download compressed file</button>
-    <div class="error" id="error"></div>
-  </div>
+    <button type="button" id="downloadBtn">Download compressed file</button>
+    <div class="error" id="error" role="alert"></div>
+  </main>
 
 <script>
 const dropzone = document.getElementById('dropzone');
@@ -149,6 +170,9 @@ let compressedBlob = null;
 let outFileName = 'compressed.ods';
 
 dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+});
 dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
 dropzone.addEventListener('drop', (e) => {

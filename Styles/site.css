@@ -1,0 +1,104 @@
+/* Shared enhancements loaded on every page after the page's own styles:
+   keyboard focus, small-screen navigation, reduced motion, and the theme toggle.
+   Each page defines its own dark colours under html[data-theme="dark"]. */
+
+html[data-theme="dark"] { color-scheme: dark; }
+
+/* ── Keyboard focus ── */
+:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+}
+html[data-theme="dark"] :focus-visible { outline-color: #93c5fd; }
+
+/* ── Skip link ── */
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -60px;
+  z-index: 10000;
+  padding: 10px 16px;
+  background: #111827;
+  color: #fff !important;
+  border-radius: 6px;
+  font: 600 14px/1.2 system-ui, sans-serif;
+  text-decoration: none;
+}
+.skip-link:focus { top: 8px; }
+
+/* Visually hidden, still read by screen readers */
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Media never wider than the screen ── */
+img, video, canvas, iframe { max-width: 100%; }
+
+/* ── Top navigation on small screens: one swipeable row instead of wrapping off-screen ── */
+@media (max-width: 900px) {
+  .nav-links {
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-wrap: nowrap;
+    justify-content: flex-start !important;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, #000 85%, transparent);
+            mask-image: linear-gradient(to right, #000 85%, transparent);
+    padding-right: 24px;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links li, .nav-links a { flex: 0 0 auto; }
+}
+
+/* ── Theme toggle ── */
+.theme-toggle {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 9999;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #ffffff;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  padding: 0;
+}
+.theme-toggle:hover { transform: translateY(-1px); }
+.theme-toggle .icon-sun { display: none; }
+html[data-theme="dark"] .theme-toggle {
+  background: #1f2937;
+  color: #fbbf24;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+html[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+@media print {
+  .theme-toggle, .skip-link { display: none !important; }
+}
+
+/* ── Respect reduced-motion preference ── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

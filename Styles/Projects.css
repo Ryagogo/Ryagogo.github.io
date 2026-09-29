@@ -181,9 +181,6 @@ p code {
     color: #db2777;
 }
 
-
-}
-
 .comment {
     color: #718096;
     font-style: italic;
@@ -325,26 +322,54 @@ p code {
     gap: 16px;
   }
 
-#topbar h6 {
+#topbar h6, #topbar .topbar-title {
     font-size: 16px;
     font-weight: 600;
     color: #fff;
     letter-spacing: 0.02em;
-</style>
+}
 
-<header id="topbar">
+#topbar > nav { margin-left: auto; display: flex; min-width: 0; }
+.nav-links { margin: 0; padding: 0; }
 
-  
-	
-  <h6>IT Fundamentals Handbook</h6 >
-	
-    <div class="nav-links">
-      <li><a href="index">Home</a></li>
-      <li><a href="Resume">Résumé</a></li>
-      <li><a href="cover">Cover Letter</a></li>
-      <li><a href="Projects">IT Notes</a></li>
-      <li><a href="Coding">Projects</a></li>
-      <li><a href="contact">Contact</a></li>
-    </div>
+@media (max-width: 900px) {
+    #topbar { padding: 0 16px; }
+    #topbar .topbar-title {
+        flex: 0 1 auto;
+        min-width: 0;
+        max-width: 45%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    #topbar > nav { flex: 1 1 auto; }
+}
 
-  
+@media (max-width: 768px) {
+    .main-container { margin-top: 20px; }
+    .main-container img { max-width: 100% !important; }
+    table { display: block; overflow-x: auto; }
+}
+
+/* ── Dark mode ── */
+html[data-theme="dark"] {
+    --bg-color: #0f141b;
+    --text-color: #d7dde5;
+    --primary-color: #9cc3f5;
+    --secondary-color: #7fb0ec;
+    --accent-color: #6ea8ec;
+    --code-bg: #161c25;
+    --code-border: #2b3544;
+    --code-text: #d7dde5;
+    --toc-bg: #121821;
+}
+html[data-theme="dark"] th,
+html[data-theme="dark"] .main-container [style*="background-color: #f2f2f2"] { background-color: #1b2330 !important; }
+html[data-theme="dark"] tr:nth-child(even),
+html[data-theme="dark"] .main-container [style*="#fafafa"],
+html[data-theme="dark"] .main-container [style*="#f9f9f9"] { background-color: #151c26 !important; }
+html[data-theme="dark"] p code { background-color: #1f2733; color: #f472b6; }
+html[data-theme="dark"] .comment { color: #9aa5b4; }
+html[data-theme="dark"] .placeholder-section { background-color: #231a0f; border-color: #c2692a; color: #f0a468; }
+html[data-theme="dark"] .main-container [style*="color: #666"],
+html[data-theme="dark"] .main-container [style*="color: #777"] { color: #9aa5b4 !important; }

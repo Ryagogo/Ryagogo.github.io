@@ -958,38 +958,124 @@ td.red-border-cell:nth-child(4) {
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+  /* ── Small screens: sidebar becomes a slide-out menu ── */
+  #menu-toggle { display: none; }
+  #topbar nav { display: flex; min-width: 0; }
+  #topbar .nav-links { margin: 0; padding: 0; }
+  @media (max-width: 900px) {
+    #menu-toggle {
+      display: flex;
+      position: fixed;
+      top: 10px;
+      left: 8px;
+      z-index: 300;
+      width: 44px;
+      height: 44px;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    #topbar { padding: 0 12px 0 60px; gap: 12px; }
+    #topbar h1 {
+      font-size: 16px;
+      flex: 0 1 auto;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #topbar nav { flex: 1 1 auto; }
+    #sidebar {
+      margin-top: 0;
+      top: 65px;
+      height: calc(100vh - 65px);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 250;
+    }
+    #sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
+    #main { margin-left: 0; min-width: 0; }
+    #content { margin-top: 65px; padding: 20px 14px 48px; max-width: 100%; }
+    .section { padding: 20px 16px; overflow-x: auto; }
+    .code-container { padding: 16px; border-radius: 16px; }
+  }
 
+  #sidebar-header span { color: #8791a3; }
 
+  /* ── Dark mode: content cards go dark, screen mock-ups stay light ── */
+  html[data-theme="dark"] {
+    --bg-page: #0e1014;
+    --bg-content: #1d1c16;
+    --bg-content-alt: #26241b;
+    --border: #4a4526;
+    --link-color: #8cb8f2;
+    --accent-hover: #b0cff7;
+    --warning-red: #ff7a6b;
+    --text-main: #e9e5d3;
+  }
+  html[data-theme="dark"] .section h2,
+  html[data-theme="dark"] .section h3,
+  html[data-theme="dark"] .section p { color: #ece8d6; }
+  html[data-theme="dark"] .section h3 { border-bottom-color: #4a4526; }
+  html[data-theme="dark"] .section li { color: #ddd9c7; }
+  html[data-theme="dark"] .step-list li::before { color: #d6c26a; }
+  html[data-theme="dark"] .screenshot-box { background: #2a2718; border-color: #4a4526; color: #d6c98f; }
+  html[data-theme="dark"] .note { background: #2a2614; color: #ece8d6; }
+  html[data-theme="dark"] .note.red-note { background: #2e1715; }
+  html[data-theme="dark"] .attach-pill { background: #16243a; border-color: #2c4a73; color: #a9c8f5; }
+  html[data-theme="dark"] .custom-table,
+  html[data-theme="dark"] .overlap-table,
+  html[data-theme="dark"] .inspect-table,
+  html[data-theme="dark"] .units-table,
+  html[data-theme="dark"] .dialog-box,
+  html[data-theme="dark"] .email-preview,
+  html[data-theme="dark"] .context-menu,
+  html[data-theme="dark"] .code-table {
+    --link-color: #1a4e99;
+    --warning-red: #c0392b;
+    color-scheme: light;
+    color: #1a1a1a;
+  }
+  html[data-theme="dark"] .units-table,
+  html[data-theme="dark"] .code-table { background: #fff; }
 </style>
+<link rel="stylesheet" href="Styles/site.css">
+<script src="Scripts/site.js"></script>
 </head>
-<button id="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
 
 <body>
+<a class="skip-link" href="#content">Skip to main content</a>
+<button id="menu-toggle" onclick="toggleSidebar()" aria-label="Open section menu" aria-controls="sidebar" aria-expanded="false">&#9776;</button>
 
-<aside id="sidebar">
+<aside id="sidebar" aria-label="Page sections">
   <div id="sidebar-header">
     <h2>Navigation</h2>
     <span>Important Files &amp; Macros</span>
   </div>
   <nav id=nav-header>
 
-    <a class="has-sub"; href="#promotion-macro">Promotion;<span class="chevron">▶</span></a>
+    <a class="has-sub" aria-expanded="false" href="#promotion-macro">Promotion;<span class="chevron" aria-hidden="true">▶</span></a>
     <div class="sub-group">
       <a href="#promotion-macro" class="sub">Promotion Macro</a>
       <a href="#sale-fact-tags" class="sub">Sale Fact Tags</a>
     </div>
 
 
-    <a class="has-sub"; href="#buyer-promo-tracker">Buyer Promo Tracker<span class="chevron">▶</span></a>
+    <a class="has-sub" aria-expanded="false" href="#buyer-promo-tracker">Buyer Promo Tracker<span class="chevron" aria-hidden="true">▶</span></a>
     <div class="sub-group">
       <a href="#sales-update-button" class="sub">Sales Update Button</a>
       <a href="#brand-tabbing" class="sub">Brand Tabbing</a>
       <a href="#assign-tracker-path" class="sub">Assign Tracker Path to Promotion Macro</a>
     </div>
 
-   <a class="has-sub"; href="#Fact-Tags">Fact Tags<span class="chevron">▶</span></a>
+   <a class="has-sub" aria-expanded="false" href="#Fact-Tags">Fact Tags<span class="chevron" aria-hidden="true">▶</span></a>
     <div class="sub-group">
-    <a href="#sale-master"; class="sub">SALE MASTER</a>
+    <a href="#sale-master" class="sub">SALE MASTER</a>
  </div>
 
 <a href="#SQL-Tables">SQL Tables</a>
@@ -1002,14 +1088,14 @@ td.red-border-cell:nth-child(4) {
 
 
 
- <a class="has-sub" href="#inspection-tools">Inspection Tools<span class="chevron">▶</span></a>
+ <a class="has-sub" aria-expanded="false" href="#inspection-tools">Inspection Tools<span class="chevron" aria-hidden="true">▶</span></a>
     <div class="sub-group">
-    <a href="#supplier-inspect-1"; class="sub">Supplier Inspect 1</a>
-    <a href="#supplier-inspect-2"; class="sub">Supplier Inspect 2</a>
-    <a href="#ffinspect-1"; class="sub">FFINSPECT 1</a>
-    <a href="#ffinspect"; class="sub">FFInspect</a>
-    <a href="#class-inspector"; class="sub">CLASS Inspector</a>
-    <a href="#vpnrinfinder"; class="sub">VPNrinfinder</a>
+    <a href="#supplier-inspect-1" class="sub">Supplier Inspect 1</a>
+    <a href="#supplier-inspect-2" class="sub">Supplier Inspect 2</a>
+    <a href="#ffinspect-1" class="sub">FFINSPECT 1</a>
+    <a href="#ffinspect" class="sub">FFInspect</a>
+    <a href="#class-inspector" class="sub">CLASS Inspector</a>
+    <a href="#vpnrinfinder" class="sub">VPNrinfinder</a>
 </div>
   </nav>
 </aside>
@@ -1019,6 +1105,7 @@ td.red-border-cell:nth-child(4) {
     headerLink.addEventListener('click', function(e) {
       e.preventDefault(); // Prevents jumping straight away to allow menu toggle feel
       this.classList.toggle('open');
+      this.setAttribute('aria-expanded', String(this.classList.contains('open')));
       const subGroup = this.nextElementSibling;
       if (subGroup && subGroup.classList.contains('sub-group')) {
         subGroup.classList.toggle('open');
@@ -1027,16 +1114,20 @@ td.red-border-cell:nth-child(4) {
   });
 
   function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar.style.display === 'none' || sidebar.style.display === '') {
-      sidebar.style.display = 'flex';
-    } else {
-      sidebar.style.display = 'none';
-    }
+    const open = document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', String(open));
   }
+
+  // On small screens, close the menu after jumping to a section.
+  document.querySelectorAll('#sidebar nav a:not(.has-sub)').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 900) {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
 </script>
-</body>
-</html>
 
 <!-- MAIN AREA -->
 <div id="main">
@@ -1045,7 +1136,7 @@ td.red-border-cell:nth-child(4) {
 
   <div id="topbar">
     <h1>Important Files and Macros</h1>
-<nav>
+<nav aria-label="Main">
      <ul class="nav-links">
       <li><a href="index">Home</a></li>
       <li><a href="Resume">Résumé</a></li>
@@ -1059,7 +1150,7 @@ td.red-border-cell:nth-child(4) {
   </div>
 
 </header>
-  <div id="content">
+  <main id="content">
 
     <!-- PROMOTION MACRO -->
     <div class="section" id="promotion-macro">
@@ -1651,7 +1742,6 @@ CleanUp:
       </ol>
       <p class="red">*if Brand Tab Name does not match Brand name input on Promotion Macro the macro will be unable to copy information over to Promo tracker. (Text just needs to match)</p>
 
-<body>
 
     <table class="custom-table">
         <tr>
@@ -3208,7 +3298,7 @@ oraerror:
       </table>
     </div>
 
-  </div><!-- /content -->
+  </main><!-- /content -->
 </div><!-- /main -->
 
 <script>
