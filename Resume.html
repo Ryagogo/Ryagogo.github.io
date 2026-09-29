@@ -123,12 +123,12 @@
     .cert-item:last-child{ margin-bottom: 0; }
     .cert-name{ font-size: 0.83rem; font-weight: 700; color: var(--ink); display: block; }
     .cert-meta{ font-size: 0.74rem; color: var(--ink-soft); display: block; margin-top: 1px; }
-    .cert-sub{ font-size: 0.72rem; color: #74808b; display: block; margin-top: 2px; font-style: italic; }
+    .cert-sub{ font-size: 0.72rem; color: #66727d; display: block; margin-top: 2px; font-style: italic; }
 
     .edu-school{ font-size: 0.85rem; font-weight: 700; color: var(--ink); }
     .edu-loc{ font-size: 0.74rem; color: var(--ink-soft); margin-top: 1px; }
     .edu-degree{ font-size: 0.83rem; color: var(--ink-soft); margin-top: 6px; }
-    .edu-note{ font-size: 0.74rem; color: #74808b; font-style: italic; margin-top: 6px; }
+    .edu-note{ font-size: 0.74rem; color: #66727d; font-style: italic; margin-top: 6px; }
 
     /* ---- main content ---- */
     .summary p{ font-size: 0.92rem; color: var(--ink-soft); line-height: 1.65; }
@@ -171,9 +171,29 @@
         .main{ padding: 28px 24px; }
         header{ padding: 32px 24px 24px; }
         .contact-info{ text-align: left; }
-        .name-row{ flex-direction: column; align-items: flex-start; }
+        header .name-row{ flex-direction: column; align-items: flex-start; }
+        .job-header{ flex-direction: column; gap: 2px; }
+        .job-dates{ white-space: normal; }
     }
+    html[data-theme="dark"] .cert-sub, html[data-theme="dark"] .edu-note{ color: #97a1ab; }
+
+    /* ===== DARK MODE ===== */
+    html[data-theme="dark"]{
+        --ink:        #e6e9ed;
+        --ink-soft:   #b4bcc5;
+        --rule:       #3a4450;
+        --rule-light: #2a323c;
+        --accent:     #d4b27f;
+        --paper:      #161b22;
+        --panel:      #1c222b;
+    }
+    html[data-theme="dark"] body{ background: #0d1117; }
+    html[data-theme="dark"] .page{ box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.4); }
+    .contact-info a{ color: inherit; text-decoration: none; }
+    .contact-info a:hover{ text-decoration: underline; }
 </style>
+<link rel="stylesheet" href="Styles/site.css">
+<script src="Scripts/site.js"></script>
 </head>
 <body>
 
@@ -187,8 +207,8 @@
             </div>
             <div class="contact-info">
                 Virginia Beach, VA<br>
-                757-779-1724<br>
-                RyanGray4287@gmail.com
+                <a href="tel:+17577791724">757-779-1724</a><br>
+                <a href="mailto:ryangray4287@gmail.com">RyanGray4287@gmail.com</a>
             </div>
         </div>
     </header>

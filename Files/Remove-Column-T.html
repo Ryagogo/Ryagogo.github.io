@@ -8,16 +8,27 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- SheetJS for Excel processing -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="../Styles/site.css">
+    <script src="../Scripts/site.js"></script>
+    <style>
+        html[data-theme="dark"] body.bg-gray-50 { background: #0f1115; }
+        html[data-theme="dark"] .bg-white { background: #181b21; }
+        html[data-theme="dark"] .border-gray-100 { border-color: #2a2f38; }
+        html[data-theme="dark"] .border-gray-300 { border-color: #3a404b; }
+        html[data-theme="dark"] .text-gray-800 { color: #e8eaed; }
+        html[data-theme="dark"] .text-gray-700 { color: #d0d4da; }
+        html[data-theme="dark"] .text-gray-500 { color: #a9aeb5; }
+    </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-6">
 
-    <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full border border-gray-100">
+    <main class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full border border-gray-100">
         <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">Excel Row Cleaner</h2>
         <p class="text-sm text-gray-500 mb-6 text-center">Upload a file to remove all rows where <strong>Column T</strong> is blank.</p>
 
         <!-- Upload Zone -->
         <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Select Excel File (.xlsx, .xls)</label>
+            <label for="excelFile" class="block text-sm font-medium text-gray-700 mb-2">Select Excel File (.xlsx, .xls)</label>
             <input type="file" id="excelFile" accept=".xlsx, .xls" 
                 class="block w-full text-sm text-gray-500
                 file:mr-4 file:py-2 file:px-4
@@ -29,14 +40,14 @@
         </div>
 
         <!-- Action Button -->
-        <button id="processBtn" 
+        <button type="button" id="processBtn" 
             class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-md transition duration-200 shadow-sm cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed">
             Process & Download
         </button>
 
         <!-- Status Message -->
-        <div id="status" class="mt-4 text-center text-sm font-medium hidden"></div>
-    </div>
+        <div id="status" class="mt-4 text-center text-sm font-medium hidden" role="status" aria-live="polite"></div>
+    </main>
 
     <script>
         document.getElementById('processBtn').addEventListener('click', function() {

@@ -20,7 +20,7 @@
     --warn: #ffb547;
     --danger: #ff5252;
     --text: #e8eaeb;
-    --muted: #6b7074;
+    --muted: #979da2;
     --mono: 'DM Mono', monospace;
     --sans: 'Syne', sans-serif;
   }
@@ -297,10 +297,17 @@
   .btn.loading .btn-text { display: none; }
 
   scrollbar-color: var(--border) var(--surface);
+
+  html { color-scheme: dark; }
+  .upload-zone:focus-within { border-color: var(--accent); }
+  @media (max-width: 600px) {
+    body { padding: 32px 16px 64px; }
+  }
 </style>
+<link rel="stylesheet" href="../Styles/site.css">
 </head>
 <body>
-<div class="wrapper">
+<main class="wrapper">
 
   <header>
     <div class="tag">Excel Processor</div>
@@ -313,8 +320,8 @@
 
   <!-- Upload -->
   <div class="upload-zone" id="dropZone">
-    <input type="file" id="fileInput" accept=".xlsx,.xls">
-    <div class="upload-icon">
+    <input type="file" id="fileInput" accept=".xlsx,.xls" aria-label="Choose an Excel file">
+    <div class="upload-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
         <polyline points="17 8 12 3 7 8"/>
@@ -347,22 +354,22 @@
   </div>
 
   <!-- Log -->
-  <div class="log-box" id="logBox"></div>
+  <div class="log-box" id="logBox" role="log" aria-live="polite"></div>
 
   <!-- Buttons -->
-  <button class="btn" id="runBtn" disabled>
+  <button type="button" class="btn" id="runBtn" disabled>
     <div class="spinner"></div>
     <span class="btn-text">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;margin-top:-2px"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;margin-top:-2px"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       Run Cleanup
     </span>
   </button>
-  <button class="btn btn-outline" id="downloadBtn" disabled>
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;margin-top:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  <button type="button" class="btn btn-outline" id="downloadBtn" disabled>
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;margin-top:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     Download Cleaned File
   </button>
 
-</div>
+</main>
 
 <script>
 const fileInput  = document.getElementById('fileInput');

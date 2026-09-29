@@ -40,7 +40,7 @@
     top: 0; left: 0; right: 0;
     height: var(--header-h);
     background: var(--navy);
-Step 2: Save File 
+    display: flex;
     align-items: center;
     padding: 0 24px;
     z-index: 100;
@@ -3665,28 +3665,106 @@ body {
             background: #e6e6e6;
         }
         
+
+  /* ── Small screens ── */
+  @media (max-width: 900px) {
+    body { margin: 0 !important; padding: 0 !important; }
+    #topbar h1 { flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #main { padding: 24px 18px 60px !important; }
+    #main table { display: block; max-width: 100%; overflow-x: auto; }
+    .section { overflow-x: auto; }
+    #main a, .callout { overflow-wrap: anywhere; }
+  }
+
+  /* ── Dark mode ── */
+  html[data-theme="dark"] {
+    --navy: #0a1420;
+    --navy-mid: #122235;
+    --accent: #4a9fd4;
+    --accent-light: #7cbde6;
+    --accent-pale: #16324a;
+    --surface: #0e141c;
+    --surface2: #1f2a37;
+    --border: #2a3a4d;
+    --text: #d8e0e9;
+    --text-muted: #9aabbd;
+  }
+  html[data-theme="dark"] body { background: var(--surface); color: var(--text); }
+  html[data-theme="dark"] .section { background: #151d27; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+  html[data-theme="dark"] #topbar { background: #0a1420; }
+  html[data-theme="dark"] #topbar .logo-badge { background: #2e7dbe; }
+  html[data-theme="dark"] .section-title,
+  html[data-theme="dark"] .er-category h3,
+  html[data-theme="dark"] .impact-card h4,
+  html[data-theme="dark"] .doc-meta-value,
+  html[data-theme="dark"] .decision-table td:last-child,
+  html[data-theme="dark"] code { color: #e8eef5; }
+  html[data-theme="dark"] .code-container code { color: #e3e3e3; }
+  html[data-theme="dark"] .sub-section-title { color: #c9d6e3; }
+  html[data-theme="dark"] .decision-table thead th { background: #0a1420; }
+  html[data-theme="dark"] .callout.warn { background: #2a1416; color: #f3b1b1; }
+  html[data-theme="dark"] .callout.info { background: #10263a; color: #b9daf5; }
+  html[data-theme="dark"] .callout.tip, html[data-theme="dark"] .steps li.steps-note { background: #2a2210; color: #f0d59a; border-color: #5c4a1a; }
+  html[data-theme="dark"] .callout.success { background: #0f2a1c; color: #a8e2c0; }
+  html[data-theme="dark"] .er-category.success .er-category-icon { background: #0f2a1c; }
+  html[data-theme="dark"] .er-category.action .er-category-icon { background: #2a1416; }
+  html[data-theme="dark"] .chip-red { background: #2a1416; color: #f3a1a1; border-color: #5c2a2a; }
+  html[data-theme="dark"] .chip-yellow { background: #2a2210; color: #f0d59a; border-color: #5c4a1a; }
+  html[data-theme="dark"] .chip-blue { border-color: #2a5577; color: #9ccbee; }
+  html[data-theme="dark"] .chip-green { background: #0f2a1c; color: #9fdcb8; border-color: #255c3d; }
+  html[data-theme="dark"] .nav-section-header .chevron { color: #7ca4c0; }
+  /* Email, spreadsheet and Oracle screen mock-ups stay light, like screenshots */
+  html[data-theme="dark"] #main .email-container,
+  html[data-theme="dark"] #main .steps > div:not(.code-container),
+  html[data-theme="dark"] #main .table-wrapper,
+  html[data-theme="dark"] #main .result-grid,
+  html[data-theme="dark"] #main table:not(.decision-table) {
+    --navy: #0d1b2a;
+    --navy-mid: #1a2f45;
+    --accent: #2e7dbe;
+    --accent-light: #4a9fd4;
+    --accent-pale: #e8f4fc;
+    --surface: #f7f9fc;
+    --surface2: #edf2f7;
+    --border: #d0dae6;
+    --text: #1a2535;
+    --text-muted: #5a6a7e;
+    background: #fff;
+    color: #000;
+    color-scheme: light;
+  }
+  html[data-theme="dark"] #main .email-container code,
+  html[data-theme="dark"] #main .steps > div:not(.code-container) code,
+  html[data-theme="dark"] #main table:not(.decision-table) code { color: var(--navy); }
+  html[data-theme="dark"] #main .section > p[style*="color: #555555"] { color: #a9b6c4 !important; }
+  html[data-theme="dark"] #main [style*="color: var(--navy)"],
+  html[data-theme="dark"] #main [style*="color:var(--navy)"] { color: #e8eef5 !important; }
 </style>
+<link rel="stylesheet" href="Styles/site.css">
+<script src="Scripts/site.js"></script>
 </head>
 <body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
 
 <!-- OVERLAY -->
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
 
 <!-- TOP BAR -->
 <header id="topbar">
-  <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+  <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Open section menu" aria-controls="sidebar" aria-expanded="false">☰</button>
   <span class="logo-badge">NEXCOM</span>
   <h1>Data Steward Team Guide</h1>
   <span class="tagline">Supply Chain Systems · Internal Use Only</span>
 </header>
 
 <!-- SIDEBAR -->
-<nav id="sidebar">
+<nav id="sidebar" aria-label="Guide sections">
 
   <!-- SEARCH -->
   <div id="sidebar-search-wrap" style="position:relative;">
-    <input type="text" id="sidebar-search" placeholder="Search sections…" autocomplete="off" oninput="filterNav(this.value)">
-    <span class="search-icon">⌕</span>
+    <input type="search" id="sidebar-search" placeholder="Search sections…" aria-label="Search sections" autocomplete="off" oninput="filterNav(this.value)">
+    <span class="search-icon" aria-hidden="true">⌕</span>
   </div>
   <div id="search-no-results" class="search-no-results">No results found.</div>
 
@@ -3695,7 +3773,7 @@ body {
   <a class="nav-top-link" href="#doc-guide">Document Decision Guide</a>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">Email Responses <span class="chevron">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Email Responses <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#er-cat-action-required">Action Required</a>
       <a class="nav-sub-link" href="#er-cat-successful">Successful Upload</a>
@@ -3703,7 +3781,7 @@ body {
   </div>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">SQL Query Reference<span class="chevron">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">SQL Query Reference<span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#sql-g1">Check Today's Process Tracker Actions by User</a>
       <a class="nav-sub-link" href="#sql-g2">Check Staging Table Status by Process ID</a>
@@ -3745,7 +3823,7 @@ body {
   </div>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">Adding a Size Code (ID) <span class="chevron">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Adding a Size Code (ID) <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#sizecode-download-template">Download Differentiators Template</a>
       <a class="nav-sub-link" href="#sizecode-diff-group">Creating a new Differentiator Group</a>
@@ -3754,7 +3832,7 @@ body {
   </div>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">Supplier <span class="chevron">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Supplier <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#add-supplier">Adding a Supplier via Item Induction</a>
       <a class="nav-sub-link" href="#primary-supp-list">Updating Primary Supplier — Item List</a>
@@ -3763,7 +3841,7 @@ body {
   </div>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">Non-Merchandise <span class="chevron">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Non-Merchandise <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#nex-gift-card">NEX Gift Cards — Non-Merchandise</a>
       <a class="nav-sub-link" href="#non-merch-fee">Non-Merchandise — Fee Items</a>
@@ -3771,7 +3849,7 @@ body {
   </div>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">Mass UPC Deletion <span class="chevron">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Mass UPC Deletion <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#agc-create-template">Creating Item Induction Template for Mass UPC Deletes</a>
       <a class="nav-sub-link" href="#agc-inducting">Inducting Mass Delete Item Induction Template</a>
@@ -3780,7 +3858,7 @@ body {
   </div>
   <a class="nav-top-link" href="#corporate-delete">Corporate Delete Process</a>
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">Item Reclassification<span class="chevron">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Item Reclassification<span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#reclass-hierarchy-change">Merchandise Hierarchy Change Re-class Process</a>
       <a class="nav-sub-link" href="#reclass-keying-v16">Keying a Re-class in RMS v16</a>
@@ -3801,7 +3879,7 @@ body {
   
   <a class="nav-top-link" href="#template-checker">Updating Template Checker Tables</a>
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">Web Brands <span class="chevron">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Web Brands <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#brand-create-name">Creating a New Web Brand Name</a>
       <a class="nav-sub-link" href="#brand-create-uda2">Creating a New Web Brand UDA (Part 2)</a>
@@ -3813,7 +3891,7 @@ body {
     </div>
   </div>
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">Misc <span class="chevron">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Misc <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#rms16-from-rms10">Creating a v16 Item from an Existing v10 Item</a>
       <a class="nav-sub-link" href="#primary-supp-project">Primary Supplier / Costing Location Project</a>
@@ -12951,15 +13029,18 @@ function copyCode(button) {
     const isOpen = links.classList.contains('open');
     links.classList.toggle('open', !isOpen);
     header.classList.toggle('open', !isOpen);
+    header.setAttribute('aria-expanded', String(!isOpen));
   }
 
   function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('open');
+    const open = document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open', open);
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', String(open));
   }
   function closeSidebar() {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
   }
 
   // Active nav link on scroll

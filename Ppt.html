@@ -20,7 +20,7 @@
     --red: #ef4444;
     --amber: #f59e0b;
     --text: #e2e8f0;
-    --muted: #64748b;
+    --muted: #8b98ab;
     --mono: 'DM Mono', monospace;
     --sans: 'DM Sans', sans-serif;
   }
@@ -82,13 +82,22 @@
   .dupe-badge { font-size: 9px; font-family: var(--mono); background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); border-radius: 3px; padding: 1px 5px; margin-left: 6px; }
   
   .tag-ae { color: #818cf8; } .tag-fe { color: #fb923c; } .tag-email { color: #34d399; }
+
+  html { color-scheme: dark; }
+  .drop-zone:focus-within { border-color: var(--accent); }
+  @media (max-width: 600px) {
+    body { padding: 24px 16px; }
+    .actions { flex-wrap: wrap; }
+    .actions-note { margin-left: 0; width: 100%; }
+  }
 </style>
+<link rel="stylesheet" href="Styles/site.css">
 </head>
 <body>
-<div class="container">
+<main class="container">
 
   <header>
-    <div class="logo">📊</div>
+    <div class="logo" aria-hidden="true">📊</div>
     <div>
       <h1>Ad Tracker Tool Workspace</h1>
       <div class="subtitle">Target Pipeline Asset: <span style="font-family: var(--mono); font-size: 11px; color: var(--accent);">/Files/AdTracker.xlsm</span></div>
@@ -98,8 +107,8 @@
   <div class="card">
     <div class="card-label">Source PowerPoints Workspace</div>
     <div class="drop-zone" id="pptxDrop">
-      <input type="file" id="pptxInput" accept=".pptx" multiple>
-      <div class="drop-icon">📎</div>
+      <input type="file" id="pptxInput" accept=".pptx" multiple aria-label="Choose weekly PPTX files">
+      <div class="drop-icon" aria-hidden="true">📎</div>
       <div class="drop-text">
         <strong>Drop your weekly PPTX files here</strong><br>
         Multiple files are parsed and extracted simultaneously.
@@ -108,7 +117,7 @@
     <div class="file-list" id="fileList"></div>
   </div>
 
-  <div class="log" id="logPanel"></div>
+  <div class="log" id="logPanel" role="log" aria-live="polite"></div>
 
   <div class="card" style="padding:16px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -136,12 +145,12 @@
   </div>
 
   <div class="actions">
-    <button class="btn btn-primary" id="exportBtn" disabled>⬇ Export to Excel Sheet (.xlsm)</button>
-    <button class="btn btn-ghost" id="clearBtn">✕ Clear Queue</button>
-    <span class="actions-note" id="actionsNote">Awaiting processing parameters...</span>
+    <button type="button" class="btn btn-primary" id="exportBtn" disabled>⬇ Export to Excel Sheet (.xlsm)</button>
+    <button type="button" class="btn btn-ghost" id="clearBtn">✕ Clear Queue</button>
+    <span class="actions-note" id="actionsNote" aria-live="polite">Awaiting processing parameters...</span>
   </div>
 
-</div>
+</main>
 
 <script>
 const LOCAL_TEMPLATE_PATH = "/Files/AdTracker.xlsm";
@@ -306,7 +315,7 @@ function renderFileList() {
         <div class="file-week">${pf.adWeek} · ${pf.items.length} items</div>
       </div>
       <span class="file-status ${pf.status === 'ok' ? 'status-ok' : 'status-error'}">${pf.status === 'ok' ? 'PARSED' : 'FAILED'}</span>
-      <button class="remove-btn" onclick="removeFile(${i})">✕</button>
+      <button type="button" class="remove-btn" aria-label="Remove file" onclick="removeFile(${i})">✕</button>
     </div>
   `).join('');
 }

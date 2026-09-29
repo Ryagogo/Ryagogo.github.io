@@ -14,24 +14,40 @@
         .upload-section:hover { background: #e8f0fe; }
         button { background-color: #34a853; color: white; border: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.1rem; transition: 0.2s; }
         button:hover { background-color: #2d8e47; }
-        button:disabled { background-color: #dadce0; cursor: not-allowed; }
+        button:disabled { background-color: #dadce0; color: #5f6368; cursor: not-allowed; }
         #status { margin-top: 15px; font-weight: 500; color: #1967d2; }
+        .instructions { color: #5f6368; }
+        @media (max-width: 540px) {
+            body { padding: 16px; box-sizing: border-box; }
+            .card { padding: 1.75rem 1.25rem; box-sizing: border-box; }
+        }
+        html[data-theme="dark"] body { background-color: #0f1115; }
+        html[data-theme="dark"] .card { background: #181b21; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        html[data-theme="dark"] h2 { color: #e8eaed; }
+        html[data-theme="dark"] .instructions { color: #a9aeb5; }
+        html[data-theme="dark"] .upload-section { background: #1f232b; color: #e8eaed; }
+        html[data-theme="dark"] .upload-section:hover { background: #22304a; }
+        html[data-theme="dark"] button { background-color: #1e7e3a; }
+        html[data-theme="dark"] button:disabled { background-color: #3a3f47; color: #9aa0a6; }
+        html[data-theme="dark"] #status { color: #8ab4f8; }
     </style>
+    <link rel="stylesheet" href="Styles/site.css">
+    <script src="Scripts/site.js"></script>
 </head>
 <body>
 
-<div class="card">
+<main class="card">
     <h2>RMS10 Export Formatter</h2>
     <p class="instructions">Upload your file to remove columns and keep all rows (including Row 1).</p>
     
     <div class="upload-section" onclick="document.getElementById('fileInput').click()">
-        <input type="file" id="fileInput" accept=".xlsx, .xls" style="display:none">
+        <input type="file" id="fileInput" accept=".xlsx, .xls" style="display:none" aria-label="Excel file">
         <span id="fileName">Select Excel File</span>
     </div>
     
-    <button id="processBtn" disabled>Generate Cleaned Export</button>
-    <div id="status"></div>
-</div>
+    <button type="button" id="processBtn" disabled>Generate Cleaned Export</button>
+    <div id="status" role="status" aria-live="polite"></div>
+</main>
 
 <script>
     const fileInput = document.getElementById('fileInput');

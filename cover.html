@@ -150,11 +150,27 @@
         .meta-row{ flex-direction: column; }
         .recipient{ text-align: left; }
     }
+
+    /* ===== DARK MODE ===== */
+    html[data-theme="dark"]{
+        --ink:        #e6e9ed;
+        --ink-soft:   #b4bcc5;
+        --rule:       #3a4450;
+        --rule-light: #2a323c;
+        --accent:     #d4b27f;
+        --paper:      #161b22;
+    }
+    html[data-theme="dark"] body{ background: #0d1117; }
+    html[data-theme="dark"] .page{ box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.4); }
+    .contact-info a{ color: inherit; text-decoration: none; }
+    .contact-info a:hover{ text-decoration: underline; }
 </style>
+<link rel="stylesheet" href="Styles/site.css">
+<script src="Scripts/site.js"></script>
 </head>
 <body>
 
-<div class="page">
+<main class="page">
 
     <header>
         <div>
@@ -163,8 +179,8 @@
         </div>
         <div class="contact-info">
             Virginia Beach, VA<br>
-            757-779-1724<br>
-            RyanGray4287@gmail.com<br>
+            <a href="tel:+17577791724">757-779-1724</a><br>
+            <a href="mailto:ryangray4287@gmail.com">RyanGray4287@gmail.com</a><br>
             <a href="https://www.ryanpgray.com" style="color:inherit;">www.RyanPGray.com</a>
         </div>
     </header>
@@ -197,7 +213,7 @@
     <div class="closing">Sincerely,</div>
     <div class="signature">Ryan Gray</div>
 
-</div>
+</main>
 
 </body>
 </html>

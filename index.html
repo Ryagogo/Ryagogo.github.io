@@ -508,7 +508,7 @@
 
     .footer-copy {
       font-size: 0.75rem;
-      color: rgba(255,255,255,0.35);
+      color: rgba(255,255,255,0.6);
       margin-top: 4px;
     }
 
@@ -520,13 +520,19 @@
       font-size: 0.65rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.55);
     }
 
     .footer-contact-value {
       font-size: 0.84rem;
       color: rgba(255,255,255,0.75);
+      text-decoration: none;
     }
+
+    a.footer-contact-value:hover { color: #fff; text-decoration: underline; }
+    .profile-info-row a { color: inherit; text-decoration: none; }
+    .profile-info-row a:hover { color: var(--cobalt); text-decoration: underline; }
+    .nav-logo { text-decoration: none; }
 
     .footer-socials { display: flex; gap: 10px; }
 
@@ -549,7 +555,6 @@
     /* RESPONSIVE */
     @media (max-width: 900px) {
       nav { padding: 0 20px; }
-      #.nav-links { display: none; }
       .hero { padding: 100px 28px 48px; min-height: auto; }
       .hero-bottom { flex-direction: column; align-items: flex-start; }
       .stats-inner { grid-template-columns: 1fr 1fr; }
@@ -559,13 +564,38 @@
       footer { padding: 32px 20px; }
       .footer-inner { flex-direction: column; align-items: flex-start; }
       .footer-contact { flex-direction: column; gap: 14px; }
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-card.wide { grid-column: auto; }
+      .bento-arrow { opacity: 0.35; }
     }
+
+    /* DARK MODE */
+    html[data-theme="dark"] {
+      --warm-white: #0b0f17;
+      --surface: #151b26;
+      --border: #273142;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+    }
+    html[data-theme="dark"] .about-eyebrow { color: #60a5fa; }
+    html[data-theme="dark"] .about-body { color: #c4c9d1; }
+    html[data-theme="dark"] .profile-info-row { color: #d1d5db; }
+    html[data-theme="dark"] .profile-info-row i { color: #60a5fa; }
+    html[data-theme="dark"] .bento-icon { background: #1c2745; color: #60a5fa; }
+    html[data-theme="dark"] .bento-card.amber-accent .bento-icon { background: #3a2a0c; color: #fbbf24; }
+    html[data-theme="dark"] .bento-arrow { color: #60a5fa; }
+    html[data-theme="dark"] .bento-card:hover { border-color: #60a5fa; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    html[data-theme="dark"] .hero, html[data-theme="dark"] footer { background: #05080d; }
   </style>
+  <link rel="stylesheet" href="Styles/site.css">
+  <script src="Scripts/site.js"></script>
 </head>
 <body>
 
-  <nav>
-    <div class="nav-logo">R<span>.</span>Gray</div>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <nav aria-label="Main">
+    <a class="nav-logo" href="index.html" aria-label="Ryan Gray, home">R<span>.</span>Gray</a>
     <ul class="nav-links">
 
       <li><a href="Resume">Résumé</a></li>
@@ -580,17 +610,17 @@
   </nav>
 
   <section class="hero">
-    <div class="hero-bg-grid"></div>
-    <div class="hero-bg-glow"></div>
+    <div class="hero-bg-grid" aria-hidden="true"></div>
+    <div class="hero-bg-glow" aria-hidden="true"></div>
 
     <div class="hero-badge">
       Available for new opportunities
     </div>
 
-    <div class="hero-name">
+    <h1 class="hero-name">
       Ryan<br>
       <span class="line2">Gray</span>
-    </div>
+    </h1>
 
     <div class="hero-bottom">
       <div class="hero-tagline">
@@ -600,17 +630,17 @@
       </div>
       <div class="hero-actions">
         <a href="Resume.html" class="btn-primary">
-          <i class="fas fa-file-alt"></i> View Resume
+          <i class="fas fa-file-alt" aria-hidden="true"></i> View Resume
         </a>
         <a href="contact.html" class="btn-ghost">
-          Get in touch <i class="fas fa-arrow-right"></i>
+          Get in touch <i class="fas fa-arrow-right" aria-hidden="true"></i>
         </a>
       </div>
     </div>
   </section>
 
   
-  <div class="body-content">
+  <main class="body-content" id="main">
 
     <div>
       <div class="about-eyebrow">About Me</div>
@@ -635,53 +665,53 @@
         <div class="bento-grid" style="margin-top: 14px;">
 
           <a class="bento-card" href="Resume.html">
-            <div class="bento-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="bento-icon"><i class="fas fa-file-alt" aria-hidden="true"></i></div>
             <div>
               <div class="bento-label">Document</div>
               <div class="bento-title">Resume</div>
               <div class="bento-desc">Full work history and skills overview</div>
             </div>
-            <div class="bento-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="bento-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></div>
           </a>
 
           <a class="bento-card" href="cover.html">
-            <div class="bento-icon"><i class="fas fa-pen-nib"></i></div>
+            <div class="bento-icon"><i class="fas fa-pen-nib" aria-hidden="true"></i></div>
             <div>
               <div class="bento-label">Letter</div>
               <div class="bento-title">Cover Letter</div>
               <div class="bento-desc">My story in my own words</div>
             </div>
-            <div class="bento-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="bento-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></div>
           </a>
 
           <a class="bento-card amber-accent" href="macro.html">
-            <div class="bento-icon"><i class="fas fa-code"></i></div>
+            <div class="bento-icon"><i class="fas fa-code" aria-hidden="true"></i></div>
             <div>
               <div class="bento-label">Tools</div>
               <div class="bento-title">Macros</div>
               <div class="bento-desc">Excel &amp; workflow tools I've built</div>
             </div>
-            <div class="bento-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="bento-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></div>
           </a>
 
           <a class="bento-card" href="Projects.html">
-            <div class="bento-icon"><i class="fas fa-laptop-code"></i></div>
+            <div class="bento-icon"><i class="fas fa-laptop-code" aria-hidden="true"></i></div>
             <div>
               <div class="bento-label">Portfolio</div>
               <div class="bento-title">IT Projects</div>
               <div class="bento-desc">Tech work and internal tools</div>
             </div>
-            <div class="bento-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="bento-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></div>
           </a>
 
           <a class="bento-card wide" href="Handbook.html">
-            <div class="bento-icon" style="width:44px;height:44px;font-size:1.1rem;"><i class="fas fa-book-open"></i></div>
+            <div class="bento-icon" style="width:44px;height:44px;font-size:1.1rem;"><i class="fas fa-book-open" aria-hidden="true"></i></div>
             <div>
               <div class="bento-label">Reference</div>
               <div class="bento-title">Merchandiser Handbook</div>
               <div class="bento-desc">A comprehensive guide to how I approach the role</div>
             </div>
-            <div class="bento-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="bento-arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></div>
           </a>
 
         </div>
@@ -698,25 +728,23 @@
           <div class="profile-role">Supply Chain Systems Tech &middot; Virginia Beach, VA</div>
           <div class="profile-divider"></div>
           <div class="profile-info-row">
-            <i class="fas fa-phone"></i>
-            <span>757-779-1724</span>
+            <i class="fas fa-phone" aria-hidden="true"></i>
+            <a href="tel:+17577791724">757-779-1724</a>
           </div>
           <div class="profile-info-row">
-            <i class="fas fa-envelope"></i>
-            <span>ryangray4287@gmail.com</span>
+            <i class="fas fa-envelope" aria-hidden="true"></i>
+            <a href="mailto:ryangray4287@gmail.com">ryangray4287@gmail.com</a>
           </div>
           <div class="profile-info-row">
-            <i class="fas fa-map-marker-alt"></i>
+            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
             <span>Virginia Beach, Virginia</span>
           </div>
-          <div class="profile-socials">
-    
-          </div>
+          <div class="profile-socials"></div>
         </div>
       </div>
     </aside>
 
-  </div>
+  </main>
 
   <footer>
     <div class="footer-inner">
@@ -727,18 +755,18 @@
       <div class="footer-contact">
         <div class="footer-contact-item">
           <div class="footer-contact-label">Call</div>
-          <div class="footer-contact-value">757-779-1724</div>
+          <a class="footer-contact-value" href="tel:+17577791724">757-779-1724</a>
         </div>
         <div class="footer-contact-item">
           <div class="footer-contact-label">Write</div>
-          <div class="footer-contact-value">ryangray4287@gmail.com</div>
+          <a class="footer-contact-value" href="mailto:ryangray4287@gmail.com">ryangray4287@gmail.com</a>
         </div>
       </div>
       <div class="footer-socials">
-        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+        <a href="#" aria-label="Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
       </div>
     </div>
   </footer>

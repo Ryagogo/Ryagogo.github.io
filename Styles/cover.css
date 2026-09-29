@@ -105,3 +105,8 @@ nav a::after {
 nav a:hover::after {
   width: 100%;
 }
+
+@media (max-width: 600px) {
+  body { margin: 0; }
+  .container { margin: 0; padding: 28px 20px; border-radius: 0; }
+}

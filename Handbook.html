@@ -600,7 +600,6 @@
     }
     #topbar h1 { font-size: 14px; }
     #topbar .tagline { display: none; }
-    ul.nav-links { display: none !important; }
 	  
 
  #sidebar {
@@ -625,7 +624,6 @@
     }
 
     #main {
-	  width: 900px;
       margin-left: 0;
       padding: 24px 18px 60px;
     }
@@ -1924,9 +1922,106 @@ header {
     .nav-links a.active { color: #fff; }
 
 
+
+  /* ── Top bar on small screens ── */
+  #topbar > nav { margin-left: auto; display: flex; min-width: 0; }
+  #topbar .nav-links { margin: 0; padding: 0; }
+  @media (max-width: 900px) {
+    #topbar > nav { flex: 1 1 auto; }
+    #topbar h1 {
+      flex: 0 1 auto;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #topbar .topbar-download { display: none; }
+    body { margin: 0 !important; padding: 0 !important; }
+    #main table { display: block; max-width: 100%; overflow-x: auto; }
+    .metadata-container { overflow-x: auto; padding-bottom: 4px; }
+    .scroll-container { overflow-x: auto !important; }
+    .search-input { width: 100% !important; max-width: 320px; min-width: 0; }
+    #main a, .callout { overflow-wrap: anywhere; }
+    .vendor-list-item { flex-wrap: wrap; }
+    .vendor-name { min-width: 0; }
+  }
+  @media (max-width: 480px) {
+    #topbar .logo-link { display: none; }
+  }
+
+  /* ── Dark mode ── */
+  html[data-theme="dark"] {
+    --navy: #0a1420;
+    --navy-mid: #122235;
+    --accent: #4a9fd4;
+    --accent-light: #7cbde6;
+    --accent-pale: #16324a;
+    --surface: #0e141c;
+    --surface2: #1f2a37;
+    --border: #2a3a4d;
+    --text: #d8e0e9;
+    --text-muted: #9aabbd;
+  }
+  html[data-theme="dark"] body { background: var(--surface); color: var(--text); }
+  html[data-theme="dark"] .section,
+  html[data-theme="dark"] .address-box { background: #151d27; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+  html[data-theme="dark"] .section-title,
+  html[data-theme="dark"] .url-card .url-title,
+  html[data-theme="dark"] .two-col-card .col-header,
+  html[data-theme="dark"] .vendor-name,
+  html[data-theme="dark"] .address-box .nexcom-logo,
+  html[data-theme="dark"] .address-box .form-title { color: #e8eef5; }
+  html[data-theme="dark"] .sub-section-title { color: #c9d6e3; }
+  html[data-theme="dark"] .callout.warn { background: #2a1416; color: #f3b1b1; }
+  html[data-theme="dark"] .callout.info { background: #10263a; color: #b9daf5; }
+  html[data-theme="dark"] .callout.tip { background: #2a2210; color: #f0d59a; }
+  html[data-theme="dark"] .callout.success { background: #0f2a1c; color: #a8e2c0; }
+  html[data-theme="dark"] .status-good { background: #151d27; }
+  html[data-theme="dark"] .status-bad { background: #10263a; }
+  html[data-theme="dark"] .tracker-table .green-row td { background: #0f2a1c; color: #a8e2c0; }
+  html[data-theme="dark"] .chip-red { background: #2a1416; color: #f3a1a1; border-color: #5c2a2a; }
+  html[data-theme="dark"] .chip-yellow { background: #2a2210; color: #f0d59a; border-color: #5c4a1a; }
+  html[data-theme="dark"] .chip-blue { border-color: #2a5577; color: #9ccbee; }
+  html[data-theme="dark"] .chip-green { background: #0f2a1c; color: #9fdcb8; border-color: #255c3d; }
+  html[data-theme="dark"] .poc-table td, html[data-theme="dark"] .tracker-table td,
+  html[data-theme="dark"] .results-table td { border-color: #33475c; }
+  html[data-theme="dark"] .poc-table td, html[data-theme="dark"] .results-table td { background: #151d27; }
+  html[data-theme="dark"] .poc-table tr:nth-child(even) td { background: #111820; }
+  html[data-theme="dark"] .poc-table tr:hover td, html[data-theme="dark"] .results-table tr:hover td { background: var(--accent-pale); }
+  html[data-theme="dark"] #topbar .logo-badge { background: #2e7dbe; }
+  html[data-theme="dark"] .nav-section-header .chevron, html[data-theme="dark"] .search-icon { color: #7ca4c0; }
+  html[data-theme="dark"] .search-label { color: var(--text); }
+  html[data-theme="dark"] .search-input { background: #0e141c; color: var(--text); }
+  /* Spreadsheet and form mock-ups stay light, like screenshots */
+  html[data-theme="dark"] #main .table-wrapper,
+  html[data-theme="dark"] #main .metadata-container,
+  html[data-theme="dark"] #main .scroll-container,
+  html[data-theme="dark"] #main table:not(.poc-table):not(.tracker-table):not(.results-table) {
+    --navy: #0d1b2a;
+    --navy-mid: #1a2f45;
+    --accent: #2e7dbe;
+    --accent-light: #4a9fd4;
+    --accent-pale: #e8f4fc;
+    --surface: #f7f9fc;
+    --surface2: #edf2f7;
+    --border: #d0dae6;
+    --text: #1a2535;
+    --text-muted: #5a6a7e;
+    background: #fff;
+    color: #000;
+    color-scheme: light;
+  }
+  html[data-theme="dark"] #main .metadata-container { padding: 8px; border-radius: 4px; }
+  html[data-theme="dark"] #main table:not(.poc-table):not(.tracker-table):not(.results-table) code,
+  html[data-theme="dark"] #main .table-wrapper code { color: inherit; }
+  html[data-theme="dark"] .section > p code, html[data-theme="dark"] li code { color: #e8eef5; }
   </style>
+  <link rel="stylesheet" href="Styles/site.css">
+  <script src="Scripts/site.js"></script>
 </head>
 <body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
 
 <!-- OVERLAY -->
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
@@ -1934,34 +2029,34 @@ header {
 <!-- TOP BAR -->
 <header id="topbar">
 
-  <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
-	<a href="https://intranet.nexad.nexweb.us/Pages/default.aspx"; target="_blank"><span class="logo-badge">NEXCOM</span></a>
-  <h1>Merchandiser Duties Handbook</h1 > <a href="Files/Merchandiser-Duties-Handbook.v2.docx" download>Merchandiser Duties Handbook.v2</a>
+  <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Open section menu" aria-controls="sidebar" aria-expanded="false">&#9776;</button>
+	<a class="logo-link" href="https://intranet.nexad.nexweb.us/Pages/default.aspx" target="_blank" rel="noopener"><span class="logo-badge">NEXCOM</span><span class="sr-only"> intranet (opens in a new tab)</span></a>
+  <h1>Merchandiser Duties Handbook</h1> <a class="topbar-download" href="Files/Merchandiser-Duties-Handbook.v2.docx" download>Merchandiser Duties Handbook.v2</a>
 	
-    <div class="nav-links">
+    <nav aria-label="Main"><ul class="nav-links">
       <li><a href="index">Home</a></li>
       <li><a href="Resume">Résumé</a></li>
       <li><a href="cover">Cover Letter</a></li>
       <li><a href="Projects">IT Notes</a></li>
       <li><a href="Coding">Projects</a></li>
       <li><a href="contact">Contact</a></li>
-    </div>
+    </ul></nav>
 
   
 </header>
 
 <!-- SIDEBAR NAV -->
-<nav id="sidebar">
+<nav id="sidebar" aria-label="Handbook sections">
 
 <!-- SIDEBAR SEARCH BAR -->
 <div id="sidebar-search-wrap" style="position:relative;">
-  <input type="text" id="sidebar-search" placeholder="Search sections…" autocomplete="off" oninput="filterNav(this.value)">
-  <span class="search-icon">⌕</span>
+  <input type="search" id="sidebar-search" placeholder="Search sections…" aria-label="Search sections" autocomplete="off" oninput="filterNav(this.value)">
+  <span class="search-icon" aria-hidden="true">⌕</span>
 </div>
 <div id="search-no-results" class="search-no-results">No results found.</div>
 
 <div class="nav-section">
-    <div class="nav-section-header"; href="#ad-database" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
       AD Database <span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -1999,7 +2094,7 @@ header {
 
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
        Fact Tags <span class="chevron">▶</span>
 </div>
 
@@ -2014,7 +2109,7 @@ header {
 
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
       Frustrated Freights <span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -2028,7 +2123,7 @@ header {
   </div>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
       Item Inductions <span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -2042,7 +2137,7 @@ header {
   </div>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
       Item Lists <span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -2058,7 +2153,7 @@ header {
  
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
       Promotions<span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -2067,7 +2162,7 @@ header {
   </div>
 
  <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
       Purchase Orders<span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -2081,7 +2176,7 @@ header {
   <a class="nav-top-link" href="#person-of-contact">Person of Contact</a>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
       Quick Reference <span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -2096,7 +2191,7 @@ header {
   <a class="nav-top-link" href="#ranging-items">Ranging Items</a>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
       Serialization <span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -2110,7 +2205,7 @@ header {
   <a class="nav-top-link" href="#sql">SQL Reference</a>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
       Vendor Allowances <span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -2126,7 +2221,7 @@ header {
   <a class="nav-top-link" href="#who-can-help">Who Can Help?</a>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">
       Consumer Tech Specific <span class="chevron">▶</span>
     </div>
     <div class="nav-sub-links">
@@ -5210,7 +5305,7 @@ If a range of cells are selected, then, this option is ignored.</li>
     <p><a href="Files/Store-Locations.xlsx">Store Locations Download</a></p>
 <div class="controls-container">
     <span class="search-label">Search</span>
-    <input type="text" id="directorySearch" class="search-input" placeholder="Search by ID, Name, City, Address or Zip...">
+    <input type="text" id="directorySearch" class="search-input" aria-label="Search store directory" placeholder="Search by ID, Name, City, Address or Zip...">
 </div>
 
 
@@ -8609,7 +8704,7 @@ If a range of cells are selected, then, this option is ignored.</li>
     <p><a href="#">Here</a></p>
 <div class="controls-container">
     <span class="search-label">Search:</span>
-    <input type="text" id="vendorSearch" class="search-input" placeholder="Search by DUNS, Vendor, Brand, POC or Notes...">
+    <input type="text" id="vendorSearch" class="search-input" aria-label="Search vendors" placeholder="Search by DUNS, Vendor, Brand, POC or Notes...">
 </div>
 
 <div id="noResultsMessage" class="no-results">✕ No matching vendor directory items found.</div>
@@ -9297,16 +9392,19 @@ justify-content: space-between;
     const isOpen = links.classList.contains('open');
     links.classList.toggle('open', !isOpen);
     header.classList.toggle('open', !isOpen);
+    header.setAttribute('aria-expanded', String(!isOpen));
   }
 
   // Mobile sidebar
   function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('open');
+    const open = document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open', open);
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', String(open));
   }
   function closeSidebar() {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
   }
 
   // Highlight active nav link on scroll
