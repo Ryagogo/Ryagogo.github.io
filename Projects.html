@@ -117,10 +117,29 @@
   <a class="nav-top-link" href="#networking">Networking</a>
   <a class="nav-top-link" href="#alerting">Alerting</a>
   <a class="nav-top-link" href="#sql">SQL</a>
-  <a class="nav-top-link" href="#nginx">NGINX</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">NGINX <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#nginx">Overview</a>
+      <a class="nav-sub-link" href="#nginx-prereqs">Before You Start</a>
+      <a class="nav-sub-link" href="#nginx-install">Install Nginx Proxy Manager</a>
+      <a class="nav-sub-link" href="#nginx-proxy-host">Add a Proxy Host with SSL</a>
+      <a class="nav-sub-link" href="#nginx-maintenance">Updating &amp; Troubleshooting</a>
+    </div>
+  </div>
   <a class="nav-top-link" href="#bash">Bash</a>
   <a class="nav-top-link" href="#powershell">PowerShell</a>
-  <a class="nav-top-link" href="#vault-warden">Vault Warden</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Vault Warden <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#vault-warden">Overview &amp; Video</a>
+      <a class="nav-sub-link" href="#vw-prereqs">Before You Start</a>
+      <a class="nav-sub-link" href="#vw-install">Deploy Vaultwarden</a>
+      <a class="nav-sub-link" href="#vw-proxy">Publish with Nginx Proxy Manager</a>
+      <a class="nav-sub-link" href="#vw-setup">Account &amp; Security</a>
+      <a class="nav-sub-link" href="#vw-maintenance">Backups &amp; Updates</a>
+    </div>
+  </div>
   <a class="nav-top-link" href="#home-assistant">Home Assistant</a>
   <a class="nav-top-link" href="#plex">Plex</a>
   <div class="nav-section">
@@ -1457,7 +1476,256 @@ ip -c a</code></pre>
 
         <div id="nginx">
             <h2>NGINX</h2>
-            <div class="placeholder-section">Section detailing reverse proxy rules pending configuration.</div>
+            <p>NGINX is a web server that is most often used as a <strong>reverse proxy</strong>: it sits in front of your self-hosted apps, receives every request on ports 80/443, adds HTTPS, and forwards each request to the right app based on the domain name (for example <code>vault.example.com</code> → Vaultwarden). This guide uses <strong>Nginx Proxy Manager</strong> (NPM), which runs NGINX in Docker and gives it a web interface for adding sites and free Let’s Encrypt SSL certificates.</p>
+            <p><strong>Video walkthrough:</strong> the tutorial is embedded in the <a href="#vault-warden">Vault Warden</a> section, which uses this proxy.</p>
+
+            <div id="nginx-prereqs">
+                <h3>Before You Start</h3>
+                <ul>
+                    <li>An Ubuntu server you can reach over SSH (see <a href="#ssh">SSH</a>).</li>
+                    <li>Docker and the Docker Compose plugin installed (see <a href="#docker">Docker</a>).</li>
+                    <li>A domain name with DNS <strong>A records</strong> pointing at your public IP, e.g. <code>vault.example.com</code>. A free dynamic-DNS name (DuckDNS, No-IP) also works.</li>
+                    <li>Ports <strong>80</strong> and <strong>443</strong> forwarded on your router to the server’s local IP (see <a href="#static-ip">Static IP</a> so that address never changes).</li>
+                </ul>
+                <p>Confirm Docker and Compose are ready:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker --version
+sudo docker compose version</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="nginx-install">
+                <h3>Install Nginx Proxy Manager</h3>
+                <h4>Step 1: Create a shared Docker network</h4>
+                <p>Every app that sits behind the proxy joins this network, so NPM can reach them by container name without opening extra ports:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker network create proxy</code></pre>
+                    </div>
+                </div>
+                <h4>Step 2: Create a folder for NPM</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkdir -p ~/nginx-proxy-manager
+cd ~/nginx-proxy-manager</code></pre>
+                    </div>
+                </div>
+                <h4>Step 3: Create the Compose file</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nano docker-compose.yml</code></pre>
+                    </div>
+                </div>
+                <p>Paste the following, then save with <code>Ctrl + O</code>, <code>Enter</code>, and exit with <code>Ctrl + X</code>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '81:81'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true</code></pre>
+                    </div>
+                </div>
+                <p>Port <strong>80</strong> and <strong>443</strong> carry website traffic; port <strong>81</strong> is the NPM admin panel.</p>
+                <h4>Step 4: Start it</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker compose up -d
+sudo docker compose ps</code></pre>
+                    </div>
+                </div>
+                <p>The status should say <strong>running</strong> (the first start takes a minute while it downloads).</p>
+                <h4>Step 5: Open the firewall</h4>
+                <p>Allow web traffic, and allow the admin panel only from your home network (change <code>192.168.1.0/24</code> to match your network):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow from 192.168.1.0/24 to any port 81 proto tcp
+sudo ufw status</code></pre>
+                    </div>
+                </div>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Do <strong>not</strong> forward port 81 on your router. The admin panel should never be reachable from the internet.</div></div>
+                <h4>Step 6: Log in to the admin panel</h4>
+                <p>On a computer on the same network, browse to <code>http://SERVER-IP:81</code>.</p>
+                <ul>
+                    <li>Newer versions ask you to create the admin account on the first visit.</li>
+                    <li>Older versions log in with <code>admin@example.com</code> / <code>changeme</code> and immediately ask you to change the name, email and password. Do it.</li>
+                </ul>
+            </div>
+
+            <div id="nginx-proxy-host">
+                <h3>Add a Proxy Host with Free SSL</h3>
+                <p>Repeat these steps for every app you want to publish. The <a href="#vault-warden">Vault Warden</a> section shows the exact values for Vaultwarden.</p>
+                <ol>
+                    <li>Go to <strong>Hosts → Proxy Hosts → Add Proxy Host</strong>.</li>
+                    <li><strong>Details</strong> tab:
+                        <ul>
+                            <li><strong>Domain Names:</strong> the full name, e.g. <code>app.example.com</code></li>
+                            <li><strong>Scheme:</strong> <code>http</code></li>
+                            <li><strong>Forward Hostname / IP:</strong> the app’s <em>container name</em> (it must be on the <code>proxy</code> network)</li>
+                            <li><strong>Forward Port:</strong> the port the app listens on <em>inside</em> its container</li>
+                            <li>Turn on <strong>Block Common Exploits</strong> (and <strong>Websockets Support</strong> if the app needs it)</li>
+                        </ul>
+                    </li>
+                    <li><strong>SSL</strong> tab: choose <strong>Request a new SSL Certificate</strong>, turn on <strong>Force SSL</strong>, <strong>HTTP/2 Support</strong> and <strong>HSTS Enabled</strong>, enter your email, agree to the Let’s Encrypt terms, and click <strong>Save</strong>.</li>
+                    <li>After a few seconds the host shows <strong>Online</strong>. Browse to <code>https://app.example.com</code> and check for the padlock.</li>
+                </ol>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>If the certificate request fails, it is almost always DNS or port forwarding: check that the domain resolves to your public IP (<code>nslookup app.example.com</code>) and that ports 80 and 443 reach the server.</div></div>
+            </div>
+
+            <div id="nginx-maintenance">
+                <h3>Updating and Troubleshooting</h3>
+                <h4>Update Nginx Proxy Manager</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/nginx-proxy-manager
+sudo docker compose pull
+sudo docker compose up -d
+sudo docker image prune -f</code></pre>
+                    </div>
+                </div>
+                <h4>View the logs</h4>
+                <p>Follow the logs live (press <code>Ctrl + C</code> to stop):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/nginx-proxy-manager
+sudo docker compose logs -f</code></pre>
+                    </div>
+                </div>
+                <h4>“Port is already allocated” when starting</h4>
+                <p>Something else (often Apache or a regular NGINX install) is already using port 80 or 443. Find it and stop it:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo ss -tulpn | grep -E ":80 |:443 "</code></pre>
+                    </div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo systemctl disable --now apache2
+sudo systemctl disable --now nginx</code></pre>
+                    </div>
+                </div>
+                <h4>502 Bad Gateway</h4>
+                <p>NPM cannot reach the app. Make sure the app container is running and on the <code>proxy</code> network, and that the Forward Hostname and Port match:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker ps
+sudo docker network inspect proxy</code></pre>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="bash">
@@ -1472,7 +1740,274 @@ ip -c a</code></pre>
 
         <div id="vault-warden">
             <h2>Vault Warden</h2>
-            <div class="placeholder-section">Section defining deployment parameters pending installation.</div>
+            <p><strong>Vaultwarden</strong> is a lightweight, self-hosted server for the <strong>Bitwarden</strong> password manager. You keep all your passwords on your own server and still use the official Bitwarden apps and browser extensions on every device. This guide runs Vaultwarden in Docker behind <a href="#nginx">Nginx Proxy Manager</a> for HTTPS.</p>
+                <iframe class="video-embed" src="https://www.youtube.com/embed/AwJXizTdth0"
+                    title="Vaultwarden and Nginx Proxy Manager video tutorial" loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/AwJXizTdth0" target="_blank" rel="noopener">https://youtu.be/AwJXizTdth0</a></p>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Vaultwarden <strong>requires HTTPS</strong>. The web vault and the Bitwarden apps will not log in over plain <code>http://</code>, which is why it goes behind Nginx Proxy Manager with an SSL certificate.</div></div>
+
+            <div id="vw-prereqs">
+                <h3>Before You Start</h3>
+                <ul>
+                    <li><a href="#nginx">Nginx Proxy Manager</a> installed and running, with the <code>proxy</code> Docker network created.</li>
+                    <li>A DNS A record for the vault, e.g. <code>vault.example.com</code>, pointing at your public IP.</li>
+                    <li>An SSH session to the server (see <a href="#ssh">SSH</a>).</li>
+                </ul>
+            </div>
+
+            <div id="vw-install">
+                <h3>Deploy Vaultwarden</h3>
+                <h4>Step 1: Create a folder for Vaultwarden</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkdir -p ~/vaultwarden
+cd ~/vaultwarden</code></pre>
+                    </div>
+                </div>
+                <h4>Step 2: Create an admin panel password</h4>
+                <p>Vaultwarden has an admin panel for managing users and settings. Generate a secure hash of the password you want to use for it. You will be asked to type the password twice:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker run --rm -it vaultwarden/server /vaultwarden hash</code></pre>
+                    </div>
+                </div>
+                <p>Copy the whole line it prints that starts with <code>$argon2id$</code>, then put it in an environment file:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nano .env</code></pre>
+                    </div>
+                </div>
+                <p>Paste this line, replacing the example with your hash. Keep the <strong>single quotes</strong> around it:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>env</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>ADMIN_TOKEN='$argon2id$v=19$m=65540,t=3,p=4$PASTE-YOUR-HASH-HERE'</code></pre>
+                    </div>
+                </div>
+                <p>Save and exit (<code>Ctrl + O</code>, <code>Enter</code>, <code>Ctrl + X</code>), then make the file readable only by you:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>chmod 600 .env</code></pre>
+                    </div>
+                </div>
+                <h4>Step 3: Create the Compose file</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nano docker-compose.yml</code></pre>
+                    </div>
+                </div>
+                <p>Paste the following. Change <code>vault.example.com</code> to your domain:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DOMAIN: "https://vault.example.com"
+      SIGNUPS_ALLOWED: "true"
+    volumes:
+      - ./vw-data:/data
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true</code></pre>
+                    </div>
+                </div>
+                <p>No <code>ports:</code> are listed on purpose: Vaultwarden is only reachable through Nginx Proxy Manager over the shared <code>proxy</code> network.</p>
+                <h4>Step 4: Start Vaultwarden</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker compose up -d
+sudo docker compose logs -f</code></pre>
+                    </div>
+                </div>
+                <p>Wait for the Rocket startup message saying it has launched, then press <code>Ctrl + C</code> to stop watching the logs (the container keeps running).</p>
+            </div>
+
+            <div id="vw-proxy">
+                <h3>Publish It with Nginx Proxy Manager</h3>
+                <p>Open the NPM admin panel at <code>http://SERVER-IP:81</code>, go to <strong>Hosts → Proxy Hosts → Add Proxy Host</strong>, and enter:</p>
+                <table>
+                    <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>Domain Names</td><td><code>vault.example.com</code></td></tr>
+                        <tr><td>Scheme</td><td><code>http</code></td></tr>
+                        <tr><td>Forward Hostname / IP</td><td><code>vaultwarden</code></td></tr>
+                        <tr><td>Forward Port</td><td><code>80</code></td></tr>
+                        <tr><td>Block Common Exploits</td><td>On</td></tr>
+                        <tr><td>Websockets Support</td><td><strong>On</strong> (needed for live sync between devices)</td></tr>
+                        <tr><td>SSL tab</td><td>Request a new SSL Certificate, Force SSL, HTTP/2 Support, HSTS Enabled, agree to terms</td></tr>
+                    </tbody>
+                </table>
+                <p>Click <strong>Save</strong>. When the host shows <strong>Online</strong>, browse to <code>https://vault.example.com</code>. You should see the Bitwarden-style login page with a padlock in the address bar.</p>
+            </div>
+
+            <div id="vw-setup">
+                <h3>Create Your Account and Lock It Down</h3>
+                <h4>Step 1: Create your account</h4>
+                <p>On the login page, click <strong>Create account</strong>, enter your email and a strong <strong>master password</strong>, and log in.</p>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Your master password <strong>cannot be recovered</strong>, not even by the admin panel. Write it down and store it somewhere safe.</div></div>
+                <h4>Step 2: Turn off public sign-ups</h4>
+                <p>Once everyone who needs an account has one, stop strangers from registering on your server:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/vaultwarden
+sed -i 's/SIGNUPS_ALLOWED: "true"/SIGNUPS_ALLOWED: "false"/' docker-compose.yml
+sudo docker compose up -d</code></pre>
+                    </div>
+                </div>
+                <p>You can still invite people later from the admin panel.</p>
+                <h4>Step 3: Open the admin panel</h4>
+                <p>Browse to <code>https://vault.example.com/admin</code> and log in with the admin password you hashed in Step 2 of the deploy. From here you can invite users, delete accounts, and set up email (SMTP) for invitations and 2FA emails.</p>
+                <h4>Step 4: Turn on two-step login</h4>
+                <p>In the web vault, go to <strong>Settings → Security → Two-step login</strong> and enable an authenticator app. Save the recovery code somewhere safe.</p>
+                <h4>Step 5: Connect your apps</h4>
+                <p>Install the Bitwarden app or browser extension. <strong>Before logging in</strong>, choose the region/server option <strong>Self-hosted</strong> and enter <code>https://vault.example.com</code> as the Server URL. Then log in with your email and master password.</p>
+            </div>
+
+            <div id="vw-maintenance">
+                <h3>Backups and Updates</h3>
+                <h4>Back up the vault</h4>
+                <p>Everything lives in the <code>vw-data</code> folder. Stop the container briefly so the database is consistent, archive the folder, then start it again:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/vaultwarden
+sudo docker compose stop
+sudo tar -czf ~/vaultwarden-backup-$(date +%F).tar.gz -C ~/vaultwarden vw-data .env docker-compose.yml
+sudo docker compose start
+ls -lh ~/vaultwarden-backup-*.tar.gz</code></pre>
+                    </div>
+                </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Copy the backup off the server (another machine, a NAS, or cloud storage). A backup that only lives on the same disk is lost with that disk. See <a href="#raid">RAID</a> for disk redundancy.</div></div>
+                <h4>Restore from a backup</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/vaultwarden
+sudo docker compose down
+sudo tar -xzf ~/vaultwarden-backup-YYYY-MM-DD.tar.gz -C ~/vaultwarden
+sudo docker compose up -d</code></pre>
+                    </div>
+                </div>
+                <h4>Update Vaultwarden</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/vaultwarden
+sudo docker compose pull
+sudo docker compose up -d
+sudo docker image prune -f</code></pre>
+                    </div>
+                </div>
+                <h4>Troubleshooting</h4>
+                <ul>
+                    <li><strong>“This site can’t be reached”</strong>: check DNS and port forwarding for 80/443, and that the proxy host shows Online in NPM.</li>
+                    <li><strong>502 Bad Gateway</strong>: Vaultwarden is not running or not on the <code>proxy</code> network. Run <code>sudo docker ps</code> and <code>sudo docker network inspect proxy</code>.</li>
+                    <li><strong>Admin page says the token is invalid</strong>: the hash in <code>.env</code> must be wrapped in single quotes. Fix it, then run <code>sudo docker compose up -d</code>.</li>
+                    <li><strong>Devices do not sync instantly</strong>: turn on <strong>Websockets Support</strong> on the proxy host in NPM.</li>
+                </ul>
+            </div>
         </div>
 
         <div id="home-assistant">

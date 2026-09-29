@@ -369,6 +369,19 @@ html[data-theme="dark"] .callout.info { background: #10263a; color: #b9daf5; }
 html[data-theme="dark"] .callout.tip { background: #2a2210; color: #f0d59a; }
 html[data-theme="dark"] .callout code { background: rgba(255,255,255,0.08); }
 
+/* ── EMBEDDED VIDEOS ── */
+.video-embed {
+  display: block;
+  width: 100%;
+  max-width: 800px;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
+  border-radius: 8px;
+  margin: 8px 0 12px;
+  background: #000;
+}
+
 /* ── OVERLAY ── */
 .sidebar-overlay {
   display: none;
