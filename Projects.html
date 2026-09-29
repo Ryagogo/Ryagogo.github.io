@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Styles/Projects.css">
     <title>IT Fundamentals Handbook</title>
     <link rel="stylesheet" href="Styles/site.css">
@@ -13,85 +14,135 @@
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+<!-- TOP BAR -->
 <header id="topbar">
-  <span class="topbar-title">IT Fundamentals Handbook</span>
-    <nav aria-label="Main"><ul class="nav-links">
-      <li><a href="index">Home</a></li>
-      <li><a href="Resume">Résumé</a></li>
-      <li><a href="cover">Cover Letter</a></li>
-      <li><a href="Handbook">Merchandising</a></li>
-      <li><a href="Coding">Projects</a></li>
-      <li><a href="contact">Contact</a></li>
-    </ul></nav>
+  <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Open section menu" aria-controls="sidebar" aria-expanded="false">☰</button>
+  <span class="logo-badge">IT</span>
+  <h1>IT Fundamentals Handbook</h1>
+  <nav aria-label="Main"><ul class="nav-links">
+    <li><a href="index">Home</a></li>
+    <li><a href="Resume">Résumé</a></li>
+    <li><a href="cover">Cover Letter</a></li>
+    <li><a href="Handbook">Merchandising</a></li>
+    <li><a href="Coding">Projects</a></li>
+    <li><a href="contact">Contact</a></li>
+  </ul></nav>
 </header>
 
-    <nav class="sidebar-nav" aria-label="Handbook sections">
-        <h3>Handbook Links</h3>
-        <ul>
-            <li><a href="#hypervisors">Hypervisors</a></li>
-            <li class="nav-sub-1"><a href="#proxmox">Proxmox</a></li>
-            
-            <li><a href="#core-services">Core Services</a></li>
-            <li class="nav-sub-1"><a href="#tailscale">Tailscale</a></li>
-            <li class="nav-sub-1"><a href="#ssh">SSH</a></li>
-            <li class="nav-sub-1"><a href="#key-auth">Key Authentication</a></li>
-            
-            <li><a href="#docker">Docker</a></li>
-            <li><a href="#docker-compose">Docker Compose</a></li>
-            <li><a href="#curl">CURL</a></li>
-            <li><a href="#htop">Htop</a></li>
-            <li><a href="#vim-nano">Vim/Nano</a></li>
-            <li><a href="#net-tools">Net-tools</a></li>
-            <li><a href="#samba">Samba</a></li>
-            
-            <li><a href="#static-ip">Static IP</a></li>
-            <li class="nav-sub-1"><a href="#linux-static">Linux Setup</a></li>
-            <li class="nav-sub-1"><a href="#windows-static">Windows Setup</a></li>
-            
-            <li><a href="#dns">DNS</a></li>
-            <li><a href="#website-online">Deploy HTML Site</a></li>
-            <li><a href="#windows-server">Windows Server</a></li>
-            <li><a href="#ntp">NTP Server</a></li>
-            <li><a href="#central-logging">Central Logging</a></li>
-            
-            <li><a href="#containerization">Containerization</a></li>
-            <li class="nav-sub-1"><a href="#k8s-cluster">Kubernetes Cluster</a></li>
-            <li class="nav-sub-2"><a href="#minikube">Minikube</a></li>
-            <li class="nav-sub-2"><a href="#kubeadm">Kubeadm</a></li>
-            <li class="nav-sub-2"><a href="#microk8s">MicroK8s</a></li>
-            
-            <li><a href="#automation">Automation</a></li>
-            <li class="nav-sub-1"><a href="#config-mgmt">Configuration Tools</a></li>
-            
-            <li><a href="#scripting">Scripting</a></li>
-            
-            <li><a href="#security-hardening">Security Hardening</a></li>
-            <li class="nav-sub-1"><a href="#firewall-config">Firewall Setup</a></li>
-            <li class="nav-sub-1"><a href="#ids-ips">IDS/IPS Systems</a></li>
-            <li class="nav-sub-1"><a href="#vulnerability-scan">Vulnerability Scan</a></li>
-            
-            <li><a href="#networking">Networking</a></li>
-            <li><a href="#alerting">Alerting</a></li>
-            <li><a href="#sql">SQL</a></li>
-            <li><a href="#nginx">NGINX</a></li>
-            <li><a href="#bash">Bash</a></li>
-            <li><a href="#powershell">PowerShell</a></li>
-            <li><a href="#vault-warden">Vault Warden</a></li>
-            <li><a href="#home-assistant">Home Assistant</a></li>
-            <li><a href="#plex">Plex</a></li>
-            <li><a href="#raid">RAID</a></li>
-            <li><a href="#pi-hole">Pi-Hole</a></li>
-            <li><a href="#html-section">HTML</a></li>
-            <li><a href="#gpg">GPG</a></li>
-            <li><a href="#backups">Backups</a></li>
-            <li><a href="#mac-addresses">MAC Addresses</a></li>
-            <li><a href="#troubleshoots">Troubleshoots</a></li>
-            <li><a href="#command-dictionary">Command Dictionary</a></li>
-        </ul>
-    </nav>
+<!-- OVERLAY -->
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar" aria-label="Handbook sections">
+
+  <!-- SEARCH -->
+  <div id="sidebar-search-wrap" style="position:relative;">
+    <input type="search" id="sidebar-search" placeholder="Search sections…" aria-label="Search sections" autocomplete="off" oninput="filterNav(this.value)">
+    <span class="search-icon" aria-hidden="true">⌕</span>
+  </div>
+  <div id="search-no-results" class="search-no-results">No results found.</div>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Hypervisors <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#hypervisors">Overview</a>
+      <a class="nav-sub-link" href="#proxmox">Proxmox</a>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Core Services <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#core-services">Overview</a>
+      <a class="nav-sub-link" href="#tailscale">Tailscale</a>
+      <a class="nav-sub-link" href="#ssh">SSH</a>
+      <a class="nav-sub-link" href="#key-auth">Key Authentication</a>
+    </div>
+  </div>
+
+  <a class="nav-top-link" href="#docker">Docker</a>
+  <a class="nav-top-link" href="#docker-compose">Docker Compose</a>
+  <a class="nav-top-link" href="#curl">CURL</a>
+  <a class="nav-top-link" href="#htop">Htop</a>
+  <a class="nav-top-link" href="#vim-nano">Vim/Nano</a>
+  <a class="nav-top-link" href="#net-tools">Net-tools</a>
+  <a class="nav-top-link" href="#samba">Samba</a>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Static IP <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#static-ip">Overview</a>
+      <a class="nav-sub-link" href="#linux-static">Linux Setup</a>
+      <a class="nav-sub-link" href="#windows-static">Windows Setup</a>
+    </div>
+  </div>
+
+  <a class="nav-top-link" href="#dns">DNS</a>
+  <a class="nav-top-link" href="#website-online">Deploy HTML Site</a>
+  <a class="nav-top-link" href="#windows-server">Windows Server</a>
+  <a class="nav-top-link" href="#ntp">NTP Server</a>
+  <a class="nav-top-link" href="#central-logging">Central Logging</a>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Containerization <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#containerization">Overview</a>
+      <a class="nav-sub-link" href="#k8s-cluster">Kubernetes Cluster</a>
+      <a class="nav-sub-link2" href="#minikube">Minikube</a>
+      <a class="nav-sub-link2" href="#kubeadm">Kubeadm</a>
+      <a class="nav-sub-link2" href="#microk8s">MicroK8s</a>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Automation <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#automation">Overview</a>
+      <a class="nav-sub-link" href="#config-mgmt">Configuration Tools</a>
+    </div>
+  </div>
+
+  <a class="nav-top-link" href="#scripting">Scripting</a>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Security Hardening <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#security-hardening">Overview</a>
+      <a class="nav-sub-link" href="#firewall-config">Firewall Setup</a>
+      <a class="nav-sub-link" href="#ids-ips">IDS/IPS Systems</a>
+      <a class="nav-sub-link" href="#vulnerability-scan">Vulnerability Scan</a>
+    </div>
+  </div>
+
+  <a class="nav-top-link" href="#networking">Networking</a>
+  <a class="nav-top-link" href="#alerting">Alerting</a>
+  <a class="nav-top-link" href="#sql">SQL</a>
+  <a class="nav-top-link" href="#nginx">NGINX</a>
+  <a class="nav-top-link" href="#bash">Bash</a>
+  <a class="nav-top-link" href="#powershell">PowerShell</a>
+  <a class="nav-top-link" href="#vault-warden">Vault Warden</a>
+  <a class="nav-top-link" href="#home-assistant">Home Assistant</a>
+  <a class="nav-top-link" href="#plex">Plex</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">RAID <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#raid">Overview</a>
+      <a class="nav-sub-link" href="#raid-levels">Choosing a RAID Level</a>
+      <a class="nav-sub-link" href="#raid-setup">Setup over SSH</a>
+      <a class="nav-sub-link" href="#raid-maintenance">Health &amp; Disk Replacement</a>
+      <a class="nav-sub-link" href="#raid-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+  <a class="nav-top-link" href="#pi-hole">Pi-Hole</a>
+  <a class="nav-top-link" href="#html-section">HTML</a>
+  <a class="nav-top-link" href="#gpg">GPG</a>
+  <a class="nav-top-link" href="#backups">Backups</a>
+  <a class="nav-top-link" href="#mac-addresses">MAC Addresses</a>
+  <a class="nav-top-link" href="#troubleshoots">Troubleshoots</a>
+  <a class="nav-top-link" href="#command-dictionary">Command Dictionary</a>
+</nav>
 
     <main class="main-container" id="main">
-        <h1>IT Fundamentals Handbook</h1>
 
         <div id="hypervisors">
             <h2>Hypervisors</h2>
@@ -1436,7 +1487,559 @@ ip -c a</code></pre>
 
         <div id="raid">
             <h2>RAID</h2>
-            <div class="placeholder-section">Section analyzing redundancy properties combinations pending calculations.</div>
+            <p>RAID (Redundant Array of Independent Disks) combines several physical drives into one logical drive for more speed, more redundancy, or both. This guide builds a <strong>software RAID</strong> on Ubuntu Server with <code>mdadm</code>, entirely over SSH. No hardware RAID card is needed.</p>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div><strong>Creating an array erases every disk you add to it.</strong> Back up anything on those disks first, and double-check the device names before running the create command.</div></div>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>RAID is not a backup.</strong> It keeps the server running when a disk dies, but it will happily mirror an accidental delete, ransomware, or a corrupted file to every disk. Keep separate backups.</div></div>
+
+            <div id="raid-levels">
+                <h3>Choosing a RAID Level</h3>
+                <table>
+                    <thead>
+                        <tr><th>Level</th><th>Min. disks</th><th>Usable space</th><th>Survives</th><th>Best for</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>RAID 0</strong> (stripe)</td><td>2</td><td>100% of all disks</td><td>No disk failures</td><td>Scratch space, speed only. Losing one disk loses everything.</td></tr>
+                        <tr><td><strong>RAID 1</strong> (mirror)</td><td>2</td><td>Size of one disk</td><td>All but one disk</td><td>Boot/OS data, small home servers. Simple and safe.</td></tr>
+                        <tr><td><strong>RAID 5</strong> (parity)</td><td>3</td><td>Total − 1 disk</td><td>1 disk</td><td>Media and file storage with a good balance of space and safety.</td></tr>
+                        <tr><td><strong>RAID 6</strong> (double parity)</td><td>4</td><td>Total − 2 disks</td><td>2 disks</td><td>Large arrays of big drives, where rebuilds take a long time.</td></tr>
+                        <tr><td><strong>RAID 10</strong> (mirror + stripe)</td><td>4</td><td>50% of all disks</td><td>1 disk per mirror pair</td><td>VMs and databases that need speed and redundancy.</td></tr>
+                    </tbody>
+                </table>
+                <p>Use disks of the same size. The array treats every member as the size of the smallest one.</p>
+            </div>
+
+            <div id="raid-setup">
+                <h3>Setting Up a RAID Array over SSH</h3>
+                <p>The examples below use the disks <code>/dev/sdb</code>, <code>/dev/sdc</code>, <code>/dev/sdd</code> and <code>/dev/sde</code>, the array name <code>/dev/md0</code>, and the mount point <code>/mnt/raid</code>. Replace the disk names with your own from Step 3.</p>
+                <h4>Step 1: Connect to the server</h4>
+                <p>From your computer, open a terminal (PowerShell on Windows) and connect:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>ssh username@server-ip</code></pre>
+                    </div>
+                </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>If you lose the SSH connection while the array is building, nothing breaks. The build keeps running on the server. Just reconnect and check progress with <code>cat /proc/mdstat</code>.</div></div>
+                <h4>Step 2: Update the system and install mdadm</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt update
+sudo apt upgrade -y
+sudo apt install mdadm -y</code></pre>
+                    </div>
+                </div>
+                <p>If the installer shows a mail configuration screen (Postfix), choose <strong>No configuration</strong> unless you already run a mail server.</p>
+                <h4>Step 3: Identify the disks</h4>
+                <p>List every disk with its size and whether it is already in use:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>lsblk -o NAME,SIZE,FSTYPE,TYPE,MOUNTPOINTS</code></pre>
+                    </div>
+                </div>
+                <p>For more detail, including the model of each disk:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo fdisk -l</code></pre>
+                    </div>
+                </div>
+                <p>The new, empty disks usually show no partitions and no mount point. Write down their names (for example <code>sdb</code>, <code>sdc</code>).</p>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Do <strong>not</strong> use the disk that holds Ubuntu. It is the one with partitions mounted at <code>/</code> or <code>/boot</code>, usually <code>sda</code> or <code>nvme0n1</code>.</div></div>
+                <h4>Step 4: Wipe old data from the disks</h4>
+                <p>Remove any old partition tables or filesystem signatures (list every disk you will use):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo wipefs -a /dev/sdb /dev/sdc</code></pre>
+                    </div>
+                </div>
+                <p>If a disk was ever part of another RAID array, also clear its old RAID metadata. An error saying “Unrecognised md component device” just means there was nothing to clear.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mdadm --zero-superblock /dev/sdb /dev/sdc</code></pre>
+                    </div>
+                </div>
+                <h4>Step 5: Create the array</h4>
+                <p>Run <strong>only the one command</strong> for the RAID level you chose. When asked <em>Continue creating array?</em>, type <code>y</code> and press Enter.</p>
+                <p><strong>RAID 1</strong> (2 disks):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mdadm --create --verbose /dev/md0 --level=1 --raid-devices=2 /dev/sdb /dev/sdc</code></pre>
+                    </div>
+                </div>
+                <p><strong>RAID 5</strong> (3 disks):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mdadm --create --verbose /dev/md0 --level=5 --raid-devices=3 /dev/sdb /dev/sdc /dev/sdd</code></pre>
+                    </div>
+                </div>
+                <p><strong>RAID 6</strong> (4 disks):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mdadm --create --verbose /dev/md0 --level=6 --raid-devices=4 /dev/sdb /dev/sdc /dev/sdd /dev/sde</code></pre>
+                    </div>
+                </div>
+                <p><strong>RAID 10</strong> (4 disks):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mdadm --create --verbose /dev/md0 --level=10 --raid-devices=4 /dev/sdb /dev/sdc /dev/sdd /dev/sde</code></pre>
+                    </div>
+                </div>
+                <p><strong>RAID 0</strong> (2 disks, no redundancy):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mdadm --create --verbose /dev/md0 --level=0 --raid-devices=2 /dev/sdb /dev/sdc</code></pre>
+                    </div>
+                </div>
+                <h4>Step 6: Watch the initial sync</h4>
+                <p>RAID 1, 5, 6 and 10 now sync the disks in the background. This can take hours on large drives. Check progress:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cat /proc/mdstat</code></pre>
+                    </div>
+                </div>
+                <p>Or refresh it every 5 seconds (press <code>Ctrl + C</code> to stop watching):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>watch -n 5 cat /proc/mdstat</code></pre>
+                    </div>
+                </div>
+                <p>You can keep going with the next steps while it syncs. The array is usable right away, just slower until the sync finishes.</p>
+                <h4>Step 7: Create a filesystem</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mkfs.ext4 -F /dev/md0</code></pre>
+                    </div>
+                </div>
+                <h4>Step 8: Mount the array</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mkdir -p /mnt/raid
+sudo mount /dev/md0 /mnt/raid</code></pre>
+                    </div>
+                </div>
+                <p>Confirm it is mounted and shows the expected size:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>df -h /mnt/raid</code></pre>
+                    </div>
+                </div>
+                <h4>Step 9: Make the array survive a reboot</h4>
+                <p>Save the array layout so Ubuntu reassembles it at boot:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mdadm --detail --scan | sudo tee -a /etc/mdadm/mdadm.conf
+sudo update-initramfs -u</code></pre>
+                    </div>
+                </div>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Run the <code>tee -a</code> command above only once. Running it twice adds a duplicate ARRAY line. If that happens, open the file with <code>sudo nano /etc/mdadm/mdadm.conf</code> and delete the extra line.</div></div>
+                <p>Add the array to <code>/etc/fstab</code> by its UUID so it mounts automatically. <code>nofail</code> lets the server still boot if the array has a problem:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>echo "UUID=$(sudo blkid -s UUID -o value /dev/md0) /mnt/raid ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab</code></pre>
+                    </div>
+                </div>
+                <p>Test the fstab entry without rebooting. No output from <code>mount -a</code> means it worked:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo umount /mnt/raid
+sudo mount -a
+findmnt /mnt/raid</code></pre>
+                    </div>
+                </div>
+                <h4>Step 10: Give your user access</h4>
+                <p>The new filesystem is owned by root. Let your own account read and write to it:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo chown -R $USER:$USER /mnt/raid</code></pre>
+                    </div>
+                </div>
+                <h4>Step 11: Reboot and verify</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo reboot</code></pre>
+                    </div>
+                </div>
+                <p>Wait a minute, reconnect with SSH, then check the array:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>ssh username@server-ip</code></pre>
+                    </div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cat /proc/mdstat
+sudo mdadm --detail /dev/md0
+df -h /mnt/raid</code></pre>
+                    </div>
+                </div>
+                <p>In the <code>mdadm --detail</code> output, look for <strong>State : clean</strong> (or <em>active</em>) and every disk listed as <strong>active sync</strong>.</p>
+            </div>
+
+            <div id="raid-maintenance">
+                <h3>Checking Health and Replacing a Failed Disk</h3>
+                <h4>Check array health</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cat /proc/mdstat
+sudo mdadm --detail /dev/md0</code></pre>
+                    </div>
+                </div>
+                <p>In <code>/proc/mdstat</code>, <code>[UU]</code> means every disk is up. An underscore, such as <code>[U_]</code>, means a disk has failed or is missing and the array is running <strong>degraded</strong>.</p>
+                <p>Check a single disk’s own health report (install the tools first):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt install smartmontools -y
+sudo smartctl -H /dev/sdb</code></pre>
+                    </div>
+                </div>
+                <h4>Replace a failed disk</h4>
+                <p>1. Find which disk failed (it is marked <em>faulty</em> or <em>removed</em>):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mdadm --detail /dev/md0</code></pre>
+                    </div>
+                </div>
+                <p>2. Mark the disk as failed and remove it from the array (replace <code>/dev/sdc</code> with the failed disk):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mdadm /dev/md0 --fail /dev/sdc
+sudo mdadm /dev/md0 --remove /dev/sdc</code></pre>
+                    </div>
+                </div>
+                <p>3. Note the failed disk’s serial number so you pull the right physical drive, then shut down and swap it:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo smartctl -i /dev/sdc | grep -i serial
+sudo shutdown now</code></pre>
+                    </div>
+                </div>
+                <p>4. After booting back up and reconnecting over SSH, find the new disk’s name with <code>lsblk</code>, then add it to the array (here the new disk is <code>/dev/sdf</code>):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>lsblk -o NAME,SIZE,FSTYPE,TYPE,MOUNTPOINTS
+sudo wipefs -a /dev/sdf
+sudo mdadm /dev/md0 --add /dev/sdf</code></pre>
+                    </div>
+                </div>
+                <p>5. Watch the rebuild until it reaches 100%:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>watch -n 5 cat /proc/mdstat</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="raid-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <h4>The array shows up as /dev/md127 after a reboot</h4>
+                <p>The layout was not saved in Step 9. Stop the array, reassemble it under the right name, and save the config:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo umount /mnt/raid
+sudo mdadm --stop /dev/md127
+sudo mdadm --assemble --scan
+sudo mdadm --detail --scan | sudo tee -a /etc/mdadm/mdadm.conf
+sudo update-initramfs -u
+sudo mount -a</code></pre>
+                    </div>
+                </div>
+                <h4>The array is inactive or not mounted after a reboot</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mdadm --assemble --scan
+sudo mount -a
+cat /proc/mdstat</code></pre>
+                    </div>
+                </div>
+                <h4>“Device or resource busy” when creating or stopping the array</h4>
+                <p>Something is still using the disk. Check for mount points, then unmount before trying again:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>lsblk -o NAME,MOUNTPOINTS
+sudo umount /dev/sdb1</code></pre>
+                    </div>
+                </div>
+                <h4>Deleting an array completely</h4>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>This permanently destroys all data on the array.</div></div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo umount /mnt/raid
+sudo mdadm --stop /dev/md0
+sudo mdadm --zero-superblock /dev/sdb /dev/sdc</code></pre>
+                    </div>
+                </div>
+                <p>Then remove the <code>/dev/md0</code> line from <code>/etc/mdadm/mdadm.conf</code> and the <code>/mnt/raid</code> line from <code>/etc/fstab</code> (<code>sudo nano</code> each file), and run <code>sudo update-initramfs -u</code>.</p>
+            </div>
         </div>
 
         <div id="pi-hole">
@@ -1506,6 +2109,97 @@ ip -c a</code></pre>
                 }
             });
         });
+    </script>
+    <script>
+  function toggleNav(header) {
+    const links = header.nextElementSibling;
+    const isOpen = links.classList.contains('open');
+    links.classList.toggle('open', !isOpen);
+    header.classList.toggle('open', !isOpen);
+    header.setAttribute('aria-expanded', String(!isOpen));
+  }
+
+  function toggleSidebar() {
+    const open = document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open', open);
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', String(open));
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
+  }
+
+  // Highlight the sidebar link for the section on screen
+  const navLinks = document.querySelectorAll('#sidebar a[href^="#"]');
+  const targets = [...navLinks].map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  targets.forEach(t => observer.observe(t));
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      const subLinks = link.closest('.nav-sub-links');
+      if (subLinks) {
+        subLinks.classList.add('open');
+        subLinks.previousElementSibling.classList.add('open');
+        subLinks.previousElementSibling.setAttribute('aria-expanded', 'true');
+      }
+      if (window.innerWidth <= 900) closeSidebar();
+    });
+  });
+
+  // Sidebar search
+  function filterNav(query) {
+    const q = query.trim().toLowerCase();
+    const noResults = document.getElementById('search-no-results');
+    let anyVisible = false;
+
+    document.querySelectorAll('#sidebar .nav-top-link').forEach(link => {
+      const match = !q || link.textContent.toLowerCase().includes(q);
+      link.classList.toggle('nav-search-hidden', !match);
+      if (match) anyVisible = true;
+    });
+
+    document.querySelectorAll('#sidebar .nav-section').forEach(section => {
+      const header = section.querySelector('.nav-section-header');
+      const wrap = section.querySelector('.nav-sub-links');
+      const subLinks = wrap.querySelectorAll('a');
+
+      if (!q) {
+        section.classList.remove('nav-search-hidden');
+        subLinks.forEach(a => a.classList.remove('nav-search-hidden'));
+        wrap.classList.remove('open');
+        header.classList.remove('open');
+        header.setAttribute('aria-expanded', 'false');
+        anyVisible = true;
+        return;
+      }
+
+      const headerMatch = header.textContent.toLowerCase().includes(q);
+      let anySubMatch = false;
+      subLinks.forEach(a => {
+        const match = headerMatch || a.textContent.toLowerCase().includes(q);
+        a.classList.toggle('nav-search-hidden', !match);
+        if (match) anySubMatch = true;
+      });
+      section.classList.toggle('nav-search-hidden', !anySubMatch);
+      wrap.classList.toggle('open', anySubMatch);
+      header.classList.toggle('open', anySubMatch);
+      header.setAttribute('aria-expanded', String(anySubMatch));
+      if (anySubMatch) anyVisible = true;
+    });
+
+    noResults.style.display = anyVisible ? 'none' : 'block';
+  }
     </script>
 </body>
 </html>
