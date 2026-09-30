@@ -280,6 +280,8 @@
   .file-card .file-type { font-size: 12px; color: var(--text-muted); }
   .section .file-card a { font-size: 13px; font-weight: 600; margin-top: 4px; }
   .section .file-card a::before { content: '⬇ '; }
+  .section .file-card.tool a::before { content: none; }
+  .section .file-card.tool a::after { content: ' →'; }
 
   /* ── NOTES & CALLOUTS ── */
   .screenshot-box {
@@ -984,12 +986,14 @@ td.red-border-cell:nth-child(4) {
   <span class="logo-badge">NEXCOM</span>
   <h1>Important Files and Macros</h1>
   <nav aria-label="Main"><ul class="nav-links">
-    <li><a href="index">Home</a></li>
-    <li><a href="Resume">Résumé</a></li>
-    <li><a href="cover">Cover Letter</a></li>
-    <li><a href="Handbook">Merchandising</a></li>
-    <li><a href="Projects">IT Notes</a></li>
-    <li><a href="contact">Contact</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="Resume.html">Résumé</a></li>
+    <li><a href="cover.html">Cover Letter</a></li>
+    <li><a href="Handbook.html">Merchandising</a></li>
+    <li><a href="DST_Handbook10.html">Data Steward</a></li>
+    <li><a href="Projects.html">IT Notes</a></li>
+    <li><a href="Coding.html" aria-current="page">Macros &amp; Files</a></li>
+    <li><a href="contact.html">Contact</a></li>
   </ul></nav>
 </header>
 
@@ -1035,6 +1039,7 @@ td.red-border-cell:nth-child(4) {
       <a class="nav-sub-link" href="#MSA-Template">MSA Template</a>
       <a class="nav-sub-link" href="#Hardlines-Report">Hardlines Buyer Promo Report</a>
       <a class="nav-sub-link" href="#Item-List">Item Lists</a>
+      <a class="nav-sub-link" href="#web-tools">Web Tools</a>
     </div>
   </div>
   <div class="nav-section">
@@ -2170,6 +2175,16 @@ CleanUp:
       <span class="file-type">Macro-enabled workbook (.xlsm)</span>
       <a href="Files/SKULIST.xlsm" download>Download SKU List</a>
     </div>
+  </div>
+
+  <h3 id="web-tools">Web Tools</h3>
+  <p>Browser-based helpers. Files are processed on your own computer and never uploaded.</p>
+  <div class="file-grid">
+    <div class="file-card tool"><span class="file-title">ODS Compressor</span><span class="file-type">Shrinks .ods spreadsheets</span><a href="ods_compressor.html">Open tool</a></div>
+    <div class="file-card tool"><span class="file-title">RMS10 Export Formatter</span><span class="file-type">Removes unneeded columns from RMS10 exports</span><a href="macro.html">Open tool</a></div>
+    <div class="file-card tool"><span class="file-title">Ad Tracker Workspace</span><span class="file-type">Extracts ad items from weekly PowerPoints</span><a href="Ppt.html">Open tool</a></div>
+    <div class="file-card tool"><span class="file-title">Data Cleanup Tool</span><span class="file-type">Runs the standard Excel cleanup steps</span><a href="Files/data_cleanup.html">Open tool</a></div>
+    <div class="file-card tool"><span class="file-title">Excel Row Cleaner</span><span class="file-type">Removes rows where Column T is blank</span><a href="Files/Remove-Column-T.html">Open tool</a></div>
   </div>
 </div>
 

@@ -113,3 +113,38 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
   cursor: help;
   border-radius: 3px;
 }
+
+/* Current page in the top menu */
+.nav-links a[aria-current="page"] { color: #fff !important; background: rgba(255, 255, 255, 0.12); }
+
+/* Slim site menu for the résumé and cover letter (hidden when printing) */
+.site-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  height: 52px;
+  background: #111827;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.site-topnav .site-topnav-name { color: #fff; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.site-topnav .nav-links { display: flex; gap: 2px; list-style: none; margin: 0 0 0 auto; padding: 0; min-width: 0; }
+.site-topnav .nav-links a {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.site-topnav .nav-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+@media (max-width: 900px) { .site-topnav { padding: 0 12px; gap: 10px; } }
+@media print { .site-topnav { display: none !important; } }
