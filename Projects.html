@@ -61,7 +61,6 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Hypervisors <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#hypervisors">Overview</a>
       <a class="nav-sub-link" href="#proxmox">Proxmox</a>
     </div>
   </div>
@@ -69,7 +68,6 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Core Services <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#core-services">Overview</a>
       <a class="nav-sub-link" href="#tailscale">Tailscale</a>
       <a class="nav-sub-link" href="#ssh">SSH</a>
       <a class="nav-sub-link" href="#key-auth">Key Authentication</a>
@@ -87,7 +85,6 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Static IP <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#static-ip">Overview</a>
       <a class="nav-sub-link" href="#linux-static">Linux Setup</a>
       <a class="nav-sub-link" href="#windows-static">Windows Setup</a>
     </div>
@@ -102,7 +99,6 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Containerization <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#containerization">Overview</a>
       <a class="nav-sub-link" href="#k8s-cluster">Kubernetes Cluster</a>
       <a class="nav-sub-link2" href="#minikube">Minikube</a>
       <a class="nav-sub-link2" href="#kubeadm">Kubeadm</a>
@@ -113,7 +109,6 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Automation <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#automation">Overview</a>
       <a class="nav-sub-link" href="#config-mgmt">Configuration Tools</a>
     </div>
   </div>
@@ -123,7 +118,6 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Security Hardening <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#security-hardening">Overview</a>
       <a class="nav-sub-link" href="#firewall-config">Firewall Setup</a>
       <a class="nav-sub-link" href="#ids-ips">IDS/IPS Systems</a>
       <a class="nav-sub-link" href="#vulnerability-scan">Vulnerability Scan</a>
@@ -136,7 +130,7 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">NGINX <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#nginx">Overview &amp; Video</a>
+      <a class="nav-sub-link" href="#nginx">Video Tutorial</a>
       <a class="nav-sub-link" href="#nginx-prereqs">Before You Start</a>
       <a class="nav-sub-link" href="#nginx-install">Install Nginx Proxy Manager</a>
       <a class="nav-sub-link" href="#nginx-wildcard-cert">Wildcard SSL (Cloudflare)</a>
@@ -149,7 +143,7 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Vault Warden <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#vault-warden">Overview &amp; Video</a>
+      <a class="nav-sub-link" href="#vault-warden">Video Tutorial</a>
       <a class="nav-sub-link" href="#vw-prereqs">Before You Start</a>
       <a class="nav-sub-link" href="#vw-tailscale">Connect to Tailscale</a>
       <a class="nav-sub-link" href="#vw-dns">Cloudflare DNS Record</a>
@@ -167,7 +161,6 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">RAID <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#raid">Overview</a>
       <a class="nav-sub-link" href="#raid-levels">Choosing a RAID Level</a>
       <a class="nav-sub-link" href="#raid-setup">Setup over SSH</a>
       <a class="nav-sub-link" href="#raid-maintenance">Health &amp; Disk Replacement</a>
@@ -187,9 +180,11 @@
 
         <div id="hypervisors">
             <h2>Hypervisors</h2>
+            <p class="tool-overview"><strong>What it is:</strong> A hypervisor is software that runs several virtual machines (VMs) on one physical computer, giving each VM its own share of CPU, memory and storage. Type 1 (bare-metal) hypervisors such as Proxmox, VMware ESXi and Hyper-V run directly on the hardware, which makes them the foundation of most home labs and data centers.</p>
                     
             <div id="proxmox">
                 <h3>Proxmox</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Proxmox VE (Virtual Environment) is a free, open-source Type 1 hypervisor built on Debian Linux. It runs full virtual machines (KVM) and lightweight Linux containers (LXC) side by side, all managed from a web interface with built-in backups, snapshots and clustering.</p>
                 <iframe width="100%" height="315" 
             src="https://www.youtube.com/embed/_u8qTN3cCnQ" 
             title="Proxmox Tutorial" 
@@ -266,6 +261,7 @@ sudo tailscale up</code></pre>
 
         <div id="core-services">
             <h2>Core Services</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Core services are the basic tools installed on almost every Linux server before anything else: secure remote access (Tailscale, SSH and key-based login), a way to run applications (Docker and Docker Compose), and everyday command-line utilities for downloading files, watching performance, editing configuration files and troubleshooting the network.</p>
             
             <div id="tailscale">
                 <h3>Tailscale</h3>
@@ -903,17 +899,57 @@ sudo apt install net-tools</code></pre>
                     </tr>
                 </tbody>
             </table>
-        </div>
+        
+                <h4>Quick Examples</h4>
+                <p><strong>Check your IP address:</strong> shows each network interface with its hardware (MAC) address, local IP address (<code>inet</code>) and packet statistics.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>ifconfig</code></pre>
+                    </div>
+                </div>
+                <p><strong>Check listening ports:</strong> shows which programs are listening on which ports (for example, port 80 for HTTP).</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo netstat -plnt</code></pre>
+                    </div>
+                </div>
+                <p><strong>Check your default gateway:</strong> shows the routing table; the line with destination <code>0.0.0.0</code> is your default gateway (usually your router).</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>route -n</code></pre>
+                    </div>
+                </div>
+            </div>
 </div>
 
-        <p><strong>Quick Examples</strong></p>
-        <li><strong>Check your IP address:</strong>
-          <p>Simply type ifconfig. You'll see your hardware address (MAC), your local IP (inet), and data packet statistics</p></li>
-          <li><strong>Check listening ports:</strong><p>sudo netstat -plnt. This shows which programs are listening on which ports (e.g., port 80 for HTTP)</p></li>
-          <li><strong>Check your default gateway:</strong><p>route -n</p></li>
 
         <div id="samba">
             <h2>Samba</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Samba lets a Linux machine share folders with Windows, macOS and other Linux computers using SMB, the same file-sharing protocol Windows uses. Shared folders show up in File Explorer like any other network drive, which makes Samba the usual way to turn a Linux server into a home file server or NAS.</p>
             <p><strong>Step 1: Install Samba</strong></p>
             <p>For Ubuntu/Debian:</p>
             <div class="code-container">
@@ -1063,10 +1099,10 @@ sudo ufw allow samba</code></pre>
 
         <div id="static-ip">
             <h2>Static IP</h2>
+            <p class="tool-overview"><strong>What it is:</strong> A static IP address is one you set manually so it never changes, unlike a dynamic address that your router hands out through DHCP and may change after a reboot. Servers need a static IP so that port forwarding, DNS records, bookmarks and other devices can always find them at the same address.</p>
             
-            <div id="linux-static">
-                <p><strong>METHOD 1: UBUNTU NETPLAN</strong></p>
-            </div>
+            <h3 id="linux-static">Linux (Ubuntu Netplan)</h3>
+            <p class="tool-overview"><strong>What it is:</strong> On Ubuntu Server, network settings live in Netplan YAML files under <code>/etc/netplan/</code>. You set the static address, gateway and DNS servers in that file, then apply it with <code>netplan apply</code>.</p>
             <div style="margin: 15px 0; text-align: center;">
                 <iframe width="100%" height="315" 
                     src="https://www.youtube.com/embed/173rk-yiXKE" 
@@ -1233,6 +1269,7 @@ ip -c a</code></pre>
 
             <div id="windows-static">
                 <h3>Windows</h3>
+                <p class="tool-overview"><strong>What it is:</strong> On Windows, a static IP is set in the network adapter’s IPv4 properties: instead of obtaining an address automatically, you enter the IP address, subnet mask, default gateway and DNS servers yourself.</p>
             </div>
             <div style="margin: 15px 0; text-align: center;">
                 <iframe width="100%" height="315" 
@@ -1256,13 +1293,15 @@ ip -c a</code></pre>
 
         <div id="dns">
             <h2>DNS</h2>
+            <p class="tool-overview"><strong>What it is:</strong> DNS (Domain Name System) is the internet’s phone book: it translates names like <code>ryanpgray.com</code> into the IP addresses computers use to connect. Records at your DNS provider decide where a domain and its subdomains point: A records for IPv4 addresses, CNAME records for aliases, and MX records for email.</p>
         </div>
 
         <div id="website-online">
-            <p><strong>How to put an HTML website online</strong></p>
+            <h2>Deploy an HTML Site</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Deploying an HTML site means putting your pages on a server that is always online and reachable by name. This guide uses GitHub Pages, which hosts static sites (HTML, CSS and JavaScript) for free, and then connects a custom domain using DNS records.</p>
             <div style="margin: 15px 0; text-align: center;">
                 <iframe width="100%" height="315" 
-                    src="https://www.youtube.com/watch?v=p1QU3kLFPdg" 
+                    src="https://www.youtube.com/embed/p1QU3kLFPdg" 
                     title="DNS and Website Hosting Tutorial" 
                     frameborder="0" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -1347,6 +1386,7 @@ ip -c a</code></pre>
 
         <div id="windows-server">
             <h2>Windows Server</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Windows Server is Microsoft’s operating system for servers. It runs core business network services such as Active Directory (central user and computer accounts), DNS, DHCP, file sharing and Group Policy, and is the backbone of most corporate Windows networks.</p>
             <div style="margin: 15px 0; text-align: center;">
                 <iframe width="100%" height="315" 
                     src="https://www.youtube.com/embed/NE2nQlYcwao" 
@@ -1435,28 +1475,35 @@ ip -c a</code></pre>
 
         <div id="ntp">
             <h2>Network Time Protocol (NTP) Server</h2>
+            <p class="tool-overview"><strong>What it is:</strong> NTP (Network Time Protocol) keeps the clocks of every computer on a network in sync. Accurate time matters more than it seems: logins (Kerberos), security certificates, scheduled jobs and log timestamps all break or become misleading when clocks drift apart. A local NTP server syncs with public time sources and serves the correct time to every device.</p>
             <div class="placeholder-section">NTP time source parameters deployment mapping instructions pending.</div>
         </div>
 
         <div id="central-logging">
             <h2>Central Logging Server</h2>
+            <p class="tool-overview"><strong>What it is:</strong> A central logging server collects the logs from every machine on the network in one place, using tools such as rsyslog, Graylog or the ELK stack. It lets you search all logs at once, spot problems that span several systems, and keep a record even if a server fails or is compromised.</p>
             <div class="placeholder-section">Central log server ingestion templates and logging agents mapping pending.</div>
         </div>
 
         <div id="containerization">
             <h2>Containerization</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Containerization packages an application with its libraries and settings into an isolated container that runs the same way on any machine. Docker runs containers on a single host; orchestration platforms such as Kubernetes run and manage many containers across several machines, restarting failed ones and scaling them automatically.</p>
             <div id="k8s-cluster">
                 <h3>Kubernetes Cluster</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Kubernetes (K8s) is the industry-standard platform for running containers at scale. A cluster has a control plane that decides where containers (grouped into pods) run, and worker nodes that run them. Kubernetes keeps the cluster in the state you describe: it restarts crashed containers, spreads the load and rolls out updates without downtime.</p>
                 <div id="minikube">
                     <h4>Minikube (Single-node)</h4>
+                    <p class="tool-overview"><strong>What it is:</strong> Minikube runs a complete single-node Kubernetes cluster on one computer, inside a VM or container. It is built for learning and local testing rather than production.</p>
                     <div class="placeholder-section">Single-node cluster tracking definitions pending setup.</div>
                 </div>
                 <div id="kubeadm">
                     <h4>Kubeadm (Multi-node)</h4>
+                    <p class="tool-overview"><strong>What it is:</strong> Kubeadm is the official tool for building a real multi-node Kubernetes cluster from scratch. It sets up the control plane and joins the worker nodes, which gives hands-on experience with how production clusters are put together.</p>
                     <div class="placeholder-section">Bare-metal infrastructure provisioning guides pending layout.</div>
                 </div>
                 <div id="microk8s">
                     <h4>MicroK8s</h4>
+                    <p class="tool-overview"><strong>What it is:</strong> MicroK8s is a lightweight Kubernetes distribution from Canonical, installed as a single snap package. It runs well on small servers and Raspberry Pis, can form multi-node clusters, and turns on common add-ons (DNS, dashboard, storage) with one command.</p>
                     <div class="placeholder-section">Lightweight production execution parameters pending deployment mapping.</div>
                 </div>
             </div>
@@ -1464,51 +1511,61 @@ ip -c a</code></pre>
 
         <div id="automation">
             <h2>Automation</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Automation means using scripts and tools to perform repetitive IT tasks (installing software, applying settings, updating servers) the same way every time instead of by hand. It saves time, prevents mistakes, and makes an entire setup easy to rebuild.</p>
             <div id="config-mgmt">
                 <h3>Configuration management tool</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Configuration management tools such as Ansible, Puppet and Chef describe how servers should be set up (packages, users, files and services) in text files, then apply that configuration to any number of machines. Ansible is the most common starting point because it needs no agent on the servers and works over SSH.</p>
                 <div class="placeholder-section">Ansible playbooks blueprints, Puppet manifests, and Chef configurations configurations pending.</div>
             </div>
         </div>
 
         <div id="scripting">
             <h2>Scripting</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Scripting is writing small programs that run commands automatically, from one-line shortcuts to complete maintenance jobs. Bash is the scripting language of Linux and PowerShell is its Windows counterpart; together they cover most day-to-day system administration.</p>
             <div class="placeholder-section">Administrative script repositories blocks for Bash and PowerShell environments pending repository upload.</div>
         </div>
 
         <div id="security-hardening">
             <h2>Security Hardening</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Security hardening reduces a system’s attack surface: closing unused ports, removing unneeded software, enforcing strong authentication and keeping everything patched. It works in layers: a firewall to control traffic, intrusion detection to spot attacks, and regular vulnerability scans to find weaknesses before attackers do.</p>
             <div id="firewall-config">
                 <h3>Firewall configuration</h3>
+                <p class="tool-overview"><strong>What it is:</strong> A firewall controls which network traffic may enter or leave a machine, using rules based on port, protocol and source address. On Ubuntu, UFW (Uncomplicated Firewall) is a simple front end to the firewall built into the Linux kernel.</p>
                 <div class="placeholder-section">Boundary logic state checking parameters matching iptables/UFW pending.</div>
             </div>
             <div id="ids-ips">
                 <h3>Intrusion Detection/Prevention System (IDS/IPS)</h3>
+                <p class="tool-overview"><strong>What it is:</strong> An Intrusion Detection System (IDS) watches network traffic or system activity for signs of an attack and raises alerts; an Intrusion Prevention System (IPS) can also block that traffic automatically. Snort and Suricata are widely used open-source options.</p>
                 <div class="placeholder-section">Snort and Suricata rules definition matching engine parameters configuration pending mapping.</div>
             </div>
             <div id="vulnerability-scan">
                 <h3>Vulnerability scanning</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Vulnerability scanning automatically checks systems for known weaknesses such as missing patches, outdated software, open ports and weak settings. Tools like Nessus and OpenVAS produce a report ranked by severity, so the most serious issues can be fixed first.</p>
                 <div class="placeholder-section">Nessus assessment metrics tracking charts pending framework deployment.</div>
             </div>
         </div>
 
         <div id="networking">
             <h2>Networking</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Networking covers how devices connect and communicate: IP addressing and subnets, routing between networks, switches, VLANs that split one physical network into separate virtual ones, and the firewall and NAT rules at the network edge. A solid network layout is what keeps a home lab both reachable and secure.</p>
             <div class="placeholder-section">VLAN separation maps and kernel router configurations configurations metrics tracking profiles pending initialization.</div>
         </div>
 
         <div id="alerting">
             <h2>Alerting</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Alerting sends a notification (email, text message, Discord and so on) when a monitored value crosses a threshold, such as a server going offline, a disk filling up or CPU staying high. Tools like Uptime Kuma, Prometheus with Alertmanager, and Grafana watch systems around the clock so problems are caught before users notice.</p>
             <div class="placeholder-section">Threshold limit breach tracking metrics and monitoring routes configurations details pending.</div>
         </div>
 
         <div id="sql">
             <h2>SQL</h2>
+            <p class="tool-overview"><strong>What it is:</strong> SQL (Structured Query Language) is the standard language for working with relational databases such as MySQL, PostgreSQL, Oracle and Microsoft SQL Server. It is used to read data (<code>SELECT</code>), add and change records (<code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>) and define the tables that hold them.</p>
             <div class="placeholder-section">Section mapping metrics and command structures pending.</div>
         </div>
 
         <div id="nginx">
             <h2>NGINX</h2>
-            <p>NGINX is a web server most often used as a <strong>reverse proxy</strong>: it receives every request on ports 80/443, handles HTTPS, and forwards each request to the right app based on its domain name (for example <code>vault.tail.example.com</code> → Vaultwarden on port 1776). This guide uses <strong>Nginx Proxy Manager</strong> (NPM), which runs NGINX in Docker with an easy web interface and free Let’s Encrypt certificates.</p>
+            <p class="tool-overview"><strong>What it is:</strong> NGINX is a web server most often used as a <strong>reverse proxy</strong>: it receives every request on ports 80/443, handles HTTPS, and forwards each request to the right app based on its domain name (for example <code>vault.tail.example.com</code> → Vaultwarden on port 1776). This guide uses <strong>Nginx Proxy Manager</strong> (NPM), which runs NGINX in Docker with an easy web interface and free Let’s Encrypt certificates.</p>
             <p>These steps follow the first half of the video tutorial in the <a href="#vault-warden">Vault Warden</a> section, where NPM is the reverse proxy for a private, Tailscale-only Vaultwarden server.</p>
                 <iframe class="video-embed" src="https://www.youtube.com/embed/AwJXizTdth0"
                     title="Self-host Bitwarden for free with Vaultwarden, Nginx Proxy Manager and Tailscale" loading="lazy"
@@ -1794,17 +1851,19 @@ sudo systemctl disable --now nginx</code></pre>
 
         <div id="bash">
             <h2>Bash</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Bash is the default command-line shell on most Linux systems. Beyond running commands one at a time, it is a scripting language with variables, loops and conditions, used to automate tasks such as backups, updates and log cleanup.</p>
             <div class="placeholder-section">Section referencing core shell execution methods pending.</div>
         </div>
 
         <div id="powershell">
             <h2>PowerShell</h2>
+            <p class="tool-overview"><strong>What it is:</strong> PowerShell is Microsoft’s command-line shell and scripting language. Unlike traditional shells, it passes structured objects rather than plain text between commands, which makes it powerful for managing Windows, Active Directory and Microsoft 365. It also runs on Linux and macOS.</p>
             <div class="placeholder-section">Section tracking automation modules pending mapping.</div>
         </div>
 
         <div id="vault-warden">
             <h2>Vault Warden</h2>
-            <p><strong>Vaultwarden</strong> is a free, lightweight, open-source server for the <strong>Bitwarden</strong> password manager. It works with all the official Bitwarden apps, including the mobile app and the Chrome extension. In this setup it gets a custom domain and a real SSL certificate, but it is <strong>never exposed to the internet</strong>: it is only reachable from devices on your <strong>Tailscale</strong> network.</p>
+            <p class="tool-overview"><strong>What it is:</strong> <strong>Vaultwarden</strong> is a free, lightweight, open-source server for the <strong>Bitwarden</strong> password manager. It works with all the official Bitwarden apps, including the mobile app and the Chrome extension. In this setup it gets a custom domain and a real SSL certificate, but it is <strong>never exposed to the internet</strong>: it is only reachable from devices on your <strong>Tailscale</strong> network.</p>
                 <iframe class="video-embed" src="https://www.youtube.com/embed/AwJXizTdth0"
                     title="Self-host Bitwarden for free with Vaultwarden, Nginx Proxy Manager and Tailscale" loading="lazy"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -2233,17 +2292,19 @@ sudo docker image prune -f</code></pre>
 
         <div id="home-assistant">
             <h2>Home assistant</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Home Assistant is a free, open-source smart-home platform that runs on your own hardware. It brings thousands of devices and services (lights, sensors, thermostats, cameras) into one dashboard and runs automations locally, without depending on the cloud.</p>
             <div class="placeholder-section">Section referencing automation device rules pending interface integration.</div>
         </div>
 
         <div id="plex">
             <h2>Plex</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Plex is a media server that organizes your own movies, TV shows, music and photos and streams them to phones, TVs and browsers, at home or remotely. It downloads artwork and details automatically and can convert video on the fly for devices that cannot play the original format.</p>
             <div class="placeholder-section">Section targeting directory volume mounts pending storage architecture setup.</div>
         </div>
 
         <div id="raid">
             <h2>RAID</h2>
-            <p>RAID (Redundant Array of Independent Disks) combines several physical drives into one logical drive for more speed, more redundancy, or both. This guide builds a <strong>software RAID</strong> on Ubuntu Server with <code>mdadm</code>, entirely over SSH. No hardware RAID card is needed.</p>
+            <p class="tool-overview"><strong>What it is:</strong> RAID (Redundant Array of Independent Disks) combines several physical drives into one logical drive for more speed, more redundancy, or both. This guide builds a <strong>software RAID</strong> on Ubuntu Server with <code>mdadm</code>, entirely over SSH. No hardware RAID card is needed.</p>
                 <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div><strong>Creating an array erases every disk you add to it.</strong> Back up anything on those disks first, and double-check the device names before running the create command.</div></div>
                 <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>RAID is not a backup.</strong> It keeps the server running when a disk dies, but it will happily mirror an accidental delete, ransomware, or a corrupted file to every disk. Keep separate backups.</div></div>
 
@@ -2800,36 +2861,43 @@ sudo mdadm --zero-superblock /dev/sdb /dev/sdc</code></pre>
 
         <div id="pi-hole">
             <h2>Pi-Hole</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Pi-hole is a network-wide ad blocker that acts as your network’s DNS server. When any device looks up a known ad or tracking domain, Pi-hole refuses to answer, blocking ads for every device on the network (smart TVs and phones included) without installing anything on them.</p>
             <div class="placeholder-section">Section targeting DNS local blacklists pending tracking definitions.</div>
         </div>
 
         <div id="html-section">
             <h2>HTML</h2>
+            <p class="tool-overview"><strong>What it is:</strong> HTML (HyperText Markup Language) is the language that structures every web page, using tags for headings, paragraphs, links, images and more. It works together with CSS, which controls how the page looks, and JavaScript, which adds interactivity.</p>
             <div class="placeholder-section">Section summarizing design standards pending syntax components blocks layout.</div>
         </div>
 
         <div id="gpg">
             <h2>GPG</h2>
+            <p class="tool-overview"><strong>What it is:</strong> GPG (GNU Privacy Guard) is a free implementation of the OpenPGP standard for encrypting and signing files and messages. It uses a key pair: anything encrypted with your public key can only be read with your private key, and a signature proves a file or software package really came from you and was not altered.</p>
             <div class="placeholder-section">Section referencing key architecture validations pending templates definition.</div>
         </div>
 
         <div id="backups">
             <h2>Backups</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Backups are copies of data kept so it can be restored after hardware failure, accidental deletion or ransomware. A common rule is 3-2-1: three copies of the data, on two different types of storage, with one copy off-site. A backup is only reliable if restoring it is tested regularly.</p>
             <div class="placeholder-section">Section referencing environment replication strategies pending workflow metrics tracking.</div>
         </div>
 
         <div id="mac-addresses">
             <h2>MAC addresses</h2>
+            <p class="tool-overview"><strong>What it is:</strong> A MAC (Media Access Control) address is the unique hardware identifier of a network interface, written as six pairs of hexadecimal characters (for example <code>3C:52:82:1A:4F:9B</code>). Switches use MAC addresses to deliver traffic on the local network, and routers use them for DHCP reservations and device filtering.</p>
             <div class="placeholder-section">Section tracking hardware identifier lists details records allocation sheets pending.</div>
         </div>
 
         <div id="troubleshoots">
             <h2>TROUBLESHOOTS</h2>
+            <p class="tool-overview"><strong>What it is:</strong> This section collects fixes for problems run into in the lab. The approach is the same every time: identify the symptom, check the logs, change one thing at a time, and write down what fixed it.</p>
             <div class="placeholder-section">Section listing environment remediation options logs data checklists pending.</div>
         </div>
 
         <div id="command-dictionary">
             <h2>COMMAND DICTIONARY</h2>
+            <p class="tool-overview"><strong>What it is:</strong> A quick-reference glossary of common Linux and Windows commands, with what each one does and its most useful options, for fast lookup while working in a terminal.</p>
             <div class="placeholder-section">Section glossary tracking shell commands usage syntax rules matrices pending.</div>
         </div>
     </main>
