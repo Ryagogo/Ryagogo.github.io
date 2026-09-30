@@ -73,15 +73,15 @@
       <a class="nav-sub-link" href="#tailscale">Tailscale</a>
       <a class="nav-sub-link" href="#ssh">SSH</a>
       <a class="nav-sub-link" href="#key-auth">Key Authentication</a>
+      <a class="nav-sub-link" href="#docker">Docker</a>
+      <a class="nav-sub-link" href="#docker-compose">Docker Compose</a>
+      <a class="nav-sub-link" href="#curl">CURL</a>
+      <a class="nav-sub-link" href="#htop">Htop</a>
+      <a class="nav-sub-link" href="#vim-nano">Vim/Nano</a>
+      <a class="nav-sub-link" href="#net-tools">Net-tools</a>
     </div>
   </div>
 
-  <a class="nav-top-link" href="#docker">Docker</a>
-  <a class="nav-top-link" href="#docker-compose">Docker Compose</a>
-  <a class="nav-top-link" href="#curl">CURL</a>
-  <a class="nav-top-link" href="#htop">Htop</a>
-  <a class="nav-top-link" href="#vim-nano">Vim/Nano</a>
-  <a class="nav-top-link" href="#net-tools">Net-tools</a>
   <a class="nav-top-link" href="#samba">Samba</a>
 
   <div class="nav-section">
@@ -269,6 +269,7 @@ sudo tailscale up</code></pre>
             
             <div id="tailscale">
                 <h3>Tailscale</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Tailscale is a mesh VPN built on WireGuard. It links your computers, servers and phones into one private network (a “tailnet”), so they can reach each other securely from anywhere without opening ports on your router.</p>
                 <p>Connect to your remote server via SSH:</p>
                 <div class="code-container">
                     <div class="code-header">
@@ -341,6 +342,7 @@ sudo tailscale up</code></pre>
 
             <div id="ssh">
                 <h3>SSH</h3>
+                <p class="tool-overview"><strong>What it is:</strong> SSH (Secure Shell) is the standard way to log in to and manage a Linux machine from another computer. Everything you type and see is encrypted, so you can run commands on a server as if you were sitting in front of it.</p>
                 <p>Install OpenSSH Server:</p>
                 <div class="code-container">
                     <div class="code-header">
@@ -391,6 +393,7 @@ sudo apt install openssh-server -y</code></pre>
 
             <div id="key-auth">
                 <h3>Key-Based Authentication</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Key-based authentication replaces SSH passwords with a key pair: a private key that never leaves your computer and a public key you copy to the server. It is far harder to crack than a password and lets you log in without typing one.</p>
                 <iframe width="100%" height="315" 
             src="https://www.youtube.com/embed/rf1J8XSEiO0" 
             title="Windows Key-Based Authentication Tutorial" 
@@ -570,10 +573,10 @@ sudo systemctl restart ssh</code></pre>
                     </div>
                 </div>
             </div>
-        </div>
-
+        
         <div id="docker">
-            <h2>Docker</h2>
+            <h3>Docker</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Docker runs applications in <strong>containers</strong>: lightweight, isolated packages that bundle an app with everything it needs. A container runs the same way on any machine, so installing, updating or removing a service is one command and never clutters the host system.</p>
             <p>Documentation: <a href="https://docs.docker.com/engine/install" target="_blank">https://docs.docker.com/engine/install</a></p>
             <div style="text-align: center; margin: 20px 0;">
         <img src="Pictures/Projects/dockerimg1.png" alt="Docker Installation Guide" style="max-width: 80%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
@@ -645,7 +648,8 @@ sudo docker run hello-world</code></pre>
         </div>
 
         <div id="docker-compose">
-            <h2>Docker Compose</h2>
+            <h3>Docker Compose</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Docker Compose describes one or more containers (their images, ports, volumes and settings) in a single <code>docker-compose.yml</code> file, then starts or stops the whole stack with one command. It is how most of the self-hosted apps on this page are deployed.</p>
             <p>Documentation: <a href="https://docs.docker.com/compose/install/" target="_blank">https://docs.docker.com/compose/install/</a></p>
             <div style="text-align: center; margin: 20px 0;">
         <img src="Pictures/Projects/dockerimg4.png" alt="Docker Compose Installation" style="max-width: 80%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
@@ -653,7 +657,8 @@ sudo docker run hello-world</code></pre>
         </div>
 
         <div id="curl">
-            <h2>CURL</h2>
+            <h3>CURL</h3>
+                <p class="tool-overview"><strong>What it is:</strong> curl is a command-line tool for sending and receiving data over URLs. It is used to download files and install scripts, test websites and APIs, and check whether a service is responding.</p>
             <div class="code-container">
                 <div class="code-header">
                     <span>bash</span>
@@ -670,7 +675,8 @@ sudo docker run hello-world</code></pre>
         </div>
 
         <div id="htop">
-            <h2>Htop</h2>
+            <h3>Htop</h3>
+                <p class="tool-overview"><strong>What it is:</strong> htop is an interactive, color-coded process viewer for the terminal. It shows live CPU, memory and swap usage alongside every running process, and lets you sort, search and stop processes. It is the quickest way to see what is slowing a server down.</p>
             <p>Depending on your Linux distribution, use the corresponding command below:</p>
             <p><strong>For Ubuntu, Debian, Linux Mint, or Kali:</strong></p>
             <div class="code-container">
@@ -752,7 +758,8 @@ sudo dnf install htop</code></pre>
         </div>
 
         <div id="vim-nano">
-            <h2>Vim/Nano</h2>
+            <h3>Vim/Nano</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Vim and Nano are text editors that run in the terminal, used to edit configuration files directly on a server. Nano is simple, with its shortcuts listed at the bottom of the screen; Vim is more powerful and keyboard-driven, with a steeper learning curve.</p>
             <h4>Installation Steps</h4>
             <p><strong>For Ubuntu, Debian, or Raspberry Pi OS:</strong></p>
             <div class="code-container">
@@ -817,7 +824,8 @@ sudo apt install nano vim</code></pre>
         </div>
 
         <div id="net-tools">
-            <h2>Net-tools</h2>
+            <h3>Net-tools</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Net-tools is a package of classic Linux networking commands such as <code>ifconfig</code>, <code>netstat</code>, <code>route</code> and <code>arp</code>. They show network interfaces and IP addresses, open ports and connections, and the routing table, which makes them handy for troubleshooting connectivity.</p>
             <h4>Installation Steps</h4>
             <p><strong>For Ubuntu, Debian, Linux Mint, or Kali:</strong></p>
             <div class="code-container">
@@ -896,6 +904,8 @@ sudo apt install net-tools</code></pre>
                 </tbody>
             </table>
         </div>
+</div>
+
         <p><strong>Quick Examples</strong></p>
         <li><strong>Check your IP address:</strong>
           <p>Simply type ifconfig. You'll see your hardware address (MAC), your local IP (inet), and data packet statistics</p></li>
