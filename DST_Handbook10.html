@@ -210,6 +210,14 @@
     border-left-color: var(--accent);
   }
 
+  /* Sidebar grouped by template / method */
+  .nav-group-label { padding: 16px 20px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5a7a93; }
+  .nav-doc > .nav-section-header { color: #c5d8ea; }
+  .nav-nested { margin: 0; }
+  .nav-nested > .nav-section-header { border-left: 3px solid transparent; padding: 7px 18px 7px 34px; font-size: 12.5px; font-weight: 500; letter-spacing: 0; text-transform: none; color: #8eb4cc; }
+  .nav-nested > .nav-sub-links { background: rgba(0,0,0,0.12); }
+  .nav-sub-link-deep { padding-left: 48px; font-size: 12px; }
+
   /* ── MAIN CONTENT ── */
   #main {
     margin-left: var(--sidebar-w);
@@ -3859,6 +3867,105 @@
 
   <a class="nav-top-link" href="#doc-guide">Document Decision Guide</a>
 
+  <div class="nav-group-label">By Template / Method</div>
+  <div class="nav-section nav-doc">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Item Induction Template <span class="chevron">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#add-supplier">Adding a Supplier via Item Induction</a>
+      <div class="nav-section nav-nested">
+        <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Mass UPC Deletion <span class="chevron">›</span></div>
+        <div class="nav-sub-links">
+          <a class="nav-sub-link nav-sub-link-deep" href="#agc-create-template">Creating Item Induction Template for Mass UPC Deletes</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#agc-inducting">Inducting Mass Delete Item Induction Template</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#agc-deleting-process-ids">Deleting Process ID's</a>
+        </div>
+      </div>
+      <a class="nav-sub-link" href="#price-prompt">Price for Prompt</a>
+      <a class="nav-sub-link" href="#template-checker">Updating Template Checker Tables</a>
+    </div>
+  </div>
+  <div class="nav-section nav-doc">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">RMS Download <span class="chevron">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#corporate-delete">Corporate Delete Process</a>
+      <div class="nav-section nav-nested">
+        <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Web Brands <span class="chevron">›</span></div>
+        <div class="nav-sub-links">
+          <a class="nav-sub-link nav-sub-link-deep" href="#brand-create-name">Creating a New Web Brand Name</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#brand-create-uda2">Creating a New Web Brand UDA (Part 2)</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#brand-reply-email">Reply back to email</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#brand-delete-name">Deleting a Web Brand Name</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#brand-delete-udas">Deleting UDAs [ID] and/or UDA Values</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#brand-find-missing-udas">Finding Missing UDAs</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#brand-create-uda-ids">Creating New Brand UDA IDs</a>
+        </div>
+      </div>
+      <a class="nav-sub-link" href="#reportuda">Creating a New Report UDA (ID) &amp; Report UDA Value</a>
+      <div class="nav-section nav-nested">
+        <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Adding a Size Code (ID) <span class="chevron">›</span></div>
+        <div class="nav-sub-links">
+          <a class="nav-sub-link nav-sub-link-deep" href="#sizecode-download-template">Download Differentiators Template</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#sizecode-diff-group">Creating a new Differentiator Group</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#sizecode-diff-batch">Differentiator Batch</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-section nav-doc">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Manual Maintenance Form <span class="chevron">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#primary-supp-list">Updating Primary Supplier — Item List</a>
+      <a class="nav-sub-link" href="#primary-supp-single">Updating Primary Supplier — Single Item</a>
+      <a class="nav-sub-link" href="#qty-key">Quantity Key</a>
+    </div>
+  </div>
+  <div class="nav-section nav-doc">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Front-End (RMS v16) <span class="chevron">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#serialize">Serializing an Item</a>
+    </div>
+  </div>
+  <div class="nav-section nav-doc">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Re-classification Template <span class="chevron">›</span></div>
+    <div class="nav-sub-links">
+      <div class="nav-section nav-nested">
+        <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Item Reclassification <span class="chevron">›</span></div>
+        <div class="nav-sub-links">
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-inbox-submission">Receiving a Re-class Request</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-checklist">Pre-Re-class Checklist</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-hierarchy-change">Merchandise Hierarchy Changes</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-keying-v16">Keying a Re-class in RMS v16</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-viewing-editing">Viewing / Deleting Pending Re-classes</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-keying-v10-single">Single-Item Re-class in RMS v10</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-keying-v10-list">Item List Re-class in RMS v10</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-lawson-departments">Lawson (Financial) Re-classes</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-nightly-batch">Nightly Batch Communication to RAVE</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-resolving-errors">Validating &amp; Resolving Errors</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-open-orders">Failed: Open Orders</a>
+          <a class="nav-sub-link nav-sub-link-deep" href="#reclass-pack-components">Failed: Pack Components</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-group-label">More Processes &amp; Reference</div>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Third Party Gift Cards (TPGC) <span class="chevron">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#tpgc-rms">Create TPGC in RMS as Non-Merchandise</a>
+      <a class="nav-sub-link" href="#tpgc-card-types">Card Types &amp; MNT Files Needed</a>
+      <a class="nav-sub-link" href="#tpgc-cheat-sheet">TPGC Cheat Sheet (Automated MNT)</a>
+      <a class="nav-sub-link" href="#tpgc-creating-mnt">Creating the Needed MNT Files</a>
+      <a class="nav-sub-link" href="#tpgc-gcitmproperties">GCITMProperties Tab</a>
+      <a class="nav-sub-link" href="#tpgc-attachfee">TPGCAttachFee Tab</a>
+      <a class="nav-sub-link" href="#tpgc-upc">TPGC_UPC Tab</a>
+      <a class="nav-sub-link" href="#tpgc-nonmerchandise">TPGCNonMerchandise Tab</a>
+      <a class="nav-sub-link" href="#tpgc-itempriceaction">ItemPriceAction Tab</a>
+      <a class="nav-sub-link" href="#tpgc-sts">Create &amp; Upload Spreadsheet for STS</a>
+      <a class="nav-sub-link" href="#tpgc-incident">Incident Ticket for the STS Team</a>
+      <a class="nav-sub-link" href="#tpgc-orup">Submit RINs to the ORUP Team</a>
+      <a class="nav-sub-link" href="#tpgc-deploy">Deploying the MNT Files into Xadmin</a>
+    </div>
+  </div>
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Email Responses <span class="chevron">›</span></div>
     <div class="nav-sub-links">
@@ -3866,9 +3973,8 @@
       <a class="nav-sub-link" href="#er-cat-successful">Successful Upload</a>
     </div>
   </div>
-
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">SQL Query Reference<span class="chevron">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">SQL Query Reference <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#sql-g1">Check Today's Process Tracker Actions by User</a>
       <a class="nav-sub-link" href="#sql-g2">Check Staging Table Status by Process ID</a>
@@ -3908,89 +4014,6 @@
       <a class="nav-sub-link" href="#sql-q19">Identify re-class effective dates / submission verification</a>
     </div>
   </div>
-
-  <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Adding a Size Code (ID) <span class="chevron">›</span></div>
-    <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#sizecode-download-template">Download Differentiators Template</a>
-      <a class="nav-sub-link" href="#sizecode-diff-group">Creating a new Differentiator Group</a>
-      <a class="nav-sub-link" href="#sizecode-diff-batch">Differentiator Batch</a>
-    </div>
-  </div>
-
-  <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Supplier <span class="chevron">›</span></div>
-    <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#add-supplier">Adding a Supplier via Item Induction</a>
-      <a class="nav-sub-link" href="#primary-supp-list">Updating Primary Supplier — Item List</a>
-      <a class="nav-sub-link" href="#primary-supp-single">Updating Primary Supplier — Single Item</a>
-    </div>
-  </div>
-
-  <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Mass UPC Deletion <span class="chevron">›</span></div>
-    <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#agc-create-template">Creating Item Induction Template for Mass UPC Deletes</a>
-      <a class="nav-sub-link" href="#agc-inducting">Inducting Mass Delete Item Induction Template</a>
-      <a class="nav-sub-link" href="#agc-deleting-process-ids">Deleting Process ID's</a>
-    </div>
-  </div>
-  <a class="nav-top-link" href="#corporate-delete">Corporate Delete Process</a>
-  <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Item Reclassification<span class="chevron">›</span></div>
-    <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#reclass-inbox-submission">Receiving a Re-class Request</a>
-      <a class="nav-sub-link" href="#reclass-checklist">Pre-Re-class Checklist</a>
-      <a class="nav-sub-link" href="#reclass-hierarchy-change">Merchandise Hierarchy Changes</a>
-      <a class="nav-sub-link" href="#reclass-keying-v16">Keying a Re-class in RMS v16</a>
-      <a class="nav-sub-link" href="#reclass-viewing-editing">Viewing / Deleting Pending Re-classes</a>
-      <a class="nav-sub-link" href="#reclass-keying-v10-single">Single-Item Re-class in RMS v10</a>
-      <a class="nav-sub-link" href="#reclass-keying-v10-list">Item List Re-class in RMS v10</a>
-      <a class="nav-sub-link" href="#reclass-lawson-departments">Lawson (Financial) Re-classes</a>
-      <a class="nav-sub-link" href="#reclass-nightly-batch">Nightly Batch Communication to RAVE</a>
-      <a class="nav-sub-link" href="#reclass-resolving-errors">Validating &amp; Resolving Errors</a>
-      <a class="nav-sub-link" href="#reclass-open-orders">Failed: Open Orders</a>
-      <a class="nav-sub-link" href="#reclass-pack-components">Failed: Pack Components</a>
-    </div>
-  </div>
-  <a class="nav-top-link" href="#price-prompt">Price for Prompt</a>
-  <a class="nav-top-link" href="#qty-key">Quantity Key</a>
-  <a class="nav-top-link" href="#serialize">Serializing an Item</a>
-  
-  
-  <a class="nav-top-link" href="#template-checker">Updating Template Checker Tables</a>
-  <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Web Brands <span class="chevron">›</span></div>
-    <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#brand-create-name">Creating a New Web Brand Name</a>
-      <a class="nav-sub-link" href="#brand-create-uda2">Creating a New Web Brand UDA (Part 2)</a>
-      <a class="nav-sub-link" href="#brand-reply-email">Reply back to email</a>
-      <a class="nav-sub-link" href="#brand-delete-name">Deleting a Web Brand Name</a>
-      <a class="nav-sub-link" href="#brand-delete-udas">Deleting UDAs [ID] and/or UDA Values</a>
-      <a class="nav-sub-link" href="#brand-find-missing-udas">Finding Missing UDAs</a>
-      <a class="nav-sub-link" href="#brand-create-uda-ids">Creating New Brand UDA IDs</a>
-    </div>
-  </div>
-  <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Third Party Gift Cards (TPGC) <span class="chevron">›</span></div>
-    <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#tpgc-rms">Create TPGC in RMS as Non-Merchandise</a>
-      <a class="nav-sub-link" href="#tpgc-card-types">Card Types &amp; MNT Files Needed</a>
-      <a class="nav-sub-link" href="#tpgc-cheat-sheet">TPGC Cheat Sheet (Automated MNT)</a>
-      <a class="nav-sub-link" href="#tpgc-creating-mnt">Creating the Needed MNT Files</a>
-      <a class="nav-sub-link" href="#tpgc-gcitmproperties">GCITMProperties Tab</a>
-      <a class="nav-sub-link" href="#tpgc-attachfee">TPGCAttachFee Tab</a>
-      <a class="nav-sub-link" href="#tpgc-upc">TPGC_UPC Tab</a>
-      <a class="nav-sub-link" href="#tpgc-nonmerchandise">TPGCNonMerchandise Tab</a>
-      <a class="nav-sub-link" href="#tpgc-itempriceaction">ItemPriceAction Tab</a>
-      <a class="nav-sub-link" href="#tpgc-sts">Create &amp; Upload Spreadsheet for STS</a>
-      <a class="nav-sub-link" href="#tpgc-incident">Incident Ticket for the STS Team</a>
-      <a class="nav-sub-link" href="#tpgc-orup">Submit RINs to the ORUP Team</a>
-      <a class="nav-sub-link" href="#tpgc-deploy">Deploying the MNT Files into Xadmin</a>
-    </div>
-  </div>
-  <a class="nav-top-link" href="#reportuda">Creating a New Report UDA (ID) &amp; Report UDA Value</a>
-
 </nav>
 
 <!-- MAIN CONTENT -->
@@ -13816,10 +13839,12 @@ function copyCode(button) {
 
   navLinks.forEach(link => {
     link.addEventListener('click', () => {
-      const subLinks = link.closest('.nav-sub-links');
-      if (subLinks) {
+      let subLinks = link.closest('.nav-sub-links');
+      while (subLinks) {
         subLinks.classList.add('open');
         subLinks.previousElementSibling.classList.add('open');
+        subLinks.previousElementSibling.setAttribute('aria-expanded', 'true');
+        subLinks = subLinks.parentElement.closest('.nav-sub-links');
       }
       if (window.innerWidth <= 900) closeSidebar();
     });
@@ -13829,58 +13854,49 @@ function copyCode(button) {
   function filterNav(query) {
     const q = query.trim().toLowerCase();
     const noResults = document.getElementById('search-no-results');
-    const topLinks = document.querySelectorAll('#sidebar .nav-top-link');
-    const navSections = document.querySelectorAll('#sidebar .nav-section');
+    const sidebar = document.getElementById('sidebar');
     let anyVisible = false;
 
-    topLinks.forEach(link => {
+    sidebar.querySelectorAll('.nav-group-label').forEach(l => l.classList.toggle('nav-search-hidden', !!q));
+
+    sidebar.querySelectorAll(':scope > .nav-top-link').forEach(link => {
       const match = !q || link.textContent.toLowerCase().includes(q);
       link.classList.toggle('nav-search-hidden', !match);
       if (match) anyVisible = true;
     });
 
-    navSections.forEach(section => {
-      const header = section.querySelector('.nav-section-header');
-      const subLinksWrap = section.querySelector('.nav-sub-links');
-      if (!header || !subLinksWrap) return;
-      const subLinks = subLinksWrap.querySelectorAll('a');
-      const headerText = header.textContent.toLowerCase();
-
-      if (!q) {
-        section.classList.remove('nav-search-hidden');
-        subLinks.forEach(a => a.classList.remove('nav-search-hidden'));
-        subLinksWrap.classList.remove('open');
-        header.classList.remove('open');
-        anyVisible = true;
-        return;
-      }
-
-      if (headerText.includes(q)) {
-        section.classList.remove('nav-search-hidden');
-        subLinks.forEach(a => a.classList.remove('nav-search-hidden'));
-        subLinksWrap.classList.add('open');
-        header.classList.add('open');
-        anyVisible = true;
-      } else {
-        let anySubMatch = false;
-        subLinks.forEach(a => {
-          const match = a.textContent.toLowerCase().includes(q);
-          a.classList.toggle('nav-search-hidden', !match);
-          if (match) anySubMatch = true;
-        });
-        if (anySubMatch) {
-          section.classList.remove('nav-search-hidden');
-          subLinksWrap.classList.add('open');
-          header.classList.add('open');
-          anyVisible = true;
-        } else {
-          section.classList.add('nav-search-hidden');
+    // Returns whether the group (or anything inside it) matches; opens matching groups
+    function walk(section, parentMatched) {
+      const header = section.querySelector(':scope > .nav-section-header');
+      const wrap = section.querySelector(':scope > .nav-sub-links');
+      if (!header || !wrap) return false;
+      const own = !q || parentMatched || header.textContent.toLowerCase().includes(q);
+      let childMatch = false;
+      Array.from(wrap.children).forEach(child => {
+        if (child.matches('.nav-section')) {
+          if (walk(child, own)) childMatch = true;
+        } else if (child.matches('a')) {
+          const m = own || child.textContent.toLowerCase().includes(q);
+          child.classList.toggle('nav-search-hidden', !m);
+          if (m) childMatch = true;
         }
-      }
+      });
+      const visible = own || childMatch;
+      section.classList.toggle('nav-search-hidden', !visible);
+      const open = !!q && visible;
+      wrap.classList.toggle('open', open);
+      header.classList.toggle('open', open);
+      header.setAttribute('aria-expanded', String(open));
+      return visible;
+    }
+
+    sidebar.querySelectorAll(':scope > .nav-section').forEach(section => {
+      if (walk(section, false)) anyVisible = true;
     });
 
     noResults.style.display = anyVisible ? 'none' : 'block';
   }
+
 </script>
 
 </body>
