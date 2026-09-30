@@ -431,6 +431,8 @@
   details.macro-source > summary { cursor: pointer; font-weight: 600; color: var(--text); padding: 8px 0; }
   details.macro-source .code-wrapper { max-height: 520px; overflow: auto; }
   .doc-guide-updated { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
+  .proc-placeholder .doc-meta-item:last-child .doc-meta-value { color: #b7791f; }
+  html[data-theme="dark"] .proc-placeholder .doc-meta-item:last-child .doc-meta-value { color: #f6c26b; }
   /* SOP screenshots */
   .sop-shot { display: block; max-width: 100%; height: auto; margin: 12px 0; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
   kbd { font: 600 12px/1 ui-monospace, Consolas, monospace; padding: 2px 6px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; background: var(--surface); }
@@ -3871,6 +3873,14 @@
   <div class="nav-section nav-doc">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Item Induction Template <span class="chevron">›</span></div>
     <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#proc-create-item">Create an Item</a>
+      <a class="nav-sub-link" href="#proc-add-trans-rins">Add Transaction RINs</a>
+      <a class="nav-sub-link" href="#proc-add-gtin">Add a GTIN</a>
+      <a class="nav-sub-link" href="#proc-delete-gtin">Delete GTIN(s)</a>
+      <a class="nav-sub-link" href="#proc-add-dimensions">Add Dimensions</a>
+      <a class="nav-sub-link" href="#proc-add-locations">Add Location(s) to an Existing RIN</a>
+      <a class="nav-sub-link" href="#proc-consignment-item">Create a Consignment Item</a>
+      <a class="nav-sub-link" href="#proc-drop-ship-item">Create a Drop Ship Item</a>
       <a class="nav-sub-link" href="#add-supplier">Adding a Supplier via Item Induction</a>
       <div class="nav-section nav-nested">
         <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Mass UPC Deletion <span class="chevron">›</span></div>
@@ -3888,6 +3898,23 @@
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">RMS Download <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#corporate-delete">Corporate Delete Process</a>
+      <a class="nav-sub-link" href="#proc-edit-description">Edit Description, Short Description or Secondary Description</a>
+      <a class="nav-sub-link" href="#proc-edit-dimensions">Edit Dimensions</a>
+      <a class="nav-sub-link" href="#proc-add-comments">Add Comments</a>
+      <a class="nav-sub-link" href="#proc-update-brand">Update Brand</a>
+      <a class="nav-sub-link" href="#proc-update-msrp">Update Suggested Retail (MSRP)</a>
+      <a class="nav-sub-link" href="#proc-update-vpn">Update VPN</a>
+      <a class="nav-sub-link" href="#proc-primary-supplier-supplier-level">Update Primary Supplier at Supplier Level</a>
+      <a class="nav-sub-link" href="#proc-drop-ship-flag">Update Drop Ship Flag</a>
+      <a class="nav-sub-link" href="#proc-consignment-rate">Update Consignment Rate</a>
+      <a class="nav-sub-link" href="#proc-default-uop">Update Default UOP</a>
+      <a class="nav-sub-link" href="#proc-ti-hi">Update Ti/Hi</a>
+      <a class="nav-sub-link" href="#proc-rounding-level">Update Rounding Level</a>
+      <a class="nav-sub-link" href="#proc-supplier-color">Update Supplier Color</a>
+      <a class="nav-sub-link" href="#proc-inner-case-pack">Update Inner and Case Pack</a>
+      <a class="nav-sub-link" href="#proc-add-udas">Add UDAs</a>
+      <a class="nav-sub-link" href="#proc-update-udas">Update UDAs</a>
+      <a class="nav-sub-link" href="#proc-delete-udas">Delete UDAs</a>
     </div>
   </div>
   <div class="nav-section nav-doc">
@@ -3895,12 +3922,16 @@
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#primary-supp-list">Updating Primary Supplier — Item List</a>
       <a class="nav-sub-link" href="#primary-supp-single">Updating Primary Supplier — Single Item</a>
+      <a class="nav-sub-link" href="#proc-location-status">Update Location Status</a>
+      <a class="nav-sub-link" href="#proc-store-order-multiple">Update Store Order Multiple at Location Level</a>
     </div>
   </div>
   <div class="nav-section nav-doc">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Front-End (RMS v16) <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#serialize">Serializing an Item</a>
+      <a class="nav-sub-link" href="#proc-seasons-phases">Add, Edit or Delete Seasons/Phases</a>
+      <a class="nav-sub-link" href="#proc-ticket-type">Add, Edit or Delete Ticket Type</a>
     </div>
   </div>
   <div class="nav-section nav-doc">
@@ -3925,6 +3956,13 @@
       </div>
     </div>
   </div>
+  <div class="nav-section nav-doc">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Merchandise Hierarchy Template <span class="chevron">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#proc-merch-hierarchy">Create, Add or Edit a Dept/Class/Subclass</a>
+    </div>
+  </div>
+
   <div class="nav-group-label">More Processes &amp; Reference</div>
   <a class="nav-top-link" href="#qty-key">Quantity Key</a>
   <div class="nav-section">
@@ -4033,15 +4071,15 @@
     <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
       <tbody>
-        <tr><td>Create an item</td><td><strong>Item Induction Template</strong></td></tr>
-        <tr><td>Add transaction RINs</td><td><strong>Item Induction Template</strong></td></tr>
-        <tr><td>Add a supplier</td><td><strong>Item Induction Template</strong></td></tr>
-        <tr><td>Add a GTIN</td><td><strong>Item Induction Template</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Delete GTIN(s)</td><td><strong>Item Induction Template</strong></td></tr>
-        <tr><td>Add dimensions</td><td><strong>Item Induction Template</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Add location(s) to an existing RIN</td><td><strong>Item Induction Template</strong> (Location tab only)</td></tr>
-        <tr><td>Create a consignment item</td><td><strong>Item Induction Template</strong> (must update <strong>column C</strong>)</td></tr>
-        <tr><td>Create a drop ship item</td><td><strong>Item Induction Template</strong> (must update <strong>column BH</strong>)</td></tr>
+        <tr><td><a href="#proc-create-item">Create an item</a></td><td><strong>Item Induction Template</strong></td></tr>
+        <tr><td><a href="#proc-add-trans-rins">Add transaction RINs</a></td><td><strong>Item Induction Template</strong></td></tr>
+        <tr><td><a href="#add-supplier">Add a supplier</a></td><td><strong>Item Induction Template</strong></td></tr>
+        <tr><td><a href="#proc-add-gtin">Add a GTIN</a></td><td><strong>Item Induction Template</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-delete-gtin">Delete GTIN(s)</a></td><td><strong>Item Induction Template</strong></td></tr>
+        <tr><td><a href="#proc-add-dimensions">Add dimensions</a></td><td><strong>Item Induction Template</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-add-locations">Add location(s) to an existing RIN</a></td><td><strong>Item Induction Template</strong> (Location tab only)</td></tr>
+        <tr><td><a href="#proc-consignment-item">Create a consignment item</a></td><td><strong>Item Induction Template</strong> (must update <strong>column C</strong>)</td></tr>
+        <tr><td><a href="#proc-drop-ship-item">Create a drop ship item</a></td><td><strong>Item Induction Template</strong> (must update <strong>column BH</strong>)</td></tr>
       </tbody>
     </table></div>
   </div>
@@ -4051,20 +4089,20 @@
     <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
       <tbody>
-        <tr><td>Edit description, short description or secondary description</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Edit dimensions</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Add comments</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update brand</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update suggested retail (MSRP)</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update VPN</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update primary supplier at supplier level</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update drop ship flag (called <em>Direct Ship Flag</em> in RMS v16)</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update consignment rate</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update default UOP</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update Ti/Hi</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update rounding level</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update supplier color (called <em>Diff 1</em> in RMS v16)</td><td><strong>RMS Download</strong> only</td></tr>
-        <tr><td>Update inner and case pack</td><td><strong>RMS Download</strong> only. <strong>Warehoused items must be sent to ROADS.</strong></td></tr>
+        <tr><td><a href="#proc-edit-description">Edit description, short description or secondary description</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-edit-dimensions">Edit dimensions</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-add-comments">Add comments</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-update-brand">Update brand</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-update-msrp">Update suggested retail (MSRP)</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-update-vpn">Update VPN</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-primary-supplier-supplier-level">Update primary supplier at supplier level</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-drop-ship-flag">Update drop ship flag (called <em>Direct Ship Flag</em> in RMS v16)</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-consignment-rate">Update consignment rate</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-default-uop">Update default UOP</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-ti-hi">Update Ti/Hi</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-rounding-level">Update rounding level</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-supplier-color">Update supplier color (called <em>Diff 1</em> in RMS v16)</a></td><td><strong>RMS Download</strong> only</td></tr>
+        <tr><td><a href="#proc-inner-case-pack">Update inner and case pack</a></td><td><strong>RMS Download</strong> only. <strong>Warehoused items must be sent to ROADS.</strong></td></tr>
       </tbody>
     </table></div>
   </div>
@@ -4073,9 +4111,9 @@
     <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
       <tbody>
-        <tr><td>Add UDAs</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Update UDAs (List of Values only)</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
-        <tr><td>Delete UDAs (List of Values only)</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-add-udas">Add UDAs</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-update-udas">Update UDAs (List of Values only)</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td><a href="#proc-delete-udas">Delete UDAs (List of Values only)</a></td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
       </tbody>
     </table></div>
   </div>
@@ -4085,10 +4123,10 @@
     <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
       <tbody>
-        <tr><td>Update location status</td><td><strong>Manual Maintenance Form</strong></td></tr>
-        <tr><td>Update primary suppliers at location level</td><td><strong>Manual Maintenance Form</strong></td></tr>
-        <tr><td>Update <a href="#qty-key">quantity key</a></td><td><strong>Manual Maintenance Form</strong></td></tr>
-        <tr><td>Update store order multiple at location level</td><td><strong>Manual Maintenance Form</strong></td></tr>
+        <tr><td><a href="#proc-location-status">Update location status</a></td><td><strong>Manual Maintenance Form</strong></td></tr>
+        <tr><td><a href="#primary-supp-list">Update primary suppliers at location level</a></td><td><strong>Manual Maintenance Form</strong></td></tr>
+        <tr><td><a href="#qty-key">Update quantity key</a></td><td><strong>Manual Maintenance Form</strong></td></tr>
+        <tr><td><a href="#proc-store-order-multiple">Update store order multiple at location level</a></td><td><strong>Manual Maintenance Form</strong></td></tr>
       </tbody>
     </table></div>
   </div>
@@ -4097,8 +4135,8 @@
     <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
       <tbody>
-        <tr><td>Add, edit or delete seasons/phases</td><td><strong>Front-End (RMS v16)</strong> <em>or</em> <strong>Mass Change via Item List</strong></td></tr>
-        <tr><td>Add, edit or delete ticket type</td><td><strong>Front-End (RMS v16)</strong> <em>or</em> <strong>Mass Change via Item List</strong></td></tr>
+        <tr><td><a href="#proc-seasons-phases">Add, edit or delete seasons/phases</a></td><td><strong>Front-End (RMS v16)</strong> <em>or</em> <strong>Mass Change via Item List</strong></td></tr>
+        <tr><td><a href="#proc-ticket-type">Add, edit or delete ticket type</a></td><td><strong>Front-End (RMS v16)</strong> <em>or</em> <strong>Mass Change via Item List</strong></td></tr>
       </tbody>
     </table></div>
   </div>
@@ -4108,11 +4146,283 @@
     <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
       <tbody>
-        <tr><td>Re-class RIN(s) to a different dept/class/subclass</td><td><strong>Re-classification Template</strong>. Done the <strong>first full week of every month</strong>; see <a href="#reclass">Item Reclassification</a>.</td></tr>
-        <tr><td>Create, add or edit a dept/class/subclass</td><td><strong>Merchandise Hierarchy Template</strong>. Done <strong>twice a year</strong>.</td></tr>
+        <tr><td><a href="#reclass">Re-class RIN(s) to a different dept/class/subclass</a></td><td><strong>Re-classification Template</strong>. Done the <strong>first full week of every month</strong>; see <a href="#reclass">Item Reclassification</a>.</td></tr>
+        <tr><td><a href="#proc-merch-hierarchy">Create, add or edit a dept/class/subclass</a></td><td><strong>Merchandise Hierarchy Template</strong>. Done <strong>twice a year</strong>.</td></tr>
       </tbody>
     </table></div>
   </div>
+</section>
+<section class="section proc-placeholder" id="proc-create-item">
+  <h2 class="section-title">Create an Item</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Item Induction Template</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-add-trans-rins">
+  <h2 class="section-title">Add Transaction RINs</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Item Induction Template</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-add-gtin">
+  <h2 class="section-title">Add a GTIN</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Item Induction Template</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-delete-gtin">
+  <h2 class="section-title">Delete GTIN(s)</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Item Induction Template</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>For corporate mass deletes from the Retek 832 UPC/EAN Deletion Report, see <a href="#agc-create-template">Mass UPC Deletion</a>.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-add-dimensions">
+  <h2 class="section-title">Add Dimensions</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Item Induction Template</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-add-locations">
+  <h2 class="section-title">Add Location(s) to an Existing RIN</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Item Induction Template</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>Use the <strong>Location tab only</strong>.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-consignment-item">
+  <h2 class="section-title">Create a Consignment Item</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Item Induction Template</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>Must update <strong>column C</strong>.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-drop-ship-item">
+  <h2 class="section-title">Create a Drop Ship Item</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Item Induction Template</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>Must update <strong>column BH</strong>.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-edit-description">
+  <h2 class="section-title">Edit Description, Short Description or Secondary Description</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-edit-dimensions">
+  <h2 class="section-title">Edit Dimensions</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-add-comments">
+  <h2 class="section-title">Add Comments</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-update-brand">
+  <h2 class="section-title">Update Brand</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>To create a new web brand name or brand UDA, see <a href="#brand-create-name">Web Brands</a>.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-update-msrp">
+  <h2 class="section-title">Update Suggested Retail (MSRP)</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-update-vpn">
+  <h2 class="section-title">Update VPN</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-primary-supplier-supplier-level">
+  <h2 class="section-title">Update Primary Supplier at Supplier Level</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>For the primary supplier at the <em>location</em> level, see <a href="#primary-supp-list">Updating Primary Supplier</a> (Manual Maintenance Form).</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-drop-ship-flag">
+  <h2 class="section-title">Update Drop Ship Flag</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>Called the <strong>Direct Ship Flag</strong> in RMS v16.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-consignment-rate">
+  <h2 class="section-title">Update Consignment Rate</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-default-uop">
+  <h2 class="section-title">Update Default UOP</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-ti-hi">
+  <h2 class="section-title">Update Ti/Hi</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-rounding-level">
+  <h2 class="section-title">Update Rounding Level</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-supplier-color">
+  <h2 class="section-title">Update Supplier Color</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>Called <strong>Diff 1</strong> in RMS v16. RMS Download only.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-inner-case-pack">
+  <h2 class="section-title">Update Inner and Case Pack</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>RMS Download only. <strong>If the items are warehoused, they must be sent to ROADS.</strong></p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-add-udas">
+  <h2 class="section-title">Add UDAs</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>To create a new report UDA ID or value, see <a href="#reportuda">Report UDA</a>.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-update-udas">
+  <h2 class="section-title">Update UDAs</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>List of Values UDAs only.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-delete-udas">
+  <h2 class="section-title">Delete UDAs</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">RMS Download</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>List of Values UDAs only.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-location-status">
+  <h2 class="section-title">Update Location Status</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Manual Maintenance Form</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-store-order-multiple">
+  <h2 class="section-title">Update Store Order Multiple at Location Level</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Manual Maintenance Form</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-seasons-phases">
+  <h2 class="section-title">Add, Edit or Delete Seasons/Phases</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Mass Change via Item List</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-ticket-type">
+  <h2 class="section-title">Add, Edit or Delete Ticket Type</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Front-End (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Or</span><span class="doc-meta-value">Mass Change via Item List</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
+</section>
+<section class="section proc-placeholder" id="proc-merch-hierarchy">
+  <h2 class="section-title">Create, Add or Edit a Dept/Class/Subclass</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Use this</span><span class="doc-meta-value">Merchandise Hierarchy Template</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Status</span><span class="doc-meta-value">Instructions coming soon</span></div>
+  </div>
+  <p>Done <strong>twice a year</strong>.</p>
+  <div class="callout info"><span class="callout-icon">ℹ</span><div>Step-by-step instructions for this process haven't been added yet. Until then, check the <a href="#doc-guide">Document Decision Guide</a> for which template or method to use.</div></div>
 </section>
 <section class="section" id="email-responses">
 <h2 class="section-title">Email Responses</h2>
