@@ -105,3 +105,11 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 
 /* Sidebar search boxes already show their own icon */
 #sidebar-search::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
+
+/* Redacted details: the real value has been replaced with a placeholder, blurred for display */
+.redacted {
+  filter: blur(4px);
+  user-select: none;
+  cursor: help;
+  border-radius: 3px;
+}
