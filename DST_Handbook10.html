@@ -12013,6 +12013,15 @@ New Web Brand request has been created. Please use the below in the <span class=
       </div>
       <a class="download-card-btn" href="Files/TPGC_Cheat_Sheet.xlsm" download>Download</a>
     </div>
+    <div class="download-card">
+      <div class="download-card-icon" aria-hidden="true">XLSM</div>
+      <div class="download-card-body">
+        <span class="download-card-title">MNT Master Creator (2026_01)</span>
+        <span class="download-card-meta">Macro-enabled Excel workbook (.xlsm) · the converter workbook the cheat sheet exports into; <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> creates an MNT file from the active tab</span>
+      </div>
+      <a class="download-card-btn" href="Files/CreateMNTFile_MasterCreator_2026_01.xlsm" download>Download</a>
+    </div>
+    <p>Download <strong>both</strong> workbooks. Keep the Master Creator's file name as <code>CreateMNTFile_MasterCreator_2026_01.xlsm</code>. The cheat sheet finds it by that name.</p>
 
     <p class="step-heading"><strong>How it fits into the TPGC process</strong></p>
     <ol class="steps">
@@ -12067,7 +12076,7 @@ New Web Brand request has been created. Please use the below in the <span class=
     <p class="step-heading"><strong>Before you start</strong></p>
     <ul>
       <li><strong>Enable macros.</strong> When the workbook opens, select <strong>Enable Content</strong> in the yellow security bar.</li>
-      <li><strong>Master Creator location.</strong> The macro opens the TPGC MNT Master Creator workbook (<code>CreateMNTFile_MasterCreator_2026_01.xlsm</code>) from the shared templates folder (<span class="redacted" title="Redacted for privacy">X:\shared\folder</span>). If that drive isn't mapped, open the Master Creator yourself first; the macro uses any open workbook with the same file name.</li>
+      <li><strong>Master Creator location.</strong> The macro opens the TPGC MNT Master Creator workbook (<code>CreateMNTFile_MasterCreator_2026_01.xlsm</code>) from the shared templates folder (<span class="redacted" title="Redacted for privacy">X:\shared\folder</span>). If you downloaded the Master Creator from this page, or that drive isn't mapped, <strong>open the Master Creator first</strong>. The macro uses any open workbook with the same file name. Like the cheat sheet, the Master Creator is save-locked, so use it without saving and close it when you're done.</li>
       <li><strong>Start from a clean Master Creator.</strong> The macro adds rows <em>below</em> whatever is already on each tab, and the MNT files include every row on the tab. Clear old rows (or open a fresh copy) before exporting.</li>
       <li><strong>The cheat sheet cannot be saved.</strong> It carries a permanent save lock, so saving shows <em>"This workbook is locked and cannot be saved again."</em> Fill it in, export, and close without saving. Keep your source list somewhere else if you need to reuse it.</li>
     </ul>
@@ -12120,7 +12129,7 @@ New Web Brand request has been created. Please use the below in the <span class=
       <tbody>
         <tr><td>Could not find these headers on row 3</td><td>A cheat sheet header was renamed or moved off row 3. Restore it, or download a fresh copy.</td></tr>
         <tr><td>No data found below row 3</td><td>Nothing is in the Type of Gift Card column, or the Export was run from another tab.</td></tr>
-        <tr><td>Could not open target workbook</td><td>The shared drive isn't mapped or the Master Creator moved. Open the Master Creator first and run Export again.</td></tr>
+        <tr><td>Could not open target workbook</td><td>The shared drive isn't mapped or the Master Creator moved. Open the <a href="Files/CreateMNTFile_MasterCreator_2026_01.xlsm" download>Master Creator</a> first (keeping its file name) and run Export again.</td></tr>
         <tr><td>Tab '…' not found / Headers not found on '…'</td><td>The open Master Creator is a different version. Use the current <code>CreateMNTFile_MasterCreator_2026_01.xlsm</code>.</td></tr>
         <tr><td>Skipped rows in the summary</td><td>Fix the listed fields. The rows that passed were already written, so clear the Master Creator tabs (or close it without saving) before exporting again to avoid duplicates.</td></tr>
         <tr><td>This workbook is locked and cannot be saved again</td><td>Expected: the cheat sheet is meant to be used without saving.</td></tr>
@@ -13113,7 +13122,7 @@ pyo3_runtime.PanicException: Python API call failed
     <div class="callout tip"><span class="callout-icon">💡</span><div><strong>Faster option:</strong> the <a href="#tpgc-cheat-sheet">TPGC Cheat Sheet</a> fills these tabs and creates the MNT files for you. The manual steps below are still useful for one-off fixes.</div></div>
     <p>An MNT file is a simple pipe-delimited file used to import specific data into Xadmin's data tables. The data is entered in the MNT Creator Excel workbook, and a built-in macro (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>) converts the active tab into an <code>.mnt</code> file.</p>
     <ol class="steps">
-      <li>Get the latest MNT Creator workbook. Email the ORUP team for the current location of the most up-to-date file.</li>
+      <li>Get the latest MNT Creator workbook: <a href="Files/CreateMNTFile_MasterCreator_2026_01.xlsm" download>download the 2026_01 Master Creator</a>, or email the ORUP team for the current location of the most up-to-date file.</li>
       <li>Open the file and do a <strong>File → Save As</strong> to a location of your choosing. Fill in only the tabs you need converted (see the table above).</li>
       <li>A pop-up appears as a reminder of the keystrokes used to convert each tab. Select <strong>OK</strong>.</li>
       <div>
