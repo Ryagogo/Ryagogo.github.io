@@ -3938,16 +3938,18 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Item Reclassification<span class="chevron">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#reclass-hierarchy-change">Merchandise Hierarchy Change Re-class Process</a>
+      <a class="nav-sub-link" href="#reclass-inbox-submission">Receiving a Re-class Request</a>
+      <a class="nav-sub-link" href="#reclass-checklist">Pre-Re-class Checklist</a>
+      <a class="nav-sub-link" href="#reclass-hierarchy-change">Merchandise Hierarchy Changes</a>
       <a class="nav-sub-link" href="#reclass-keying-v16">Keying a Re-class in RMS v16</a>
-      <a class="nav-sub-link" href="#reclass-resolving-errors">Resolving Re-class Errors</a>
-      <a class="nav-sub-link" href="#reclass-viewing-editing">Viewing / Editing Current Re-classes</a>
-      <a class="nav-sub-link" href="#reclass-keying-v10-single">Keying a Re-class for a Single Item in RMSv10</a>
-      <a class="nav-sub-link" href="#reclass-keying-v10-list">Keying a Re-class for an Item List in RMSv10</a>
-      <a class="nav-sub-link" href="#reclass-open-orders">Identifying Open Orders for Items that Failed to Re-class</a>
-      <a class="nav-sub-link" href="#reclass-pack-components">Components of Pack Items on Order</a>
-      <a class="nav-sub-link" href="#reclass-lawson-departments">Re-classes Between Lawson Departments</a>
+      <a class="nav-sub-link" href="#reclass-viewing-editing">Viewing / Deleting Pending Re-classes</a>
+      <a class="nav-sub-link" href="#reclass-keying-v10-single">Single-Item Re-class in RMS v10</a>
+      <a class="nav-sub-link" href="#reclass-keying-v10-list">Item List Re-class in RMS v10</a>
+      <a class="nav-sub-link" href="#reclass-lawson-departments">Lawson (Financial) Re-classes</a>
       <a class="nav-sub-link" href="#reclass-nightly-batch">Nightly Batch Communication to RAVE</a>
+      <a class="nav-sub-link" href="#reclass-resolving-errors">Validating &amp; Resolving Errors</a>
+      <a class="nav-sub-link" href="#reclass-open-orders">Failed: Open Orders</a>
+      <a class="nav-sub-link" href="#reclass-pack-components">Failed: Pack Components</a>
     </div>
   </div>
   <a class="nav-top-link" href="#price-prompt">Price for Prompt</a>
@@ -9484,383 +9486,263 @@ where ref_item = '',
 <section class="section" id="reclass">
   <h2 class="section-title">Item Reclassification</h2>
   <div class="doc-meta">
-    <div class="doc-meta-item"><span class="doc-meta-label">Document</span><span class="doc-meta-value">Item Re-class SOP</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Document</span><span class="doc-meta-value">SOP-S.05.1.2 · Item Re-class (v16 &amp; v10)</span></div>
     <div class="doc-meta-item"><span class="doc-meta-label">Author</span><span class="doc-meta-value">Data Steward Team</span></div>
-    <div class="doc-meta-item"><span class="doc-meta-label">Scope</span><span class="doc-meta-value">Mandatory — all DST members</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Scope</span><span class="doc-meta-value">Mandatory: all DST members</span></div>
   </div>
 
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-purpose">Purpose</h3>
-    <p>This Standard Operating Procedure (SOP) describes the process for documenting steps needed to complete RMS item re-classes.</p>
+  <div class="sub-section" id="reclass-overview">
+    <h3 class="sub-section-title">What it is</h3>
+    <p>A <strong>re-class</strong> moves an approved item from one department/class/subclass to another in RMS. Buying teams request them through the DST Inbox; DST checks that the item can safely move, keys the re-class in <strong>RMS v16</strong> (and in <strong>RMS v10</strong> where required), and the change is applied by the nightly batch. Most of the work is in the checks beforehand: forecasting, mandatory UDAs, open orders on the deals tables, pack components and financial (Lawson) moves are the usual reasons a re-class fails.</p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Key fact</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Non-financial re-classes</td><td>Processed monthly, during the <strong>1st full week</strong> of the month.</td></tr>
+        <tr><td>Financial re-classes</td><td>Processed twice a year, directly after inventories (<strong>February and August</strong>).</td></tr>
+        <tr><td>Item level</td><td>In v16, always re-class at the <strong>Parent</strong> level (Level 1, formerly the Grandparent in v10). Packs are the only 2-level items.</td></tr>
+        <tr><td>Item lists</td><td>Required when <strong>more than five items</strong> go to the same dept/class/subclass. A separate list is needed for v16 and v10.</td></tr>
+        <tr><td>Nightly volume</td><td>Soft cap of <strong>25,000 items</strong> per night, counting all items exploded out.</td></tr>
+        <tr><td>When it runs</td><td>The re-class job runs in <strong>Phase 4</strong> of the nightly batch (the after-batch), the night before the effective date.</td></tr>
+        <tr><td>Closing POs</td><td>Orders that must be closed have to be closed in v16 by <strong>1 pm EST</strong> so the change flows to v10.</td></tr>
+      </tbody>
+    </table></div>
+
+    <p class="step-heading"><strong>Process at a glance</strong></p>
+    <ol class="steps">
+      <li><a href="#reclass-inbox-submission">Receive the request</a> in the DST Inbox and check the re-class form is complete.</li>
+      <li><a href="#reclass-checklist">Run the pre-re-class checks</a>: forecasting, mandatory UDAs, hierarchy changes, financial moves, and open or pack orders.</li>
+      <li><a href="#reclass-keying-v16">Key the re-class in RMS v16</a>, and in v10 (<a href="#reclass-keying-v10-single">single item</a> or <a href="#reclass-keying-v10-list">item list</a>) where required.</li>
+      <li><a href="#reclass-nightly-batch">Report the night's item count</a> before leaving for the day.</li>
+      <li>After the batch, <a href="#reclass-resolving-errors">validate the results</a> and fix any failures (<a href="#reclass-open-orders">open orders</a>, <a href="#reclass-pack-components">pack components</a>).</li>
+      <li>Reply to the original email with the canned response once validation is complete.</li>
+    </ol>
   </div>
 
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-scope">Scope</h3>
-    <p>This SOP is a mandatory document and shall be implemented by all DST members when creating or editing item re-classes for the buying groups.</p>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-training">Training</h3>
-    <p>The DST is responsible for ensuring that team members who follow this procedure understand the SOP's objectives and other inter-related activities. Training for the buying teams is to be held quarterly for reviewing the process that the buying team is to take for submitting item reclassifications correctly. Upon approval this document <strong>MUST</strong> be distributed to all necessary team members.</p>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-definitions">Definitions</h3>
-    <table class="decision-table">
+  <div class="sub-section" id="reclass-definitions">
+    <h3 class="sub-section-title">Definitions</h3>
+    <div class="table-wrap"><table class="decision-table ref-table">
       <thead><tr><th>Term</th><th>Definition</th></tr></thead>
       <tbody>
-        <tr><td>2-Level Item</td><td>An item built with a RIN and Reference number; these are built at Trans Level 1.</td></tr>
-        <tr><td>3-Level Item</td><td>An item built with a Grandparent RIN, Transaction RIN, and Reference number. All items are 3-level in v16, except Packs.</td></tr>
-        <tr><td>Component Item</td><td>An item inside of a pack, such as an individual pack of cigarettes or an individual bag of jerky.</td></tr>
-        <tr><td>Deals Tables</td><td>Tables that will cause re-classes to fail when POs are on them.</td></tr>
-        <tr><td>Forecasting</td><td>Module within RMS in which sales are estimated in the future.</td></tr>
-        <tr><td>Pack Item</td><td>The container that holds other items (e.g., a carton of cigarettes, or a display/shipper with multiple items). These are the ONLY 2-level items in v16, and will not have a Parent Item.</td></tr>
-        <tr><td>Parent Item</td><td>The highest item in v16, formerly known as the Grandparent in v10. All re-classes are done at this level in v16.</td></tr>
-        <tr><td>Query</td><td>The script ran in SQL or Toad to pull information.</td></tr>
-        <tr><td>Report</td><td>The results from the Query or RDW/QS — this is your data.</td></tr>
-        <tr><td>Skulist</td><td>Another word for Item List used in SQL — a group of items compiled on a single list.</td></tr>
-        <tr><td>Transaction Item</td><td>The level 2 item; all orders are done at this level. Currently known as the Child item in 3-level items, or RIN in 2-level items. This is the level the item is ordered and sold at.</td></tr>
-        <tr><td>UDA</td><td>User Defined Attributes.</td></tr>
+        <tr><td>2-Level Item</td><td>An item built with a RIN and Reference number; built at Trans Level 1.</td></tr>
+        <tr><td>3-Level Item</td><td>An item built with a Grandparent RIN, Transaction RIN and Reference number. All items are 3-level in v16, except Packs.</td></tr>
+        <tr><td>Component Item</td><td>An item inside a pack, such as an individual pack of cigarettes or a single bag of jerky.</td></tr>
+        <tr><td>Deals Tables</td><td>Tables that cause re-classes to fail when POs are on them.</td></tr>
+        <tr><td>Forecasting</td><td>The RMS module that estimates future sales.</td></tr>
+        <tr><td>Pack Item</td><td>The container that holds other items (e.g. a carton of cigarettes, or a display/shipper). The ONLY 2-level items in v16; they have no Parent Item.</td></tr>
+        <tr><td>Parent Item</td><td>The highest item level in v16, formerly the Grandparent in v10. All v16 re-classes are done at this level.</td></tr>
+        <tr><td>Query / Report</td><td>The script run in SQL or Toad, and the results it returns (or results from RDW/QS).</td></tr>
+        <tr><td>Skulist</td><td>The SQL name for an Item List: a group of items compiled on a single list.</td></tr>
+        <tr><td>Transaction Item</td><td>The level 2 item that is ordered and sold. The Child item in 3-level items, or the RIN in 2-level items.</td></tr>
+        <tr><td>UDA</td><td>User Defined Attribute.</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
 
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-precautions">Precautions</h3>
-    <div class="callout warn"><span class="callout-icon">⚠</span><div>It is essential that the buying group understand they need to communicate PO cancellations with the planner so that replenishment is not impacted. If POs need to be closed (such as for a Deals Table or a component of a Pack item on POs), we will avoid doing re-classes over the weekend or holidays. This ensures staff are in the office to address any issues that may arise and to reinstate the POs once the re-classes have completed.</div></div>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-responsibility">Responsibility</h3>
-    <p>DST is responsible for updating and maintaining these procedures.</p>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-equipment">Equipment / Systems</h3>
+  <div class="sub-section" id="reclass-about">
+    <h3 class="sub-section-title">About this Procedure</h3>
     <ul>
-      <li>Item Re-class form submitted from buying group</li>
-      <li>RMSv16 &amp; RMSv10</li>
-      <li>TOAD / SQL</li>
-      <li>DST Role in v16 &amp; v10</li>
+      <li><strong>Purpose:</strong> documents the steps needed to complete RMS item re-classes.</li>
+      <li><strong>Scope:</strong> mandatory for all DST members when creating or editing item re-classes for the buying groups.</li>
+      <li><strong>Training:</strong> DST makes sure team members understand this SOP. Buying teams are trained <strong>quarterly</strong> on submitting re-classes correctly.</li>
+      <li><strong>Responsibility:</strong> DST updates and maintains this procedure.</li>
+      <li><strong>Systems:</strong> the buying group's Item Re-class form, RMS v16 &amp; RMS v10, Toad/SQL, and the DST role in v16 &amp; v10.</li>
     </ul>
+    <div class="callout warn"><span class="callout-icon">⚠</span><div><strong>Precaution:</strong> buying groups must tell their planner about any PO cancellations so replenishment isn't affected. If POs need to be closed (for the deals tables or a pack component on order), <strong>don't run those re-classes over a weekend or holiday</strong>, so someone is in the office to handle issues and reinstate the POs afterwards.</div></div>
   </div>
 
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-what-is">Re-class Definition</h3>
+  <div class="sub-section" id="reclass-inbox-submission">
+    <h3 class="sub-section-title">Receiving a Re-class Request</h3>
     <ol class="steps">
-      <li>Within RMS, movement of an approved item from one department/class/subclass to another department/class/subclass.</li>
+      <li>Buying teams email the DST Inbox with the subject <strong>FINANCIAL RECLASS</strong> or <strong>RECLASS [1, 2, 3, …]</strong>, depending on the type of re-class.</li>
+      <li>During open re-class cycles, check the inbox several times a day and move new emails to the <strong>Received</strong> folder. Leave them <strong>unread</strong> until you start working on them. The manager assigns re-classes based on workload.</li>
+      <li>Open the email and confirm the re-class form is filled out <strong>completely and correctly</strong>. The blank template is on the HUB under Code M → Support → ORUP → Templates.</li>
+      <li>If more than five items are going to the same dept/class/subclass, the buying group <strong>must</strong> supply an item list, one for v16 and a separate one for v10 (v16 item lists don't flow to v10). v16 items must be at the Parent level.</li>
+      <li>Keep a running total of items being processed each day and tell RAVE/RIB, so they can adjust and keep batches from running long (25k soft cap).</li>
     </ol>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-inbox-submission">Re-class Form Submission to DST Inbox</h3>
-    <p><strong>Overview</strong></p>
-    <ol class="steps">
-      <li>All item re-class requests will be submitted to the DST Inbox by the Buying Team with the subject of <strong>FINANCIAL RECLASS</strong> or <strong>RECLASS [1,2,3,4,5, etc.]</strong> based on the type of re-class being submitted. Non-Financial re-classes will be processed on a monthly basis during the 1st full week of the month, and Financial re-classes will be processed twice a year directly after inventories have been completed (February and August).</li>
-      <li>During the approved re-class cycles the DST Inbox will be checked several times daily, with received emails being moved to the received folder within the inbox. Please remember to keep them as unread until you are working on them. Re-classes will be assigned accordingly based on workload by the Manager during the open re-class periods. Upon opening the email, be sure the re-class form is filled out completely and correctly. Template can be accessed on the HUB under Code M, Support, ORUP, Templates.</li>
-      <li>There is a soft cap to the amount of items that can be processed each night at <strong>25k items</strong>. This cap incorporates all items exploded out. Each day, let RAVE/RIB know the amount of items that are getting processed so they can adjust to prevent batches from running long.</li>
-    </ol>
-
-    <p><strong>Example of Template:</strong></p>
-    <div style="overflow-x:auto;">
-    <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; font-size: 12.5px; white-space: nowrap;">
-      <thead>
-        <tr style="background-color: #f2f2f2; font-weight: bold;">
-          <th>Item #</th>
-          <th>Item List #</th>
-          <th>RC#</th>
-          <th>Current Dept</th>
-          <th>Current Class</th>
-          <th>Current Subclass</th>
-          <th>Item Count</th>
-          <th>New Dept</th>
-          <th>New Class</th>
-          <th>New Subclass #</th>
-          <th>New Dept Forecastable? Y/N</th>
-          <th>Required UDAs Attached? Y/N</th>
-          <th>Lawson/Financial Move? Y/N</th>
-          <th>Pack or Component Items Included? Y/N</th>
-        </tr>
-      </thead>
+    <p><strong>Re-class form columns</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Column</th><th>What it tells you</th></tr></thead>
       <tbody>
-        <tr>
-          <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-        </tr>
+        <tr><td>Item # / Item List #</td><td>The Parent-level item, or the item list, to move.</td></tr>
+        <tr><td>RC#</td><td>The re-class number. Record it here once the re-class is keyed.</td></tr>
+        <tr><td>Current Dept / Class / Subclass</td><td>Where the item is today.</td></tr>
+        <tr><td>Item Count</td><td>How many items the re-class covers, for the nightly total.</td></tr>
+        <tr><td>New Dept / Class / Subclass</td><td>Where the item is going.</td></tr>
+        <tr><td>New Dept Forecastable? Y/N</td><td>Whether the forecasting check below applies.</td></tr>
+        <tr><td>Required UDAs Attached? Y/N</td><td>Whether the destination's mandatory UDAs are on the item.</td></tr>
+        <tr><td>Lawson/Financial Move? Y/N</td><td>Whether approval and extra notifications are needed.</td></tr>
+        <tr><td>Pack or Component Items Included? Y/N</td><td>Whether to check pack orders before keying.</td></tr>
       </tbody>
+    </table></div>
+  </div>
+
+  <div class="sub-section" id="reclass-checklist">
+    <h3 class="sub-section-title">Pre-Re-class Checklist</h3>
+    <p>Run these checks before keying anything. Each one catches a common cause of a failed re-class. Links go to the queries in the <a href="#reclass-query-index">Re-class Query Index</a>.</p>
+    <div class="table-wrap"><table class="decision-table ref-table plain-table">
+      <thead><tr><th>Check</th><th>How to check</th><th>If it applies</th></tr></thead>
+      <tbody>
+        <tr><td>Mandatory UDAs</td><td>Q1 (mandatory UDAs by dept; not in the query index) then <a href="#sql-q2">Q2</a> (UDAs on the item list).</td><td>Add every mandatory UDA for the <em>destination</em> dept/class/subclass before the re-class. Most were removed in RMS 16.</td></tr>
+        <tr><td>Forecasting</td><td><a href="#sql-q3">Q3</a> (dept), <a href="#sql-q4">Q4</a> (item), <a href="#sql-q5">Q5</a> (item list).</td><td>See <a href="#reclass-forecasted-items">Forecasted Items</a>.</td></tr>
+        <tr><td>Recent hierarchy change</td><td>Search the DST Inbox for "Please Map New and Edit Dept, Class, and Subclasses".</td><td>See <a href="#reclass-hierarchy-change">Hierarchy Changes</a>.</td></tr>
+        <tr><td>Financial (Lawson) move</td><td><a href="#sql-q15">Q15</a> (depts on the item list), <a href="#sql-q16">Q16</a> (groups for those depts).</td><td>Needs approval. See <a href="#reclass-lawson-departments">Lawson Departments</a>.</td></tr>
+        <tr><td>Open orders / deals tables</td><td><a href="#sql-q7">Q7</a> (open orders), <a href="#sql-q8">Q8</a> (deals tables), <a href="#sql-q9">Q9</a> (open appointments).</td><td>Buying group closes the <strong>whole</strong> order by 1 pm EST. Items can't just be removed from it. See <a href="#reclass-open-orders">Open Orders</a>.</td></tr>
+        <tr><td>Packs &amp; components</td><td><a href="#sql-q6">Q6</a> (component items on order).</td><td>Buying group cancels the pack's orders. See <a href="#reclass-pack-components">Pack Components</a>.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="sub-section-title" id="reclass-forecasted-items" style="margin-top:24px;">Forecasted Items</h3>
+    <ol class="steps">
+      <li>Run <a href="#sql-q3">Q3</a> to see whether the destination department is forecastable, then <a href="#sql-q4">Q4</a> (single item) or <a href="#sql-q5">Q5</a> (item list) to see whether the items are on forecasting. The item's forecastability must match the destination.</li>
+      <li><strong>Item must stay forecastable:</strong> the Forecasting Team sets up the new dept/class/subclass as forecastable. If the destination dept isn't forecastable, it must be added to a domain for the financial group (see the domain query in the <a href="#sql-reclass-forecasted">query index</a>).</li>
+      <li><strong>Item doesn't need forecasting:</strong> ask the Forecasting Team to change its replenishment method to <strong>min/max</strong>. You can then re-class it without making the destination forecastable.</li>
+    </ol>
+    <div class="callout warn"><span class="callout-icon">⚠</span><div>Skipping this check is risky: the item won't re-class, and the Mass Change Item Rejection Report shows an <strong>unrelated</strong> error instead of saying the item is forecastable.</div></div>
+
+    <h3 class="sub-section-title" id="reclass-hierarchy-change" style="margin-top:24px;">Merchandise Hierarchy Changes</h3>
+    <p>Always check whether the destination dept/class/subclass was recently changed. Search the DST Inbox for an email tagged <em>"FYI . . . Please Read"</em> titled <em>"Please Map New and Edit Dept, Class, and Subclasses"</em>. These stay in the inbox for 48 hours, then move to the <strong>Merchandise Hierarchy</strong> folder.</p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Destination is…</th><th>When you can re-class</th></tr></thead>
+      <tbody>
+        <tr><td>A dept/class/subclass with a <strong>name change</strong></td><td>As soon as the new name is visible in RMS. Name changes don't affect downstream systems.</td></tr>
+        <tr><td>A <strong>newly created</strong> dept/class/subclass</td><td><strong>Wait</strong> for confirmation from the downstream systems. Going early can make sales report incorrectly.</td></tr>
+        <tr><td>A <strong>re-activated</strong> dept/class/subclass (was N/A, reopened with a new name)</td><td><strong>Wait</strong> for confirmation from the downstream system POCs listed in the "Please Map New and Edit…" email.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="sub-section" id="reclass-keying-v16">
+    <h3 class="sub-section-title">Keying a Re-class in RMS v16</h3>
+    <p>One screen handles single items and item lists, and is also where you view and delete pending re-classes.</p>
+    <ol class="steps">
+      <li>From <strong>Tasks</strong>, select <span class="path-highlight">Foundation Data</span> &rarr; <span class="path-highlight">Items</span> &rarr; <span class="path-highlight">Reclassifications</span>.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-menu-reclassifications.png" alt="RMS v16 task menu with Reclassifications highlighted under Foundation Data, Items." loading="lazy"></li>
+      <li>The <strong>Reclassifications</strong> screen lists every pending re-class, with its details below.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-reclassifications-screen.png" alt="Reclassifications screen showing pending re-classes and the Detail section." loading="lazy"></li>
+      <li>Click the green <strong>+</strong>, or <strong>Actions → Add</strong>.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-actions-add.png" alt="Actions menu open with Add circled, next to the green plus button." loading="lazy"></li>
+      <li>In the <strong>Add Reclassification</strong> window, fill in:
+        <ul>
+          <li><strong>Description:</strong> the submitter's last name. If they sent more than one, add a number: <code>DOE - #1</code>, <code>DOE - #2</code>, and so on.</li>
+          <li><strong>Reclass Date:</strong> defaults to tomorrow. Pick a later date if needed; the system holds the re-class until then.</li>
+        </ul>
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-add-reclassification-blank.png" alt="Blank Add Reclassification window with Description, Reclass Date, item selection and new hierarchy fields." loading="lazy"></li>
+      <li>Under <strong>Select Items to Reclassify</strong>, choose <strong>Item</strong> or <strong>Item List</strong> and enter the Parent-level item or the item list number (or search with the magnifier/LOV).
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-add-item.png" alt="Item selected with a Parent-level item number entered." loading="lazy">
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-add-item-list.png" alt="Item List selected with an item list number entered." loading="lazy">
+        <div class="callout info"><span class="callout-icon">ℹ</span><div>For 2-level items, the items on your v16 item list won't match the v10 item list.</div></div></li>
+      <li>Under <strong>Select New Hierarchy</strong>, enter the Department, Class and Subclass the item is <strong>GOING TO</strong>.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-add-new-hierarchy.png" alt="Completed Add Reclassification window with the new department, class and subclass." loading="lazy"></li>
+      <li>Click <strong>OK</strong>, or <strong>OK and Add Another</strong> to key the next one (repeat steps 4–6).</li>
+      <li>A warning confirms the items <em>will be reclassified the night before the reclassification effective date</em>. Click <strong>OK</strong>. The job runs in Phase 4 of the nightly batch.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-confirmation.png" alt="Warning: Items will be reclassified the night before the reclassification effective date." loading="lazy"></li>
+      <li>Record the new re-class number in the <strong>RC#</strong> column of the re-class form.</li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="reclass-viewing-editing">
+    <h3 class="sub-section-title">Viewing or Deleting Pending Re-classes</h3>
+    <p>Re-classes can't be edited. To change one, delete it and key it again.</p>
+    <ol class="steps">
+      <li>Open <span class="path-highlight">Tasks</span> &rarr; <span class="path-highlight">Foundation Data</span> &rarr; <span class="path-highlight">Items</span> &rarr; <span class="path-highlight">Reclassifications</span>. The grid shows re-classes that are still <strong>waiting to run</strong> (not ones already processed). Select a row to see its items in <strong>Detail</strong>.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-view-details.png" alt="Reclassifications grid with a selected re-class and its item shown in the Detail section." loading="lazy"></li>
+      <li>To delete, highlight the re-class and click the red <strong>X</strong> (or <strong>Actions → Delete</strong>). Select <strong>Yes</strong> at the warning.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-delete-warning.png" alt="Warning: Do you want to delete this record? with Yes and No." loading="lazy"></li>
+      <li>Click <strong>Save and Close</strong> to save the deletion.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v16-after-delete.png" alt="Reclassifications grid after the deleted re-class has been removed." loading="lazy"></li>
+    </ol>
+    <div class="callout warn"><span class="callout-icon">⚠</span><div>If a re-class didn't process in the nightly batch and there are <strong>no partially received orders</strong>, it <strong>must be deleted and keyed again</strong>. Changing its date in the back end won't make it run.</div></div>
+  </div>
+
+  <div class="sub-section" id="reclass-keying-v10-single">
+    <h3 class="sub-section-title">Keying a Single-Item Re-class in RMS v10</h3>
+    <ol class="steps">
+      <li>From <strong>Retek Enterprise</strong>, double-click the <strong>Items</strong> folder, then open the <strong>Reclassification</strong> folder.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v10-items-reclassification-folder.png" alt="Retek Enterprise Start with the Items folder open and Reclassification circled." loading="lazy"></li>
+      <li>Select <strong>Reclassify one item</strong>.</li>
+      <li>Enter the item's <strong>RIN</strong>. The <strong>Reclassification Number</strong> fills in automatically; record it in the RC# column of the form.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v10-reclassify-item.png" alt="Reclassify Item window with Item, Reclassification Number, Description, Effective Date and hierarchy fields." loading="lazy"></li>
+      <li><strong>Reclassification Description:</strong> buyer's last name and department, plus a number if there are several, e.g. <code>DOE - Dept 123 #1</code>.</li>
+      <li><strong>Effective Date:</strong> defaults to tomorrow; choose another day if needed.</li>
+      <li>Enter the Department, Class and Subclass the item is <strong>GOING TO</strong>, then click <strong>OK</strong>.</li>
+      <li>A warning confirms the item(s) <em>will be reclassified the night before the reclassification effective date</em> (Phase 4 of the batch).
+        <img class="sop-shot" src="Pictures/DST/Reclass/v10-reclass-confirmation.png" alt="Retek Warning confirming the item will be reclassified the night before the effective date." loading="lazy"></li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="reclass-keying-v10-list">
+    <h3 class="sub-section-title">Keying an Item List Re-class in RMS v10</h3>
+    <ol class="steps">
+      <li>From <strong>Retek Enterprise</strong>, double-click the <strong>Items</strong> folder, then <strong>Item List</strong>.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v10-items-item-list.png" alt="Retek Enterprise Start with Item List selected in the Items folder." loading="lazy"></li>
+      <li>Choose <strong>Use</strong> from the drop-down, enter the <strong>v10</strong> item list number and click <strong>OK</strong>.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v10-item-list-use.png" alt="Item List Search with the Use option circled in the drop-down." loading="lazy"></li>
+      <li>From the top menu select <span class="path-highlight">Options</span> &rarr; <span class="path-highlight">Create Mass Item Change</span> &rarr; <span class="path-highlight">Reclassification</span>. The re-class form opens with <strong>Item List</strong> in place of Item.</li>
+      <li>Record the re-class number on the form.</li>
+      <li><strong>Description:</strong> <code>Buyer Last Name - Dept # - #1</code> (same format as single items).</li>
+      <li>Set the <strong>Effective Date</strong> (tomorrow by default), enter the Department, Class and Subclass the items are <strong>GOING TO</strong>, and click <strong>OK</strong>.
+        <img class="sop-shot" src="Pictures/DST/Reclass/v10-item-list-reclass-confirmation.png" alt="Item list re-class form with the confirmation that items will be reclassified the night before the effective date." loading="lazy"></li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="reclass-lawson-departments">
+    <h3 class="sub-section-title">Re-classes Between Lawson (Financial) Departments</h3>
+    <p>A re-class that moves an item into a different Lawson (financial) group is a <strong>financial move</strong> and needs extra approval and notice.</p>
+    <ol class="steps">
+      <li>Confirm it's a financial move: run <a href="#sql-q15">Q15</a> to list the departments on the item list (this also catches a mis-keyed item from another department), then <a href="#sql-q16">Q16</a> to check whether those departments belong to different groups.</li>
+      <li>Get approval from the <strong>Vice President of Merchandising Support</strong> (the Director of Merchandise Planning and Analysis can also approve moves outside the financial group).</li>
+      <li>Notify the <strong>DMM of Planning and Replenishment</strong>. POCs are the Director of Merchandise Planning and Analysis and the Director of Merchandise Planning.</li>
+      <li>Key the re-class as normal (<a href="#reclass-keying-v16">RMS v16</a>, plus v10 if required).</li>
+      <li>The Merchandise Accounting Manager reviews financial moves in a monthly report and handles any follow-up.</li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="reclass-nightly-batch">
+    <h3 class="sub-section-title">Nightly Batch Communication to RAVE</h3>
+    <ol class="steps">
+      <li>Each evening, the <strong>last team member to leave</strong> runs the batch queries: <a href="#sql-q18">Q18</a> (re-classes scheduled for tonight) and <a href="#sql-q19">Q19</a> (details for specific re-class numbers). The SOP also lists Q20 for tonight's re-class numbers, which isn't in the query index.</li>
+      <li>Post the <strong>total number of items</strong> being re-classed that night in the <strong>Record Counts/Batch Count</strong> Teams chat. Keep it under the 25k soft cap.</li>
+      <li>The week after, run the <a href="#sql-reclass-nightly-batch">v16 vs v10 hierarchy comparison</a> to confirm both systems match.</li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="reclass-resolving-errors">
+    <h3 class="sub-section-title">Validating Re-classes &amp; Resolving Errors</h3>
+    <ol class="steps">
+      <li>After the batch, check the results with <a href="#sql-q13">Q13</a> (item list) or <a href="#sql-q14">Q14</a> (single item). Export to Excel and filter one item list at a time. You can select several lists together if they're going to the same dept/class/subclass.</li>
+      <li>If a list shows more than one value for dept, class or subclass, some items didn't move. For very large lists, just check each filter drop-down for extra values.</li>
+      <li>For any failure, find the reason with <a href="#sql-q11">Q11</a> (last batch only) or <a href="#sql-q12">Q12</a> (older rejections, by user, date or item). The rejection reason tells you what to fix.</li>
+      <li>Fix the cause (usually <a href="#reclass-open-orders">open orders</a> or <a href="#reclass-pack-components">pack components</a>), then key the failed items again.</li>
+      <li>Once everything validates, reply to the original email with the canned response.</li>
+    </ol>
+    <p><em>Unfiltered results: one item list with all its items.</em></p>
+    <table class="result-grid">
+      <tr><th>SKULIST</th><th>ITEM</th><th>DEPT</th><th>CLASS</th><th>SUBCLASS</th></tr>
+      <tr><td>187376</td><td>103688</td><td>973</td><td>8000</td><td>8000</td></tr>
+      <tr><td>187376</td><td>256116</td><td>973</td><td>8000</td><td>8000</td></tr>
+      <tr><td>187376</td><td>5532526</td><td>973</td><td>1001</td><td>3</td></tr>
     </table>
-    </div>
+    <p style="margin-top:14px;"><em>Filtered to the old class/subclass: these two items <strong>did not</strong> re-class and must be done again.</em></p>
+    <table class="result-grid">
+      <tr><th>SKULIST</th><th>ITEM</th><th>DEPT</th><th>CLASS</th><th>SUBCLASS</th></tr>
+      <tr><td>187376</td><td>103688</td><td>973</td><td>8000</td><td>8000</td></tr>
+      <tr><td>187376</td><td>256116</td><td>973</td><td>8000</td><td>8000</td></tr>
+    </table>
 
-    <ol class="steps" start="5">
-      <li>If there are more than five items going to the same department/class/subclass, an item list <strong>MUST</strong> be created by the buying groups. All items in RMS16 must be handled at the Parent Level, formerly known as the Grandparent level in RMSv10. Item lists created in v16 will not flow to v10, so it is necessary for the buying team to create a separate item list for each system.</li>
-      <li>Re-classes that move outside their Lawson (financial) group must be approved by the Vice President of Merchandising Support or the Director of Merchandise Planning and Analysis.</li>
-      <li>In the event that orders hit the deals tables, DST will run an open order report and send any open orders to the buying group to close (see SQL Query Reference). Any orders that may need to be closed must be done by <strong>1pm EST</strong> in v16 in order for the changes to flow to v10 correctly. The items cannot be removed from the order; the entire order must be in closed status.</li>
-      <li>All <strong>MANDATORY UDA's</strong> for the Dept/Class/Subclass that the item is going to must be added to the item prior to the re-class. <em>Note: most Mandatory UDA's were removed for RMS16.</em>
-        <div class="callout info"><span class="callout-icon">ℹ</span><div>Use the Mandatory UDA queries in the SQL Query Reference to (1) find Mandatory UDAs by Department, then (2) find the UDAs attached to a Skulist.</div></div>
-      </li>
+    <h3 class="sub-section-title" id="reclass-open-orders" style="margin-top:24px;">Failed Because of Open Orders</h3>
+    <ol class="steps">
+      <li>An item usually fails because of an open PO on the <strong>deals tables</strong>, or because it's a <a href="#reclass-pack-components">component of a pack</a> that's on order.</li>
+      <li>Run <a href="#sql-q7">Q7</a> to find the item or item list on open orders, then check those PO numbers with <a href="#sql-q8">Q8</a> (both deals tables) and <a href="#sql-q9">Q9</a> (open appointments, which must be closed before the PO can be). Together they give you the POs that need closing.</li>
+      <li>Export the results to Excel with columns expanded, a gray header row, a filter and all borders. Include PO number, status and, optionally, item number.</li>
+      <li>Email the buying group asking them to cancel the POs and let DST know when done. For a few POs, paste a screenshot into the email; for more, attach the spreadsheet.</li>
+      <li>When they confirm, check the POs are closed (Q10 in the SOP, which isn't in the query index), then key the re-class again. If RMS still sees a PO as open, wait a few minutes and retry.</li>
     </ol>
 
-    <h3 class="sub-section-title" id="reclass-forecasted-items" style="margin-top:24px;">Forecasted Items on Re-classes</h3>
+    <h3 class="sub-section-title" id="reclass-pack-components" style="margin-top:24px;">Failed Because of Pack Components on Order</h3>
     <ol class="steps">
-      <li>To determine if items are forecastable, run the forecastable query in the SQL Query Reference to check if a department is forecastable, if an item is on forecasting, or if an item list is on forecasting.</li>
-      <li>If the item needs to remain forecastable, the new Dept/Class/Subclass that the item is going to must be set up as forecastable by the Forecasting Team. If the destination department needs to be set up as forecastable, it will need to be added to a domain for the financial group.</li>
-      <li>If the item is currently forecastable, but does not need to be forecasted, work with the Forecasting Team to have the replenishment method changed to min/max. Then you'll be able to re-class the item without making the new Dept/Class/Subclass forecastable.</li>
-      <li>If you do not check to see whether your item is forecastable you may get an error, but the error on the Mass Change Item Rejection Report will <strong>NOT</strong> show you the item is forecastable. Instead the item will not re-class and you will receive an unrelated error.</li>
-    </ol>
-
-    <h3 class="sub-section-title" id="reclass-hierarchy-change" style="margin-top:24px;">Merchandise Hierarchy Change Re-class Process</h3>
-    <ol class="steps">
-      <li>Always confirm whether or not an item is going into a Dept/Class/Subclass that has recently had a Hierarchy Change.
-        <ul>
-          <li>To find if the new Dept/Class/Subclass has recently had a Hierarchy change, search the DST Inbox for an email tagged <em>"FYI . . . Please Read"</em> and titled <em>"Please Map New and Edit Dept, Class, and Subclasses."</em></li>
-          <li>These will be kept in the Inbox for 48 hours, after which you will need to look in the Merchandise Hierarchy Folder to confirm they are not there.</li>
-        </ul>
-      </li>
-      <li>If the item is going to a Dept/Class/Subclass with a Name Change, then you may re-class as soon as the name change is visible in RMS. These do not impact downstream systems.</li>
-      <li>If the item is going to a newly created Dept/Class/Subclass, then you must WAIT until confirmation is received from the downstream systems. Not waiting could result in incorrect sales.</li>
-      <li>If the item is going to a re-activated Dept/Class/Subclass (one that had been N/A, but was re-opened with a new name), then you must WAIT until confirmation is received from the downstream system's POCs, found in the "Please Map New and Edit Dept, Class, and Subclasses" emails.</li>
-    </ol>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-keying-v16">Keying a Re-class in RMS v16</h3>
-    <ol class="steps">
-      <li>From Tasks, select Foundation Data &gt; Items &gt; Reclassification.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Menu</th><th>Navigation Path</th></tr></thead>
-          <tbody><tr><td>Tasks</td><td>Foundation Data → Items → Reclassification</td></tr></tbody>
-        </table>
-      </li>
-      <li>Selecting Reclassifications will bring up the Reclassifications Screen. From this screen you will create re-classes for single items and item lists, as well as delete any re-class that needs to be deleted.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Screen Element</th><th>Function</th></tr></thead>
-          <tbody>
-            <tr><td>Reclassifications Grid</td><td>Lists all active re-classes</td></tr>
-            <tr><td>Green "+" (Actions &gt; Add)</td><td>Create a new re-class</td></tr>
-            <tr><td>Red "X" (Actions &gt; Delete)</td><td>Delete an existing re-class</td></tr>
-          </tbody>
-        </table>
-      </li>
-      <li>In the Reclassifications Box select the Green "+" or go to Actions &gt; Add. All RINs must be at the Parent level; this is the Level 1 item.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Action</th><th>Result</th></tr></thead>
-          <tbody><tr><td>Green "+" / Actions &gt; Add</td><td>Opens the Add Reclassification screen</td></tr></tbody>
-        </table>
-      </li>
-      <li>The Add Reclassification screen will open up.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Field</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td>Description</td><td>Free-text field identifying the re-class</td></tr>
-            <tr><td>Reclass Date</td><td>The date the re-class becomes effective</td></tr>
-          </tbody>
-        </table>
-      </li>
-      <li>In the Reclassification Description, enter the last name of the submitter. If they have submitted more than one re-class you can enter a number after the name, i.e., DOE - #1 for the first and DOE #2 for the second, etc.</li>
-      <li>The Reclass Date is the next day. If you do not want the re-class to be effective the next day, pick any other later date. The system will hold the re-class until the day specified.</li>
-      <li>In the "Select Item to Reclassify" section, select "Item" for a single item re-class and "Item List" for an item list re-class. Then enter the item or item list in the Item/Item List box. You can also use the LOV marker to search for items.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Field</th><th>Options / Notes</th></tr></thead>
-          <tbody>
-            <tr><td>Select Item to Reclassify</td><td>"Item" (single item) or "Item List" (item list)</td></tr>
-            <tr><td>Item / Item List box</td><td>Enter item/item list number, or search using the LOV marker</td></tr>
-          </tbody>
-        </table>
-        <div class="callout info"><span class="callout-icon">ℹ</span><div><strong>NOTE:</strong> Items on your v16 item list will not match your items on the v10 item list for 2-level items.</div></div>
-      </li>
-      <li>In the Select New Hierarchy section, enter the department, class, and subclass the item is <strong>GOING TO</strong>.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Field</th><th>Enter</th></tr></thead>
-          <tbody>
-            <tr><td>Department</td><td>New department the item is going to</td></tr>
-            <tr><td>Class</td><td>New class the item is going to</td></tr>
-            <tr><td>Subclass</td><td>New subclass the item is going to</td></tr>
-          </tbody>
-        </table>
-      </li>
-      <li>Click OK once all the data has been entered. If you have additional re-classes to input, select "Ok and Add Another" and repeat steps 5–8, then hit "Ok".</li>
-      <li>You will get a message that the item will be reclassified the night before the reclassification effective date. The re-class job runs in Phase 4 of the batches (this is the after-batch).
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Message</th><th>Meaning</th></tr></thead>
-          <tbody><tr><td>"Item will be reclassified the night before the reclassification effective date."</td><td>Confirms the re-class was saved and will run in Phase 4 of the nightly batch (after-batch)</td></tr></tbody>
-        </table>
-      </li>
-      <li>Reply to the original email with the canned email once successful validation has been completed.</li>
-    </ol>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-resolving-errors">Resolving Re-class Errors</h3>
-    <ol class="steps">
-      <li>To see the reason a re-class has failed, use the "recent rejection" and "past rejection" queries in the SQL Query Reference. The text editor will give you the rejection reason. You can determine how to correct the problem from this reason.</li>
-      <li>To review whether a re-class has gone through, use the "Validate if Item List/SKULIST re-classed" and "Validate if single item re-classed" queries in the SQL Query Reference. Enter your item or item list number and run the script(s). Export to Excel and then filter the data. Select one item list at a time from the filter drop down. You may select multiple item lists at a time if they are all going to the same dept, class, and subclass. You should easily see if the items were all re-classed. If the item lists were HUGE, you could just check each drop down, because if there is more than one value for dept, class, or subclass for an individual item list, then you know there is an item that is not re-classed.
-
-        <p style="margin-top:14px;"><em>Non-filtered results from above script — you can see which items were successfully re-classed:</em></p>
-        <table class="result-grid">
-          <tr><th>SKULIST</th><th>ITEM</th><th>DEPT</th><th>CLASS</th><th>SUBCLASS</th></tr>
-          <tr><td>187376</td><td>103688</td><td>973</td><td>8000</td><td>8000</td></tr>
-          <tr><td>187376</td><td>256116</td><td>973</td><td>8000</td><td>8000</td></tr>
-          <tr><td>187376</td><td>5532526</td><td>973</td><td>1001</td><td>3</td></tr>
-        </table>
-
-        <p style="margin-top:14px;"><em>Filtered results from above script — you can now see these items DID NOT get re-classed and should be done again:</em></p>
-        <table class="result-grid">
-          <tr><th>SKULIST</th><th>ITEM</th><th>DEPT</th><th>CLASS</th><th>SUBCLASS</th></tr>
-          <tr><td>187376</td><td>103688</td><td>973</td><td>8000</td><td>8000</td></tr>
-          <tr><td>187376</td><td>256116</td><td>973</td><td>8000</td><td>8000</td></tr>
-        </table>
-      </li>
-    </ol>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-viewing-editing">Viewing / Editing Current Re-classes</h3>
-    <ol class="steps">
-      <li>From Retek Enterprise Home, click on Tasks &gt; Foundation Data &gt; Items &gt; Reclassification.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Menu</th><th>Navigation Path</th></tr></thead>
-          <tbody><tr><td>Tasks</td><td>Foundation Data → Items → Reclassification</td></tr></tbody>
-        </table>
-      </li>
-      <li>The Re-class view shows all active re-classes that will be effective in future batches.
-        <ul>
-          <li>Please note: this will not show any re-classes that have already processed. This is the same screen used for creating re-classes. You can see the details of the selected re-class in the Details section.</li>
-        </ul>
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Screen Element</th><th>Shows</th></tr></thead>
-          <tbody>
-            <tr><td>Reclassifications Grid</td><td>All active, future-effective re-classes</td></tr>
-            <tr><td>Details Section</td><td>Full detail of the currently selected re-class</td></tr>
-          </tbody>
-        </table>
-      </li>
-      <li>If a re-class needs to be deleted for any reason, highlight it and click delete (the red "X" or Action &gt; Delete). You will receive a warning confirming you wish to delete the re-class. Select "Yes".
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Prompt</th><th>Action</th></tr></thead>
-          <tbody><tr><td>Delete confirmation warning</td><td>Select "Yes" to confirm</td></tr></tbody>
-        </table>
-      </li>
-      <li>Once you have selected "Yes" the re-class will delete from the Reclassification list. Select "Save and Close" to save the delete.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Button</th><th>Action</th></tr></thead>
-          <tbody><tr><td>Save and Close</td><td>Commits the deletion</td></tr></tbody>
-        </table>
-      </li>
-      <li>As in v10, you won't be able to edit the existing re-class, but viewing the details will allow you to see whether you need to delete a current re-class and start again.
-        <div class="callout warn"><span class="callout-icon">⚠</span><div><strong>NOTE:</strong> If a reclass does not process during the nightly batch, and there are no partially received orders, it MUST be deleted and reprocessed. Changing the date in the backend will not retrigger it to reprocess.</div></div>
-      </li>
-    </ol>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-keying-v10-single">Keying a Re-class for a Single Item in RMSv10</h3>
-    <ol class="steps">
-      <li>From Retek Enterprise, double-click on the Items folder. From Items, double-click and open the Reclassification Folder.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Folder</th><th>Navigation Path</th></tr></thead>
-          <tbody><tr><td>Items</td><td>Items → Reclassification Folder</td></tr></tbody>
-        </table>
-      </li>
-      <li>Double-click on the Reclassification Folder and then select "reclassify one item".
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Folder Option</th><th>Result</th></tr></thead>
-          <tbody><tr><td>Reclassify one item</td><td>Opens the Reclassification Item screen</td></tr></tbody>
-        </table>
-      </li>
-      <li>In the Reclassification Item screen, enter the RIN of the item that is being reclassified.</li>
-      <li>The reclassification number is automatically populated. Record that number on the re-class form.</li>
-      <li>In the Reclassification Description, enter the last name of the buyer, then the department. If they have submitted more than one re-class you can enter a number after the name, i.e., DOE - Dept 123 #1 for the first and DOE #2 for the second, etc.</li>
-      <li>The effective date is the next day. If you do not want the re-class to be effective the next day, pick any other day. The system will hold the re-class until the day specified. Enter the department, class, and subclass the item is <strong>GOING TO</strong>.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Field</th><th>Enter</th></tr></thead>
-          <tbody>
-            <tr><td>RIN</td><td>The item's RIN</td></tr>
-            <tr><td>Reclassification Number</td><td>Auto-populated — record on the re-class form</td></tr>
-            <tr><td>Description</td><td>Buyer last name + department (+ sequence number if multiple)</td></tr>
-            <tr><td>Effective Date</td><td>Defaults to next day; can be set later</td></tr>
-            <tr><td>Department</td><td>New department the item is going to</td></tr>
-            <tr><td>Class</td><td>New class the item is going to</td></tr>
-            <tr><td>Subclass</td><td>New subclass the item is going to</td></tr>
-          </tbody>
-        </table>
-      </li>
-      <li>Click OK once all the data has been entered.</li>
-      <li>You will get a message that the "Item(s) will be reclassified the night before the reclassification effective date." The re-class job runs in Phase 4 of the batches (this is the after-batch).
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Message</th><th>Meaning</th></tr></thead>
-          <tbody><tr><td>"Item(s) will be reclassified the night before the reclassification effective date."</td><td>Confirms the re-class was saved and will run in Phase 4 (after-batch)</td></tr></tbody>
-        </table>
-      </li>
-      <li>Reply to the original email stating re-classes have been completed once validation is completed.</li>
-    </ol>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-keying-v10-list">Keying a Re-class for an Item List in RMSv10</h3>
-    <ol class="steps">
-      <li>From Retek Enterprise, double-click on the Items folder and double-click on Item List.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Folder</th><th>Navigation Path</th></tr></thead>
-          <tbody><tr><td>Items</td><td>Items → Item List</td></tr></tbody>
-        </table>
-      </li>
-      <li>Select "Use" from the drop-down selection.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Field</th><th>Selection</th></tr></thead>
-          <tbody><tr><td>Item List action</td><td>Use</td></tr></tbody>
-        </table>
-      </li>
-      <li>Enter the item list number and click OK.</li>
-      <li>From the top of the screen select Options, Create Mass Item Change, Reclassification.</li>
-      <li>The re-class form opens, but with Item List instead of Item.</li>
-      <li>Record the re-class number on the re-class form.</li>
-      <li>Enter the Buyer Last Name - Dept # - #1,2,3,4,5, etc. in the re-class description. Same format as used for single item re-classes.</li>
-      <li>Select the effective date. The effective date is the next day. If you do not want the re-class to be effective the next day, pick any other day.</li>
-      <li>Enter the Dept/Class/Subclass the items are <strong>GOING TO</strong>.</li>
-      <li>Click OK.</li>
-      <li>The item will be re-classed the night before the reclassification effective date.
-        <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; margin-top:8px;">
-          <thead><tr style="background-color: #f2f2f2; font-weight: bold;"><th>Message</th><th>Meaning</th></tr></thead>
-          <tbody><tr><td>Reclassification confirmation</td><td>Confirms the item list re-class will run the night before the effective date</td></tr></tbody>
-        </table>
-      </li>
-    </ol>
-
-    <h3 class="sub-section-title" id="reclass-open-orders" style="margin-top:24px;">Identifying Open Orders for Items that Failed to Re-class</h3>
-    <ol class="steps">
-      <li>If an item fails to re-class it may be due to an open PO on the deals table(s) or a component on a pack on order in RMS.</li>
-      <li>In Toad/SQL, run the queries in the SQL Query Reference to (1) find item lists (or items) on an open order, (2) check deals tables using PO numbers, (3) check for open appointments on POs, and (4) check if a PO is not closed/re-opened.</li>
-      <li>Use the open-order query to find the items on the POs, then check those POs against the deals-table and open-appointment queries — these will give you the POs that need to be closed.</li>
-      <li>Export the results to Excel and save the spreadsheet with proper formatting. Proper formatting is as follows: columns expanded, header in gray, filter added, and all borders added. Columns included should be PO number, Status, and, if desired, item number.
-        <ul>
-          <li>If only a few POs, paste a screenshot to the email body and email the buying group to cancel the open POs and to notify DST when they have been canceled. If there are more than a few POs, send as an Excel attachment.</li>
-        </ul>
-      </li>
-      <li>After the buying group notifies DST that the POs have been closed, run the "PO not closed/re-opened" query to verify that the POs have been canceled, and then you can re-class the item(s). Sometimes when an open PO has been closed, the system will still see the PO as open. If this happens, wait a few minutes and try the re-class again — it should go through after waiting.</li>
-    </ol>
-
-    <h3 class="sub-section-title" id="reclass-pack-components" style="margin-top:24px;">Components of Pack Items on Order (Items That Failed)</h3>
-    <ol class="steps">
-      <li>There are times when an item is not on order when you run the open order query above, but the item is a component of a pack in RMS that is on order. This will cause an item to fail because of open orders. To identify these items on order, use the "Identifying component items on order" query in the SQL Query Reference.</li>
-      <li>When this query comes back it will indicate the POs the pack item is on. The buying group can then cancel the order(s) the pack is on, and the re-class can be completed on the component item(s).</li>
-    </ol>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-lawson-departments">Re-classes Between Lawson Departments</h3>
-    <ol class="steps">
-      <li>When receiving re-classes that move between Lawson departments, approval by the Vice President of Merchandising Support is needed.</li>
-      <li>To verify that this is a financial move, use the department-move queries in the SQL Query Reference to find the departments, then confirm they are from different groups.</li>
-      <li>Be sure to notify the DMM of Planning and Replenishment that you have an intra-department Lawson re-class. POCs are the Director of Merchandise Planning and Analysis and the Director of Merchandise Planning.</li>
-      <li>Complete the re-class as stated above in <a href="#reclass">Keying a Re-class in RMS v16</a>.</li>
-      <li>The Merchandise Accounting Manager runs a monthly report for these and will take any necessary action regarding financial moves.</li>
-    </ol>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title" id="reclass-nightly-batch">Nightly Batch Communication to RAVE</h3>
-    <ol class="steps">
-      <li>Each evening before leaving, the last team member to leave will run the nightly batch queries in the SQL Query Reference to (1) check re-classes scheduled to run in the nightly batch, (2) find how many items will process in a night, and (3) find re-class numbers running that night.</li>
-      <li>Drop the amount of total items being reclassed each night in the Record Counts/Batch Count TEAMS chat.</li>
+      <li>If the item isn't on order itself but still fails for open orders, it's probably a <strong>component of a pack</strong> that is on order.</li>
+      <li>Run <a href="#sql-q6">Q6</a> with the item number. It returns the POs the pack is on.</li>
+      <li>Ask the buying group to cancel those orders, then key the re-class for the component item(s) again.</li>
     </ol>
   </div>
 </section>
