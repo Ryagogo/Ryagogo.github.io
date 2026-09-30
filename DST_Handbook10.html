@@ -422,6 +422,7 @@
   details.macro-source { margin: 18px 0 4px; }
   details.macro-source > summary { cursor: pointer; font-weight: 600; color: var(--text); padding: 8px 0; }
   details.macro-source .code-wrapper { max-height: 520px; overflow: auto; }
+  .doc-guide-updated { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
   /* SOP screenshots */
   .sop-shot { display: block; max-width: 100%; height: auto; margin: 12px 0; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
   kbd { font: 600 12px/1 ui-monospace, Consolas, monospace; padding: 2px 6px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; background: var(--surface); }
@@ -4000,77 +4001,94 @@
 <!-- ════════════════════════════════════ -->
 <section class="section" id="doc-guide">
   <h2 class="section-title">Document Decision Guide</h2>
-  <p>Use the tables below to identify the correct form or process for any DST action. When in doubt, refer to the relevant SOP linked in the sidebar.</p>
+  <p>Find the action you need, then use the template or method listed. Where two options are shown, either one works. <span class="doc-guide-updated">Updated 01.07.2026</span></p>
+  <div class="callout tip"><span class="callout-icon">💡</span><div><strong>Updating multiple items?</strong> Use the <strong>RMS Download</strong> form instead of editing items one at a time on the front end.</div></div>
 
   <div class="sub-section" id="doc-guide-building">
     <h3 class="sub-section-title">Building &amp; Adding Items</h3>
-    <table class="decision-table">
+    <p>These all go on the <strong>Item Induction Template</strong>.</p>
+    <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
       <tbody>
-        <tr><td>Build an item</td><td>Item Induction Form</td></tr>
-        <tr><td>Add a supplier</td><td>Item Induction Form</td></tr>
-        <tr><td>Add a transaction</td><td>Item Induction Form</td></tr>
-        <tr><td>Add a GTIN</td><td>Item Induction Form <em>or</em> manually via Front-End</td></tr>
-        <tr><td>Add dimensions</td><td>Item Induction Form <em>or</em> manually via Front-End</td></tr>
-        <tr><td>Delete a GTIN</td><td>Item Induction Form</td></tr>
-        <tr><td>Add UDAs</td><td>Item Induction Form</td></tr>
-        <tr><td>Create a consignment item</td><td>Item Induction Form — change <strong>Column C</strong></td></tr>
-        <tr><td>Create a drop ship item</td><td>Item Induction Form — change <strong>Column BH</strong></td></tr>
+        <tr><td>Create an item</td><td><strong>Item Induction Template</strong></td></tr>
+        <tr><td>Add transaction RINs</td><td><strong>Item Induction Template</strong></td></tr>
+        <tr><td>Add a supplier</td><td><strong>Item Induction Template</strong></td></tr>
+        <tr><td>Add a GTIN</td><td><strong>Item Induction Template</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Delete GTIN(s)</td><td><strong>Item Induction Template</strong></td></tr>
+        <tr><td>Add dimensions</td><td><strong>Item Induction Template</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Add location(s) to an existing RIN</td><td><strong>Item Induction Template</strong> (Location tab only)</td></tr>
+        <tr><td>Create a consignment item</td><td><strong>Item Induction Template</strong> (must update <strong>column C</strong>)</td></tr>
+        <tr><td>Create a drop ship item</td><td><strong>Item Induction Template</strong> (must update <strong>column BH</strong>)</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title">Supplier-Level Updates</h3>
-    <table class="decision-table">
+  <div class="sub-section" id="doc-guide-updates">
+    <h3 class="sub-section-title">Item &amp; Supplier Updates</h3>
+    <p>Edit on the front end for a single item, or use RMS Download for several.</p>
+    <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
       <tbody>
-        <tr><td>Update Primary Supplier at Supplier Level</td><td>Manually or via RMS Download</td></tr>
-        <tr><td>Update Drop Ship Flag (Direct Ship in v16)</td><td>Manually or via RMS Download</td></tr>
-        <tr><td>Update VPN</td><td>Manually or via RMS Download</td></tr>
-        <tr><td>Update Supplier Color (Diff 1 in v16)</td><td>Manually or via RMS Download</td></tr>
-        <tr><td>Update Consignment Rate</td><td>Manually or via RMS Download</td></tr>
-        <tr><td>Update Default UOP</td><td>Manually or via RMS Download</td></tr>
-        <tr><td>Update Inner and Pack — Cross docked item</td><td>Send to DST</td></tr>
-        <tr><td>Update Inner and Pack — Warehouse item</td><td>Send to ROADS</td></tr>
-        <tr><td>Update Ti/Hi</td><td>Manually or via RMS Download</td></tr>
-        <tr><td>Update Rounding Level</td><td>Manually or via RMS Download</td></tr>
-        <tr><td>Edit Dimensions</td><td>Manually or RMS Download</td></tr>
+        <tr><td>Edit description, short description or secondary description</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Edit dimensions</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Add comments</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update brand</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update suggested retail (MSRP)</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update VPN</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update primary supplier at supplier level</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update drop ship flag (called <em>Direct Ship Flag</em> in RMS v16)</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update consignment rate</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update default UOP</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update Ti/Hi</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update rounding level</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update supplier color (called <em>Diff 1</em> in RMS v16)</td><td><strong>RMS Download</strong> only</td></tr>
+        <tr><td>Update inner and case pack</td><td><strong>RMS Download</strong> only. <strong>Warehoused items must be sent to ROADS.</strong></td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title">Hierarchy &amp; Location</h3>
-    <table class="decision-table">
+  <div class="sub-section" id="doc-guide-udas">
+    <h3 class="sub-section-title">UDAs</h3>
+    <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
       <tbody>
-        <tr><td>Move item to a different Dept/Class/Subclass</td><td>Re-class form (first full week of every month); certain changes require Management approval</td></tr>
-        <tr><td>Create, add, or edit a Dept/Class/Subclass</td><td>Merchandise Hierarchy Form (twice a year); certain changes require Management approval</td></tr>
-        <tr><td>Add a location to a RIN</td><td>Item Induction Form — Location Tab only</td></tr>
-        <tr><td>Update Primary Supplier at Location Level</td><td>Manual Maintenance Form</td></tr>
-        <tr><td>Update Quantity Key</td><td>Contact START/DST</td></tr>
-        <tr><td>Update Location Status</td><td>Manual Maintenance Form</td></tr>
-        <tr><td>Update Store Order Multiple at Location Level</td><td>Manual Maintenance Form</td></tr>
+        <tr><td>Add UDAs</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Update UDAs (List of Values only)</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Delete UDAs (List of Values only)</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title">UDAs, Seasons &amp; Descriptions</h3>
-    <table class="decision-table">
+  <div class="sub-section" id="doc-guide-location">
+    <h3 class="sub-section-title">Location-Level Updates</h3>
+    <p>These all go on the <strong>Manual Maintenance Form</strong>.</p>
+    <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
       <tbody>
-        <tr><td>Update UDAs (List of Values only)</td><td>RMS Download</td></tr>
-        <tr><td>Delete UDAs (List of Values only)</td><td>RMS Download</td></tr>
-        <tr><td>Update, Add, or Delete Seasons/Phases</td><td>Manually or Mass Change via Item List</td></tr>
-        <tr><td>Update, Add, or Delete Ticket Type</td><td>Manually or Mass Change via Item List</td></tr>
-        <tr><td>Update Brand</td><td>Manually via Front-End or RMS Download</td></tr>
-        <tr><td>Update Suggested Retail (MSRP)</td><td>Manually via Front-End or RMS Download</td></tr>
-        <tr><td>Update Comments</td><td>Manually via Front-End or RMS Download</td></tr>
-        <tr><td>Update Description, Short, or Secondary</td><td>Manually via Front-End or RMS Download</td></tr>
+        <tr><td>Update location status</td><td><strong>Manual Maintenance Form</strong></td></tr>
+        <tr><td>Update primary suppliers at location level</td><td><strong>Manual Maintenance Form</strong></td></tr>
+        <tr><td>Update <a href="#qty-key">quantity key</a></td><td><strong>Manual Maintenance Form</strong></td></tr>
+        <tr><td>Update store order multiple at location level</td><td><strong>Manual Maintenance Form</strong></td></tr>
       </tbody>
-    </table>
+    </table></div>
+  </div>
+  <div class="sub-section" id="doc-guide-seasons">
+    <h3 class="sub-section-title">Seasons &amp; Ticket Types</h3>
+    <div class="table-wrap"><table class="decision-table">
+      <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
+      <tbody>
+        <tr><td>Add, edit or delete seasons/phases</td><td><strong>Front-End (RMS v16)</strong> <em>or</em> <strong>Mass Change via Item List</strong></td></tr>
+        <tr><td>Add, edit or delete ticket type</td><td><strong>Front-End (RMS v16)</strong> <em>or</em> <strong>Mass Change via Item List</strong></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="sub-section" id="doc-guide-hierarchy">
+    <h3 class="sub-section-title">Hierarchy Changes</h3>
+    <p>These run on a fixed schedule.</p>
+    <div class="table-wrap"><table class="decision-table">
+      <thead><tr><th>If you need to…</th><th>Use this</th></tr></thead>
+      <tbody>
+        <tr><td>Re-class RIN(s) to a different dept/class/subclass</td><td><strong>Re-classification Template</strong>. Done the <strong>first full week of every month</strong>; see <a href="#reclass">Item Reclassification</a>.</td></tr>
+        <tr><td>Create, add or edit a dept/class/subclass</td><td><strong>Merchandise Hierarchy Template</strong>. Done <strong>twice a year</strong>.</td></tr>
+      </tbody>
+    </table></div>
   </div>
 </section>
 <section class="section" id="email-responses">
