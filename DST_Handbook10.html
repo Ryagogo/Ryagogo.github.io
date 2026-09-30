@@ -409,6 +409,19 @@
   .decision-table.codes-table thead th:first-child { width: auto; }
   .decision-table.codes-table td { font-family: inherit; }
   .decision-table.codes-table td:not(:first-child) { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+  .decision-table.plain-table td:not(:first-child) { font-family: inherit; font-size: 13px; }
+  /* Download card */
+  .download-card { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 16px 0; padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+  .download-card-icon { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 8px; background: #1d6f42; color: #fff; font: 700 11px/48px system-ui, sans-serif; text-align: center; letter-spacing: 0.04em; }
+  .download-card-body { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .download-card-title { font-weight: 600; color: var(--text); }
+  .download-card-meta { font-size: 13px; color: var(--text-muted); }
+  .download-card-btn { flex: 0 0 auto; padding: 9px 18px; border-radius: 8px; background: var(--navy); color: #fff !important; font-weight: 600; font-size: 14px; text-decoration: none; }
+  .download-card-btn:hover { filter: brightness(1.15); }
+  html[data-theme="dark"] .download-card-btn { background: #2b6cb0; }
+  details.macro-source { margin: 18px 0 4px; }
+  details.macro-source > summary { cursor: pointer; font-weight: 600; color: var(--text); padding: 8px 0; }
+  details.macro-source .code-wrapper { max-height: 520px; overflow: auto; }
   /* SOP screenshots */
   .sop-shot { display: block; max-width: 100%; height: auto; margin: 12px 0; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
   kbd { font: 600 12px/1 ui-monospace, Consolas, monospace; padding: 2px 6px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; background: var(--surface); }
@@ -3968,6 +3981,7 @@
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#tpgc-rms">Create TPGC in RMS as Non-Merchandise</a>
       <a class="nav-sub-link" href="#tpgc-card-types">Card Types &amp; MNT Files Needed</a>
+      <a class="nav-sub-link" href="#tpgc-cheat-sheet">TPGC Cheat Sheet (Automated MNT)</a>
       <a class="nav-sub-link" href="#tpgc-creating-mnt">Creating the Needed MNT Files</a>
       <a class="nav-sub-link" href="#tpgc-gcitmproperties">GCITMProperties Tab</a>
       <a class="nav-sub-link" href="#tpgc-attachfee">TPGCAttachFee Tab</a>
@@ -11983,7 +11997,7 @@ New Web Brand request has been created. Please use the below in the <span class=
 
   <div class="sub-section" id="tpgc-overview">
     <h3 class="sub-section-title">What it is</h3>
-    <p>Third Party Gift Cards (TPGC) are gift cards from outside brands such as Starbucks, Target or Visa that are sold at the register. They are built in RMS as <strong>non-merchandise</strong> items, so they never flow to Xadmin on their own. Instead, each card is loaded into Xadmin through a set of <code>.mnt</code> (maintenance) files created with the MNT Creator workbook. The STS team is also given the card details so sales audit treats them correctly, and ORUP is told about the new RINs so the Non-Merchandise Master File stays current.</p>
+    <p>Third Party Gift Cards (TPGC) are gift cards from outside brands such as Starbucks, Target or Visa that are sold at the register. They are built in RMS as <strong>non-merchandise</strong> items, so they never flow to Xadmin on their own. Instead, each card is loaded into Xadmin through a set of <code>.mnt</code> (maintenance) files created with the MNT Creator workbook, most quickly by using the <a href="#tpgc-cheat-sheet">TPGC Cheat Sheet</a>. The STS team is also given the card details so sales audit treats them correctly, and ORUP is told about the new RINs so the Non-Merchandise Master File stays current.</p>
     <div class="callout warn"><span class="callout-icon">⚠</span><div><strong>Do NOT create Third Party Gift Cards in Xadmin.</strong> They must be input into Xadmin through a series of MNT (maintenance) files.</div></div>
     <img class="sop-shot" src="Pictures/DST/TPGC/tpgc-workflow.png" alt="Third Party Gift Card workflow: create in RMS as non-merchandise, create and upload the STS spreadsheet, create an incident ticket, complete the needed converter tabs for the card type, press Ctrl+Shift+M after each tab, then upload to Xadmin or ask Store Systems to deploy." loading="lazy">
   </div>
@@ -12035,8 +12049,1116 @@ New Web Brand request has been created. Please use the below in the <span class=
     <img class="sop-shot" src="Pictures/DST/TPGC/card-types.png" alt="The four TPGC card types: Fixed No Fee, Fixed Fee, Range No Fee and Range Fee." loading="lazy">
   </div>
 
+  <div class="sub-section" id="tpgc-cheat-sheet">
+    <h3 class="sub-section-title">TPGC Cheat Sheet: Automated MNT Creation</h3>
+    <p>The <strong>TPGC Cheat Sheet</strong> is a macro-enabled workbook that streamlines the MNT Master Creator inputs. Instead of filling out up to five converter tabs by hand and pressing <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> on each one, you enter <strong>one row per gift card</strong> on the cheat sheet and click <strong>Export</strong>. The <code>ExportTPGC</code> macro routes each row by its card type, writes the right rows and default values into every tab the card needs, keeps those tabs in sync, and then builds all the <code>.mnt</code> files in one pass.</p>
+
+    <div class="download-card">
+      <div class="download-card-icon" aria-hidden="true">XLSM</div>
+      <div class="download-card-body">
+        <span class="download-card-title">TPGC Cheat Sheet</span>
+        <span class="download-card-meta">Macro-enabled Excel workbook (.xlsm) · contains the <code>ExportTPGC</code> and <code>CreateTPGCMNTFiles</code> macros</span>
+      </div>
+      <a class="download-card-btn" href="Files/TPGC_Cheat_Sheet.xlsm" download>Download</a>
+    </div>
+
+    <p class="step-heading"><strong>How it fits into the TPGC process</strong></p>
+    <ol class="steps">
+      <li>Build the gift cards in RMS as non-merchandise (see above) so each card has its transaction-level RIN.</li>
+      <li>Fill in the <strong>TPGC Cheat Sheet</strong>, one row per card.</li>
+      <li>Click <strong>Export</strong>. The macro fills the MNT Master Creator tabs and creates the <code>.mnt</code> files. This replaces the manual tab-by-tab steps in <a href="#tpgc-creating-mnt">Creating the Needed MNT Files</a> and the tab guides that follow, which remain as a reference for what each column means and for one-off fixes.</li>
+      <li>Continue as normal: <a href="#tpgc-sts">STS spreadsheet</a>, <a href="#tpgc-incident">incident ticket</a>, <a href="#tpgc-orup">ORUP submission</a>, and <a href="#tpgc-deploy">deployment into Xadmin</a>.</li>
+    </ol>
+
+    <p class="step-heading"><strong>What's in the workbook</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Tab</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>TPGC</td><td>The input sheet. Headers are on <strong>row 3</strong>; enter one gift card per row from row 4 down. Contains the <strong>Export</strong> button. Column N previews the first 11 digits of the UPC.</td></tr>
+        <tr><td>DST Use Only</td><td>Helper that turns Group / Dept / Class / Subclass numbers into the merch level IDs (<code>226G</code>, <code>817D</code>, <code>817-1300C</code>, <code>817-1300-2S</code>) so you can double-check what the macro will write.</td></tr>
+        <tr><td>Group</td><td>Lookup list of every department with its name and group number. Use it to find the Group for a card's department.</td></tr>
+      </tbody>
+    </table></div>
+
+    <p class="step-heading"><strong>TPGC tab columns</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Column (row 3 header)</th><th>What to enter</th></tr></thead>
+      <tbody>
+        <tr><td>Type of Gift Card</td><td>Pick from the drop-down: <code>Fixed Price NoFee</code>, <code>Fixed Price Fee</code>, <code>Price Range No Fee</code> or <code>Price Range Fee</code>. Rows with no type are ignored.</td></tr>
+        <tr><td>Transaction Level RIN#</td><td>The gift card's transaction RIN from RMS.</td></tr>
+        <tr><td>Group</td><td>Group number only, e.g. <code>226</code>. The macro adds the <code>G</code>.</td></tr>
+        <tr><td>Dept</td><td>Department number only, e.g. <code>817</code>.</td></tr>
+        <tr><td>Class</td><td>Class number only, e.g. <code>1300</code>.</td></tr>
+        <tr><td>Subclass</td><td>Subclass number only, e.g. <code>2</code>.</td></tr>
+        <tr><td>Description with no Special Characters</td><td>Used for both the Name and Description fields on TPGCNonMerchandise.</td></tr>
+        <tr><td>Price Range (Min)</td><td>Range cards only. Minimum load value; <code>$</code> and commas are allowed.</td></tr>
+        <tr><td>Price Range (Max)</td><td>Range cards only. Maximum load value; must be greater than or equal to the minimum.</td></tr>
+        <tr><td>Fixed Retail</td><td>Fixed cards only. The card's retail price.</td></tr>
+        <tr><td>Fee Rins Associated</td><td>Fee cards only. Pick from the drop-down, e.g. <code>14243675 (3.95)</code>. The amount in parentheses is ignored. You can type more than one RIN separated by commas, spaces, semicolons, slashes or line breaks.</td></tr>
+        <tr><td>Effective Dates</td><td>Date the price or fee takes effect. Required for Fixed cards and Fee cards.</td></tr>
+        <tr><td>GTIN/UPC#</td><td>The card's full UPC or GTIN. The macro works out the first 11 digits.</td></tr>
+      </tbody>
+    </table></div>
+
+    <p class="step-heading"><strong>Required fields and tabs filled, by card type</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table codes-table plain-table">
+      <thead><tr><th>Card type</th><th>Required on the cheat sheet</th><th>Master Creator tabs filled</th></tr></thead>
+      <tbody>
+        <tr><td>Fixed Price NoFee</td><td>RIN, GTIN/UPC, Fixed Retail, Effective Date</td><td><code>TPGC_UPC</code> · <code>TPGCNonMerchandise</code> · <code>ItemPriceAction</code></td></tr>
+        <tr><td>Fixed Price Fee</td><td>Same as above + Fee RIN</td><td>Same as above + <code>TPGCAttachFee</code> (one row per fee RIN)</td></tr>
+        <tr><td>Price Range No Fee</td><td>RIN, GTIN/UPC, Min, Max</td><td><code>TPGC_UPC</code> · <code>TPGCNonMerchandise</code> · <code>GCITMProperties</code> (a MIN row and a MAX row)</td></tr>
+        <tr><td>Price Range Fee</td><td>Same as above + Effective Date, Fee RIN</td><td>Same as above + <code>TPGCAttachFee</code> (one row per fee RIN)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout info"><span class="callout-icon">ℹ</span><div>Group, Dept, Class, Subclass and Description are <strong>not</strong> checked. They are copied as entered, so make sure they match RMS.</div></div>
+
+    <p class="step-heading"><strong>Before you start</strong></p>
+    <ul>
+      <li><strong>Enable macros.</strong> When the workbook opens, select <strong>Enable Content</strong> in the yellow security bar.</li>
+      <li><strong>Master Creator location.</strong> The macro opens the TPGC MNT Master Creator workbook (<code>CreateMNTFile_MasterCreator_2026_01.xlsm</code>) from the shared templates folder (<span class="redacted" title="Redacted for privacy">X:\shared\folder</span>). If that drive isn't mapped, open the Master Creator yourself first; the macro uses any open workbook with the same file name.</li>
+      <li><strong>Start from a clean Master Creator.</strong> The macro adds rows <em>below</em> whatever is already on each tab, and the MNT files include every row on the tab. Clear old rows (or open a fresh copy) before exporting.</li>
+      <li><strong>The cheat sheet cannot be saved.</strong> It carries a permanent save lock, so saving shows <em>"This workbook is locked and cannot be saved again."</em> Fill it in, export, and close without saving. Keep your source list somewhere else if you need to reuse it.</li>
+    </ul>
+
+    <p class="step-heading"><strong>Using the cheat sheet</strong></p>
+    <ol class="steps">
+      <li>Open <strong>TPGC_Cheat_Sheet.xlsm</strong> and enable content.</li>
+      <li>On the <strong>TPGC</strong> tab, enter one row per gift card starting on row 4, using the column guide above.</li>
+      <li>Stay on the TPGC tab and click the blue <strong>Export</strong> button. The macro reads whichever sheet is active, so don't run it from another tab.</li>
+      <li>The macro checks that every header on row 3 is present, opens the Master Creator, and checks that each target tab and header exists. If anything is missing it stops and lists what it couldn't find, before writing anything.</li>
+      <li>Each row is validated for its card type. A row is written <strong>only if it passes every check</strong>, so a card never ends up on some tabs but not others.</li>
+      <li>A summary shows how many rows were exported for each card type, how many TPGCAttachFee and GCITMProperties rows were added, and any <strong>skipped</strong> rows with the reason (for example <em>Row 7: missing/invalid Fixed Retail</em>).</li>
+      <li>Answer <strong>Yes</strong> to <em>Create the MNT file(s) now?</em>. Choose <strong>No</strong> if you want to review the Master Creator tabs first. The Master Creator is left open on the TPGC_UPC tab.</li>
+      <li>A <strong>Check the data</strong> prompt lists each populated tab with its row count, last column and last cell value. If a count or last column looks wrong, select <strong>No</strong>: there is probably old or hidden data to delete below the last row or to the right of the last column.</li>
+      <li>Choose the folder to save the files in (for example your U drive).</li>
+      <li>One file is created per populated tab, named <code>MNTCreation_&lt;Tab&gt;-&lt;username&gt;&lt;yyyy_mm_dd_hhmm&gt;.mnt</code>, and a final message lists them. Deploy them all on the same day.</li>
+    </ol>
+
+    <p class="step-heading"><strong>What the macro fills in for you</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Item</th><th>How it is handled</th></tr></thead>
+      <tbody>
+        <tr><td>UPC</td><td>Keeps digits only, pads a UPC that lost its leading zeros back to 12 digits, strips extra leading zeros from a GTIN-13/14, then writes the <strong>first 11 digits</strong> as text so leading zeros survive.</td></tr>
+        <tr><td>Merch levels</td><td>Builds <code>&lt;Group&gt;G</code>, <code>&lt;Dept&gt;D</code>, <code>&lt;Dept&gt;-&lt;Class&gt;C</code> and <code>&lt;Dept&gt;-&lt;Class&gt;-&lt;Subclass&gt;S</code>.</td></tr>
+        <tr><td>Name / Description</td><td>The cheat sheet description goes into both fields.</td></tr>
+        <tr><td>Retail</td><td>Formatted as <code>0.00</code>.</td></tr>
+        <tr><td>Dates</td><td>Formatted as <code>YYYY-MM-DD</code>.</td></tr>
+        <tr><td>Fee RINs</td><td>Reads every all-digit value, ignoring amounts in parentheses, and writes one TPGCAttachFee row for each.</td></tr>
+        <tr><td>Range values</td><td>Two GCITMProperties rows per card: <code>TPGC_MIN_PRICE</code> and <code>TPGC_MAX_PRICE</code>, type <code>DECIMAL</code>.</td></tr>
+        <tr><td>Fixed values</td><td>Every constant from the tab guides above, such as <code>INSERT</code>, <code>ITEM_XREF</code>, <code>NON_PHYSICAL_ITEM</code>, <code>VOUCHER</code> / <code>NEX_ISSUE_XPAY_TPGC</code>, <code>PRICE_UPDATE_2</code>, <code>REGULAR_PRICE</code>, <code>ATTACHED_ITEMS</code>, <code>_commonAttachedItemsPrompt</code>, <code>*</code> for worldwide and <code>TRUE</code> for Apply Immediately.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="table-wrap"><table class="decision-table ref-table codes-table plain-table">
+      <thead><tr><th>Card type</th><th>Attached Items Flag</th><th>Prompt for Price Flag</th></tr></thead>
+      <tbody>
+        <tr><td>Fixed Price NoFee</td><td>0</td><td>0</td></tr>
+        <tr><td>Fixed Price Fee</td><td>1</td><td>0</td></tr>
+        <tr><td>Price Range No Fee</td><td>0</td><td>1</td></tr>
+        <tr><td>Price Range Fee</td><td>1</td><td>1</td></tr>
+      </tbody>
+    </table></div>
+    <p>Columns are found by their header text, ignoring case, spaces and line breaks, so the macro keeps working if columns are moved in either workbook, as long as the headers are unchanged.</p>
+
+    <p class="step-heading"><strong>Creating MNT files only</strong></p>
+    <p>If you edit the Master Creator tabs by hand after exporting, you can rebuild the files without exporting again: press <kbd>Alt</kbd>+<kbd>F8</kbd>, select <code>CreateTPGCMNTFiles</code> and click <strong>Run</strong>. It goes straight to the Check the data prompt and folder picker. The output matches the original converter: rows 2 to the last row, columns joined with <code>|</code>, followed by one blank line.</p>
+
+    <p class="step-heading"><strong>Troubleshooting</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Message</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td>Could not find these headers on row 3</td><td>A cheat sheet header was renamed or moved off row 3. Restore it, or download a fresh copy.</td></tr>
+        <tr><td>No data found below row 3</td><td>Nothing is in the Type of Gift Card column, or the Export was run from another tab.</td></tr>
+        <tr><td>Could not open target workbook</td><td>The shared drive isn't mapped or the Master Creator moved. Open the Master Creator first and run Export again.</td></tr>
+        <tr><td>Tab '…' not found / Headers not found on '…'</td><td>The open Master Creator is a different version. Use the current <code>CreateMNTFile_MasterCreator_2026_01.xlsm</code>.</td></tr>
+        <tr><td>Skipped rows in the summary</td><td>Fix the listed fields. The rows that passed were already written, so clear the Master Creator tabs (or close it without saving) before exporting again to avoid duplicates.</td></tr>
+        <tr><td>This workbook is locked and cannot be saved again</td><td>Expected: the cheat sheet is meant to be used without saving.</td></tr>
+      </tbody>
+    </table></div>
+
+    <details class="macro-source">
+      <summary>View the full macro code (<code>ExportTPGC</code>)</summary>
+      <div class="code-container">
+        <div class="code-header"><span>VBA · Module1</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code>Option Explicit
+
+&#x27;==============================================================================
+&#x27; ExportTPGC
+&#x27; Exports gift card setup rows from the active sheet (headers on row 3) into the
+&#x27; TPGC MNT Master Creator workbook, routed by &quot;Type of Gift Card&quot;, then builds
+&#x27; pipe-delimited MNT files for every populated tab.
+&#x27;
+&#x27; Fixed Price NoFee -&gt;
+&#x27;   TPGC_UPC            : RIN#, first 11 of UPC, plus UPC_DEFAULTS
+&#x27;   TPGCNonMerchandise  : RIN#, Description, Merch Levels 1-4, plus NM_NOFEE_DEFAULTS
+&#x27;   ItemPriceAction     : RIN#, Fixed Retail, Effective Date, plus PRICE_DEFAULTS
+&#x27;
+&#x27; Fixed Price Fee -&gt;
+&#x27;   Same as NoFee, but TPGCNonMerchandise uses NM_FEE_DEFAULTS, and
+&#x27;   TPGCAttachFee       : Gift card RIN#, Fee RIN#, Effective Date, plus AF_DEFAULTS
+&#x27;                         (one row per fee RIN; amounts in parentheses are ignored)
+&#x27;
+&#x27; Price Range No Fee -&gt;
+&#x27;   TPGC_UPC            : same as Fixed Price
+&#x27;   TPGCNonMerchandise  : NM_RANGE_NOFEE_DEFAULTS
+&#x27;   GCITMProperties     : two rows per item - TPGC_MIN_PRICE and TPGC_MAX_PRICE
+&#x27;
+&#x27; Price Range Fee -&gt;
+&#x27;   Same as Price Range No Fee, but TPGCNonMerchandise uses NM_RANGE_FEE_DEFAULTS,
+&#x27;   and TPGCAttachFee is populated as for Fixed Price Fee.
+&#x27;
+&#x27; MNT files: one per populated tab, rows 2..last, columns 1..last joined with &quot;|&quot;,
+&#x27; named MNTCreation_&lt;Tab&gt;-&lt;Username&gt;&lt;yyyy_mm_dd_hhmm&gt;.mnt in a folder you pick.
+&#x27; CreateTPGCMNTFiles can also be run on its own.
+&#x27;
+&#x27; All fee types set Attached Items Flag = 1 on TPGCNonMerchandise.
+&#x27; A row is only written if it passes all checks, so every tab stays in sync.
+&#x27; Columns are resolved by header text, ignoring case and all spaces/line breaks.
+&#x27;==============================================================================
+
+Private Const TARGET_PATH As String = &quot;<span class="redacted" title="Redacted for privacy">X:\shared\folder\CreateMNTFile_MasterCreator.xlsm</span>&quot;
+
+Private Const SRC_HEADER_ROW As Long = 3
+Private Const TGT_HEADER_ROW As Long = 1
+Private Const TGT_FIRST_DATA_ROW As Long = 2
+
+&#x27;--- Source headers ---------------------------------------------------------
+Private Const H_TYPE As String = &quot;Type of Gift Card&quot;
+Private Const H_RIN As String = &quot;Transaction Level RIN#&quot;
+Private Const H_GROUP As String = &quot;Group&quot;
+Private Const H_DEPT As String = &quot;Dept&quot;
+Private Const H_CLASS As String = &quot;Class&quot;
+Private Const H_SUBCLASS As String = &quot;Subclass&quot;
+Private Const H_DESC As String = &quot;Description with no Special Characters&quot;
+Private Const H_MIN As String = &quot;Price Range (Min)&quot;
+Private Const H_MAX As String = &quot;Price Range (Max)&quot;
+Private Const H_RETAIL As String = &quot;Fixed Retail&quot;
+Private Const H_FEE As String = &quot;Fee Rins Associated&quot;
+Private Const H_EFF As String = &quot;Effective Dates&quot;
+Private Const H_GTIN As String = &quot;GTIN/UPC#&quot;
+
+&#x27;--- TPGC_UPC tab (exact header match) --------------------------------------
+Private Const TAB_UPC As String = &quot;TPGC_UPC&quot;
+Private Const H_UPC_TRAN As String = &quot;TPGC TRAN #&quot;
+Private Const H_UPC_UPC As String = &quot;TRANSACTION  GC UPC(Only the first 11 digits)&quot;
+
+Private Const UPC_DEFAULTS As String = _
+    &quot;INSERT|INSERT~&quot; &amp; _
+    &quot;TABLE NAME|ITEM_XREF~&quot; &amp; _
+    &quot;Store Field (enter word STORE for store Specific. * for all stores)|*~&quot; &amp; _
+    &quot;Store Field (enter Store Loc number for store Specific. * for all stores)|*~&quot; &amp; _
+    &quot;APPLY IMMEDIATELY= TRUE|TRUE&quot;
+
+&#x27;--- TPGCNonMerchandise tab (header STARTS WITH match) -----------------------
+Private Const TAB_NM As String = &quot;TPGCNonMerchandise&quot;
+Private Const H_NM_ITEMID As String = &quot;Item ID (PK)&quot;
+Private Const H_NM_NAME As String = &quot;Name Name or short&quot;
+Private Const H_NM_DESC As String = &quot;Description field&quot;
+Private Const H_NM_M1 As String = &quot;Merch Level 1 Id&quot;
+Private Const H_NM_M2 As String = &quot;Merch Level 2 Id&quot;
+Private Const H_NM_M3 As String = &quot;Merch Level 3 Id&quot;
+Private Const H_NM_M4 As String = &quot;Merch Level 4 Id&quot;
+
+&#x27; Fixed Price NoFee: Attached Items = 0, Prompt for Price = 0
+Private Const NM_NOFEE_DEFAULTS As String = _
+    &quot;Action Code|INSERT~&quot; &amp; _
+    &quot;Record Identifier|NON_PHYSICAL_ITEM~&quot; &amp; _
+    &quot;Item Level Code|ITEM~&quot; &amp; _
+    &quot;Not in the host doc Item Type Code|NON_PHYSICAL~&quot; &amp; _
+    &quot;Field:Unit of Measure Code|EA~&quot; &amp; _
+    &quot;Field: Qty Scale|1~&quot; &amp; _
+    &quot;Tax Group ID|0~&quot; &amp; _
+    &quot;Attached Items Flag|0~&quot; &amp; _
+    &quot;Force Quantity of One Flag|1~&quot; &amp; _
+    &quot;Disallow Discounts Flag|1~&quot; &amp; _
+    &quot;Prompt for Price Flag|0~&quot; &amp; _
+    &quot;Non-physical Item Type Code|VOUCHER~&quot; &amp; _
+    &quot;Non-physical Item Sub-type|NEX_ISSUE_XPAY_TPGC~&quot; &amp; _
+    &quot;Exclude From Net Sales Flag|1~&quot; &amp; _
+    &quot;Disallow Deals Flag|1~&quot; &amp; _
+    &quot;Org Code|*~&quot; &amp; _
+    &quot;Level Code (PK)|*~&quot; &amp; _
+    &quot;Disallow Selfcheckout Flag|1&quot;
+
+&#x27; Fixed Price Fee: Attached Items = 1, Prompt for Price = 0
+Private Const NM_FEE_DEFAULTS As String = _
+    &quot;Action Code|INSERT~&quot; &amp; _
+    &quot;Record Identifier|NON_PHYSICAL_ITEM~&quot; &amp; _
+    &quot;Item Level Code|ITEM~&quot; &amp; _
+    &quot;Not in the host doc Item Type Code|NON_PHYSICAL~&quot; &amp; _
+    &quot;Field:Unit of Measure Code|EA~&quot; &amp; _
+    &quot;Field: Qty Scale|1~&quot; &amp; _
+    &quot;Tax Group ID|0~&quot; &amp; _
+    &quot;Attached Items Flag|1~&quot; &amp; _
+    &quot;Force Quantity of One Flag|1~&quot; &amp; _
+    &quot;Disallow Discounts Flag|1~&quot; &amp; _
+    &quot;Prompt for Price Flag|0~&quot; &amp; _
+    &quot;Non-physical Item Type Code|VOUCHER~&quot; &amp; _
+    &quot;Non-physical Item Sub-type|NEX_ISSUE_XPAY_TPGC~&quot; &amp; _
+    &quot;Exclude From Net Sales Flag|1~&quot; &amp; _
+    &quot;Disallow Deals Flag|1~&quot; &amp; _
+    &quot;Org Code|*~&quot; &amp; _
+    &quot;Level Code (PK)|*~&quot; &amp; _
+    &quot;Disallow Selfcheckout Flag|1&quot;
+
+&#x27; Price Range No Fee: Attached Items = 0, Prompt for Price = 1
+Private Const NM_RANGE_NOFEE_DEFAULTS As String = _
+    &quot;Action Code|INSERT~&quot; &amp; _
+    &quot;Record Identifier|NON_PHYSICAL_ITEM~&quot; &amp; _
+    &quot;Item Level Code|ITEM~&quot; &amp; _
+    &quot;Not in the host doc Item Type Code|NON_PHYSICAL~&quot; &amp; _
+    &quot;Field:Unit of Measure Code|EA~&quot; &amp; _
+    &quot;Field: Qty Scale|1~&quot; &amp; _
+    &quot;Tax Group ID|0~&quot; &amp; _
+    &quot;Attached Items Flag|0~&quot; &amp; _
+    &quot;Force Quantity of One Flag|1~&quot; &amp; _
+    &quot;Disallow Discounts Flag|1~&quot; &amp; _
+    &quot;Prompt for Price Flag|1~&quot; &amp; _
+    &quot;Non-physical Item Type Code|VOUCHER~&quot; &amp; _
+    &quot;Non-physical Item Sub-type|NEX_ISSUE_XPAY_TPGC~&quot; &amp; _
+    &quot;Exclude From Net Sales Flag|1~&quot; &amp; _
+    &quot;Disallow Deals Flag|1~&quot; &amp; _
+    &quot;Org Code|*~&quot; &amp; _
+    &quot;Level Code (PK)|*~&quot; &amp; _
+    &quot;Disallow Selfcheckout Flag|1&quot;
+
+&#x27; Price Range Fee: Attached Items = 1, Prompt for Price = 1
+Private Const NM_RANGE_FEE_DEFAULTS As String = _
+    &quot;Action Code|INSERT~&quot; &amp; _
+    &quot;Record Identifier|NON_PHYSICAL_ITEM~&quot; &amp; _
+    &quot;Item Level Code|ITEM~&quot; &amp; _
+    &quot;Not in the host doc Item Type Code|NON_PHYSICAL~&quot; &amp; _
+    &quot;Field:Unit of Measure Code|EA~&quot; &amp; _
+    &quot;Field: Qty Scale|1~&quot; &amp; _
+    &quot;Tax Group ID|0~&quot; &amp; _
+    &quot;Attached Items Flag|1~&quot; &amp; _
+    &quot;Force Quantity of One Flag|1~&quot; &amp; _
+    &quot;Disallow Discounts Flag|1~&quot; &amp; _
+    &quot;Prompt for Price Flag|1~&quot; &amp; _
+    &quot;Non-physical Item Type Code|VOUCHER~&quot; &amp; _
+    &quot;Non-physical Item Sub-type|NEX_ISSUE_XPAY_TPGC~&quot; &amp; _
+    &quot;Exclude From Net Sales Flag|1~&quot; &amp; _
+    &quot;Disallow Deals Flag|1~&quot; &amp; _
+    &quot;Org Code|*~&quot; &amp; _
+    &quot;Level Code (PK)|*~&quot; &amp; _
+    &quot;Disallow Selfcheckout Flag|1&quot;
+
+&#x27;--- ItemPriceAction tab (header STARTS WITH match) --------------------------
+Private Const TAB_PRICE As String = &quot;ItemPriceAction&quot;
+Private Const H_PR_RIN As String = &quot;TRANSACTION RIN&quot;
+Private Const H_PR_RETAIL As String = &quot;RETAIL&quot;
+Private Const H_PR_EFF As String = &quot;EFFECTIVE DATE&quot;
+
+Private Const PRICE_DEFAULTS As String = _
+    &quot;ACTION|INSERT~&quot; &amp; _
+    &quot;TABLE NAME|PRICE_UPDATE_2~&quot; &amp; _
+    &quot;PRICE REGULAR_PRICE|REGULAR_PRICE~&quot; &amp; _
+    &quot;Store Field|*~&quot; &amp; _
+    &quot;STORE #|*~&quot; &amp; _
+    &quot;FIELD|1&quot;
+
+&#x27;--- TPGCAttachFee tab (header STARTS WITH match) ----------------------------
+Private Const TAB_AF As String = &quot;TPGCAttachFee&quot;
+Private Const H_AF_SOLD As String = &quot;Sold Item ID&quot;
+Private Const H_AF_ATTACHED As String = &quot;Attached Item (PK)&quot;
+Private Const H_AF_EFF As String = &quot;Effective Date and Time&quot;
+
+Private Const AF_DEFAULTS As String = _
+    &quot;Action Code|INSERT~&quot; &amp; _
+    &quot;Record Identifier|ATTACHED_ITEMS~&quot; &amp; _
+    &quot;Quantity to Add|1~&quot; &amp; _
+    &quot;Association Type|_commonAttachedItemsPrompt~&quot; &amp; _
+    &quot;Level Code|*~&quot; &amp; _
+    &quot;Level Value|*&quot;
+
+&#x27;--- GCITMProperties tab (header STARTS WITH match) --------------------------
+Private Const TAB_GCP As String = &quot;GCITMProperties&quot;
+Private Const H_GCP_ITEMID As String = &quot;Item Id (PK)&quot;
+Private Const H_GCP_PROP As String = &quot;Property Code&quot;
+Private Const H_GCP_TYPE As String = &quot;Type&quot;
+Private Const H_GCP_DEC As String = &quot;Min/MAX Value&quot;
+
+Private Const GCP_TYPE_VALUE As String = &quot;DECIMAL&quot;
+Private Const GCP_PROP_MIN As String = &quot;TPGC_MIN_PRICE&quot;
+Private Const GCP_PROP_MAX As String = &quot;TPGC_MAX_PRICE&quot;
+
+Private Const GCP_DEFAULTS As String = _
+    &quot;Action Code|INSERT~&quot; &amp; _
+    &quot;Record Identifier|ITEM_PROPERTY&quot;
+
+&#x27;--- Module state -----------------------------------------------------------
+Private wsSrc As Worksheet
+Private wsUPC As Worksheet
+Private wsNM As Worksheet
+Private wsPR As Worksheet
+Private wsAF As Worksheet
+Private wsGCP As Worksheet
+
+Private cType As Long, cRin As Long, cGrp As Long, cDept As Long, cCls As Long
+Private cSub As Long, cDesc As Long, cMin As Long, cMax As Long
+Private cRetail As Long, cFee As Long, cEff As Long, cGtin As Long
+
+Private cUpcTran As Long, cUpcUpc As Long
+Private cNmId As Long, cNmName As Long, cNmDesc As Long
+Private cNm1 As Long, cNm2 As Long, cNm3 As Long, cNm4 As Long
+Private cPrRin As Long, cPrRetail As Long, cPrEff As Long
+Private cAfSold As Long, cAfAtt As Long, cAfEff As Long
+Private cGcpId As Long, cGcpProp As Long, cGcpType As Long, cGcpDec As Long
+
+Private nextUPC As Long, nextNM As Long, nextPR As Long, nextAF As Long, nextGCP As Long
+
+Private upcDefCols() As Long, upcDefVals() As String
+Private nmNoFeeCols() As Long, nmNoFeeVals() As String
+Private nmFeeCols() As Long, nmFeeVals() As String
+Private nmRangeNoFeeCols() As Long, nmRangeNoFeeVals() As String
+Private nmRangeFeeCols() As Long, nmRangeFeeVals() As String
+Private prDefCols() As Long, prDefVals() As String
+Private afDefCols() As Long, afDefVals() As String
+Private gcpDefCols() As Long, gcpDefVals() As String
+
+Private nNoFee As Long, nFee As Long, nRangeNoFee As Long, nRangeFee As Long
+Private nAF As Long, nGCP As Long, nSkipped As Long
+Private skipLog As String
+
+&#x27;==============================================================================
+&#x27; Main
+&#x27;==============================================================================
+Public Sub ExportTPGC()
+    Dim wbTgt As Workbook, lastSrc As Long, r As Long
+    Dim giftType As String, missing As String, summary As String
+
+    On Error GoTo Fail
+    nNoFee = 0: nFee = 0: nRangeNoFee = 0: nRangeFee = 0
+    nAF = 0: nGCP = 0: nSkipped = 0: skipLog = &quot;&quot;
+    Set wsSrc = ActiveSheet
+
+    &#x27;--- Resolve source columns --------------------------------------------
+    cType = ReqCol(wsSrc, SRC_HEADER_ROW, H_TYPE, False, missing)
+    cRin = ReqCol(wsSrc, SRC_HEADER_ROW, H_RIN, False, missing)
+    cGrp = ReqCol(wsSrc, SRC_HEADER_ROW, H_GROUP, False, missing)
+    cDept = ReqCol(wsSrc, SRC_HEADER_ROW, H_DEPT, False, missing)
+    cCls = ReqCol(wsSrc, SRC_HEADER_ROW, H_CLASS, False, missing)
+    cSub = ReqCol(wsSrc, SRC_HEADER_ROW, H_SUBCLASS, False, missing)
+    cDesc = ReqCol(wsSrc, SRC_HEADER_ROW, H_DESC, False, missing)
+    cMin = ReqCol(wsSrc, SRC_HEADER_ROW, H_MIN, False, missing)
+    cMax = ReqCol(wsSrc, SRC_HEADER_ROW, H_MAX, False, missing)
+    cRetail = ReqCol(wsSrc, SRC_HEADER_ROW, H_RETAIL, False, missing)
+    cFee = ReqCol(wsSrc, SRC_HEADER_ROW, H_FEE, False, missing)
+    cEff = ReqCol(wsSrc, SRC_HEADER_ROW, H_EFF, False, missing)
+    cGtin = ReqCol(wsSrc, SRC_HEADER_ROW, H_GTIN, False, missing)
+    If missing &lt;&gt; &quot;&quot; Then
+        MsgBox &quot;Could not find these headers on row &quot; &amp; SRC_HEADER_ROW &amp; &quot;:&quot; &amp; vbCrLf &amp; missing, _
+               vbExclamation, &quot;Export TPGC&quot;
+        Exit Sub
+    End If
+
+    lastSrc = wsSrc.Cells(wsSrc.Rows.Count, cType).End(xlUp).Row
+    If lastSrc &lt;= SRC_HEADER_ROW Then
+        MsgBox &quot;No data found below row &quot; &amp; SRC_HEADER_ROW &amp; &quot;.&quot;, vbInformation, &quot;Export TPGC&quot;
+        Exit Sub
+    End If
+
+    &#x27;--- Open target workbook ------------------------------------------------
+    Set wbTgt = GetOrOpenWorkbook(TARGET_PATH)
+    If wbTgt Is Nothing Then
+        MsgBox &quot;Could not open target workbook:&quot; &amp; vbCrLf &amp; TARGET_PATH, vbCritical, &quot;Export TPGC&quot;
+        Exit Sub
+    End If
+
+    Application.ScreenUpdating = False
+
+    &#x27;--- TPGC_UPC ------------------------------------------------------------
+    Set wsUPC = ReqSheet(wbTgt, TAB_UPC)
+    missing = &quot;&quot;
+    cUpcTran = ReqCol(wsUPC, TGT_HEADER_ROW, H_UPC_TRAN, False, missing)
+    cUpcUpc = ReqCol(wsUPC, TGT_HEADER_ROW, H_UPC_UPC, False, missing)
+    If missing &lt;&gt; &quot;&quot; Then Err.Raise vbObjectError + 2, , &quot;Headers not found on &#x27;&quot; &amp; TAB_UPC &amp; &quot;&#x27;:&quot; &amp; vbCrLf &amp; missing
+    ResolveDefaults wsUPC, UPC_DEFAULTS, upcDefCols, upcDefVals, False
+    nextUPC = NextEmptyRow(wsUPC, cUpcTran)
+
+    &#x27;--- TPGCNonMerchandise --------------------------------------------------
+    Set wsNM = ReqSheet(wbTgt, TAB_NM)
+    missing = &quot;&quot;
+    cNmId = ReqCol(wsNM, TGT_HEADER_ROW, H_NM_ITEMID, True, missing)
+    cNmName = ReqCol(wsNM, TGT_HEADER_ROW, H_NM_NAME, True, missing)
+    cNmDesc = ReqCol(wsNM, TGT_HEADER_ROW, H_NM_DESC, True, missing)
+    cNm1 = ReqCol(wsNM, TGT_HEADER_ROW, H_NM_M1, True, missing)
+    cNm2 = ReqCol(wsNM, TGT_HEADER_ROW, H_NM_M2, True, missing)
+    cNm3 = ReqCol(wsNM, TGT_HEADER_ROW, H_NM_M3, True, missing)
+    cNm4 = ReqCol(wsNM, TGT_HEADER_ROW, H_NM_M4, True, missing)
+    If missing &lt;&gt; &quot;&quot; Then Err.Raise vbObjectError + 2, , &quot;Headers not found on &#x27;&quot; &amp; TAB_NM &amp; &quot;&#x27;:&quot; &amp; vbCrLf &amp; missing
+    ResolveDefaults wsNM, NM_NOFEE_DEFAULTS, nmNoFeeCols, nmNoFeeVals, True
+    ResolveDefaults wsNM, NM_FEE_DEFAULTS, nmFeeCols, nmFeeVals, True
+    ResolveDefaults wsNM, NM_RANGE_NOFEE_DEFAULTS, nmRangeNoFeeCols, nmRangeNoFeeVals, True
+    ResolveDefaults wsNM, NM_RANGE_FEE_DEFAULTS, nmRangeFeeCols, nmRangeFeeVals, True
+    nextNM = NextEmptyRow(wsNM, cNmId)
+
+    &#x27;--- ItemPriceAction -----------------------------------------------------
+    Set wsPR = ReqSheet(wbTgt, TAB_PRICE)
+    missing = &quot;&quot;
+    cPrRin = ReqCol(wsPR, TGT_HEADER_ROW, H_PR_RIN, True, missing)
+    cPrRetail = ReqCol(wsPR, TGT_HEADER_ROW, H_PR_RETAIL, True, missing)
+    cPrEff = ReqCol(wsPR, TGT_HEADER_ROW, H_PR_EFF, True, missing)
+    If missing &lt;&gt; &quot;&quot; Then Err.Raise vbObjectError + 2, , &quot;Headers not found on &#x27;&quot; &amp; TAB_PRICE &amp; &quot;&#x27;:&quot; &amp; vbCrLf &amp; missing
+    ResolveDefaults wsPR, PRICE_DEFAULTS, prDefCols, prDefVals, True
+    nextPR = NextEmptyRow(wsPR, cPrRin)
+
+    &#x27;--- TPGCAttachFee -------------------------------------------------------
+    Set wsAF = ReqSheet(wbTgt, TAB_AF)
+    missing = &quot;&quot;
+    cAfSold = ReqCol(wsAF, TGT_HEADER_ROW, H_AF_SOLD, True, missing)
+    cAfAtt = ReqCol(wsAF, TGT_HEADER_ROW, H_AF_ATTACHED, True, missing)
+    cAfEff = ReqCol(wsAF, TGT_HEADER_ROW, H_AF_EFF, True, missing)
+    If missing &lt;&gt; &quot;&quot; Then Err.Raise vbObjectError + 2, , &quot;Headers not found on &#x27;&quot; &amp; TAB_AF &amp; &quot;&#x27;:&quot; &amp; vbCrLf &amp; missing
+    ResolveDefaults wsAF, AF_DEFAULTS, afDefCols, afDefVals, True
+    nextAF = NextEmptyRow(wsAF, cAfSold)
+
+    &#x27;--- GCITMProperties -----------------------------------------------------
+    Set wsGCP = ReqSheet(wbTgt, TAB_GCP)
+    missing = &quot;&quot;
+    cGcpId = ReqCol(wsGCP, TGT_HEADER_ROW, H_GCP_ITEMID, True, missing)
+    cGcpProp = ReqCol(wsGCP, TGT_HEADER_ROW, H_GCP_PROP, True, missing)
+    cGcpType = ReqCol(wsGCP, TGT_HEADER_ROW, H_GCP_TYPE, True, missing)
+    cGcpDec = ReqCol(wsGCP, TGT_HEADER_ROW, H_GCP_DEC, True, missing)
+    If missing &lt;&gt; &quot;&quot; Then Err.Raise vbObjectError + 2, , &quot;Headers not found on &#x27;&quot; &amp; TAB_GCP &amp; &quot;&#x27;:&quot; &amp; vbCrLf &amp; missing
+    ResolveDefaults wsGCP, GCP_DEFAULTS, gcpDefCols, gcpDefVals, True
+    nextGCP = NextEmptyRow(wsGCP, cGcpId)
+
+    &#x27;--- Route each source row -----------------------------------------------
+    For r = SRC_HEADER_ROW + 1 To lastSrc
+        giftType = Norm(CStr(wsSrc.Cells(r, cType).Value))
+        If giftType &lt;&gt; &quot;&quot; Then
+            Select Case giftType
+                Case Norm(&quot;Fixed Price NoFee&quot;)
+                    ExportFixedPrice r, False
+                Case Norm(&quot;Fixed Price Fee&quot;)
+                    ExportFixedPrice r, True
+                Case Norm(&quot;Price Range No Fee&quot;)
+                    ExportPriceRange r, False
+                Case Norm(&quot;Price Range Fee&quot;)
+                    ExportPriceRange r, True
+                Case Else
+                    nSkipped = nSkipped + 1
+                    skipLog = skipLog &amp; &quot;  Row &quot; &amp; r &amp; &quot;: unhandled type &#x27;&quot; &amp; _
+                              wsSrc.Cells(r, cType).Value &amp; &quot;&#x27;&quot; &amp; vbCrLf
+            End Select
+        End If
+    Next r
+
+    Application.ScreenUpdating = True
+    wbTgt.Activate
+    wsUPC.Activate
+
+    summary = &quot;Export complete.&quot; &amp; vbCrLf &amp; vbCrLf &amp; _
+              &quot;Fixed Price NoFee: &quot; &amp; nNoFee &amp; &quot; row(s)&quot; &amp; vbCrLf &amp; _
+              &quot;Fixed Price Fee: &quot; &amp; nFee &amp; &quot; row(s)&quot; &amp; vbCrLf &amp; _
+              &quot;Price Range No Fee: &quot; &amp; nRangeNoFee &amp; &quot; row(s)&quot; &amp; vbCrLf &amp; _
+              &quot;Price Range Fee: &quot; &amp; nRangeFee &amp; &quot; row(s)&quot; &amp; vbCrLf &amp; _
+              TAB_AF &amp; &quot;: &quot; &amp; nAF &amp; &quot; row(s)&quot; &amp; vbCrLf &amp; _
+              TAB_GCP &amp; &quot;: &quot; &amp; nGCP &amp; &quot; row(s)&quot; &amp; vbCrLf &amp; _
+              &quot;Skipped: &quot; &amp; nSkipped &amp; IIf(nSkipped &gt; 0, vbCrLf &amp; vbCrLf &amp; Left$(skipLog, 800), &quot;&quot;)
+
+    If nNoFee + nFee + nRangeNoFee + nRangeFee = 0 Then
+        MsgBox summary, vbExclamation, &quot;Export TPGC&quot;
+        Exit Sub
+    End If
+
+    If MsgBox(summary &amp; vbCrLf &amp; vbCrLf &amp; &quot;Create the MNT file(s) now?&quot;, _
+              vbYesNo + IIf(nSkipped &gt; 0, vbExclamation, vbQuestion), &quot;Export TPGC&quot;) = vbYes Then
+        CreateMNTFiles wbTgt
+    End If
+    Exit Sub
+
+Fail:
+    Application.ScreenUpdating = True
+    MsgBox &quot;Export failed:&quot; &amp; vbCrLf &amp; Err.Description, vbCritical, &quot;Export TPGC&quot;
+End Sub
+
+&#x27;==============================================================================
+&#x27; Standalone: build MNT files from the Master Creator&#x27;s populated TPGC tabs
+&#x27;==============================================================================
+Public Sub CreateTPGCMNTFiles()
+    Dim wb As Workbook
+    Set wb = GetOrOpenWorkbook(TARGET_PATH)
+    If wb Is Nothing Then
+        MsgBox &quot;Could not open target workbook:&quot; &amp; vbCrLf &amp; TARGET_PATH, vbCritical, &quot;Create MNT&quot;
+        Exit Sub
+    End If
+    CreateMNTFiles wb
+End Sub
+
+&#x27;==============================================================================
+&#x27; Fixed Price (NoFee or Fee)
+&#x27;==============================================================================
+Private Sub ExportFixedPrice(ByVal r As Long, ByVal isFee As Boolean)
+    Dim rin As String, upc11 As String, sRetail As String, sEff As String
+    Dim problem As String, fees As Collection, fee As Variant
+
+    rin = Trim$(CStr(wsSrc.Cells(r, cRin).Value))
+    upc11 = UPCFirst11(wsSrc.Cells(r, cGtin).Value)
+    sRetail = RetailText(wsSrc.Cells(r, cRetail).Value)
+    sEff = DateText(wsSrc.Cells(r, cEff).Value)
+    If isFee Then Set fees = ParseList(wsSrc.Cells(r, cFee).Value)
+
+    If rin = &quot;&quot; Then problem = problem &amp; &quot;RIN#, &quot;
+    If upc11 = &quot;&quot; Then problem = problem &amp; &quot;GTIN/UPC#, &quot;
+    If sRetail = &quot;&quot; Then problem = problem &amp; &quot;Fixed Retail, &quot;
+    If sEff = &quot;&quot; Then problem = problem &amp; &quot;Effective Date, &quot;
+    If isFee Then
+        If fees.Count = 0 Then problem = problem &amp; &quot;Fee RIN, &quot;
+    End If
+    If problem &lt;&gt; &quot;&quot; Then LogSkip r, problem: Exit Sub
+
+    WriteUPC r, upc11
+    If isFee Then
+        WriteNonMerch r, nmFeeCols, nmFeeVals
+    Else
+        WriteNonMerch r, nmNoFeeCols, nmNoFeeVals
+    End If
+
+    &#x27;--- ItemPriceAction ---
+    WriteDefaults wsPR, nextPR, prDefCols, prDefVals
+    wsPR.Cells(nextPR, cPrRin).Value = wsSrc.Cells(r, cRin).Value
+    wsPR.Cells(nextPR, cPrRetail).NumberFormat = &quot;@&quot;
+    wsPR.Cells(nextPR, cPrRetail).Value = sRetail
+    wsPR.Cells(nextPR, cPrEff).NumberFormat = &quot;@&quot;
+    wsPR.Cells(nextPR, cPrEff).Value = sEff
+    nextPR = nextPR + 1
+
+    &#x27;--- TPGCAttachFee (Fee only; one row per fee RIN) ---
+    If isFee Then
+        For Each fee In fees
+            WriteAttachFee r, CStr(fee), sEff
+        Next fee
+        nFee = nFee + 1
+    Else
+        nNoFee = nNoFee + 1
+    End If
+End Sub
+
+&#x27;==============================================================================
+&#x27; Price Range (NoFee or Fee)
+&#x27;==============================================================================
+Private Sub ExportPriceRange(ByVal r As Long, ByVal isFee As Boolean)
+    Dim rin As String, upc11 As String, sEff As String, problem As String
+    Dim vMin As Variant, vMax As Variant, fees As Collection, fee As Variant
+
+    rin = Trim$(CStr(wsSrc.Cells(r, cRin).Value))
+    upc11 = UPCFirst11(wsSrc.Cells(r, cGtin).Value)
+    vMin = NumValue(wsSrc.Cells(r, cMin).Value)
+    vMax = NumValue(wsSrc.Cells(r, cMax).Value)
+    If isFee Then
+        sEff = DateText(wsSrc.Cells(r, cEff).Value)
+        Set fees = ParseList(wsSrc.Cells(r, cFee).Value)
+    End If
+
+    If rin = &quot;&quot; Then problem = problem &amp; &quot;RIN#, &quot;
+    If upc11 = &quot;&quot; Then problem = problem &amp; &quot;GTIN/UPC#, &quot;
+    If IsEmpty(vMin) Then problem = problem &amp; &quot;Price Range (Min), &quot;
+    If IsEmpty(vMax) Then problem = problem &amp; &quot;Price Range (Max), &quot;
+    If Not IsEmpty(vMin) And Not IsEmpty(vMax) Then
+        If vMin &gt; vMax Then problem = problem &amp; &quot;Min greater than Max, &quot;
+    End If
+    If isFee Then
+        If sEff = &quot;&quot; Then problem = problem &amp; &quot;Effective Date, &quot;
+        If fees.Count = 0 Then problem = problem &amp; &quot;Fee RIN, &quot;
+    End If
+    If problem &lt;&gt; &quot;&quot; Then LogSkip r, problem: Exit Sub
+
+    WriteUPC r, upc11
+    If isFee Then
+        WriteNonMerch r, nmRangeFeeCols, nmRangeFeeVals
+    Else
+        WriteNonMerch r, nmRangeNoFeeCols, nmRangeNoFeeVals
+    End If
+
+    WriteItemProperty r, GCP_PROP_MIN, vMin
+    WriteItemProperty r, GCP_PROP_MAX, vMax
+
+    If isFee Then
+        For Each fee In fees
+            WriteAttachFee r, CStr(fee), sEff
+        Next fee
+        nRangeFee = nRangeFee + 1
+    Else
+        nRangeNoFee = nRangeNoFee + 1
+    End If
+End Sub
+
+&#x27;==============================================================================
+&#x27; Tab writers
+&#x27;==============================================================================
+Private Sub WriteUPC(ByVal r As Long, ByVal upc11 As String)
+    WriteDefaults wsUPC, nextUPC, upcDefCols, upcDefVals
+    wsUPC.Cells(nextUPC, cUpcTran).Value = wsSrc.Cells(r, cRin).Value
+    wsUPC.Cells(nextUPC, cUpcUpc).NumberFormat = &quot;@&quot;   &#x27; keep leading zeros
+    wsUPC.Cells(nextUPC, cUpcUpc).Value = upc11
+    nextUPC = nextUPC + 1
+End Sub
+
+Private Sub WriteNonMerch(ByVal r As Long, cols() As Long, vals() As String)
+    Dim sGrp As String, sDept As String, sCls As String, sSub As String
+    sGrp = Trim$(CStr(wsSrc.Cells(r, cGrp).Value))
+    sDept = Trim$(CStr(wsSrc.Cells(r, cDept).Value))
+    sCls = Trim$(CStr(wsSrc.Cells(r, cCls).Value))
+    sSub = Trim$(CStr(wsSrc.Cells(r, cSub).Value))
+
+    WriteDefaults wsNM, nextNM, cols, vals
+    wsNM.Cells(nextNM, cNmId).Value = wsSrc.Cells(r, cRin).Value
+    wsNM.Cells(nextNM, cNmName).Value = wsSrc.Cells(r, cDesc).Value
+    wsNM.Cells(nextNM, cNmDesc).Value = wsSrc.Cells(r, cDesc).Value
+    wsNM.Cells(nextNM, cNm1).Value = sGrp &amp; &quot;G&quot;
+    wsNM.Cells(nextNM, cNm2).Value = sDept &amp; &quot;D&quot;
+    wsNM.Cells(nextNM, cNm3).Value = sDept &amp; &quot;-&quot; &amp; sCls &amp; &quot;C&quot;
+    wsNM.Cells(nextNM, cNm4).Value = sDept &amp; &quot;-&quot; &amp; sCls &amp; &quot;-&quot; &amp; sSub &amp; &quot;S&quot;
+    nextNM = nextNM + 1
+End Sub
+
+Private Sub WriteAttachFee(ByVal r As Long, ByVal feeRin As String, ByVal sEff As String)
+    WriteDefaults wsAF, nextAF, afDefCols, afDefVals
+    wsAF.Cells(nextAF, cAfSold).Value = wsSrc.Cells(r, cRin).Value
+    wsAF.Cells(nextAF, cAfAtt).Value = feeRin
+    wsAF.Cells(nextAF, cAfEff).NumberFormat = &quot;@&quot;
+    wsAF.Cells(nextAF, cAfEff).Value = sEff
+    nextAF = nextAF + 1
+    nAF = nAF + 1
+End Sub
+
+Private Sub WriteItemProperty(ByVal r As Long, ByVal propCode As String, ByVal amount As Variant)
+    WriteDefaults wsGCP, nextGCP, gcpDefCols, gcpDefVals
+    wsGCP.Cells(nextGCP, cGcpId).Value = wsSrc.Cells(r, cRin).Value
+    wsGCP.Cells(nextGCP, cGcpProp).Value = propCode
+    wsGCP.Cells(nextGCP, cGcpType).Value = GCP_TYPE_VALUE
+    wsGCP.Cells(nextGCP, cGcpDec).Value = amount
+    nextGCP = nextGCP + 1
+    nGCP = nGCP + 1
+End Sub
+
+Private Sub LogSkip(ByVal r As Long, ByVal problem As String)
+    nSkipped = nSkipped + 1
+    skipLog = skipLog &amp; &quot;  Row &quot; &amp; r &amp; &quot;: missing/invalid &quot; &amp; Left$(problem, Len(problem) - 2) &amp; vbCrLf
+End Sub
+
+&#x27;==============================================================================
+&#x27; MNT file creation
+&#x27;==============================================================================
+
+&#x27; Builds one MNT file per populated TPGC tab in a folder the user picks.
+Private Sub CreateMNTFiles(wb As Workbook)
+    Dim tabs As Variant, i As Long, ws As Worksheet
+    Dim lastRow() As Long, lastCol() As Long, useTab() As Boolean
+    Dim msg As String, folder As String, stamp As String
+    Dim outPath As String, created As String, nFiles As Long
+
+    On Error GoTo Fail
+    tabs = Array(TAB_UPC, TAB_NM, TAB_PRICE, TAB_AF, TAB_GCP)
+    ReDim lastRow(LBound(tabs) To UBound(tabs))
+    ReDim lastCol(LBound(tabs) To UBound(tabs))
+    ReDim useTab(LBound(tabs) To UBound(tabs))
+
+    &#x27;--- Find populated tabs and their data extents ---
+    For i = LBound(tabs) To UBound(tabs)
+        Set ws = GetSheet(wb, CStr(tabs(i)))
+        If Not ws Is Nothing Then
+            lastRow(i) = LastUsedRow(ws)
+            lastCol(i) = LastUsedCol(ws)
+            If lastRow(i) &gt;= TGT_FIRST_DATA_ROW And lastCol(i) &gt; 0 Then
+                useTab(i) = True
+                msg = msg &amp; ws.Name &amp; &quot;: &quot; &amp; (lastRow(i) - 1) &amp; &quot; row(s)&quot; &amp; vbCrLf &amp; _
+                      &quot;    Last col &quot; &amp; ColLetter(ws, lastCol(i)) &amp; &quot; &quot;&quot;&quot; &amp; _
+                      ShortHeader(ws.Cells(TGT_HEADER_ROW, lastCol(i)).Value) &amp; &quot;&quot;&quot;&quot; &amp; vbCrLf &amp; _
+                      &quot;    Last cell: &quot;&quot;&quot; &amp; cellText(ws.Cells(lastRow(i), lastCol(i))) &amp; &quot;&quot;&quot;&quot; &amp; vbCrLf
+            End If
+        End If
+    Next i
+
+    If msg = &quot;&quot; Then
+        MsgBox &quot;None of the TPGC tabs have data below the header row.&quot;, vbInformation, &quot;Create MNT&quot;
+        Exit Sub
+    End If
+
+    &#x27;--- Sanity check (catches hidden old data, as in Start_MNT) ---
+    If MsgBox(&quot;Create MNT files for these tabs?&quot; &amp; vbCrLf &amp; vbCrLf &amp; msg &amp; vbCrLf &amp; _
+              &quot;If a row count or last column looks wrong, click No. There may be old or &quot; &amp; _
+              &quot;hidden data - delete all rows under the last row and columns to the right.&quot;, _
+              vbYesNo + vbQuestion, &quot;Check the data&quot;) = vbNo Then
+        MsgBox &quot;MNT creation aborted.&quot;, vbInformation, &quot;Create MNT&quot;
+        Exit Sub
+    End If
+
+    &#x27;--- Ask where to save ---
+    folder = PickFolder()
+    If folder = &quot;&quot; Then
+        MsgBox &quot;No folder selected. MNT creation cancelled.&quot;, vbInformation, &quot;Create MNT&quot;
+        Exit Sub
+    End If
+
+    &#x27;--- Write files ---
+    stamp = Format$(Now(), &quot;yyyy_mm_dd_hhmm&quot;)
+    For i = LBound(tabs) To UBound(tabs)
+        If useTab(i) Then
+            Set ws = GetSheet(wb, CStr(tabs(i)))
+            outPath = folder &amp; &quot;\MNTCreation_&quot; &amp; ws.Name &amp; &quot;-&quot; &amp; Environ(&quot;Username&quot;) &amp; stamp &amp; &quot;.mnt&quot;
+            WriteMNT ws, lastRow(i), lastCol(i), outPath
+            created = created &amp; &quot;  &quot; &amp; Mid$(outPath, InStrRev(outPath, &quot;\&quot;) + 1) &amp; vbCrLf
+            nFiles = nFiles + 1
+        End If
+    Next i
+
+    MsgBox &quot;Created &quot; &amp; nFiles &amp; &quot; MNT file(s) in:&quot; &amp; vbCrLf &amp; folder &amp; vbCrLf &amp; vbCrLf &amp; created, _
+           vbInformation, &quot;Create MNT&quot;
+    Exit Sub
+
+Fail:
+    Close
+    MsgBox &quot;MNT creation failed:&quot; &amp; vbCrLf &amp; Err.Description, vbCritical, &quot;Create MNT&quot;
+End Sub
+
+&#x27; Same output as Normal_MNT: rows 2..lastRow, columns 1..lastCol joined by &quot;|&quot;,
+&#x27; followed by one blank line.
+Private Sub WriteMNT(ws As Worksheet, ByVal lastRow As Long, ByVal lastCol As Long, ByVal outPath As String)
+    Dim f As Integer, r As Long, c As Long, oLine As String
+    f = FreeFile
+    Open outPath For Output As #f
+    For r = TGT_FIRST_DATA_ROW To lastRow
+        oLine = &quot;&quot;
+        For c = 1 To lastCol
+            If c &gt; 1 Then oLine = oLine &amp; &quot;|&quot;
+            oLine = oLine &amp; cellText(ws.Cells(r, c))
+        Next c
+        Print #f, oLine
+    Next r
+    Print #f, &quot;&quot;
+    Close #f
+End Sub
+
+&#x27; Folder picker; returns &quot;&quot; if cancelled.
+Private Function PickFolder() As String
+    With Application.FileDialog(msoFileDialogFolderPicker)
+        .Title = &quot;Choose where to save the MNT file(s)&quot;
+        .AllowMultiSelect = False
+        If .Show = -1 Then
+            PickFolder = .SelectedItems(1)
+            If Right$(PickFolder, 1) = &quot;\&quot; Then PickFolder = Left$(PickFolder, Len(PickFolder) - 1)
+        End If
+    End With
+End Function
+
+&#x27; Last row containing anything (including hidden rows).
+Private Function LastUsedRow(ws As Worksheet) As Long
+    Dim f As Range
+    Set f = ws.Cells.Find(What:=&quot;*&quot;, LookIn:=xlFormulas, SearchOrder:=xlByRows, _
+                          SearchDirection:=xlPrevious)
+    If Not f Is Nothing Then LastUsedRow = f.Row
+End Function
+
+&#x27; Last column containing anything (including the header row and hidden columns).
+Private Function LastUsedCol(ws As Worksheet) As Long
+    Dim f As Range
+    Set f = ws.Cells.Find(What:=&quot;*&quot;, LookIn:=xlFormulas, SearchOrder:=xlByColumns, _
+                          SearchDirection:=xlPrevious)
+    If Not f Is Nothing Then LastUsedCol = f.Column
+End Function
+
+&#x27; Cell value as text, the same way Normal_MNT concatenates it; errors become &quot;&quot;.
+Private Function cellText(c As Range) As String
+    If IsError(c.Value) Then Exit Function
+    cellText = c.Value
+End Function
+
+Private Function ColLetter(ws As Worksheet, ByVal col As Long) As String
+    ColLetter = Split(ws.Cells(1, col).Address, &quot;$&quot;)(1)
+End Function
+
+&#x27; First line of a header, trimmed to 40 characters for display.
+Private Function ShortHeader(ByVal v As Variant) As String
+    Dim s As String
+    If IsError(v) Then Exit Function
+    s = Replace(CStr(v), vbCr, vbLf)
+    If InStr(s, vbLf) &gt; 0 Then s = Left$(s, InStr(s, vbLf) - 1)
+    s = Trim$(s)
+    If Len(s) &gt; 40 Then s = Left$(s, 37) &amp; &quot;...&quot;
+    ShortHeader = s
+End Function
+
+&#x27;==============================================================================
+&#x27; Helpers
+&#x27;==============================================================================
+
+&#x27; FindHeader that appends the header to &#x27;missing&#x27; when not found.
+Private Function ReqCol(ws As Worksheet, hdrRow As Long, headerText As String, _
+                        matchPrefix As Boolean, ByRef missing As String) As Long
+    ReqCol = FindHeader(ws, hdrRow, headerText, matchPrefix)
+    If ReqCol = 0 Then missing = missing &amp; &quot;  - &quot; &amp; headerText &amp; vbCrLf
+End Function
+
+&#x27; Returns the named sheet or raises an error.
+Private Function ReqSheet(wb As Workbook, sheetName As String) As Worksheet
+    Set ReqSheet = GetSheet(wb, sheetName)
+    If ReqSheet Is Nothing Then Err.Raise vbObjectError + 1, , _
+        &quot;Tab &#x27;&quot; &amp; sheetName &amp; &quot;&#x27; not found in target workbook.&quot;
+End Function
+
+&#x27; Parses &quot;Header|Value~Header|Value&quot; and resolves each header to its column.
+&#x27; Raises an error listing any headers not found on the tab.
+Private Sub ResolveDefaults(ws As Worksheet, spec As String, cols() As Long, vals() As String, _
+                            matchPrefix As Boolean)
+    Dim pairs() As String, parts() As String, i As Long, missing As String
+    pairs = Split(spec, &quot;~&quot;)
+    ReDim cols(LBound(pairs) To UBound(pairs))
+    ReDim vals(LBound(pairs) To UBound(pairs))
+    For i = LBound(pairs) To UBound(pairs)
+        parts = Split(pairs(i), &quot;|&quot;)
+        cols(i) = FindHeader(ws, TGT_HEADER_ROW, parts(0), matchPrefix)
+        vals(i) = parts(1)
+        If cols(i) = 0 Then missing = missing &amp; &quot;  - &quot; &amp; parts(0) &amp; vbCrLf
+    Next i
+    If missing &lt;&gt; &quot;&quot; Then Err.Raise vbObjectError + 3, , _
+        &quot;Default-value headers not found on &#x27;&quot; &amp; ws.Name &amp; &quot;&#x27;:&quot; &amp; vbCrLf &amp; missing
+End Sub
+
+&#x27; Writes the default values into one row.
+Private Sub WriteDefaults(ws As Worksheet, rowNum As Long, cols() As Long, vals() As String)
+    Dim i As Long
+    For i = LBound(cols) To UBound(cols)
+        ws.Cells(rowNum, cols(i)).Value = vals(i)
+    Next i
+End Sub
+
+&#x27; Returns the column of a header on the given row, or 0 if not found.
+&#x27; Comparison ignores case and all whitespace. matchPrefix = True matches headers
+&#x27; that START with headerText (for long multi-line headers).
+Private Function FindHeader(ws As Worksheet, hdrRow As Long, headerText As String, _
+                            Optional matchPrefix As Boolean = False) As Long
+    Dim lastCol As Long, c As Long, target As String, cellText As String
+    target = Tight(headerText)
+    lastCol = ws.Cells(hdrRow, ws.Columns.Count).End(xlToLeft).Column
+    For c = 1 To lastCol
+        cellText = Tight(CStr(ws.Cells(hdrRow, c).Value))
+        If matchPrefix Then
+            If Left$(cellText, Len(target)) = target Then FindHeader = c: Exit Function
+        Else
+            If cellText = target Then FindHeader = c: Exit Function
+        End If
+    Next c
+End Function
+
+&#x27; Extracts fee RINs from a cell. Ignores anything in parentheses (e.g. the fee
+&#x27; amount in &quot;14243675 (3.95)&quot;) and keeps only all-digit values, so a cell can
+&#x27; hold one or more RINs separated by commas, semicolons, slashes, spaces or
+&#x27; line breaks.
+Private Function ParseList(ByVal v As Variant) As Collection
+    Dim s As String, clean As String, ch As String
+    Dim parts() As String, i As Long, depth As Long, tok As String
+    Set ParseList = New Collection
+    If IsEmpty(v) Then Exit Function
+    If IsNumeric(v) Then
+        s = Format$(CDec(v), &quot;0&quot;)
+    Else
+        s = CStr(v)
+    End If
+
+    &#x27; Drop anything inside parentheses
+    For i = 1 To Len(s)
+        ch = Mid$(s, i, 1)
+        If ch = &quot;(&quot; Then
+            depth = depth + 1
+        ElseIf ch = &quot;)&quot; Then
+            If depth &gt; 0 Then depth = depth - 1
+        ElseIf depth = 0 Then
+            clean = clean &amp; ch
+        End If
+    Next i
+
+    clean = Replace(clean, vbCr, &quot; &quot;)
+    clean = Replace(clean, vbLf, &quot; &quot;)
+    clean = Replace(clean, &quot;,&quot;, &quot; &quot;)
+    clean = Replace(clean, &quot;;&quot;, &quot; &quot;)
+    clean = Replace(clean, &quot;/&quot;, &quot; &quot;)
+    clean = Replace(clean, Chr(160), &quot; &quot;)
+    parts = Split(Application.WorksheetFunction.Trim(clean), &quot; &quot;)
+
+    &#x27; Keep digit-only tokens (RINs)
+    For i = LBound(parts) To UBound(parts)
+        tok = Trim$(parts(i))
+        If tok &lt;&gt; &quot;&quot; Then
+            If Not tok Like &quot;*[!0-9]*&quot; Then ParseList.Add tok
+        End If
+    Next i
+End Function
+
+&#x27; Uppercase, trimmed, internal whitespace/line breaks collapsed to single spaces.
+Private Function Norm(ByVal s As String) As String
+    s = Replace(s, vbCr, &quot; &quot;)
+    s = Replace(s, vbLf, &quot; &quot;)
+    s = Replace(s, vbTab, &quot; &quot;)
+    s = Replace(s, Chr(160), &quot; &quot;)
+    s = Trim$(s)
+    Do While InStr(s, &quot;  &quot;) &gt; 0
+        s = Replace(s, &quot;  &quot;, &quot; &quot;)
+    Loop
+    Norm = UCase$(s)
+End Function
+
+&#x27; Norm with all spaces removed.
+Private Function Tight(ByVal s As String) As String
+    Tight = Replace(Norm(s), &quot; &quot;, &quot;&quot;)
+End Function
+
+&#x27; Numeric value of a cell ($ and commas allowed); Empty if blank or not numeric.
+Private Function NumValue(ByVal v As Variant) As Variant
+    Dim s As String
+    s = Replace(Replace(Trim$(CStr(v)), &quot;$&quot;, &quot;&quot;), &quot;,&quot;, &quot;&quot;)
+    If s = &quot;&quot; Then Exit Function
+    If Not IsNumeric(s) Then Exit Function
+    NumValue = CDbl(s)
+End Function
+
+&#x27; Retail as &quot;0.00&quot; text; &quot;&quot; if blank or not numeric.
+Private Function RetailText(ByVal v As Variant) As String
+    Dim n As Variant
+    n = NumValue(v)
+    If IsEmpty(n) Then Exit Function
+    RetailText = Format$(n, &quot;0.00&quot;)
+End Function
+
+&#x27; Date as &quot;yyyy-mm-dd&quot; text; &quot;&quot; if blank or not a date.
+Private Function DateText(ByVal v As Variant) As String
+    If IsEmpty(v) Then Exit Function
+    If Trim$(CStr(v)) = &quot;&quot; Then Exit Function
+    If Not IsDate(v) Then Exit Function
+    DateText = Format$(CDate(v), &quot;yyyy-mm-dd&quot;)
+End Function
+
+&#x27; Digits only; normalizes to a 12-digit UPC-A (pads lost leading zeros,
+&#x27; drops extra leading zeros from GTIN-13/14), then returns the first 11 digits.
+Private Function UPCFirst11(ByVal v As Variant) As String
+    Dim s As String, d As String, i As Long, ch As String
+    If IsNumeric(v) And Not IsEmpty(v) Then
+        s = Format$(CDec(v), &quot;0&quot;)
+    Else
+        s = CStr(v)
+    End If
+    For i = 1 To Len(s)
+        ch = Mid$(s, i, 1)
+        If ch Like &quot;#&quot; Then d = d &amp; ch
+    Next i
+    If d = &quot;&quot; Then Exit Function
+    Do While Len(d) &gt; 12 And Left$(d, 1) = &quot;0&quot;
+        d = Mid$(d, 2)
+    Loop
+    If Len(d) &lt; 12 Then d = String$(12 - Len(d), &quot;0&quot;) &amp; d
+    UPCFirst11 = Left$(d, 11)
+End Function
+
+&#x27; First empty row in the key column at or below TGT_FIRST_DATA_ROW.
+Private Function NextEmptyRow(ws As Worksheet, keyCol As Long) As Long
+    Dim r As Long
+    r = ws.Cells(ws.Rows.Count, keyCol).End(xlUp).Row + 1
+    If r &lt; TGT_FIRST_DATA_ROW Then r = TGT_FIRST_DATA_ROW
+    NextEmptyRow = r
+End Function
+
+Private Function GetSheet(wb As Workbook, sheetName As String) As Worksheet
+    On Error Resume Next
+    Set GetSheet = wb.Worksheets(sheetName)
+    On Error GoTo 0
+End Function
+
+Private Function GetOrOpenWorkbook(fullPath As String) As Workbook
+    Dim wb As Workbook, fileName As String
+    fileName = Mid$(fullPath, InStrRev(fullPath, &quot;\&quot;) + 1)
+    For Each wb In Application.Workbooks
+        If StrComp(wb.Name, fileName, vbTextCompare) = 0 Then
+            Set GetOrOpenWorkbook = wb
+            Exit Function
+        End If
+    Next wb
+    If Dir(fullPath) = &quot;&quot; Then Exit Function
+    On Error Resume Next
+    Set GetOrOpenWorkbook = Workbooks.Open(fullPath)
+    On Error GoTo 0
+End Function
+
++----------+--------------------+---------------------------------------------+
+|Type      |Keyword             |Description                                  |
++----------+--------------------+---------------------------------------------+
+|Suspicious|Environ             |May read system environment variables        |
+|Suspicious|Open                |May open a file                              |
+|Suspicious|Write               |May write to a file (if combined with Open)  |
+|Suspicious|output              |May write to a file (if combined with Open)  |
+|Suspicious|Print #             |May write to a file (if combined with Open)  |
+|Suspicious|run                 |May run an executable file or a system       |
+|          |                    |command                                      |
+|Suspicious|Create              |May execute file or a system command through |
+|          |                    |WMI                                          |
+|Suspicious|Chr                 |May attempt to obfuscate specific strings    |
+|          |                    |(use option --deobf to deobfuscate)          |
+|Suspicious|Hex Strings         |Hex-encoded strings were detected, may be    |
+|          |                    |used to obfuscate strings (option --decode to|
+|          |                    |see all)                                     |
+|Suspicious|Base64 Strings      |Base64-encoded strings were detected, may be |
+|          |                    |used to obfuscate strings (option --decode to|
+|          |                    |see all)                                     |
+|Hex String|&#x27;\x00\x02\x08\x19&#x27;  |00020819                                     |
+|Hex String|&#x27;\x00\x00\x00\x00\x0|000000000046                                 |
+|          |0F&#x27;                 |                                             |
+|Hex String|&#x27;\x00\x02\x08 &#x27;     |00020820                                     |
+|Hex String|&#x27;\x14$6u&#x27;           |14243675                                     |
+|Base64    |&#x27;\rm&#x27;              |Dept                                         |
+|String    |                    |                                             |
+|Base64    |&#x27;Jܕ,&#x27;             |Subclass                                     |
+|String    |                    |                                             |
+|Base64    |O*^                 |Type                                         |
+|String    |                    |                                             |
+|Base64    |&#x27;Rǫ&#x27;             |Username                                     |
+|String    |                    |                                             |
+|Suspicious|VBA Stomping        |VBA Stomping was detected: the VBA source    |
+|          |                    |code and P-code are different, this may have |
+|          |                    |been used to hide malicious code             |
++----------+--------------------+---------------------------------------------+
+VBA Stomping detection is experimental: please report any false positive/negative at https://github.com/decalage2/oletools/issues
+
+ModuleNotFoundError: No module named &#x27;_cffi_backend&#x27;
+thread &#x27;&lt;unnamed&gt;&#x27; panicked at /usr/share/cargo/registry/pyo3-0.20.2/src/err/mod.rs:788:5:
+Python API call failed
+stack backtrace:
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+Traceback (most recent call last):
+  File &quot;/usr/local/bin/olevba&quot;, line 8, in &lt;module&gt;
+    sys.exit(main())
+             ^^^^^^
+  File &quot;/usr/local/lib/python3.11/dist-packages/oletools/olevba.py&quot;, line 4670, in main
+    curr_return_code = process_file(filename, data, container, options)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &quot;/usr/local/lib/python3.11/dist-packages/oletools/olevba.py&quot;, line 4503, in process_file
+    if not crypto.is_encrypted(filename):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &quot;/usr/local/lib/python3.11/dist-packages/oletools/crypto.py&quot;, line 195, in is_encrypted
+    return msoffcrypto.OfficeFile(file_handle).is_encrypted()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &quot;/usr/local/lib/python3.11/dist-packages/msoffcrypto/__init__.py&quot;, line 47, in OfficeFile
+    from msoffcrypto.format.ooxml import OOXMLFile
+  File &quot;/usr/local/lib/python3.11/dist-packages/msoffcrypto/format/ooxml.py&quot;, line 13, in &lt;module&gt;
+    from msoffcrypto.method.ecma376_agile import ECMA376Agile
+  File &quot;/usr/local/lib/python3.11/dist-packages/msoffcrypto/method/ecma376_agile.py&quot;, line 13, in &lt;module&gt;
+    from cryptography.hazmat.primitives import serialization
+  File &quot;/usr/lib/python3/dist-packages/cryptography/hazmat/primitives/serialization/__init__.py&quot;, line 7, in &lt;module&gt;
+    from cryptography.hazmat.primitives._serialization import (
+  File &quot;/usr/lib/python3/dist-packages/cryptography/hazmat/primitives/_serialization.py&quot;, line 11, in &lt;module&gt;
+    from cryptography.hazmat.primitives.hashes import HashAlgorithm
+  File &quot;/usr/lib/python3/dist-packages/cryptography/hazmat/primitives/hashes.py&quot;, line 10, in &lt;module&gt;
+    from cryptography.hazmat.bindings._rust import openssl as rust_openssl
+pyo3_runtime.PanicException: Python API call failed
+</code></pre>
+        </div>
+      </div>
+    </details>
+  </div>
+
   <div class="sub-section" id="tpgc-creating-mnt">
     <h3 class="sub-section-title">Creating the Needed MNT Files</h3>
+    <div class="callout tip"><span class="callout-icon">💡</span><div><strong>Faster option:</strong> the <a href="#tpgc-cheat-sheet">TPGC Cheat Sheet</a> fills these tabs and creates the MNT files for you. The manual steps below are still useful for one-off fixes.</div></div>
     <p>An MNT file is a simple pipe-delimited file used to import specific data into Xadmin's data tables. The data is entered in the MNT Creator Excel workbook, and a built-in macro (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>) converts the active tab into an <code>.mnt</code> file.</p>
     <ol class="steps">
       <li>Get the latest MNT Creator workbook. Email the ORUP team for the current location of the most up-to-date file.</li>
