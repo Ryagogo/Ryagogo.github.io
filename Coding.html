@@ -4,301 +4,313 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Important Files and Macros</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  /* Important Files and Macros: layout and colours shared with the Data Steward and Merchandising guides */
   :root {
-    --bg-page: #1a1d23;
-    --bg-sidebar: #13151a;
-    --bg-content: #f5ebb8;
-    --bg-content-alt: #ede3a8;
-    --accent: #2a6ebb;
-    --accent-hover: #3a80d4;
-    --accent-red: #c0392b;
-    --accent-orange: #e67e22;
-    --text-main: #1a1a1a;
-    --text-sidebar: #c8cdd8;
-    --text-sidebar-hover: #ffffff;
-    --text-muted: #555;
-    --sidebar-width: 270px;
-    --border: #d4c87a;
-    --sidebar-active-bg: #2a6ebb22;
-    --sidebar-active: #5aadff;
+    --navy: #0d1b2a;
+    --navy-mid: #1a2f45;
+    --accent: #2e7dbe;
+    --accent-light: #4a9fd4;
+    --accent-pale: #e8f4fc;
+    --gold: #c8922a;
+    --red: #d63031;
+    --surface: #f7f9fc;
+    --surface2: #edf2f7;
+    --border: #d0dae6;
+    --text: #1a2535;
+    --text-muted: #5a6a7e;
+    --sidebar-w: 280px;
+    --header-h: 64px;
     --link-color: #1a4e99;
     --warning-red: #c0392b;
-    --highlight-yellow: #fff176;
-    --header-font: 'Georgia', serif;
-    --body-font: 'Segoe UI', Arial, sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--bg-page);
-    font-family: var(--body-font);
-    color: var(--text-main);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    background: var(--surface);
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  /* ── TOP HEADER BAR ── */
+  #topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    background: var(--navy);
     display: flex;
-    min-height: 100vh;
+    align-items: center;
+    padding: 0 24px;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    gap: 16px;
+  }
+  #topbar .logo-badge {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+  #topbar h1 { font-size: 16px; font-weight: 600; color: #fff; letter-spacing: 0.02em; }
+  #topbar > nav { margin-left: auto; display: flex; min-width: 0; }
+  #topbar .nav-links { display: flex; gap: 2px; list-style: none; }
+  #topbar .nav-links a {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+  #topbar .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+  #menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    color: #fff;
+    font-size: 20px;
+    margin-right: 8px;
   }
 
   /* ── SIDEBAR ── */
   #sidebar {
-    margin-top: 63px;
-    width: var(--sidebar-width);
-    min-width: var(--sidebar-width);
-    background: var(--bg-sidebar);
     position: fixed;
-    top: 0; left: 0;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 100;
-    border-right: 1px solid #2a2d35;
-    display: flex;
-    flex-direction: column;
-  }
-
-  #sidebar-header {
-    padding: 22px 20px 16px;
-    border-bottom: 1px solid #2a2d35;
-    background: #0d0f13;
-  }
-
-  #sidebar-header h2 {
-    font-family: var(--header-font);
-    font-size: 13px;
-    font-weight: 700;
-    color: #8a9ab5;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  #sidebar-header span {
-    display: block;
-    font-size: 11px;
-    color: #4a5568;
-    margin-top: 4px;
-    letter-spacing: 0.04em;
-  }
-
-  #sidebar nav {
-    padding: 12px 0 24px;
-    flex: 1;
-  }
-
-  .nav-section-label {
-    font-size: 10px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 14px 20px 6px;
-  }
-
-  #sidebar nav a {
-    display: block;
-    padding: 7px 20px 7px 20px;
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 13px;
-    line-height: 1.4;
-    transition: background 0.15s, color 0.15s;
-    border-left: 3px solid transparent;
-    font-weight: bold;
-  }
-
-  #sidebar nav a:hover {
-    background: #1e2230;
-    color: var(--text-sidebar-hover);
-    border-left-color: var(--accent-hover);
-  }
-
- 
-
-  #sidebar nav a.sub {
-    padding-left: 34px;
-    font-size: 12px;
-    color: #8a96aa;
-  }
-
-  #sidebar nav a.sub:hover {
-    color: var(--text-sidebar-hover);
-  }
-
-  /* ── MAIN ── */
-  #main {
-    margin-left: var(--sidebar-width);
-    flex: 1;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  #topbar {
-    position: fixed;
-    top: 0;
+    top: var(--header-h);
     left: 0;
-    right: 0;
-    z-index: 200;
+    width: var(--sidebar-w);
+    height: calc(100vh - var(--header-h));
+    background: var(--navy-mid);
+    overflow-y: auto;
+    z-index: 90;
+    padding: 16px 0 40px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+    transition: transform 0.3s ease;
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+  #sidebar-search-wrap {
+    padding: 12px 14px 10px;
+    position: sticky;
+    top: 0;
+    background: var(--navy-mid);
+    z-index: 10;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  #sidebar-search {
+    width: 100%;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 7px 32px 7px 10px;
+    font-size: 12.5px;
+    color: #d4eaf5;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  #sidebar-search::placeholder { color: #7a98b0; }
+  #sidebar-search:focus { border-color: var(--accent); background: rgba(0,0,0,0.35); }
+  #sidebar-search-wrap .search-icon {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7ca4c0;
+    font-size: 13px;
+    pointer-events: none;
+  }
+  #search-no-results { display: none; padding: 10px 20px; font-size: 12px; color: #8eb4cc; font-style: italic; }
+  .nav-search-hidden { display: none !important; }
+  .nav-section { margin-bottom: 2px; }
+  .nav-section-header {
     display: flex;
     align-items: center;
-    justify-content: Space-between;
-    padding: 0 48px;
-    height: 65px;
-    background: #000000;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    gap: 8px;
+    padding: 9px 18px 9px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7ca4c0;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s;
+  }
+  .nav-section-header:hover { color: #fff; }
+  .nav-section-header .chevron { margin-left: auto; font-size: 14px; transition: transform 0.2s; color: #7ca4c0; }
+  .nav-section-header.open .chevron { transform: rotate(90deg); }
+  .nav-sub-links { display: none; background: rgba(0,0,0,0.15); }
+  .nav-sub-links.open { display: block; }
+  .nav-sub-link {
+    display: block;
+    padding: 7px 18px 7px 34px;
+    font-size: 12.5px;
+    color: #8eb4cc;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-sub-link:hover, .nav-sub-link.active {
+    background: rgba(46,125,190,0.15);
+    color: #d4eaf5;
+    border-left-color: var(--accent);
   }
 
-  #topbar h1 {
-    font-family: var(--header-font);
-    font-size: 20px;
-    font-style: italic;
-    font-weight: 700;
-    color: #e8dfa8;
-    letter-spacing: 0.02em;
+  /* ── MAIN CONTENT ── */
+  #main {
+    margin-left: var(--sidebar-w);
+    margin-top: var(--header-h);
+    padding: 40px 36px 80px;
+    max-width: calc(1800px + var(--sidebar-w));
   }
-
-  #content {
-    margin-top: 100px;
-    padding: 36px 48px 60px;
-    max-width: 1800px;
-  }
-
-  /* ── SECTIONS ── */
   .section {
-    background: var(--bg-content);
+    background: #fff;
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 32px 36px;
     margin-bottom: 28px;
-    scroll-margin-top: 80px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s;
   }
+  .section:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  #main [id] { scroll-margin-top: calc(var(--header-h) + 20px); }
 
+  /* ── HEADINGS ── */
   .section h2 {
-    font-family: var(--header-font);
     font-size: 22px;
-    font-weight: 900;
-    color: #1a1a1a;
-    margin-bottom: 18px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--border);
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--accent-pale);
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
-
+  .section h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 22px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
   .section h3 {
-    font-family: var(--header-font);
-    font-size: 18px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-top: 26px;
-    margin-bottom: 12px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #ddd0a0;
-    scroll-margin-top: 80px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy-mid);
+    margin: 28px 0 12px;
+    padding-top: 22px;
+    border-top: 1px solid var(--surface2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-
-  .section p {
-    font-size: 14px;
-    line-height: 1.7;
-    color: #000000;
-    margin-bottom: 10px;
+  .section h3::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 16px;
+    background: var(--accent-light);
+    border-radius: 2px;
+    flex-shrink: 0;
   }
+  .section h2 + h3 { margin-top: 8px; padding-top: 0; border-top: 0; }
 
-  .section a {
-    color: var(--link-color);
-    text-decoration: underline;
-  }
-
-  .section a:hover {
-    color: var(--accent-hover);
-  }
-
-  /* ordered / unordered lists */
-  .section ol, .section ul {
-    padding-left: 28px;
-    margin-bottom: 12px;
-  }
-
-  .section li {
-    font-size: 14px;
-    line-height: 1.75;
-    margin-bottom: 6px;
-  }
-
-  /* Underlined items */
+  /* ── TYPOGRAPHY ── */
+  .section p { margin-bottom: 10px; color: var(--text); }
+  .section a { color: var(--accent); text-decoration: none; }
+  .section a:hover { color: var(--accent-light); text-decoration: underline; }
+  .section ol, .section ul { margin: 0 0 12px 22px; }
+  .section li { margin-bottom: 4px; }
+  strong { font-weight: 600; }
   .underline { text-decoration: underline; }
-
-  /* Red warning text */
   .red { color: var(--warning-red); font-weight: 600; }
-
-  /* Red underline */
   .red.underline { color: var(--warning-red); text-decoration: underline; }
 
-  /* Code block */
-  pre, code {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 12.5px;
-    background: #000000;
-    border: 1px solid #000000;
-    border-radius: 4px;
-    display: block;
-    padding: 14px 16px;
-    margin: 12px 0;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    line-height: 1.55;
+  /* ── FILE DOWNLOAD LINKS ── */
+  .section .file-link { margin: 4px 0 14px; }
+  .section .file-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--navy);
+    font-weight: 600;
+    text-decoration: none;
   }
+  .section .file-link a::before { content: '⬇'; color: var(--accent); font-size: 13px; }
+  .section .file-link a:hover { border-color: var(--accent); background: var(--accent-pale); text-decoration: none; }
 
-  /* Screenshot / image placeholder */
+  .file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .file-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+  .file-card .file-title { font-weight: 600; color: var(--navy); }
+  .file-card .file-type { font-size: 12px; color: var(--text-muted); }
+  .section .file-card a { font-size: 13px; font-weight: 600; margin-top: 4px; }
+  .section .file-card a::before { content: '⬇ '; }
+
+  /* ── NOTES & CALLOUTS ── */
   .screenshot-box {
-    background: #ede3a0;
-    border: 1px solid #ccc08a;
-    border-radius: 5px;
-    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
     margin: 12px 0;
     font-size: 12px;
-    color: #6b5e2a;
+    color: var(--text-muted);
     font-style: italic;
   }
-
-  /* Info note */
   .note {
-    background: #fff9d6;
-    border-left: 4px solid #e0c84a;
-    border-radius: 3px;
-    padding: 10px 14px;
-    margin: 10px 0;
+    background: #eef7ff;
+    border-left: 4px solid var(--accent);
+    border-radius: 7px;
+    padding: 12px 16px;
+    margin: 12px 0;
     font-size: 13.5px;
-    line-height: 1.6;
+    color: #1a4a6e;
   }
+  .note.red-note { background: #fff5f5; border-left-color: var(--red); color: #8b2020; }
+  .section > img { max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px; margin: 8px 0 14px; }
 
-  .note.red-note {
-    background: #fdecea;
-    border-left-color: var(--warning-red);
-  }
+  .step-list { counter-reset: steps; list-style: none; padding-left: 0; margin-left: 0 !important; }
+  .step-list li { counter-increment: steps; display: flex; gap: 10px; margin-bottom: 10px; }
+  .step-list li::before { content: counter(steps) "."; font-weight: 700; min-width: 22px; color: var(--accent); }
 
-  /* Step numbering continues from lists */
-  .step-list {
-    counter-reset: steps;
-    list-style: none;
-    padding-left: 0;
-  }
+  /* ── CODE BLOCKS ── */
+  pre, code { font-family: 'Fira Code', Consolas, Monaco, monospace; }
 
-  .step-list li {
-    counter-increment: steps;
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    line-height: 1.7;
-  }
-
-  .step-list li::before {
-    content: counter(steps) ".";
-    font-weight: 700;
-    min-width: 22px;
-    color: #7a6820;
-  }
-
-  /* tag pill row from table of contents brand tabs */
   .brand-tags {
     display: flex;
     flex-wrap: wrap;
@@ -525,12 +537,6 @@
   #sidebar::-webkit-scrollbar-thumb { background: #2a2d35; border-radius: 3px; }
   #sidebar::-webkit-scrollbar-thumb:hover { background: #3a3d48; }
 
-  @media (max-width: 768px) {
-    :root { --sidebar-width: 220px; }
-    #content { padding: 24px 20px 48px; }
-    .section { padding: 20px 18px; }
-  }
-
 /* Container styling matching the sleek, highly rounded dark mode aesthetic */
         .code-container {
             position: relative;
@@ -620,32 +626,6 @@
         /* Light matching syntax highlight colors for raw code lines */
         .vba-keyword { color: #f28b82; } /* Sub, Dim, As, Boolean */
         .vba-type { color: #aecbfa; }    /* Workbook, String, Object, Long */
-
-        /* ── NEW COLLAPSIBLE SIDEBAR RULES ── */
-        .has-sub {
-            display: flex !important;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-        }
-        .chevron {
-            font-size: 10px;
-            transition: transform 0.2s ease;
-            display: inline-block;
-        }
-        /* Rotates the chevron downward when active */
-        .has-sub.open .chevron {
-            transform: rotate(90deg);
-        }
-        /* Sub-navigation link wrapper container hidden by default */
-        .sub-group {
-            display: none;
-        }
-        .sub-group.open {
-            display: block;
-        }
-
-
 .custom-table {
     background-color: #ffffff;
     border-collapse: collapse;
@@ -914,119 +894,62 @@ td.red-border-cell:nth-child(4) {
     color: #ffffff !important; /* Forces text to white inside selection */
 }
 
-.nav-links a {
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.55);
-      text-decoration: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: color 0.2s, background 0.2s;
-    }
+  .code-container { margin: 12px 0 18px; }
 
+  /* ── Screen mock-ups keep their original look ── */
+  .custom-table, .overlap-table, .inspect-table, .units-table, .dialog-box, .email-preview, .context-menu, .code-table {
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .section .mockup-scroll { max-width: 100%; overflow-x: auto; margin: 10px 0 16px; }
 
-  .nav-logo {
-      font-family: 'Fraunces', serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -0.01em;
-    }
+  /* ── OVERLAY ── */
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 80; }
+  .sidebar-overlay.open { display: block; }
 
-  .nav-links {
-      display: flex;
-      gap: 2px;
-      list-style: none;
-    }
-
-.nav-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: end;
-    padding: 0 48px;
-    height: 60px;
-    background: rgba(17, 24, 39, 0.92);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-  /* ── Small screens: sidebar becomes a slide-out menu ── */
-  #menu-toggle { display: none; }
-  #topbar nav { display: flex; min-width: 0; }
-  #topbar .nav-links { margin: 0; padding: 0; }
+  /* ── MOBILE ── */
   @media (max-width: 900px) {
-    #menu-toggle {
-      display: flex;
-      position: fixed;
-      top: 10px;
-      left: 8px;
-      z-index: 300;
-      width: 44px;
-      height: 44px;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 22px;
-      cursor: pointer;
-    }
-    #topbar { padding: 0 12px 0 60px; gap: 12px; }
-    #topbar h1 {
-      font-size: 16px;
-      flex: 0 1 auto;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    #topbar nav { flex: 1 1 auto; }
+    #menu-toggle { display: block; }
+    #topbar { padding: 0 16px; gap: 10px; }
+    #topbar h1 { font-size: 14px; flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #topbar > nav { flex: 1 1 auto; }
     #sidebar {
-      margin-top: 0;
-      top: 65px;
-      height: calc(100vh - 65px);
+      bottom: 0;
+      height: auto;
       transform: translateX(-100%);
-      transition: transform 0.3s ease;
-      z-index: 250;
+      will-change: transform;
+      z-index: 200;
+      padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
     }
-    #sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
-    #main { margin-left: 0; min-width: 0; }
-    #content { margin-top: 65px; padding: 20px 14px 48px; max-width: 100%; }
-    .section { padding: 20px 16px; overflow-x: auto; }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; padding: 24px 14px 60px; }
+    .section { padding: 22px 18px; overflow-x: auto; }
     .code-container { padding: 16px; border-radius: 16px; }
   }
+  @media (max-width: 480px) { #topbar .logo-badge { display: none; } }
 
-  #sidebar-header span { color: #8791a3; }
-
-  /* ── Dark mode: content cards go dark, screen mock-ups stay light ── */
+  /* ── DARK MODE ── */
   html[data-theme="dark"] {
-    --bg-page: #0e1014;
-    --bg-content: #1d1c16;
-    --bg-content-alt: #26241b;
-    --border: #4a4526;
+    --navy: #0a1420;
+    --navy-mid: #122235;
+    --accent: #4a9fd4;
+    --accent-light: #7cbde6;
+    --accent-pale: #16324a;
+    --surface: #0e141c;
+    --surface2: #1f2a37;
+    --border: #2a3a4d;
+    --text: #d8e0e9;
+    --text-muted: #9aabbd;
     --link-color: #8cb8f2;
-    --accent-hover: #b0cff7;
     --warning-red: #ff7a6b;
-    --text-main: #e9e5d3;
   }
+  html[data-theme="dark"] .section { background: #151d27; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
   html[data-theme="dark"] .section h2,
-  html[data-theme="dark"] .section h3,
-  html[data-theme="dark"] .section p { color: #ece8d6; }
-  html[data-theme="dark"] .section h3 { border-bottom-color: #4a4526; }
-  html[data-theme="dark"] .section li { color: #ddd9c7; }
-  html[data-theme="dark"] .step-list li::before { color: #d6c26a; }
-  html[data-theme="dark"] .screenshot-box { background: #2a2718; border-color: #4a4526; color: #d6c98f; }
-  html[data-theme="dark"] .note { background: #2a2614; color: #ece8d6; }
-  html[data-theme="dark"] .note.red-note { background: #2e1715; }
+  html[data-theme="dark"] .file-card .file-title,
+  html[data-theme="dark"] .section .file-link a { color: #e8eef5; }
+  html[data-theme="dark"] .section h3 { color: #c9d6e3; }
+  html[data-theme="dark"] #topbar .logo-badge { background: #2e7dbe; }
+  html[data-theme="dark"] .note { background: #10263a; color: #b9daf5; }
+  html[data-theme="dark"] .note.red-note { background: #2a1416; color: #f3b1b1; }
   html[data-theme="dark"] .attach-pill { background: #16243a; border-color: #2c4a73; color: #a9c8f5; }
   html[data-theme="dark"] .custom-table,
   html[data-theme="dark"] .overlap-table,
@@ -1038,6 +961,7 @@ td.red-border-cell:nth-child(4) {
   html[data-theme="dark"] .code-table {
     --link-color: #1a4e99;
     --warning-red: #c0392b;
+    --text: #1a2535;
     color-scheme: light;
     color: #1a1a1a;
   }
@@ -1049,122 +973,99 @@ td.red-border-cell:nth-child(4) {
 </head>
 
 <body>
-<a class="skip-link" href="#content">Skip to main content</a>
-<button id="menu-toggle" onclick="toggleSidebar()" aria-label="Open section menu" aria-controls="sidebar" aria-expanded="false">&#9776;</button>
+<a class="skip-link" href="#main">Skip to main content</a>
 
-<aside id="sidebar" aria-label="Page sections">
-  <div id="sidebar-header">
-    <h2>Navigation</h2>
-    <span>Important Files &amp; Macros</span>
-  </div>
-  <nav id=nav-header>
+<!-- OVERLAY -->
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
 
-    <a class="has-sub" aria-expanded="false" href="#promotion-macro">Promotion;<span class="chevron" aria-hidden="true">▶</span></a>
-    <div class="sub-group">
-      <a href="#promotion-macro" class="sub">Promotion Macro</a>
-      <a href="#sale-fact-tags" class="sub">Sale Fact Tags</a>
-    </div>
-
-
-    <a class="has-sub" aria-expanded="false" href="#buyer-promo-tracker">Buyer Promo Tracker<span class="chevron" aria-hidden="true">▶</span></a>
-    <div class="sub-group">
-      <a href="#sales-update-button" class="sub">Sales Update Button</a>
-      <a href="#brand-tabbing" class="sub">Brand Tabbing</a>
-      <a href="#assign-tracker-path" class="sub">Assign Tracker Path to Promotion Macro</a>
-    </div>
-
-   <a class="has-sub" aria-expanded="false" href="#Fact-Tags">Fact Tags<span class="chevron" aria-hidden="true">▶</span></a>
-    <div class="sub-group">
-    <a href="#sale-master" class="sub">SALE MASTER</a>
- </div>
-
-<a href="#SQL-Tables">SQL Tables</a>
-<a href="#Ad-Planner">Ad Planner & Uploader</a>
-<a href="#Ad-Bible">Ad Bible</a>
-<a href="#Ad-Tracker">Ad Tracker</a>
-<a href="#MSA-Template">MSA Template</a>
-<a href="#Hardlines-Report">Hardlines Buyer Promo Report</a>
-<a href="#Item-List">Item Lists</a>
-
-
-
- <a class="has-sub" aria-expanded="false" href="#inspection-tools">Inspection Tools<span class="chevron" aria-hidden="true">▶</span></a>
-    <div class="sub-group">
-    <a href="#supplier-inspect-1" class="sub">Supplier Inspect 1</a>
-    <a href="#supplier-inspect-2" class="sub">Supplier Inspect 2</a>
-    <a href="#ffinspect-1" class="sub">FFINSPECT 1</a>
-    <a href="#ffinspect" class="sub">FFInspect</a>
-    <a href="#class-inspector" class="sub">CLASS Inspector</a>
-    <a href="#vpnrinfinder" class="sub">VPNrinfinder</a>
-</div>
-  </nav>
-</aside>
-
-<script>
-  document.querySelectorAll('.has-sub').forEach(headerLink => {
-    headerLink.addEventListener('click', function(e) {
-      e.preventDefault(); // Prevents jumping straight away to allow menu toggle feel
-      this.classList.toggle('open');
-      this.setAttribute('aria-expanded', String(this.classList.contains('open')));
-      const subGroup = this.nextElementSibling;
-      if (subGroup && subGroup.classList.contains('sub-group')) {
-        subGroup.classList.toggle('open');
-      }
-    });
-  });
-
-  function toggleSidebar() {
-    const open = document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('menu-toggle').setAttribute('aria-expanded', String(open));
-  }
-
-  // On small screens, close the menu after jumping to a section.
-  document.querySelectorAll('#sidebar nav a:not(.has-sub)').forEach(link => {
-    link.addEventListener('click', () => {
-      if (window.innerWidth <= 900) {
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
-      }
-    });
-  });
-</script>
-
-<!-- MAIN AREA -->
-<div id="main">
-
-<header>
-
-  <div id="topbar">
-    <h1>Important Files and Macros</h1>
-<nav aria-label="Main">
-     <ul class="nav-links">
-      <li><a href="index">Home</a></li>
-      <li><a href="Resume">Résumé</a></li>
-      <li><a href="cover">Cover Letter</a></li>
-      <li><a href="Handbook">Merchandising</a></li>
-      <li><a href="Projects">IT Notes</a></li>
-
-      <li><a href="contact">Contact</a></li>
-    </ul>
-  </nav>
-  </div>
-
+<!-- TOP BAR -->
+<header id="topbar">
+  <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Open section menu" aria-controls="sidebar" aria-expanded="false">☰</button>
+  <span class="logo-badge">NEXCOM</span>
+  <h1>Important Files and Macros</h1>
+  <nav aria-label="Main"><ul class="nav-links">
+    <li><a href="index">Home</a></li>
+    <li><a href="Resume">Résumé</a></li>
+    <li><a href="cover">Cover Letter</a></li>
+    <li><a href="Handbook">Merchandising</a></li>
+    <li><a href="Projects">IT Notes</a></li>
+    <li><a href="contact">Contact</a></li>
+  </ul></nav>
 </header>
-  <main id="content">
+
+<!-- SIDEBAR -->
+<nav id="sidebar" aria-label="Page sections">
+  <div id="sidebar-search-wrap" style="position:relative;">
+    <input type="search" id="sidebar-search" placeholder="Search sections…" aria-label="Search sections" autocomplete="off" oninput="filterNav(this.value)">
+    <span class="search-icon" aria-hidden="true">⌕</span>
+  </div>
+  <div id="search-no-results">No results found.</div>
+
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Promotion Macro <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#promotion-macro">Promotion Macro</a>
+      <a class="nav-sub-link" href="#sale-fact-tags">Sale Fact Tags</a>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Buyer Promo Tracker <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#buyer-promo-tracker">Overview</a>
+      <a class="nav-sub-link" href="#sales-update-button">Sales Update Button</a>
+      <a class="nav-sub-link" href="#brand-tabbing">Brand Tabbing</a>
+      <a class="nav-sub-link" href="#assign-tracker-path">Assign Tracker Path</a>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Fact Tags <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#Fact-Tags">Overview</a>
+      <a class="nav-sub-link" href="#sale-master">Sale Master</a>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Files &amp; Templates <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#files-templates">All Files</a>
+      <a class="nav-sub-link" href="#SQL-Tables">SQL Tables</a>
+      <a class="nav-sub-link" href="#Ad-Planner">Ad Planner &amp; Uploader</a>
+      <a class="nav-sub-link" href="#Ad-Bible">Ad Bible</a>
+      <a class="nav-sub-link" href="#Ad-Tracker">Ad Tracker</a>
+      <a class="nav-sub-link" href="#MSA-Template">MSA Template</a>
+      <a class="nav-sub-link" href="#Hardlines-Report">Hardlines Buyer Promo Report</a>
+      <a class="nav-sub-link" href="#Item-List">Item Lists</a>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Inspection Tools <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#inspection-tools">Open Document in Background</a>
+      <a class="nav-sub-link" href="#supplier-inspect-1">Supplier Inspect 1</a>
+      <a class="nav-sub-link" href="#supplier-inspect-2">Supplier Inspect 2</a>
+      <a class="nav-sub-link" href="#ffinspect-1">FFInspect 1</a>
+      <a class="nav-sub-link" href="#ffinspect">FFInspect 2</a>
+      <a class="nav-sub-link" href="#class-inspector">CLASS Inspector</a>
+      <a class="nav-sub-link" href="#vpnrinfinder">VPN RIN Finder</a>
+    </div>
+  </div>
+</nav>
+
+  <main id="main">
 
     <!-- PROMOTION MACRO -->
     <div class="section" id="promotion-macro">
       <h2>Promotion Macro</h2>
 
-        <p style="font-size:16px;font-weight:700;font-family:var(--header-font);" ><a href="/Files/Promotion-Macro.xlsm">Promotion Macro</a> (Save to shared path your team can access)</p>
+        <p class="file-link"><a href="Files/Promotion-Macro.xlsm">Promotion Macro</a> (Save to shared path your team can access)</p>
 <div class="code-container">
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -1334,10 +1235,10 @@ CleanUp:
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -1386,7 +1287,6 @@ CleanUp:
 </div>
 
       <ol>
-<br></br>
         <li><span class="underline">Fill in the information for all the red boxes</span> (Start &amp; End Dates, Brand, User ID, Buyer Number)<br>*Fill in or paste the information from the DOF form.</li>
         <li><span class="underline">Highlighted Columns need to be filled out. Rin, Reg Sell, and Promo sell are required</span><br>*Promo Sell column <span class="red underline">MUST be</span> fixed pricing.<br>*Scan back column and Model/Description in not required but nice to have for tracking purposes.</li>
         <li><span class="red underline">Verify Promotion fixed pricing is correct and what you want for promotion. Especially with .00 pricing endings</span></li>
@@ -1478,17 +1378,17 @@ CleanUp:
 
 <div class="section" id="buyer-promo-tracker">
       <h2>Promotion Macro w/ automatic tracking and filing</h2>
- <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/Promotion Macro2.xlsm">Promotion Macro</a>
+ <p class="file-link"><a href="Files/Promotion Macro2.xlsm">Promotion Macro</a>
 
     <!-- BUYER PROMO TRACKER -->
     
       <h3>Buyer Promo Tracker</h3>
 
 
-      <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/Buyer-Promo-Tracker.xlsm">Buyer Promo Tracker Template</a>
+      <p class="file-link"><a href="Files/Buyer-Promo-Tracker.xlsm">Buyer Promo Tracker Template</a>
       
       <p>1. Save to path team can access</p>
-<img src="C:\Users\grayr\Desktop\Coding pictures.files\Pictures\Promo Tracker\Tracker1.png"; style="width: 100%";>
+<img src="Pictures/Coding/Promo Tracker/Tracker1.png" alt="Buyer Promo Tracker workbook saved to a shared path">
 
 
 
@@ -1496,7 +1396,7 @@ CleanUp:
         <span class="red">*Note</span> If RINS are the same and dates overlap at all. Column will indicate an overlapping promo has been entered
       </div>
 
-      <table class="overlap-table" style="margin-top:12px;">
+      <div class="mockup-scroll"><table class="overlap-table" style="margin-top:12px;">
         <thead>
           <tr>
             <th>Overlap Check</th>
@@ -1528,7 +1428,7 @@ CleanUp:
             <td>1234567</td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
 
       <!-- SALES UPDATE BUTTON sub-section -->
       <h3 id="sales-update-button">Sales Update Button</h3>
@@ -1538,10 +1438,10 @@ CleanUp:
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -1687,7 +1587,7 @@ CleanUp:
 
       <p>Units Sold for specified period for all locations will populate into column AG. Trailing credit will auto calculate in column AH</p>
 
-      <table class="units-table">
+      <div class="mockup-scroll"><table class="units-table">
         <thead>
           <tr>
             <th>Units Sold</th>
@@ -1700,7 +1600,7 @@ CleanUp:
             <td>$ &nbsp;&nbsp;&nbsp;80.00</td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
 
  
 
@@ -1743,7 +1643,7 @@ CleanUp:
       <p class="red">*if Brand Tab Name does not match Brand name input on Promotion Macro the macro will be unable to copy information over to Promo tracker. (Text just needs to match)</p>
 
 
-    <table class="custom-table">
+    <div class="mockup-scroll"><table class="custom-table">
         <tr>
             <td class="label-cell">
                 <div class="border-box">Input Vendor Name Here!!!</div>
@@ -1778,7 +1678,7 @@ CleanUp:
             <td class="empty-cell"></td>
             <td class="empty-cell"></td>
         </tr>
-    </table>
+    </table></div>
 
 
 
@@ -1972,7 +1872,6 @@ CleanUp:
         </div>
     </div>
 </div>
-<br></br>
 
       <p>Back onto Promotion Macro Workbook.</p>
 
@@ -1980,7 +1879,6 @@ CleanUp:
         <li>Right click macro button</li>
         <li>Click <strong>"assign macro"</strong></li>
         <li>Click <strong>"VendorDOF"</strong> and select <strong>Edit</strong>
-<br>
           <div class="dialog-box" style="margin-top:8px;min-width:320px;">
             <div class="dialog-title">Assign Macro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ? ✕</div>
 
@@ -2009,7 +1907,7 @@ CleanUp:
 
 
 <div style="background-color: white">
-    <table class="code-table">
+    <div class="mockup-scroll"><table class="code-table">
         <tr>
           
             <td class="code-line comment-text">
@@ -2034,9 +1932,8 @@ CleanUp:
                 <span class="variable">FactMasterPath</span> = <span class="string">"G:\Code_M\Code_MG1\CT Jason Wilmoth\Consumer Tech Fact Tags\Fact Tags V4.xlsm"</span>
             </td>
         </tr>
-    </table>
+    </table></div>
 </div>
-<br></br>
         <li>Under <strong>"Part 4: File Generation Loop"</strong> and <strong>"Revised Dynamic Paths"</strong> provide a path for START templates to save to. For Now location & Later location</li>
 <div style="background-color: white">
 <table class="code-table">
@@ -2081,7 +1978,6 @@ CleanUp:
 </div>
 
 
-<br></br>
 
         <li>Do <strong>Ctrl + S</strong> to save and close the window</li>
         <li>*You must reassign macro</li>
@@ -2103,10 +1999,10 @@ CleanUp:
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -2234,41 +2130,48 @@ CleanUp:
 
 
 
-<div class="section" id="SQL-Tables">
-      <h2>SQL Tables</h2>
-  <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/SQL Tables and Columns.xlsx";>SQL Tables</a></p>
+<!-- FILES & TEMPLATES -->
+<div class="section" id="files-templates">
+  <h2>Files &amp; Templates</h2>
+  <p>Workbooks and templates used across merchandising. Save a copy to a shared path your team can access.</p>
+  <div class="file-grid">
+    <div class="file-card" id="SQL-Tables">
+      <span class="file-title">SQL Tables</span>
+      <span class="file-type">Excel workbook (.xlsx)</span>
+      <a href="Files/SQL Tables and Columns.xlsx" download>Download SQL Tables and Columns</a>
+    </div>
+    <div class="file-card" id="Ad-Planner">
+      <span class="file-title">Ad Planner &amp; Uploader</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm)</span>
+      <a href="Files/NEX_Ad_Planner_v22.xlsm" download>Download Ad Planner v22</a>
+    </div>
+    <div class="file-card" id="Ad-Bible">
+      <span class="file-title">Ad Bible</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm)</span>
+      <a href="Files/Ad Bible.xlsm" download>Download Ad Bible</a>
+    </div>
+    <div class="file-card" id="Ad-Tracker">
+      <span class="file-title">Ad Tracker</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm)</span>
+      <a href="Files/AdTracker.xlsm" download>Download Ad Tracker</a>
+    </div>
+    <div class="file-card" id="MSA-Template">
+      <span class="file-title">MSA Template</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm)</span>
+      <a href="Files/Blank MSA V6 - New Format.xlsm" download>Download Blank MSA V6 (New Format)</a>
+    </div>
+    <div class="file-card" id="Hardlines-Report">
+      <span class="file-title">Hardlines Buyer Promo Report</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm)</span>
+      <a href="Files/Hardlines-Report-Macro.xlsm" download>Download Hardlines Report Macro</a>
+    </div>
+    <div class="file-card" id="Item-List">
+      <span class="file-title">Item Lists</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm)</span>
+      <a href="Files/SKULIST.xlsm" download>Download SKU List</a>
+    </div>
+  </div>
 </div>
-
-<div class="section" id="Ad-Planner">
-      <h2>Ad Planner & Uploader</h2>
-  <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/NEX_Ad_Planner_v22.xlsm">Ad Planner v22</a></p>
-</div>
-
-<div class="section" id="Ad-Bible">
-      <h2>Ad Bible</h2>
-  <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/Ad Bible.xlsm";>Ad Bible</a></p>
-</div>
-
-<div class="section" id="Ad-Tracker">
-      <h2>Ad Tracker</h2>
-  <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/AdTracker.xlsm">Ad Tracker</a></p>
-</div>
-
-<div class="section" id="MSA-Template">
-      <h2>MSA Template</h2>
-  <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/Blank MSA V6 - New Format.xlsm">MSA Template</a></p>
-</div>
-
-<div class="section" id="Hardlines-Report">
-      <h2>Hardlines Buyer Promo Report</h2>
-  <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/Hardlines-Report-Macro.xlsm">Hardlines Macro</a></p>
-</div>
-
-<div class="section" id="Item-List">
-      <h2>Item Lists</h2>
-  <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/SKULIST.xlsm">Item Lists</a></p>
-</div>
-
 
 <div class="section" id="inspection-tools">
 <h2>Inspection Tools</h2>
@@ -2281,10 +2184,10 @@ CleanUp:
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -2297,21 +2200,20 @@ CleanUp:
 <span class="vba-keyword">End Sub</span></code></pre>
     </div>
 </div>
-<br></br>
     <!-- SUPPLIER INSPECT 1 -->
     <div id="supplier-inspect-1">
       <h3>Supplier Inspect 1</h3>
-      <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/Supplierins1.xlsm">Supplier Information Macro.v1</a></p>
+      <p class="file-link"><a href="Files/Supplierins1.xlsm">Supplier Information Macro.v1</a></p>
       <p>Code:</p>
 
 <div class="code-container">
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -2428,7 +2330,7 @@ CantFind:
 
 
 
-      <table class="inspect-table" style="margin-top:14px;">
+      <div class="mockup-scroll"><table class="inspect-table" style="margin-top:14px;">
         <thead>
           <tr>
             <th>Trans Rin:</th>
@@ -2449,24 +2351,23 @@ CantFind:
             <td>13</td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
-<br></br>
 
     <!-- SUPPLIER INSPECT 2 -->
     <div id="supplier-inspect-2">
-      <h2>Supplier Inspect 2</h2>
-      <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/Supplierins2.xlsm">Supplier Information Macro.v2</a></p>
+      <h3>Supplier Inspect 2</h3>
+      <p class="file-link"><a href="Files/Supplierins2.xlsm">Supplier Information Macro.v2</a></p>
       <p>Code:</p>
 
 <div class="code-container">
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -2590,7 +2491,7 @@ CantFind:
 
 
 
-      <table class="inspect-table" style="margin-top:14px;">
+      <div class="mockup-scroll"><table class="inspect-table" style="margin-top:14px;">
         <thead>
           <tr>
             <th>Trans Rin:</th>
@@ -2617,23 +2518,22 @@ CantFind:
             <td>13</td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
-<br></br>
     <!-- FFINSPECT 1 -->
     <div id="ffinspect-1">
-      <h2>FFINSPECT 1</h2>
-      <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/FFINS1.xlsm">Frustrated Freight Macro.v1</a></p>
+      <h3>FFInspect 1</h3>
+      <p class="file-link"><a href="Files/FFINS1.xlsm">Frustrated Freight Macro.v1</a></p>
       <p>Code:</p>
       
 <div class="code-container">
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -2759,7 +2659,7 @@ CantFind:
 
 </div>
 
-  <table class="inspect-table" style="margin-top:14px;">
+  <div class="mockup-scroll"><table class="inspect-table" style="margin-top:14px;">
         <thead>
           <tr>
             <th>Trans Rin:</th>
@@ -2795,14 +2695,13 @@ CantFind:
 
           </tr>
         </tbody>
-      </table>
+      </table></div>
    
     </div>
-<br></br>
     <!-- FFINSPECT -->
     <div id="ffinspect">
-      <h2>FFInspect</h2>
-      <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/FFINS2.xlsm">Frustrated Freight Macro.v2</a></p>
+      <h3>FFInspect 2</h3>
+      <p class="file-link"><a href="Files/FFINS2.xlsm">Frustrated Freight Macro.v2</a></p>
       <p>Code:</p>
 
 
@@ -2810,10 +2709,10 @@ CantFind:
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -2975,11 +2874,10 @@ CantFind:
         </div>
       </div>
     </div>
-<br></br>
     <!-- CLASS INSPECTOR -->
     <div id="class-inspector">
-      <h2>CLASS Inspector</h2>
-      <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/CLASS.xlsm">CLASS Macro</a></p>
+      <h3>CLASS Inspector</h3>
+      <p class="file-link"><a href="Files/CLASS.xlsm">CLASS Macro</a></p>
      
       <p>Code:</p>
 
@@ -2987,10 +2885,10 @@ CantFind:
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -3110,7 +3008,7 @@ CantFind:
 
       
 
-      <table class="inspect-table" style="margin-top:10px;">
+      <div class="mockup-scroll"><table class="inspect-table" style="margin-top:10px;">
         <thead>
           <tr>
             <th>Trans Rin:</th>
@@ -3129,15 +3027,14 @@ CantFind:
             <td>1 – ALKALINE</td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
 
       
     </div>
-<br></br>
     <!-- VPNRINFINDER -->
     <div id="vpnrinfinder">
-      <h2>VPNrinfinder</h2>
-      <p style="font-size:16px;font-weight:700;font-family:var(--header-font);"><a href="Files/VPNrinFinder.xlsm">VPN Rin Finder Macro</a></p>
+      <h3>VPN RIN Finder</h3>
+      <p class="file-link"><a href="Files/VPNrinFinder.xlsm">VPN Rin Finder Macro</a></p>
       <p>Code:</p>
 
 
@@ -3145,10 +3042,10 @@ CantFind:
     <div class="code-header">
         <span>VBA</span>
         <div class="header-controls">
-            <button class="control-btn" title="Download source">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             </button>
-            <button class="control-btn" title="Copy code" onclick="copyCode(this)">
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
@@ -3278,7 +3175,7 @@ oraerror:
 </div>
 
 
-      <table class="inspect-table" style="margin-top:14px;">
+      <div class="mockup-scroll"><table class="inspect-table" style="margin-top:14px;">
         <thead>
           <tr>
             <th>Trans Rin:</th>
@@ -3295,48 +3192,105 @@ oraerror:
             <td>GS108-400NAS</td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
+</div>
 
-  </main><!-- /content -->
-</div><!-- /main -->
+  </main>
 
 <script>
-  // Highlight active nav link based on scroll
-  const sections = document.querySelectorAll('.section, h3[id]');
-  const navLinks = document.querySelectorAll('#sidebar nav a');
-
-  // Build a map of all anchored elements
-  const anchors = [...document.querySelectorAll('[id]')].filter(el => {
-    return [...navLinks].some(a => a.getAttribute('href') === '#' + el.id);
-  });
-
-  function onScroll() {
-    let current = '';
-    anchors.forEach(el => {
-      const rect = el.getBoundingClientRect();
-      if (rect.top <= 100) current = el.id;
-    });
-    navLinks.forEach(a => {
-      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-    });
+  function toggleNav(header) {
+    const links = header.nextElementSibling;
+    const isOpen = links.classList.contains('open');
+    links.classList.toggle('open', !isOpen);
+    header.classList.toggle('open', !isOpen);
+    header.setAttribute('aria-expanded', String(!isOpen));
   }
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  function toggleSidebar() {
+    const open = document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open', open);
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', String(open));
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
+  }
 
-  // Smooth scroll
-  navLinks.forEach(a => {
-    a.addEventListener('click', e => {
-      const href = a.getAttribute('href');
-      if (href && href.startsWith('#')) {
-        e.preventDefault();
-        const target = document.querySelector(href);
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Download a code block as a .bas file that can be imported into the VBA editor
+  function downloadCode(button) {
+    const container = button.closest('.code-container');
+    const code = container.querySelector('code').innerText;
+    const heading = container.closest('[id]') && container.closest('[id]').querySelector('h2, h3');
+    const name = (heading ? heading.textContent : 'macro').trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'macro';
+    const url = URL.createObjectURL(new Blob([code.replace(/\n/g, '\r\n')], { type: 'text/plain' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name + '.bas';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // Highlight the sidebar link for the section on screen
+  const navLinks = document.querySelectorAll('#sidebar a[href^="#"]');
+  const targets = [...navLinks].map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + id));
       }
     });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  targets.forEach(t => observer.observe(t));
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      const subLinks = link.closest('.nav-sub-links');
+      if (subLinks) {
+        subLinks.classList.add('open');
+        subLinks.previousElementSibling.classList.add('open');
+        subLinks.previousElementSibling.setAttribute('aria-expanded', 'true');
+      }
+      if (window.innerWidth <= 900) closeSidebar();
+    });
   });
+
+  // Sidebar search
+  function filterNav(query) {
+    const q = query.trim().toLowerCase();
+    let anyVisible = false;
+    document.querySelectorAll('#sidebar .nav-section').forEach(section => {
+      const header = section.querySelector('.nav-section-header');
+      const wrap = section.querySelector('.nav-sub-links');
+      const subLinks = wrap.querySelectorAll('a');
+      if (!q) {
+        section.classList.remove('nav-search-hidden');
+        subLinks.forEach(a => a.classList.remove('nav-search-hidden'));
+        wrap.classList.remove('open');
+        header.classList.remove('open');
+        header.setAttribute('aria-expanded', 'false');
+        anyVisible = true;
+        return;
+      }
+      const headerMatch = header.textContent.toLowerCase().includes(q);
+      let anySubMatch = false;
+      subLinks.forEach(a => {
+        const match = headerMatch || a.textContent.toLowerCase().includes(q);
+        a.classList.toggle('nav-search-hidden', !match);
+        if (match) anySubMatch = true;
+      });
+      section.classList.toggle('nav-search-hidden', !anySubMatch);
+      wrap.classList.toggle('open', anySubMatch);
+      header.classList.toggle('open', anySubMatch);
+      header.setAttribute('aria-expanded', String(anySubMatch));
+      if (anySubMatch) anyVisible = true;
+    });
+    document.getElementById('search-no-results').style.display = anyVisible ? 'none' : 'block';
+  }
 </script>
-</div>
 </body>
 </html>
