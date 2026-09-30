@@ -634,14 +634,11 @@
         .sql-string { color: #ccffd2; }
 
 
-/* Standard Windows Outlook UI Base Styles */
-body {
+/* Standard Windows Outlook UI Base Styles (scoped to the email mock-up) */
+.email-container {
     font-family: 'Segoe UI', Calibri, Arial, sans-serif;
     font-size: 11pt;
     color: #323130;
-    background-color: #f3f2f1;
-    margin: 0;
-    padding: 30px 15px;
 }
 
 /* Main Container simulating an opened Email item */
@@ -724,13 +721,8 @@ body {
     color: #797775;
     font-size: 9.5pt;
 }
-body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    background-color: #ffffff;
-}
-
 .excel-table {
+    font-family: Arial, sans-serif;
     border-collapse: collapse;
     font-size: 13px;
     color: #000000;
@@ -3666,6 +3658,53 @@ body {
         }
         
 
+  /* ── Consistency clean-up ── */
+  .step-heading {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 22px 0 10px;
+  }
+  html[data-theme="dark"] .step-heading { color: #e8eef5; }
+  #main .section h2.section-title:not(:first-child) { margin-top: 36px; }
+  .nav-section-header .chevron { font-size: 14px; }
+  /* Email templates wrap instead of running off the right edge */
+  .code-wrapper pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  /* Wide Oracle/spreadsheet mock-ups scroll inside their card instead of overflowing it */
+  #main .steps > div:not(.code-container),
+  #main .section > .table-wrapper,
+  #main .section > div[style*="overflow-x"] { max-width: 100%; overflow-x: auto; }
+
+  /* Screen mock-ups keep the spreadsheet/Oracle look they were built with */
+  #main .steps > div:not(.code-container),
+  #main .table-wrapper,
+  #main .result-grid,
+  #main table:not(.decision-table) {
+    font-family: Arial, sans-serif;
+    font-size: 11pt;
+    color: #323130;
+  }
+
+  /* ── Top bar: site navigation ── */
+  #topbar .tagline { margin-left: 4px; padding-left: 16px; border-left: 1px solid rgba(255,255,255,0.15); white-space: nowrap; }
+  #topbar > nav { margin-left: auto; display: flex; min-width: 0; }
+  #topbar .nav-links { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; }
+  #topbar .nav-links li { margin: 0; }
+  #topbar .nav-links a {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+  #topbar .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); text-decoration: none; }
+  @media (max-width: 1280px) { #topbar .tagline { display: none; } }
+  @media (max-width: 480px) { #topbar .logo-badge { display: none; } }
+
   /* ── Small screens ── */
   @media (max-width: 900px) {
     body { margin: 0 !important; padding: 0 !important; }
@@ -3756,6 +3795,15 @@ body {
   <span class="logo-badge">NEXCOM</span>
   <h1>Data Steward Team Guide</h1>
   <span class="tagline">Supply Chain Systems · Internal Use Only</span>
+  <nav aria-label="Main"><ul class="nav-links">
+    <li><a href="index">Home</a></li>
+    <li><a href="Resume">Résumé</a></li>
+    <li><a href="cover">Cover Letter</a></li>
+    <li><a href="Handbook">Merchandising</a></li>
+    <li><a href="Projects">IT Notes</a></li>
+    <li><a href="Coding">Projects</a></li>
+    <li><a href="contact">Contact</a></li>
+  </ul></nav>
 </header>
 
 <!-- SIDEBAR -->
@@ -4108,7 +4156,7 @@ Data Steward Team</code></pre>
 </div>
 </div>
 <div class="sub-section" id="er-action-rquired">
-<div class="sub-section-title">ACTION RQUIRED:</div>
+<div class="sub-section-title">ACTION REQUIRED:</div>
 <div class="code-container">
     <div class="code-header">
         <span>Email Response</span>
@@ -4136,7 +4184,7 @@ Data Steward Team</code></pre>
 </div>
 </div>
 <div class="sub-section" id="er-action-rquired-for-building-a-new-brand-request">
-<div class="sub-section-title">ACTION RQUIRED for Building a New Brand Request:</div>
+<div class="sub-section-title">ACTION REQUIRED for Building a New Brand Request:</div>
 <div class="code-container">
     <div class="code-header">
         <span>Email Response</span>
@@ -4168,7 +4216,7 @@ Data Steward Team</code></pre>
 </div>
 </div>
 <div class="sub-section" id="er-action-rquired-for-location-tab-duplicate-ifid-rec">
-<div class="sub-section-title">ACTION RQUIRED for Location Tab (duplicate IFID records):</div>
+<div class="sub-section-title">ACTION REQUIRED for Location Tab (duplicate IFID records):</div>
 <div class="code-container">
     <div class="code-header">
         <span>Email Response</span>
@@ -4197,7 +4245,7 @@ Data Steward Team</code></pre>
 </div>
 </div>
 <div class="sub-section" id="er-action-rquired-for-add-trans-diff-size-issues">
-<div class="sub-section-title">ACTION RQUIRED for Add Trans (Diff/Size Issues):</div>
+<div class="sub-section-title">ACTION REQUIRED for Add Trans (Diff/Size Issues):</div>
 <div class="code-container">
     <div class="code-header">
         <span>Email Response</span>
@@ -4229,7 +4277,7 @@ Data Steward Team</code></pre>
 </div>
 </div>
 <div class="sub-section" id="er-action-rquired-for-add-trans-diff-nrf-issues">
-<div class="sub-section-title">ACTION RQUIRED for Add Trans (Diff/NRF Issues):</div>
+<div class="sub-section-title">ACTION REQUIRED for Add Trans (Diff/NRF Issues):</div>
 <div class="code-container">
     <div class="code-header">
         <span>Email Response</span>
@@ -4261,7 +4309,7 @@ Data Steward Team</code></pre>
 </div>
 </div>
 <div class="sub-section" id="er-action-rquired-for-brands-item-desc-loc-tab">
-<div class="sub-section-title">ACTION RQUIRED for Brands, Item Desc, &amp; Loc Tab:</div>
+<div class="sub-section-title">ACTION REQUIRED for Brands, Item Desc, &amp; Loc Tab:</div>
 <div class="code-container">
     <div class="code-header">
         <span>Email Response</span>
@@ -4297,7 +4345,7 @@ Data Steward Team</code></pre>
 </div>
 </div>
 <div class="sub-section" id="er-action-rquired-for-cost-higher-than-retail">
-<div class="sub-section-title">ACTION RQUIRED for cost higher than retail:</div>
+<div class="sub-section-title">ACTION REQUIRED for cost higher than retail:</div>
 <div class="code-container">
     <div class="code-header">
         <span>Email Response</span>
@@ -4327,7 +4375,7 @@ Data Steward Team</code></pre>
 </div>
 </div>
 <div class="sub-section" id="er-action-rquired-for-dimension-field-s">
-<div class="sub-section-title">ACTION RQUIRED for Dimension Field(s):</div>
+<div class="sub-section-title">ACTION REQUIRED for Dimension Field(s):</div>
 <div class="code-container">
     <div class="code-header">
         <span>Email Response</span>
@@ -4656,7 +4704,7 @@ Data Steward Team</code></pre>
 </div>
 </div>
 <div class="sub-section" id="er-action-rquired-for-pack-gtin-s-that-exist-in-rms">
-<div class="sub-section-title">ACTION RQUIRED for Pack GTIN(s) that Exist in RMS:</div>
+<div class="sub-section-title">ACTION REQUIRED for Pack GTIN(s) that Exist in RMS:</div>
 <div class="inline-note">Example / reference data</div>
 <table class="result-grid"><tr><th>GTIN</th><th>PACK_NO</th><th>DEPT</th><th>CLASS</th><th>SUBCLASS</th><th>ITEM_DESC</th><th>CREATE_DATETIME</th></tr><tr><td>072140039417</td><td>17254330</td><td>603</td><td>1501</td><td>2</td><td>Eucerin Body Asst 12pc</td><td>8/08/24</td></tr><tr><td>072140039424</td><td>17254329</td><td>603</td><td>1501</td><td>4</td><td>Aquaphor Body Asst PDQ</td><td>8/08/24</td></tr></table>
 <div class="code-container">
@@ -4688,7 +4736,7 @@ Data Steward Team</code></pre>
 </div>
 </div>
 <div class="sub-section" id="er-action-rquired-for-gtin-delete-template-format-sub">
-<div class="sub-section-title">ACTION RQUIRED for GTIN Delete (template format/submission):</div>
+<div class="sub-section-title">ACTION REQUIRED for GTIN Delete (template format/submission):</div>
 <div class="code-container">
     <div class="code-header">
         <span>Email Response</span>
@@ -8715,12 +8763,12 @@ where ref_item = '',
       </li>
     </ol>
 
-    <p style="margin-top:18px; font-weight:600; color:var(--navy);">Step 1 — Create Your Item List</p>
+    <h4 class="step-heading">Step 1 — Create Your Item List</h4>
     <ol class="steps">
       <li>Create your item list in RMS v16, including both Parent &amp; Child RINs if necessary.</li>
     </ol>
 
-    <p style="margin-top:18px; font-weight:600; color:var(--navy);">Step 2 — Download the Item List from RMS</p>
+    <h4 class="step-heading">Step 2 — Download the Item List from RMS</h4>
     <ol class="steps">
       <li>Click the Tasks button and choose "Items."</li>
 <div style="display: inline-block; background-color: #f4f4f4; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
@@ -9119,7 +9167,7 @@ where ref_item = '',
       <li>A box will pop up — choose "Item Master." A Process Description will auto-populate. Click OK.</li>
     </ol>
 
-    <p style="margin-top:18px; font-weight:600; color:var(--navy);">Step 3 — Open the File in Excel</p>
+    <h4 class="step-heading">Step 3 — Open the File in Excel</h4>
     <ol class="steps">
       <li>You'll see the option to Open the file — choose Open with Microsoft Excel.</li>
       <li>The file that opens is the "Item Induction Base Template." Note the multiple tabs at the bottom of the spreadsheet.</li>
@@ -9428,7 +9476,7 @@ where ref_item = '',
 
    
 
-    <p style="margin-top:18px; font-weight:600; color:var(--navy);">Step 4 — Save &amp; Send</p>
+    <h4 class="step-heading">Step 4 — Save &amp; Send</h4>
     <ol class="steps">
       <li>Save the file to your personal drive with whatever name you choose. The file will automatically be in the correct ODS format (Open Document Spreadsheet).</li>
       <li>Send the ODS file to the Data Steward Team for upload. Please note "Corporate Delete" in the subject line. You're done!</li>
@@ -10993,7 +11041,6 @@ Team\ORUP\QRGs\Added to HUB&gt;</li>
     <ol class="steps">
       <li>Forward the buying team's email (with the Web Brand template attachment) to the Senior MAs and wait for approval.<br> <em>***Senior MAs will specify the case format for the Brand Description and UDA Value Description.</em></li>
       <li>In RMS v16:<br> <strong>Tasks → Foundation Data → Data Loading → Download</strong></li>
-      <br></br>
     <div class="oracle-system-container">
     
     <header class="oracle-top-bar">
@@ -11070,9 +11117,7 @@ Team\ORUP\QRGs\Added to HUB&gt;</li>
     </div>
 
 </div>
-<br></br>
       <li>Click <strong>Download</strong>. Open the downloaded file in Microsoft Excel</li>
-      <br></br>
 <div class="firefox-dialog-container">
     
     <div class="dialog-title-bar">
@@ -11128,7 +11173,6 @@ Team\ORUP\QRGs\Added to HUB&gt;</li>
 
     </div>
 </div>
-<br></br>
       <li>On the <strong>Brands</strong> tab: <br> clear all data below headers (Row 1), then fill in:<br>
         &nbsp;&nbsp;• <strong>Action (A)</strong>: <code>CREATE</code><br>
         &nbsp;&nbsp;• <strong>Brand Name (B)</strong>: Brand name in ALL CAPS<br>
@@ -11195,7 +11239,6 @@ Team\ORUP\QRGs\Added to HUB&gt;</li>
     <div class="callout info"><span class="callout-icon">ℹ</span><div>Current Web Brand Master UDA IDs: <code>9639, 10338, 10339, 10340, 10341, 35001, 35002, 85002, 85003, 85004, 85005, 85006, 85007</code>. Max 999 UDA Values per UDA ID.</div></div>
     <ol class="steps">
       <li>In RMS v16:<br> <strong>Tasks → Foundation Data → Data Loading → Download</strong>.<br><strong> Template Type:</strong> <code>Items</code>, <br><strong>Template:</strong> <code>User Defined Attributes (UDA)</code> → Download → Open in Excel.</li>
-      <br></br>
       <div class="oracle-system-container">
     
     <header class="oracle-top-bar">
@@ -11272,9 +11315,7 @@ Team\ORUP\QRGs\Added to HUB&gt;</li>
     </div>
 
 </div>
-<br></br>
 <li>Click <strong>Download</strong>. Open the downloaded file in Microsoft Excel.</li>
-<br></br>
 
 <div class="firefox-dialog-container">
     
@@ -11331,7 +11372,6 @@ Team\ORUP\QRGs\Added to HUB&gt;</li>
 
     </div>
 </div>
-<br></br>
       <li>The spreadsheet will have 5 tabs: <em>UDAs, UDA_Translations, UDA_Values, UDA_Value_Translations, UDA_Defaults</em>.<br> Clear all data below headers on <strong>all</strong> tabs.</li>
       <li>On the <strong>UDA_Values</strong> tab:<br> &nbsp;&nbsp;• <strong>Action (A)</strong>: <code>Create</code><br>
         &nbsp;&nbsp;• <strong>UDA (B)</strong>: 85006<br>
@@ -11396,10 +11436,8 @@ Team\ORUP\QRGs\Added to HUB&gt;</li>
    
 <li>For PE, click on Data Loading Status notification → View Issues → Correct error as needed</li>
 <li>Run queries included in index so the new Web Brand can added to the Quick Reference Guide (QRG) listing on the SharePoint HUB via Senior Supply Chain Tech or Data Steward Team Manager</li>
-<br>
 <h2 class="section-title" id="brand-reply-email">Reply back to email</h2>
 <p>Reply back to users email informing them that the new Web Brand request was processed and created:</p>
-<br></br>
 <div class="code-container">
         <!-- Header Controls Context -->
         <div class="code-header">
@@ -11428,11 +11466,9 @@ New Web Brand request has been created. Please use the below in the <span class=
  </ol>
   </div>
 
-<br></br>
   <h2 class="section-title" id="brand-delete-name">Deleting a Web Brand Name</h2>
 <ol class="steps">
 <li>In RMS v16:<br> <strong>Tasks → Foundation Data → Data Loading → Download</strong>.<br><strong> Template Type:</strong> <code>Items</code> <br><strong>Template:</strong> <code>Brands</code> → Download → Open in Excel.</li>
-<br>
 <div class="oracle-system-container">
     
     <header class="oracle-top-bar">
@@ -11509,7 +11545,6 @@ New Web Brand request has been created. Please use the below in the <span class=
     </div>
 
 </div>
-<br>
 <li>On the <strong>"Brands"</strong> tab:<br>Add filter to the Header Row (Row 1)<br>Search/Select the Brand Name wanting to delete<br>Action (A) - select DELETE from the drop-down<br>Filter Action (A) to show the updates only (uncheck Delete from the listing)<br>Delete all Update rows<br>Remove Filter so that only the Delete Brands are showing<br>Repeat previous steps as needed if deleting more than one Brand Name<br>Save as an .ods file </li>
  <li>Save as <code>.ods</code> file to:<br>
         <span class="filepath"><span class="fp-icon">📁</span>T:\Code_M\Code_MS\Data Steward Team\UDA Creation v16</span><br>*Save as Brand Deletes (todays date)</li>
@@ -11542,7 +11577,6 @@ New Web Brand request has been created. Please use the below in the <span class=
 
     <li>Correct errors as needed</li>
 </ol>
-<br></br>
   <h2 class="section-title" id="brand-delete-udas">Deleting UDAs [ID] and/or UDA Values</h2>
 <ol class="steps">
 <li>In RMS v16:<br> <strong>Tasks → Foundation Data → Data Loading → Download</strong>.<br><strong> Template Type:</strong> <code>Items</code>, <br><strong>Template:</strong> <code>User Defined Attributes (UDA)</code> → Download → Open in Excel.</li>
@@ -11611,10 +11645,9 @@ New Web Brand request has been created. Please use the below in the <span class=
         }
     </script>
 
-<br></br>
   <h2 class="section-title" id="brand-find-missing-udas">Finding Missing UDAs</h2>
 <div class="callout warn"><span class="callout-icon">⚠</span><div>When deleting Brands the corresponding Brand UDA will also need to be removed, as previously stated. Once a year a Web Master Brand UDA query should be ran to fill and try to capture all the missing numbers in the 999 long UDA listing</div></div>
-<h3>To find missing UDAs in the sequence run the following query:</h3>
+<h3 class="sub-section-title">To find missing UDAs in the sequence run the following query:</h3>
 <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -11753,7 +11786,6 @@ New Web Brand request has been created. Please use the below in the <span class=
     </tbody>
 </table>
 
-<br></br>
 <h2 class="sub-section-title">Queries</h2>
 
 <div class="code-container">
@@ -11843,7 +11875,6 @@ New Web Brand request has been created. Please use the below in the <span class=
     </tr>
   </tbody>
 </table>
-<br></br>
 <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left;">
   <thead>
     <tr style="background-color: #f2f2f2; font-weight: bold;">
@@ -11863,7 +11894,6 @@ New Web Brand request has been created. Please use the below in the <span class=
   </tbody>
 </table>
 </ol>
-<br></br>
 
 <h2 class="sub-section-title">Queries</h2>
 
@@ -12346,7 +12376,7 @@ order by im.item, rzl.zone_id, x.loc ;</code></pre>
       </ul>
     </div></div>
 
-    <h4 style="margin-top:22px; font-size:15px; color:var(--navy);">Steps to Add a Costing Location</h4>
+    <h4 class="step-heading">Steps to Add a Costing Location</h4>
     <ol class="steps">
       <li>Filter the worksheet to identify items and franchise locations that are missing a costing location:
         <table border="1" cellpadding="5" cellspacing="0" style="font-family: Arial, sans-serif; border-collapse: collapse; text-align: left; font-size:12.5px; margin-top:8px;">
@@ -12379,7 +12409,7 @@ order by im.item, rzl.zone_id, x.loc ;</code></pre>
       </li>
     </ol>
 
-    <h4 style="margin-top:22px; font-size:15px; color:var(--navy);">Add a Costing Location Manually</h4>
+    <h4 class="step-heading">Add a Costing Location Manually</h4>
     <div class="callout info"><span class="callout-icon">ℹ</span><div><strong>Important:</strong> There are two ways to add or update a costing location within the Locations screen: (1) Edit Locations, or (2) Mass Change / Location Attributes.</div></div>
 
     <p style="margin-top:14px;"><strong>Navigate to the Locations Screen</strong></p>
@@ -12475,7 +12505,7 @@ order by im.item, rzl.zone_id, x.loc ;</code></pre>
       <li>Click Save and Close to apply the updates and exit the screen.</li>
     </ol>
 
-    <h4 style="margin-top:22px; font-size:15px; color:var(--navy);">Add Costing Location Using Item and Location Lists</h4>
+    <h4 class="step-heading">Add Costing Location Using Item and Location Lists</h4>
     <ul>
       <li>Item lists must be created using the parent item number.</li>
       <li>Create and induct the required Item Lists and Location Lists by following the steps outlined in the Item and Location List Induction QRG:
