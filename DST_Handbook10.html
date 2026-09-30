@@ -3927,14 +3927,6 @@
   </div>
 
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Non-Merchandise <span class="chevron">›</span></div>
-    <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#nex-gift-card">NEX Gift Cards — Non-Merchandise</a>
-      <a class="nav-sub-link" href="#non-merch-fee">Non-Merchandise — Fee Items</a>
-    </div>
-  </div>
-
-  <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Mass UPC Deletion <span class="chevron">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#agc-create-template">Creating Item Induction Template for Mass UPC Deletes</a>
@@ -8007,46 +7999,6 @@ submit both of these templates on the same e-mail.</p>
       <li>Paste the Primary Supplier into the <strong>Primary Supplier Site</strong> field. Set <strong>Primary Country</strong> to <code>USA</code>.</li>
       <li>Click <strong>Save and Close</strong>.</li>
     </ol>
-  </div>
-</section>
-<section class="section" id="nex-gift-card">
-  <h2 class="section-title">NEX Gift Cards — Non-Merchandise</h2>
-  <p>NEX Gift Cards follow a distinct process from 3rd Party Gift Cards. These are created in both RMS and XAdmin (unlike TPGC which is RMS + MNT only).</p>
-  <ol class="steps">
-    <li>Create the NEX Gift Card item in <strong>RMS as Non-Merchandise</strong>.</li>
-    <li>Create the item in <strong>XAdmin</strong> following the XAdmin Gift Card setup steps.</li>
-    <li>Complete the <code>.mnt</code> file for the NEX Gift Card type using the MNT Creator. Reference the NEX Gift Card Matrix in the Non-Merch SOP (Section 9.3.1).</li>
-    <li>Upload and Deploy via XAdmin.</li>
-  </ol>
-  <div class="callout tip"><span class="callout-icon">💡</span><div>See the NEX Gift Card and Third Party Gift Card Matrix (Non-Merch SOP Section 9.3.1) to confirm which matrix row applies to your card type before beginning.</div></div>
-</section>
-<section class="section" id="non-merch-fee">
-  <h2 class="section-title">Non-Merchandise — Fee Items</h2>
-  <p>Non-merchandise items with an associated fee are processed through both RMS and XAdmin. The <code>.mnt</code> file is the mechanism used to configure these items in XStore.</p>
-
-  <div class="callout info"><span class="callout-icon">ℹ</span><div>A <strong>.mnt file</strong> is a configuration file used by XStore to define non-merchandise item behavior. MNT files are created using the MNT Creator file, then uploaded and deployed via XAdmin.</div></div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title">Step 1 — Create Item in RMS as Non-Merchandise</h3>
-    <ol class="steps">
-      <li>Build the item in RMS following standard DST non-merchandise item procedures.</li>
-      <li>Ensure the item is properly classified under the correct non-merchandise department and class.</li>
-    </ol>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title">Step 2 — Create Item in XAdmin &amp; Build MNT File</h3>
-    <ol class="steps">
-      <li>Open the MNT Creator file for the appropriate fee type.</li>
-      <li>Fill out the required tabs with the correct data. Reference the XStore Warranty SOP (Pages 19–29) located at:<br><span class="filepath"><span class="fp-icon">📁</span><span class="redacted" title="Redacted for privacy">X:\shared\folder</span></span></li>
-      <li>Once MNT files are created, move them from your U Drive to the MNT Files folder.</li>
-      <li>Upload into XAdmin and Deploy — instructions are in the XStore Warranty SOP.</li>
-    </ol>
-  </div>
-
-  <div class="sub-section">
-    <h3 class="sub-section-title">Editing an Existing Fee in XAdmin</h3>
-    <p>Navigate to the fee item within XAdmin and apply the required changes. Re-deploy after editing per standard XAdmin deploy procedures.</p>
   </div>
 </section>
 <section class="section" id="agc-upc-deletion">
