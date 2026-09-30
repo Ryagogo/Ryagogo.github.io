@@ -539,3 +539,14 @@ html[data-theme="dark"] .main-container [style*="color: #777"] { color: #9aabbd 
             color: #9aa0a6;
             font-style: italic;
         }
+
+/* Short "what it is" summary at the top of each tool section */
+.tool-overview {
+  background: var(--surface);
+  border-left: 3px solid var(--accent-light);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 0 0 14px;
+}
+.tool-overview strong { color: var(--navy); }
+html[data-theme="dark"] .tool-overview strong { color: #e8eef5; }
