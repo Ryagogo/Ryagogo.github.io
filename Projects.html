@@ -92,7 +92,19 @@
   </div>
 
   <a class="nav-top-link" href="#dns">DNS</a>
-  <a class="nav-top-link" href="#website-online">Deploy HTML Site</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Deploy HTML Site <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#deploy-prereqs">Before You Start</a>
+      <a class="nav-sub-link" href="#deploy-github-pages">Part 1: GitHub Pages</a>
+      <a class="nav-sub-link" href="#deploy-domain">Part 2: Get a Domain</a>
+      <a class="nav-sub-link" href="#deploy-how-dns">How the Browser Finds Your Site</a>
+      <a class="nav-sub-link" href="#deploy-dns-records">Part 3: DNS Records</a>
+      <a class="nav-sub-link" href="#deploy-link-domain">Part 4: Connect the Domain</a>
+      <a class="nav-sub-link" href="#deploy-https">Part 5: HTTPS</a>
+      <a class="nav-sub-link" href="#deploy-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
   <a class="nav-top-link" href="#windows-server">Windows Server</a>
   <a class="nav-top-link" href="#ntp">NTP Server</a>
   <a class="nav-top-link" href="#central-logging">Central Logging</a>
@@ -1299,90 +1311,263 @@ ip -c a</code></pre>
 
         <div id="website-online">
             <h2>Deploy an HTML Site</h2>
-            <p class="tool-overview"><strong>What it is:</strong> Deploying an HTML site means putting your pages on a server that is always online and reachable by name. This guide uses GitHub Pages, which hosts static sites (HTML, CSS and JavaScript) for free, and then connects a custom domain using DNS records.</p>
-            <div style="margin: 15px 0; text-align: center;">
-                <iframe width="100%" height="315" 
-                    src="https://www.youtube.com/embed/p1QU3kLFPdg" 
-                    title="DNS and Website Hosting Tutorial" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    allowfullscreen>
-                </iframe>
+            <p class="tool-overview"><strong>What it is:</strong> Deploying an HTML site means putting your pages on a web server that is always online, so anyone can open them in a browser. This guide uses <strong>GitHub Pages</strong>, a free service that publishes static sites (HTML, CSS, JavaScript and images) straight from a GitHub repository, then connects a custom domain such as <code>yourname.com</code> using DNS records and turns on free HTTPS.</p>
+            <p>These steps follow the video tutorial below (SuperSimpleDev). Each step links to the matching point in the video.</p>
+                <iframe class="video-embed" src="https://www.youtube.com/embed/p1QU3kLFPdg"
+                    title="How to put an HTML website on the internet and set up a domain name" loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/p1QU3kLFPdg" target="_blank" rel="noopener">https://youtu.be/p1QU3kLFPdg</a></p>
+
+            <div id="deploy-prereqs">
+                <h3>Before You Start</h3>
+                <ul>
+                    <li>A website made of HTML and CSS files on your computer. No website yet? Download the video’s sample site: open it on GitHub, click <strong>Code → Download ZIP</strong>, and unzip it.</li>
+                    <li>A free <a href="https://github.com" target="_blank" rel="noopener">GitHub</a> account.</li>
+                    <li>For Part 2 only: about $10–15 a year for a domain name.</li>
+                </ul>
+                <p><strong>Useful links:</strong></p>
+                <ul>
+                    <li><a href="https://www.namecheap.com" target="_blank" rel="noopener">Namecheap</a>: domain registrar used in the video</li>
+                    <li><a href="https://mxtoolbox.com/DNSLookup.aspx" target="_blank" rel="noopener">MxToolbox DNS Lookup</a>: shows which IP addresses a domain points to</li>
+                    <li><a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site" target="_blank" rel="noopener">GitHub Docs: Managing a custom domain</a>: GitHub’s own IP addresses and instructions for other registrars</li>
+                </ul>
             </div>
 
-            <p><strong>Useful Links:</strong></p>
-            <ul>
-                <li><a href="https://ap.www.namecheap.com">https://ap.www.namecheap.com</a></li>
-                <li><a href="https://mxtoolbox.com/DNSLookup.aspx">https://mxtoolbox.com/DNSLookup.aspx</a></li>
-            </ul>
+            <div id="deploy-github-pages">
+                <h3>Part 1: Put the Website on the Internet (GitHub Pages)</h3>
+                <p>Opening an HTML file on your own computer only works for you. GitHub Pages copies your files to GitHub’s web servers so anyone can reach them.</p>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=128" target="_blank" rel="noopener">▶ Watch this step (2:08)</a></p>
 
-            <h3>Part 1: Hosting Your Website for Free (GitHub Pages)</h3>
-            <p>GitHub Pages is a free service that hosts your static files directly from a GitHub repository.</p>
-            <ol>
-                <li><strong>Create a GitHub Account:</strong> Go to <a href="https://github.com">github.com</a> and sign up or log in</li>
-                <li><strong>Create a New Repository:</strong>
-                    <ul>
-                        <li>Click your profile icon (top right) > <strong>Your repositories</strong> > <strong>New</strong></li>
-                        <li>Give it a name (e.g., <code>my-website</code>) and ensure it is set to <strong>Public</strong></li>
-                    </ul>
-                </li>
-                <li><strong>Upload Your Files:</strong>
-                    <ul>
-                        <li>Click <strong>"uploading an existing file"</strong>.</li>
-                        <li>Drag and drop your <code>index.html</code> (and any CSS/Images) into the box.</li>
-                        <li>Scroll down and click <strong>Commit changes</strong>.</li>
-                    </ul>
-                </li>
-                <li><strong>Enable GitHub Pages:</strong>
-                    <ul>
-                        <li>Go to <strong>Settings</strong> (top tab) > <strong>Pages</strong> (left sidebar).</li>
-                        <li>Under <strong>Build and deployment</strong>, ensure "Deploy from a branch" is selected and the branch is set to <strong>main</strong>.</li>
-                        <li>Click <strong>Save</strong>. After a minute, you'll see a link like: <code>https://your-username.github.io/my-website/</code>.</li>
-                    </ul>
-                </li>
-            </ol>
+                <h4>Step 1: Sign in to GitHub</h4>
+                <p>Go to <a href="https://github.com" target="_blank" rel="noopener">github.com</a> and sign in, or sign up for a new account and then sign in.</p>
 
-            <h3>Part 2: Using a Custom Domain (Namecheap)</h3>
-            <p>If you want a professional address (like <code>www.yourname.com</code>), you need to point your domain to GitHub's servers.</p>
-            <ol>
-                <li><strong>Buy a Domain:</strong> Purchase one from <a href="https://www.namecheap.com">Namecheap</a>.</li>
-                <li><strong>Configure GitHub:</strong>
-                    <ul>
-                        <li>In your GitHub Repo <strong>Settings > Pages</strong>, scroll to <strong>Custom domain</strong>.</li>
-                        <li>Type your domain (e.g., <code>yourname.com</code>) and click <strong>Save</strong>.</li>
-                    </ul>
-                </li>
-                <li><strong>Configure Namecheap (DNS Records):</strong>
-                    <ul>
-                        <li>Log in to Namecheap > <strong>Domain List</strong> > <strong>Manage</strong> > <strong>Advanced DNS</strong>.</li>
-                        <li>Add four <strong>A Records</strong> pointing to GitHub's IP addresses:
-                            <ul style="list-style-type: none; font-family: monospace; background: #f9f9f9; padding: 10px; border-radius: 5px;">
-                                <li>185.199.108.153</li>
-                                <li>185.199.109.153</li>
-                                <li>185.199.110.153</li>
-                                <li>185.199.111.153</li>
-                            </ul>
-                        </li>
-                        <li>Add a <strong>CNAME Record</strong>:
-                            <ul>
-                                <li><strong>Host:</strong> <code>www</code></li>
-                                <li><strong>Value:</strong> <code>your-username.github.io</code></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <li><strong>Link Domain in GitHub:</strong>
-                    <ul>
-                        <li>Return to your GitHub repository <strong>Settings > Pages</strong>.</li>
-                        <li>Under <strong>Custom domain</strong>, type your new domain (e.g., <code>example.com</code>) and click <strong>Save</strong>.</li>
-                    </ul>
-                </li>
-                <li><strong>Enable Security (HTTPS):</strong>
-                    <ul>
-                        <li>Once the domain is verified, check the <strong>Enforce HTTPS</strong> box.</li>
-                    </ul>
-                </li>
-            </ol>
+                <h4>Step 2: Create a public repository</h4>
+                <p>A <strong>repository</strong> is like a folder on GitHub that holds your website’s files.</p>
+                <ol>
+                    <li>Click your profile icon (top right) → <strong>Your repositories</strong> → <strong>New</strong>.</li>
+                    <li><strong>Repository name:</strong> anything that helps you recognize it, for example <code>super-simple-website</code>.</li>
+                    <li>Select <strong>Public</strong>. GitHub Pages is only free for public repositories.</li>
+                    <li>Leave the other options at their defaults and click <strong>Create repository</strong>.</li>
+                </ol>
+
+                <h4>Step 3: Upload your website’s files</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=214" target="_blank" rel="noopener">▶ Watch this step (3:34)</a></p>
+
+                <ol>
+                    <li>In the new repository, click <strong>uploading an existing file</strong>. If you don’t see the link, add <code>/upload</code> to the end of the repository’s URL.</li>
+                    <li>On your computer, <strong>open</strong> your website’s folder, select <strong>everything inside it</strong>, and drag the files into the upload box.</li>
+                    <li>Wait for every file to finish uploading, scroll to the bottom and click <strong>Commit changes</strong>.</li>
+                </ol>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Drag the files <strong>inside</strong> your folder, not the folder itself. Dragging the folder adds an extra folder level in the repository, and your pages end up at the wrong address.</div></div>
+
+                <h4>Step 4: Turn on GitHub Pages</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=290" target="_blank" rel="noopener">▶ Watch this step (4:50)</a></p>
+
+                <ol>
+                    <li>In the repository, click <strong>Settings</strong> (top tab) → <strong>Pages</strong> (left menu).</li>
+                    <li>Under <strong>Build and deployment</strong>, set the branch drop-down to <strong>main</strong> (it may say <strong>master</strong>; pick whichever isn’t <em>None</em>). Leave the folder as <code>/ (root)</code>.</li>
+                    <li>Click <strong>Save</strong>.</li>
+                    <li>Wait a couple of minutes, then refresh the page. It will say <strong>Your site is live at</strong> followed by the address.</li>
+                </ol>
+                <p>Your site’s default address always follows this pattern:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>url</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>https://YOUR-USERNAME.github.io/REPOSITORY-NAME/</code></pre>
+                    </div>
+                </div>
+
+                <h4>Step 5: Open your site</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=357" target="_blank" rel="noopener">▶ Watch this step (5:57)</a></p>
+
+                <p>Open the address in a new tab. If you see a <strong>404</strong> page, that’s normal at this point: add the name of one of your HTML files to the end of the address, for example <code>…/REPOSITORY-NAME/youtube.html</code>, and your page loads. The next step fixes the 404.</p>
+
+                <h4>Step 6: Add an index.html so the home page loads</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=503" target="_blank" rel="noopener">▶ Watch this step (8:23)</a></p>
+
+                <p>When an address doesn’t name a file, the web server looks for <code>index.html</code>. No <code>index.html</code> means a 404. Make your main page the home page by renaming it:</p>
+                <ol>
+                    <li>In the repository, click your main HTML file (e.g. <code>youtube.html</code>) and click the <strong>pencil</strong> (Edit this file).</li>
+                    <li>Change the file name at the top to <code>index.html</code>.</li>
+                    <li>Click <strong>Commit changes</strong>, wait a minute or two, and refresh your site’s address. The home page now loads without a file name.</li>
+                </ol>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>How it works:</strong> the repository behaves exactly like the folder on your computer. If your HTML loads <code>styles/general.css</code> locally, it loads the same file from the repository, and images and other files work the same way. So the workflow is simply: build the site on your computer, upload the files, and GitHub Pages publishes them. Every new commit republishes the site within a few minutes.</div></div>
+            </div>
+
+            <div id="deploy-domain">
+                <h3>Part 2: Get a Domain Name</h3>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=653" target="_blank" rel="noopener">▶ Watch this step (10:53)</a></p>
+
+                <p>A domain name like <code>yourname.com</code> is easier to share than the <code>github.io</code> address. Domains are bought from a <strong>domain registrar</strong>, usually about <strong>$10–15 a year</strong> for a <code>.com</code>. Once a name is registered, no one else can take it.</p>
+                <h4>Step 1: Search for an available name</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=756" target="_blank" rel="noopener">▶ Watch this step (12:36)</a></p>
+
+                <ol>
+                    <li>Go to <a href="https://www.namecheap.com" target="_blank" rel="noopener">Namecheap</a> → <strong>Domains</strong> and search for a name.</li>
+                    <li>For a personal or job-search site, <code>firstnamelastname.com</code> is a good choice.</li>
+                    <li>If it’s taken, try another ending such as <code>.net</code>, or change the front, e.g. add <code>dev</code>: <code>firstnamelastnamedev.com</code>.</li>
+                    <li>Click <strong>Add to cart</strong> on the one you want.</li>
+                </ol>
+                <h4>Step 2: Check out</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=861" target="_blank" rel="noopener">▶ Watch this step (14:21)</a></p>
+
+                <ol>
+                    <li>Open the cart → <strong>View Cart</strong>. The defaults are fine, but make sure <strong>domain privacy</strong> is on, or your contact details become public and you’ll get spam.</li>
+                    <li>Click <strong>Confirm Order</strong>, create a Namecheap account and sign in (you need the account to manage DNS later).</li>
+                    <li>Review the checkout page and click <strong>Pay Now</strong>.</li>
+                    <li>Go to <strong>Account → Dashboard</strong>. Your new domain is listed there.</li>
+                </ol>
+            </div>
+
+            <div id="deploy-how-dns">
+                <h3>How the Browser Finds Your Site</h3>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=937" target="_blank" rel="noopener">▶ Watch this step (15:37)</a></p>
+
+                <p>Before linking the domain, it helps to know what’s happening behind the scenes:</p>
+                <ul>
+                    <li><strong>Web server:</strong> software that hands out files when a browser asks for them. Ask for <code>/index.html</code> and it returns that file; the browser displays HTML as a page. (VS Code’s Live Server is a small web server on your own computer.)</li>
+                    <li><strong>Host:</strong> the computer the web server runs on. GitHub hosts the servers for GitHub Pages.</li>
+                    <li><strong>IP address:</strong> like a phone number for every device on the internet. IPv4 looks like <code>185.199.108.153</code>; IPv6 is longer and exists because IPv4 numbers are running out.</li>
+                    <li><strong>DNS record:</strong> the link between a domain name and an address, set at your registrar. Once it points your domain at GitHub, typing your domain makes the browser contact GitHub’s servers. See also <a href="#dns">DNS</a>.</li>
+                </ul>
+            </div>
+
+            <div id="deploy-dns-records">
+                <h3>Part 3: Point the Domain at GitHub Pages (DNS Records)</h3>
+                <h4>Step 1: Open your domain’s DNS settings</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1131" target="_blank" rel="noopener">▶ Watch this step (18:51)</a></p>
+
+                <p>In Namecheap: <strong>Account</strong> → sign in → <strong>Domain List</strong> → <strong>Manage</strong> next to your domain → <strong>Advanced DNS</strong>. Scroll to the <strong>Host Records</strong> table.</p>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Using a different registrar? Look for its <strong>DNS records</strong> or <strong>Manage DNS</strong> page (search “manage DNS records” plus your registrar’s name). Every registrar asks for the same four values: <strong>Type</strong>, <strong>Host</strong>, <strong>Value</strong> and <strong>TTL</strong>.</div></div>
+
+                <h4>Step 2: Understand the four values</h4>
+                <ul>
+                    <li><strong>Type:</strong> what the record links to. An <code>A</code> record links a name to an IPv4 address; a <code>CNAME</code> record links a name to another domain name.</li>
+                    <li><strong>Host:</strong> the subdomain, the part before your domain (like <code>studio</code> in <code>studio.youtube.com</code>). Use <code>@</code> on Namecheap for the bare domain with no subdomain; some registrars leave it blank.</li>
+                    <li><strong>Value:</strong> the IP address or domain the record points to.</li>
+                    <li><strong>TTL</strong> (time to live): how quickly changes spread across the internet. Choose <strong>5 min</strong>, or enter <code>300</code> (seconds) if there’s no drop-down.</li>
+                </ul>
+
+                <h4>Step 3: Find GitHub Pages’ IP addresses</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1316" target="_blank" rel="noopener">▶ Watch this step (21:56)</a></p>
+
+                <p>Open <a href="https://mxtoolbox.com/DNSLookup.aspx" target="_blank" rel="noopener">MxToolbox DNS Lookup</a>, enter <code>YOUR-USERNAME.github.io</code> and click <strong>DNS Lookup</strong>. It lists four IPv4 addresses. Or look them up from a terminal:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nslookup YOUR-USERNAME.github.io</code></pre>
+                    </div>
+                </div>
+
+                <p>At the time of writing, GitHub Pages uses these four addresses (confirm them with the lookup or GitHub’s docs):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>text</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>185.199.108.153
+185.199.109.153
+185.199.110.153
+185.199.111.153</code></pre>
+                    </div>
+                </div>
+
+                <h4>Step 4: Add four A records</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1340" target="_blank" rel="noopener">▶ Watch this step (22:20)</a></p>
+
+                <p>Click <strong>Add New Record</strong> once for each address:</p>
+                <table>
+                    <thead><tr><th>Type</th><th>Host</th><th>Value</th><th>TTL</th></tr></thead>
+                    <tbody>
+                        <tr><td>A Record</td><td><code>@</code></td><td><code>185.199.108.153</code></td><td>5 min</td></tr>
+                        <tr><td>A Record</td><td><code>@</code></td><td><code>185.199.109.153</code></td><td>5 min</td></tr>
+                        <tr><td>A Record</td><td><code>@</code></td><td><code>185.199.110.153</code></td><td>5 min</td></tr>
+                        <tr><td>A Record</td><td><code>@</code></td><td><code>185.199.111.153</code></td><td>5 min</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>When you save your first record, Namecheap’s default parking records may disappear. That’s expected; they only exist while the domain has no records of its own.</div></div>
+
+                <h4>Step 5: Add a CNAME record for www</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1440" target="_blank" rel="noopener">▶ Watch this step (24:00)</a></p>
+
+                <p>GitHub recommends also setting up <code>www.yourdomain.com</code>. Add one more record:</p>
+                <table>
+                    <thead><tr><th>Type</th><th>Host</th><th>Value</th><th>TTL</th></tr></thead>
+                    <tbody>
+                        <tr><td>CNAME Record</td><td><code>www</code></td><td><code>YOUR-USERNAME.github.io</code></td><td>5 min</td></tr>
+                    </tbody>
+                </table>
+                <p>Click the checkmark (<strong>Save All Changes</strong>) to save.</p>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Why not a CNAME for the bare domain too?</strong> A CNAME can only be used on a subdomain such as <code>www</code>, never on the bare domain itself, so the bare domain uses A records.<br><strong>Optional:</strong> also add GitHub’s IPv6 addresses as <code>AAAA</code> records (listed in GitHub’s docs). Not required today, but it future-proofs the setup.</div></div>
+            </div>
+
+            <div id="deploy-link-domain">
+                <h3>Part 4: Connect the Domain in GitHub Pages</h3>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1566" target="_blank" rel="noopener">▶ Watch this step (26:06)</a></p>
+
+                <ol>
+                    <li>Go back to your repository on GitHub → <strong>Settings</strong> → <strong>Pages</strong>.</li>
+                    <li>Under <strong>Custom domain</strong>, type your domain (e.g. <code>yourname.com</code>) and click <strong>Save</strong>. GitHub runs a DNS check.</li>
+                    <li>Open your domain in a new tab. It now shows your site, though the browser may say <strong>Not secure</strong> until the next part.</li>
+                </ol>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⏳</span><div>DNS changes can take up to <strong>24–48 hours</strong> to reach everyone, depending on the registrar. If the domain doesn’t work yet, wait and try again later. Most of the time it works within minutes.</div></div>
+                <p>Check whether your records are live from a terminal:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nslookup yourname.com
+nslookup www.yourname.com</code></pre>
+                    </div>
+                </div>
+                <p>The first should return the four <code>185.199.x.153</code> addresses; the second should show it’s an alias of <code>YOUR-USERNAME.github.io</code>.</p>
+            </div>
+
+            <div id="deploy-https">
+                <h3>Part 5: Turn On HTTPS (Free)</h3>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1652" target="_blank" rel="noopener">▶ Watch this step (27:32)</a></p>
+
+                <p><strong>HTTPS</strong> encrypts everything sent between the browser and your site, so no one can read it in transit, and removes the “Not secure” warning.</p>
+                <ol>
+                    <li>In <strong>Settings → Pages</strong>, find <strong>Enforce HTTPS</strong>.</li>
+                    <li>If the box is greyed out, GitHub is still issuing your certificate. Wait a few minutes and refresh.</li>
+                    <li>Once it’s clickable, check <strong>Enforce HTTPS</strong>.</li>
+                    <li>Visit <code>https://yourname.com</code>. A lock icon in the address bar means HTTPS is working.</li>
+                </ol>
+            </div>
+
+            <div id="deploy-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <table>
+                    <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>404 on the site’s home address</td><td>There’s no <code>index.html</code> in the top level of the repository. Rename your main page to <code>index.html</code> (Part 1, Step 6).</td></tr>
+                        <tr><td>Pages load but CSS or images are missing</td><td>You probably uploaded the folder instead of its contents, or file names differ in capitalization (GitHub is case-sensitive: <code>Styles/</code> ≠ <code>styles/</code>).</td></tr>
+                        <tr><td>Changes don’t show up</td><td>Publishing takes a few minutes after each commit. Wait, then hard-refresh (<kbd>Ctrl</kbd>+<kbd>F5</kbd>).</td></tr>
+                        <tr><td>Custom domain doesn’t load</td><td>Check the A and CNAME records with <code>nslookup</code>, confirm the domain is saved under Custom domain, and allow up to 24–48 hours.</td></tr>
+                        <tr><td>“Enforce HTTPS” is greyed out</td><td>The certificate isn’t ready yet; it’s issued after DNS checks pass. Wait and refresh the Pages settings.</td></tr>
+                        <tr><td>“Not secure” in the browser</td><td>Enable Enforce HTTPS, then use <code>https://</code> in the address.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="windows-server">

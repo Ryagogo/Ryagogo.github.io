@@ -40,8 +40,11 @@ html[data-theme="dark"] :focus-visible { outline-color: #93c5fd; }
 /* ── Media never wider than the screen ── */
 img, video, canvas, iframe { max-width: 100%; }
 
-/* ── Top navigation on small screens: one swipeable row instead of wrapping off-screen ── */
-@media (max-width: 900px) {
+/* ── Top navigation: menu labels never break across lines ── */
+.nav-links a { white-space: nowrap; }
+
+/* ── Top navigation on narrower screens: one swipeable row instead of wrapping ── */
+@media (max-width: 1360px) {
   .nav-links {
     flex: 1 1 auto;
     min-width: 0;
@@ -57,6 +60,10 @@ img, video, canvas, iframe { max-width: 100%; }
   }
   .nav-links::-webkit-scrollbar { display: none; }
   .nav-links li, .nav-links a { flex: 0 0 auto; }
+}
+@media (min-width: 901px) and (max-width: 1360px) {
+  .nav-links a { padding-left: 8px !important; padding-right: 8px !important; letter-spacing: 0.03em !important; }
+  .nav-links { -webkit-mask-image: none; mask-image: none; padding-right: 0; }
 }
 
 /* ── Theme toggle ── */
