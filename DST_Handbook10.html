@@ -426,6 +426,14 @@
   details.macro-source > summary { cursor: pointer; font-weight: 600; color: var(--text); padding: 8px 0; }
   details.macro-source .code-wrapper { max-height: 520px; overflow: auto; }
   .doc-guide-updated { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
+  /* SQL query reference */
+  .sql-toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+  .sql-toc a { font-size: 13px; padding: 5px 12px; border: 1px solid var(--border); border-radius: 999px; text-decoration: none; color: var(--text); background: var(--surface); }
+  .sql-toc a:hover { border-color: var(--accent); }
+  .sql-group-desc { color: var(--text-muted); margin: -4px 0 10px; }
+  .sql-query { margin: 18px 0 22px; }
+  .sql-query-title { margin: 18px 0 2px; font-size: 15px; }
+  .sql-query-desc { margin: 0 0 8px; color: var(--text-muted); font-size: 14px; }
   /* SOP screenshots */
   .sop-shot { display: block; max-width: 100%; height: auto; margin: 12px 0; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
   kbd { font: 600 12px/1 ui-monospace, Consolas, monospace; padding: 2px 6px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; background: var(--surface); }
@@ -3873,42 +3881,64 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">SQL Query Reference<span class="chevron">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#sql-g1">Check Today's Process Tracker Actions by User</a>
-      <a class="nav-sub-link" href="#sql-g2">Check Staging Table Status by Process ID</a>
-      <a class="nav-sub-link" href="#sql-g3">Find Error Messages by Process ID</a>
-      <a class="nav-sub-link" href="#sql-g4">Check Item/Location Staging Table</a>
-      <a class="nav-sub-link" href="#sql-g5">Check if Item Is Already in the Item/Supplier/Country Staging Table</a>
-      <a class="nav-sub-link" href="#sql-g6">Look Up Item Hierarchy for a New Add Transaction</a>
-      <a class="nav-sub-link" href="#sql-g7">Look Up Item by GTIN</a>
-      <a class="nav-sub-link" href="#sql-g8">Check Dept / Class / Subclass Relationship</a>
-      <a class="nav-sub-link" href="#sql-g9">Look Up SKULIST Detail</a>
-      <a class="nav-sub-link" href="#sql-g10">Count Total Locations Attached to an Item</a>
-      <a class="nav-sub-link" href="#sql-g11">Range Already-Built Items to a Destination Dept (e.g., 781) Check</a>
-      <a class="nav-sub-link" href="#sql-g12">Show Primary Supplier at the Location Level</a>
-      <a class="nav-sub-link" href="#sql-g13">Confirm a Supplier Is Attached to an Item</a>
-      <a class="nav-sub-link" href="#sql-g14">Identify Items Missing the Correct Primary Supplier</a>
-      <a class="nav-sub-link" href="#sql-g15">Confirm a Supplier Exists in RMS</a>
-      <a class="nav-sub-link" href="#sql-g16">Check Default Unit of Purchase (UOP)</a>
-      <a class="nav-sub-link" href="#sql-g17">Look Up Primary Supplier — Single Item, Item List, or Loc List</a>
-      <a class="nav-sub-link" href="#sql-g18">Check Item/Supplier/Country Record</a>
-      <a class="nav-sub-link" href="#sql-g19">Look Up Vendor &amp; Transaction Details by GTIN</a>
-      <a class="nav-sub-link" href="#sql-g20">Check Item/Supplier/Country Dimension Record</a>
-      <a class="nav-sub-link" href="#sql-q2">Find UDAs attached to a Skulist</a>
-      <a class="nav-sub-link" href="#sql-q3">Check if Departments are forecastable</a>
-      <a class="nav-sub-link" href="#sql-q4">Determine if an item is on forecasting</a>
-      <a class="nav-sub-link" href="#sql-q5">Determine if an item list is on forecasting</a>
-      <a class="nav-sub-link" href="#sql-q6">Identifying component items on order</a>
-      <a class="nav-sub-link" href="#sql-q7">Find items on an open order that is partially received</a>
-      <a class="nav-sub-link" href="#sql-q8">Check deals tables</a>
-      <a class="nav-sub-link" href="#sql-q9">Check for open appointments on POs</a>
-      <a class="nav-sub-link" href="#sql-q11">Find a recent rejection</a>
-      <a class="nav-sub-link" href="#sql-q12">Find a historical rejection</a>
-      <a class="nav-sub-link" href="#sql-q13">Validate if Item List / SKULIST re-classed</a>
-      <a class="nav-sub-link" href="#sql-q14">Validate if a single item re-classed</a>
-      <a class="nav-sub-link" href="#sql-q15">Check for a department move by Item List</a>
-      <a class="nav-sub-link" href="#sql-q16">Check for financial moves by Departments</a>
-      <a class="nav-sub-link" href="#sql-q18">Check re-classes scheduled to run in the nightly batch</a>
-      <a class="nav-sub-link" href="#sql-q19">Identify re-class effective dates / submission verification</a>
+      <a class="nav-sub-link" href="#sql-g21">My Recent Uploads (Last 2 Days)</a>
+      <a class="nav-sub-link" href="#sql-g1">Today's Uploads with Full Timestamps</a>
+      <a class="nav-sub-link" href="#sql-g22">Today's Item Master Data Uploads</a>
+      <a class="nav-sub-link" href="#sql-g2">Staging Record Count by Status (Process ID)</a>
+      <a class="nav-sub-link" href="#sql-g23">Has RMS Started Processing an Item?</a>
+      <a class="nav-sub-link" href="#sql-g4">Step 2 (Item/Location) Upload Status</a>
+      <a class="nav-sub-link" href="#sql-g24">Find the Process ID for an Item</a>
+      <a class="nav-sub-link" href="#sql-g3">Error Messages for a Failed Upload (by Process ID)</a>
+      <a class="nav-sub-link" href="#sql-g5">Item/Supplier/Country Dimensions in Staging</a>
+      <a class="nav-sub-link" href="#sql-g7">Look Up Items by GTIN</a>
+      <a class="nav-sub-link" href="#sql-g19">Vendor &amp; Transaction Details by GTIN</a>
+      <a class="nav-sub-link" href="#sql-g6">Item Hierarchy for an Add-Transaction Request</a>
+      <a class="nav-sub-link" href="#sql-g25">Dept / Class / Subclass of a Parent Item</a>
+      <a class="nav-sub-link" href="#sql-g26">Colors and Sizes Under a Parent</a>
+      <a class="nav-sub-link" href="#sql-g27">Items in a Dept / Class / Subclass</a>
+      <a class="nav-sub-link" href="#sql-g8">Classes and Subclasses in a Department</a>
+      <a class="nav-sub-link" href="#sql-g11">Ranging Built Items to Another Dept (e.g. 781)</a>
+      <a class="nav-sub-link" href="#sql-g9">Items on an Item List</a>
+      <a class="nav-sub-link" href="#sql-g28">Locations on a Location List</a>
+      <a class="nav-sub-link" href="#sql-g29">Item List Items That Have a Supplier</a>
+      <a class="nav-sub-link" href="#sql-g30">Item List Items Missing a Supplier</a>
+      <a class="nav-sub-link" href="#sql-g31">Item List Items That Have Locations from a Location List</a>
+      <a class="nav-sub-link" href="#sql-g32">Item List Items Missing Locations from a Location List</a>
+      <a class="nav-sub-link" href="#sql-g10">Count of Locations on an Item</a>
+      <a class="nav-sub-link" href="#sql-g33">Item Locations That Are on a Location List</a>
+      <a class="nav-sub-link" href="#sql-g34">Location List Locations Missing from an Item</a>
+      <a class="nav-sub-link" href="#sql-g35">Retail by Location for a Parent Item</a>
+      <a class="nav-sub-link" href="#sql-g12">Primary Supplier and Status at the Location Level</a>
+      <a class="nav-sub-link" href="#sql-g14">Item/Locations Missing the Expected Primary Supplier</a>
+      <a class="nav-sub-link" href="#sql-g36">Quantity Key: Store Order Multiple by Location</a>
+      <a class="nav-sub-link" href="#sql-g37">Quantity Key: Confirm Updates at a Location</a>
+      <a class="nav-sub-link" href="#sql-g13">Suppliers and VPNs Attached to an Item</a>
+      <a class="nav-sub-link" href="#sql-g15">Look Up a Supplier</a>
+      <a class="nav-sub-link" href="#sql-g38">All Suppliers</a>
+      <a class="nav-sub-link" href="#sql-g16">Default Unit of Purchase (UOP)</a>
+      <a class="nav-sub-link" href="#sql-g18">Item/Supplier/Country Record</a>
+      <a class="nav-sub-link" href="#sql-g20">Item/Supplier/Country Dimensions</a>
+      <a class="nav-sub-link" href="#sql-g39">Look Up a UDA Value</a>
+      <a class="nav-sub-link" href="#sql-g40">Required (Mandatory) UDAs</a>
+      <a class="nav-sub-link" href="#sql-g41">Look Up a Brand</a>
+      <a class="nav-sub-link" href="#sql-g42">Look Up a Diff (Size/Color) ID</a>
+      <a class="nav-sub-link" href="#sql-g43">Which Diff Groups Contain a Diff ID</a>
+      <a class="nav-sub-link" href="#sql-q2">Q2: UDAs on an Item List</a>
+      <a class="nav-sub-link" href="#sql-q3">Q3: Is a Department Forecastable?</a>
+      <a class="nav-sub-link" href="#sql-q4">Q4: Is an Item on Forecasting?</a>
+      <a class="nav-sub-link" href="#sql-q5">Q5: Is an Item List on Forecasting?</a>
+      <a class="nav-sub-link" href="#sql-q6">Q6: Component Items on Open Orders</a>
+      <a class="nav-sub-link" href="#sql-q7">Q7: Items on Partially Received Open Orders</a>
+      <a class="nav-sub-link" href="#sql-q8">Q8: Check the Deals Tables</a>
+      <a class="nav-sub-link" href="#sql-q9">Q9: Open Appointments on POs</a>
+      <a class="nav-sub-link" href="#sql-q11">Q11: Recent Re-class Rejections</a>
+      <a class="nav-sub-link" href="#sql-q12">Q12: Past Re-class Rejections</a>
+      <a class="nav-sub-link" href="#sql-q13">Q13: Did an Item List Re-class?</a>
+      <a class="nav-sub-link" href="#sql-q14">Q14: Did a Single Item Re-class?</a>
+      <a class="nav-sub-link" href="#sql-q15">Q15: Departments on an Item List</a>
+      <a class="nav-sub-link" href="#sql-q16">Q16: Is It a Financial (Lawson) Move?</a>
+      <a class="nav-sub-link" href="#sql-q18">Q18: Re-classes Scheduled for the Nightly Batch</a>
+      <a class="nav-sub-link" href="#sql-q19">Q19: Look Up Specific Re-class Numbers</a>
     </div>
   </div>
 
@@ -5305,403 +5335,739 @@ Data Steward Team
  <div class="page-container">
     <h1>General Reference Queries</h1>
     <div class="info-box">
-        <p><strong>Note:</strong> These are day-to-day lookup queries for process tracking, item/hierarchy research, and supplier verification. For queries specific to the item re-class workflow, see the <a href="#reclass-query-index">Item Re-Class Process Query Index</a> below.</p>
+        <p><strong>How to use these:</strong> replace the sample values (item numbers, lists, process IDs) with your own before running. <code>YOURUSERID</code> is your RMS user ID. Lines starting with <code>--</code> are optional filters you can switch on by removing the dashes. Re-class queries are in the <a href="#reclass-query-index">Item Re-Class Query Index</a> below.</p>
+    </div>
+    <nav class="sql-toc" aria-label="Query categories">
+      <a href="#sql-general-process">Uploads &amp; Process Tracking</a>
+      <a href="#sql-general-item-lookups">Item &amp; Hierarchy Lookups</a>
+      <a href="#sql-general-lists">Item Lists &amp; Location Lists</a>
+      <a href="#sql-general-locations">Locations, Retail &amp; Quantity Key</a>
+      <a href="#sql-general-supplier">Suppliers &amp; Costing</a>
+      <a href="#sql-general-udas">UDAs, Brands &amp; Diffs</a>
+      <a href="#reclass-query-index">Item Re-Class Queries</a>
+    </nav>
+
+    <h3 class="sub-section-title" id="sql-general-process" style="margin-top:28px;">Uploads &amp; Process Tracking</h3>
+    <p class="sql-group-desc">Check whether templates you uploaded have processed, and find out why one failed.</p>
+    <div class="sql-query" id="sql-g21">
+      <p class="sql-query-title"><strong>My Recent Uploads (Last 2 Days)</strong></p>
+      <p class="sql-query-desc">Lists your template uploads from today and yesterday with their process ID, description, destination and status. Run this first after uploading to see if a template processed. Replace the user ID with your own RMS user ID in uppercase.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> PROCESS_ID, PROCESS_DESC, PROCESS_DESTINATION, ACTION_DATE, STATUS
+<span class="sql-keyword">FROM</span> rms.svc_process_tracker
+<span class="sql-keyword">WHERE</span> USER_ID = <span class="sql-string">&#x27;YOURUSERID&#x27;</span>
+  <span class="sql-keyword">AND</span> <span class="sql-keyword">TRUNC</span>(SYSDATE) - <span class="sql-keyword">TRUNC</span>(ACTION_DATE) &lt;= 1
+<span class="sql-keyword">ORDER BY</span> action_date <span class="sql-keyword">DESC</span>, PROCESS_ID <span class="sql-keyword">DESC</span>;</code></pre>
+        </div>
+      </div>
     </div>
 
-    <h3 class="sub-section-title" id="sql-general-process" style="margin-top:24px;">1. Process &amp; Staging Verification</h3>
-
-    <p id="sql-g1"><strong>Check Today&#x27;s Process Tracker Actions by User</strong> (Notification check — confirms what a user has submitted today.)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g1">
+      <p class="sql-query-title"><strong>Today's Uploads with Full Timestamps</strong></p>
+      <p class="sql-query-desc">Shows every column of today's process tracker entries for a user, with action dates displayed to the second. Useful when you need the exact time a template ran or want to check a teammate's uploads.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">alter session set</span> nls_date_format = <span class="sql-string">'mm/dd/yyyy  HH:MI:SS'</span>;
-<span class="sql-keyword">select</span> *
-<span class="sql-keyword">from</span> rms.svc_process_tracker
-<span class="sql-keyword">where</span> USER_ID = <span class="sql-string">'ANDERSDA'</span> 
-<span class="sql-keyword">and</span> <span class="sql-keyword">trunc</span>(action_date) = <span class="sql-keyword">trunc</span>(sysdate) <span class="sql-keyword">order by</span> action_date <span class="sql-keyword">desc</span>;</code></pre>
+<pre><code><span class="sql-keyword">ALTER SESSION SET</span> nls_date_format = <span class="sql-string">&#x27;mm/dd/yyyy HH:MI:SS&#x27;</span>;
+<span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.svc_process_tracker
+<span class="sql-keyword">WHERE</span> USER_ID = <span class="sql-string">&#x27;YOURUSERID&#x27;</span>
+  <span class="sql-keyword">AND</span> <span class="sql-keyword">TRUNC</span>(action_date) = <span class="sql-keyword">TRUNC</span>(sysdate)
+<span class="sql-keyword">ORDER BY</span> action_date <span class="sql-keyword">DESC</span>;</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g2"><strong>Check Staging Table Status by Process ID</strong> (Returns the count of records by process$status for a given Process ID.)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g22">
+      <p class="sql-query-title"><strong>Today's Item Master Data Uploads</strong></p>
+      <p class="sql-query-desc">Lists today's uploads to the Item Master Data tables (Item Induction templates). Remove the user ID line to see everyone who is inducting templates today, or uncomment the status line to show only unprocessed (N) uploads.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span> process$status, <span class="sql-keyword">count</span> (1) 
-<span class="sql-keyword">from</span> rms.svc_item_master 
-<span class="sql-keyword">where</span> process_id = <span class="sql-string">'21006523'</span>
-<span class="sql-keyword">group by</span> process$status;</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.svc_process_tracker
+<span class="sql-keyword">WHERE</span> TEMPLATE_KEY = <span class="sql-string">&#x27;ITEM_MASTER_DATA&#x27;</span>
+  <span class="sql-keyword">AND</span> USER_ID = <span class="sql-string">&#x27;YOURUSERID&#x27;</span>
+  <span class="sql-comment">--AND STATUS = &#x27;N&#x27;</span>
+  <span class="sql-keyword">AND</span> <span class="sql-keyword">TRUNC</span>(action_date) = <span class="sql-keyword">TRUNC</span>(sysdate)
+<span class="sql-keyword">ORDER BY</span> PROCESS_ID <span class="sql-keyword">DESC</span>;</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g3"><strong>Find Error Messages by Process ID</strong> (Returns readable error text for a failed Process ID. The commented block can be used instead to search by RIN / VPN / transaction number.)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g2">
+      <p class="sql-query-title"><strong>Staging Record Count by Status (Process ID)</strong></p>
+      <p class="sql-query-desc">Counts the item master staging records for one process ID by processing status, so you can see how many records have processed and how many are still pending or in error.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span> r.rtk_text, 
-replace(c.error_msg,<span class="sql-string">'@0'</span>,<span class="sql-string">''</span>) error_message,
-c.*
-<span class="sql-keyword">from</span> rms.coresvc_item_err c, rms.rtk_errors r  <span class="sql-keyword">where</span> <span class="sql-comment">/*process_id in (select process_id from rms.svc_item_master
-where ( orig_ref_no like '%30NuttyConcepts46%'
-or item_parent like '%30NuttyConcepts46%'
-or item_grandparent like '%30NuttyConcepts46%'))
-and*/</span> <span class="sql-keyword">REGEXP_SUBSTR</span>(replace(C.ERROR_MSG,<span class="sql-string">'@0'</span>,<span class="sql-string">''</span>), <span class="sql-string">'[^@]*'</span>) = R.RTK_KEY (+)
-<span class="sql-keyword">and</span> process_id <span class="sql-keyword">in</span> (<span class="sql-string">'21043093'</span>)
-<span class="sql-keyword">order by</span> process_id <span class="sql-keyword">desc</span>, rtk_text;</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> process$status, <span class="sql-keyword">COUNT</span>(1)
+<span class="sql-keyword">FROM</span> rms.svc_item_master
+<span class="sql-keyword">WHERE</span> process_id = <span class="sql-string">&#x27;21006523&#x27;</span>
+<span class="sql-keyword">GROUP BY</span> process$status;</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g4"><strong>Check Item/Location Staging Table</strong> (Confirms today&#x27;s item/location records submitted by a given user (step 2 check).)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g23">
+      <p class="sql-query-title"><strong>Has RMS Started Processing an Item?</strong></p>
+      <p class="sql-query-desc">Checks the item master staging table for today's records of an item that haven't finished processing (status not P). No rows means the item has processed. You can filter by process ID or creator instead of item.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span> *
-<span class="sql-keyword">from</span> RMS.NEX_SVC_ITEM_LOC
-<span class="sql-keyword">where</span> created_by = <span class="sql-string">'sobalvk'</span> 
-<span class="sql-keyword">and</span> <span class="sql-keyword">trunc</span>(created_date) = <span class="sql-keyword">trunc</span>(sysdate) <span class="sql-keyword">order by</span> created_date <span class="sql-keyword">desc</span>;</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.svc_item_master
+<span class="sql-keyword">WHERE</span> process$status &lt;&gt; <span class="sql-string">&#x27;P&#x27;</span>
+  <span class="sql-comment">--AND process_id = 205680</span>
+  <span class="sql-keyword">AND</span> ITEM = <span class="sql-string">&#x27;193070986586&#x27;</span>
+  <span class="sql-keyword">AND</span> <span class="sql-keyword">TRUNC</span>(create_datetime) = <span class="sql-keyword">TRUNC</span>(sysdate)
+<span class="sql-keyword">ORDER BY</span> create_datetime <span class="sql-keyword">DESC</span>;</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g5"><strong>Check if Item Is Already in the Item/Supplier/Country Staging Table</strong></p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g4">
+      <p class="sql-query-title"><strong>Step 2 (Item/Location) Upload Status</strong></p>
+      <p class="sql-query-desc">Shows today's Step 2 item/location staging records you created that haven't finished processing. No rows means Step 2 has processed. Uncomment a line to narrow it to one item or process ID. Uses your user ID in lowercase.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span> *
-<span class="sql-keyword">from</span> rms.svc_item_supp_country_dim
-<span class="sql-keyword">where</span> item <span class="sql-keyword">in</span> (<span class="sql-string">'14508509'</span>);</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.nex_svc_item_loc
+<span class="sql-keyword">WHERE</span> created_by = <span class="sql-string">&#x27;youruserid&#x27;</span>
+  <span class="sql-comment">--AND item = &#x27;12657293&#x27;</span>
+  <span class="sql-comment">--AND process_id = &#x27;205667&#x27;</span>
+  <span class="sql-keyword">AND</span> process_status &lt;&gt; <span class="sql-string">&#x27;P&#x27;</span>
+  <span class="sql-keyword">AND</span> <span class="sql-keyword">TRUNC</span>(created_date) = <span class="sql-keyword">TRUNC</span>(sysdate)
+<span class="sql-keyword">ORDER BY</span> created_date <span class="sql-keyword">DESC</span>;</code></pre>
         </div>
-    </div>
-    <h3 class="sub-section-title" id="sql-general-item-lookups">2. Item &amp; Hierarchy Lookups</h3>
-
-    <p id="sql-g6"><strong>Look Up Item Hierarchy for a New Add Transaction</strong> (Use this when users submit an add transaction — returns the parent, transaction item, hierarchy, color, and size group.)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
-        <div class="code-wrapper">
-<pre><code><span class="sql-keyword">SELECT</span> IM.item_grandparent <span class="sql-keyword">as</span> "PARENT", IM.item_parent <span class="sql-keyword">as</span> "TRANSACTION", IM.dept, IM.class, IM.subclass, IM.diff_1 <span class="sql-keyword">as</span> color,
-XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span class="sql-keyword">as</span> "SIZE", IM.item_desc_secondary, IM.create_datetime, IM.create_id
-<span class="sql-keyword">FROM</span> RMS.item_master IM, (<span class="sql-keyword">SELECT</span> item, diff_2 <span class="sql-keyword">FROM</span> RMS.item_master) XIM
-<span class="sql-keyword">WHERE</span> IM.item_grandparent = XIM.item
-<span class="sql-keyword">and</span> IM.item_GRANDparent <span class="sql-keyword">in</span> (<span class="sql-string">'16863505'</span>)
-<span class="sql-comment">--and IM.diff_1 in ('403', '651')</span>
-<span class="sql-keyword">ORDER BY</span> IM.dept, IM.class, IM.subclass, IM.diff_1, XIM.diff_2 <span class="sql-keyword">asc</span>;</code></pre>
-        </div>
+      </div>
     </div>
 
-    <p id="sql-g7"><strong>Look Up Item by GTIN</strong> (Returns the item parent and primary reference item indicator for a GTIN.)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g24">
+      <p class="sql-query-title"><strong>Find the Process ID for an Item</strong></p>
+      <p class="sql-query-desc">Looks up which upload (process ID) created an item, along with its parent, grandparent, description, creator and create date. Use it to find the process ID to plug into the error query below.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">Select</span>* <span class="sql-comment">---ITEM_PARENT, ITEM, primary_ref_item_ind</span>
-<span class="sql-keyword">from</span> rms.item_master
-<span class="sql-keyword">where</span> item <span class="sql-keyword">in</span> (<span class="sql-string">'196985578839'</span>);</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> PROCESS_ID, ITEM, ITEM_PARENT, ITEM_GRANDPARENT, ITEM_DESC, CREATE_ID, CREATE_DATETIME
+<span class="sql-keyword">FROM</span> rms.svc_item_master
+<span class="sql-keyword">WHERE</span> item <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;20328861&#x27;</span>);</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g8"><strong>Check Dept / Class / Subclass Relationship</strong></p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g3">
+      <p class="sql-query-title"><strong>Error Messages for a Failed Upload (by Process ID)</strong></p>
+      <p class="sql-query-desc">Returns the readable error text for every error on a process ID. The commented block can replace the process ID filter to search by reference number, parent or grandparent instead.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">Select</span> * 
-<span class="sql-keyword">from</span> rms.subclass
-<span class="sql-keyword">where</span> dept = <span class="sql-string">'770'</span>;</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> r.rtk_text,
+       <span class="sql-keyword">REPLACE</span>(c.error_msg, <span class="sql-string">&#x27;@0&#x27;</span>, <span class="sql-string">&#x27;&#x27;</span>) error_message,
+       c.*
+<span class="sql-keyword">FROM</span> rms.coresvc_item_err c, rms.rtk_errors r
+<span class="sql-keyword">WHERE</span> /*process_id <span class="sql-keyword">IN</span> (<span class="sql-keyword">SELECT</span> process_id <span class="sql-keyword">FROM</span> rms.svc_item_master
+                       <span class="sql-keyword">WHERE</span> (orig_ref_no <span class="sql-keyword">LIKE</span> <span class="sql-string">&#x27;%VALUE%&#x27;</span>
+                              <span class="sql-keyword">OR</span> item_parent <span class="sql-keyword">LIKE</span> <span class="sql-string">&#x27;%VALUE%&#x27;</span>
+                              <span class="sql-keyword">OR</span> item_grandparent <span class="sql-keyword">LIKE</span> <span class="sql-string">&#x27;%VALUE%&#x27;</span>))
+  <span class="sql-keyword">AND</span>*/ <span class="sql-keyword">REGEXP_SUBSTR</span>(<span class="sql-keyword">REPLACE</span>(c.error_msg, <span class="sql-string">&#x27;@0&#x27;</span>, <span class="sql-string">&#x27;&#x27;</span>), <span class="sql-string">&#x27;[^@]*&#x27;</span>) = r.rtk_key (+)
+  <span class="sql-keyword">AND</span> process_id <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;21650342&#x27;</span>)
+<span class="sql-keyword">ORDER BY</span> process_id <span class="sql-keyword">DESC</span>, rtk_text;</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g9"><strong>Look Up SKULIST Detail</strong></p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g5">
+      <p class="sql-query-title"><strong>Item/Supplier/Country Dimensions in Staging</strong></p>
+      <p class="sql-query-desc">Checks whether an item already has a record waiting in the item/supplier/country dimension staging table.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">SELECT</span>* 
-<span class="sql-keyword">FROM</span> RMS.skulist_detail
-<span class="sql-keyword">WHERE</span> SKULIST <span class="sql-keyword">IN</span> (<span class="sql-string">'21240112'</span>,<span class="sql-string">'21240110'</span>,<span class="sql-string">'21240111'</span>);</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.svc_item_supp_country_dim
+<span class="sql-keyword">WHERE</span> item <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;14508509&#x27;</span>);</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g10"><strong>Count Total Locations Attached to an Item</strong></p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <h3 class="sub-section-title" id="sql-general-item-lookups" style="margin-top:28px;">Item &amp; Hierarchy Lookups</h3>
+    <p class="sql-group-desc">Find items and check how they are built.</p>
+    <div class="sql-query" id="sql-g7">
+      <p class="sql-query-title"><strong>Look Up Items by GTIN</strong></p>
+      <p class="sql-query-desc">Returns the item master record for one or more GTINs, including the item parent and whether each GTIN is the primary reference item.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span> item, <span class="sql-keyword">count</span>(loc) 
-<span class="sql-keyword">from</span> rms.item_loc 
-<span class="sql-keyword">where</span> item <span class="sql-keyword">in</span> (<span class="sql-string">'19437854'</span>) 
-<span class="sql-keyword">group by</span> item 
-<span class="sql-keyword">order by</span> item <span class="sql-keyword">asc</span>;</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> *   <span class="sql-comment">-- or: ITEM_PARENT, ITEM, PRIMARY_REF_ITEM_IND</span>
+<span class="sql-keyword">FROM</span> rms.item_master
+<span class="sql-keyword">WHERE</span> item <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;198566072262&#x27;</span>, <span class="sql-string">&#x27;198566072279&#x27;</span>, <span class="sql-string">&#x27;198566072286&#x27;</span>, <span class="sql-string">&#x27;198566072293&#x27;</span>);</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g11"><strong>Range Already-Built Items to a Destination Dept (e.g., 781) Check</strong> (Pulls web description, brand, MSRP, VPN, supplier color, and e-comm UDA values for items being ranged into an already-built dept/class/subclass.)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g19">
+      <p class="sql-query-title"><strong>Vendor &amp; Transaction Details by GTIN</strong></p>
+      <p class="sql-query-desc">Starting from a GTIN, shows its create date, dept, primary vendor, parent and transaction items with names, VPN and status.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">SELECT DISTINCT</span> im.item_grandparent <span class="sql-keyword">AS</span> PARENT, im.item_parent <span class="sql-keyword">AS</span> TRANSACTION, im.dept, xim.item_desc_secondary <span class="sql-keyword">AS</span> WEB_DESC, xim.brand_name <span class="sql-keyword">AS</span> BRAND, xim.MFG_REC_RETAIL <span class="sql-keyword">AS</span> MSRP, iss.VPN <span class="sql-keyword">AS</span> VPN, iss.SUPP_DIFF_1 <span class="sql-keyword">AS</span> SUPPLIER_COLOR, uil.UDA_ID <span class="sql-keyword">AS</span> ECOMM_UDA, uil.UDA_VALUE <span class="sql-keyword">AS</span> ECOMM_UDA_VALUE 
-<span class="sql-keyword">FROM</span> rms.item_master im <span class="sql-keyword">JOIN</span> rms.item_supplier iss <span class="sql-keyword">ON</span> im.item_parent = iss.item 
-<span class="sql-keyword">LEFT JOIN</span> rms.uda_item_lov uil <span class="sql-keyword">ON</span> im.item_parent = uil.item 
-<span class="sql-keyword">AND</span> uil.UDA_ID <span class="sql-keyword">IN</span> (<span class="sql-string">'9630'</span>, <span class="sql-string">'9631'</span>, <span class="sql-string">'9632'</span>, <span class="sql-string">'9627'</span>) 
-<span class="sql-keyword">JOIN</span> (<span class="sql-keyword">SELECT</span> item, brand_name, mfg_rec_retail, item_desc_secondary <span class="sql-keyword">FROM</span> rms.item_master) xim 
-<span class="sql-keyword">ON</span> xim.item = im.item_parent 
-<span class="sql-keyword">WHERE</span> im.item_grandparent <span class="sql-keyword">IN</span> (<span class="sql-string">'19507468'</span>,<span class="sql-string">'19507466'</span>,<span class="sql-string">'19507467'</span>) 
-<span class="sql-keyword">AND</span> iss.primary_supp_ind = <span class="sql-string">'Y'</span> 
+<pre><code><span class="sql-keyword">SELECT</span> <span class="sql-keyword">DISTINCT</span> <span class="sql-keyword">TRUNC</span>(im.create_datetime) create_date, im.dept dept, s.supplier vendor, s.sup_name vendor_name,
+       im.item_grandparent parent, im.item_desc_secondary parent_name, iss.vpn vpn,
+       im.item_parent transaction, im.item_desc transaction_name, im.item gtin, im.status
+<span class="sql-keyword">FROM</span> rms.item_master im, rms.item_supplier iss, rms.sups s
+<span class="sql-keyword">WHERE</span> im.item_parent = iss.item
+  <span class="sql-keyword">AND</span> iss.supplier = s.supplier
+  <span class="sql-keyword">AND</span> im.item <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;847280052899&#x27;</span>)
+  <span class="sql-keyword">AND</span> iss.primary_supp_ind = <span class="sql-string">&#x27;Y&#x27;</span>
+<span class="sql-keyword">ORDER BY</span> im.item_grandparent, im.item_parent <span class="sql-keyword">ASC</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g6">
+      <p class="sql-query-title"><strong>Item Hierarchy for an Add-Transaction Request</strong></p>
+      <p class="sql-query-desc">When a buyer submits an add transaction, shows the parent and its existing transaction items with dept/class/subclass, color, size group, size and secondary description, so you can match the new transaction to the existing setup.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> im.item_grandparent <span class="sql-keyword">AS</span> &quot;PARENT&quot;, im.item_parent <span class="sql-keyword">AS</span> &quot;TRANSACTION&quot;, im.dept, im.class, im.subclass, im.diff_1 <span class="sql-keyword">AS</span> color,
+       xim.diff_2 <span class="sql-keyword">AS</span> size_group_id, im.diff_2 <span class="sql-keyword">AS</span> &quot;SIZE&quot;, im.item_desc_secondary, im.create_datetime, im.create_id
+<span class="sql-keyword">FROM</span> rms.item_master im, (<span class="sql-keyword">SELECT</span> item, diff_2 <span class="sql-keyword">FROM</span> rms.item_master) xim
+<span class="sql-keyword">WHERE</span> im.item_grandparent = xim.item
+  <span class="sql-keyword">AND</span> im.item_grandparent <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;16863505&#x27;</span>)
+  <span class="sql-comment">--AND im.diff_1 IN (&#x27;403&#x27;, &#x27;651&#x27;)</span>
+<span class="sql-keyword">ORDER BY</span> im.dept, im.class, im.subclass, im.diff_1, xim.diff_2 <span class="sql-keyword">ASC</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g25">
+      <p class="sql-query-title"><strong>Dept / Class / Subclass of a Parent Item</strong></p>
+      <p class="sql-query-desc">Returns the department, class and subclass of the items under a parent.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> dept, class, subclass
+<span class="sql-keyword">FROM</span> rms.item_master
+<span class="sql-keyword">WHERE</span> item_parent = <span class="sql-string">&#x27;17156710&#x27;</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g26">
+      <p class="sql-query-title"><strong>Colors and Sizes Under a Parent</strong></p>
+      <p class="sql-query-desc">Lists each transaction item under a parent with its color code and description (diff 1) and size ID and description (diff 2). Use it to check whether a size/color combination already exists before adding one.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> im.item,
+       im.diff_1 <span class="sql-keyword">AS</span> color_code,
+       d1.diff_desc <span class="sql-keyword">AS</span> color_desc,
+       im.diff_2 <span class="sql-keyword">AS</span> size_id,
+       d2.diff_desc <span class="sql-keyword">AS</span> size_desc
+<span class="sql-keyword">FROM</span> rms.item_master im
+<span class="sql-keyword">LEFT JOIN</span> rms.diff_ids d1 <span class="sql-keyword">ON</span> im.diff_1 = d1.diff_id
+<span class="sql-keyword">LEFT JOIN</span> rms.diff_ids d2 <span class="sql-keyword">ON</span> im.diff_2 = d2.diff_id
+<span class="sql-keyword">WHERE</span> im.item_parent = <span class="sql-string">&#x27;19893011&#x27;</span>   <span class="sql-comment">-- parent item</span>
+  <span class="sql-keyword">AND</span> im.item_level = im.tran_level
+<span class="sql-keyword">ORDER BY</span> im.diff_1, im.diff_2;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g27">
+      <p class="sql-query-title"><strong>Items in a Dept / Class / Subclass</strong></p>
+      <p class="sql-query-desc">Lists items in a department, class and subclass, newest first, with descriptions and who created them. Uncomment the description line to search for a word, for example items named "Display".</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> item, item_parent, short_desc, item_desc, create_id, create_datetime
+<span class="sql-keyword">FROM</span> rms.item_master
+<span class="sql-keyword">WHERE</span> dept = <span class="sql-string">&#x27;280&#x27;</span>
+  <span class="sql-keyword">AND</span> class = <span class="sql-string">&#x27;1400&#x27;</span>
+  <span class="sql-keyword">AND</span> subclass = <span class="sql-string">&#x27;3&#x27;</span>
+  <span class="sql-comment">--AND item_desc LIKE &#x27;%Display%&#x27;</span>
+<span class="sql-keyword">ORDER BY</span> create_datetime <span class="sql-keyword">DESC</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g8">
+      <p class="sql-query-title"><strong>Classes and Subclasses in a Department</strong></p>
+      <p class="sql-query-desc">Lists every class/subclass combination set up under a department, to confirm a dept/class/subclass exists before building or re-classing.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.subclass
+<span class="sql-keyword">WHERE</span> dept = <span class="sql-string">&#x27;770&#x27;</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g11">
+      <p class="sql-query-title"><strong>Ranging Built Items to Another Dept (e.g. 781)</strong></p>
+      <p class="sql-query-desc">For items being ranged into an already-built dept/class/subclass, pulls each parent and transaction with web description, brand, MSRP, VPN, supplier color and e-comm UDA values.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> <span class="sql-keyword">DISTINCT</span> im.item_grandparent <span class="sql-keyword">AS</span> parent, im.item_parent <span class="sql-keyword">AS</span> transaction, im.dept, xim.item_desc_secondary <span class="sql-keyword">AS</span> web_desc,
+       xim.brand_name <span class="sql-keyword">AS</span> brand, xim.mfg_rec_retail <span class="sql-keyword">AS</span> msrp, iss.vpn <span class="sql-keyword">AS</span> vpn, iss.supp_diff_1 <span class="sql-keyword">AS</span> supplier_color,
+       uil.uda_id <span class="sql-keyword">AS</span> ecomm_uda, uil.uda_value <span class="sql-keyword">AS</span> ecomm_uda_value
+<span class="sql-keyword">FROM</span> rms.item_master im
+<span class="sql-keyword">JOIN</span> rms.item_supplier iss <span class="sql-keyword">ON</span> im.item_parent = iss.item
+<span class="sql-keyword">LEFT JOIN</span> rms.uda_item_lov uil <span class="sql-keyword">ON</span> im.item_parent = uil.item
+     <span class="sql-keyword">AND</span> uil.uda_id <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;9630&#x27;</span>, <span class="sql-string">&#x27;9631&#x27;</span>, <span class="sql-string">&#x27;9632&#x27;</span>, <span class="sql-string">&#x27;9627&#x27;</span>)
+<span class="sql-keyword">JOIN</span> (<span class="sql-keyword">SELECT</span> item, brand_name, mfg_rec_retail, item_desc_secondary <span class="sql-keyword">FROM</span> rms.item_master) xim
+     <span class="sql-keyword">ON</span> xim.item = im.item_parent
+<span class="sql-keyword">WHERE</span> im.item_grandparent <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;19507468&#x27;</span>, <span class="sql-string">&#x27;19507466&#x27;</span>, <span class="sql-string">&#x27;19507467&#x27;</span>)
+  <span class="sql-keyword">AND</span> iss.primary_supp_ind = <span class="sql-string">&#x27;Y&#x27;</span>
 <span class="sql-keyword">ORDER BY</span> im.dept, im.item_grandparent, im.item_parent <span class="sql-keyword">ASC</span>, uil.uda_value <span class="sql-keyword">DESC</span>;</code></pre>
         </div>
-    </div>
-    <h3 class="sub-section-title" id="sql-general-supplier">3. Supplier, Vendor &amp; Costing Checks</h3>
-
-    <p id="sql-g12"><strong>Show Primary Supplier at the Location Level</strong> (Manual maintenance check — the commented lines show how to swap in a SKULIST or LOC_LIST instead of a single item/location.)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
-        <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span> item, loc, primary_supp, status 
-<span class="sql-keyword">from</span> rms.item_loc 
-<span class="sql-keyword">where</span> item <span class="sql-keyword">in</span> (<span class="sql-string">'11982497'</span>) 
-<span class="sql-comment">--where item in (select item from rms.skulist_detail where skulist = '20380870') </span>
-<span class="sql-comment">--and loc in (select location from rms.loc_list_detail where loc_list = '1395003');</span>
-<span class="sql-keyword">and</span> loc <span class="sql-keyword">in</span> (<span class="sql-string">'505'</span>);</code></pre>
-        </div>
+      </div>
     </div>
 
-    <p id="sql-g13"><strong>Confirm a Supplier Is Attached to an Item</strong></p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <h3 class="sub-section-title" id="sql-general-lists" style="margin-top:28px;">Item Lists &amp; Location Lists</h3>
+    <p class="sql-group-desc">Check what is on an item list (SKULIST) or location list, and whether the items are set up for a supplier or locations.</p>
+    <div class="sql-query" id="sql-g9">
+      <p class="sql-query-title"><strong>Items on an Item List</strong></p>
+      <p class="sql-query-desc">Lists every item on one or more item lists (SKULISTs).</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span> item, supplier, vpn
-<span class="sql-keyword">from</span> rms.item_supplier
-<span class="sql-keyword">where</span> item <span class="sql-keyword">in</span> (<span class="sql-string">'19507468'</span>,<span class="sql-string">'19507466'</span>,<span class="sql-string">'19507467'</span>)
-<span class="sql-keyword">and</span> supplier <span class="sql-keyword">in</span> (<span class="sql-string">'187949904'</span>);</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.skulist_detail
+<span class="sql-keyword">WHERE</span> skulist <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;22430800&#x27;</span>);</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g14"><strong>Identify Items Missing the Correct Primary Supplier</strong> (Cross-checks a SKULIST against a LOC_LIST to find item/location combinations where the primary supplier doesn&#x27;t match what&#x27;s expected.)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g28">
+      <p class="sql-query-title"><strong>Locations on a Location List</strong></p>
+      <p class="sql-query-desc">Lists every location on a location list.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span> sd.skulist, sd.item, lld.loc_list, il.loc, il.primary_supp, il.store_ord_mult, il.source_method, il.source_wh, il.last_update_datetime, il.last_update_id
-<span class="sql-keyword">from</span> RMS.SKULIST_DETAIL sd, RMS.LOC_LIST_DETAIL lld, rms.item_loc il
-<span class="sql-keyword">where</span> sd.item = il.item
-<span class="sql-keyword">and</span> il.loc = LLD.LOCATION
-<span class="sql-keyword">and</span> sd.skulist <span class="sql-keyword">in</span> (<span class="sql-string">'20740102'</span>)
-<span class="sql-keyword">and</span> lld.loc_list <span class="sql-keyword">in</span> (<span class="sql-string">'109220'</span>)
-<span class="sql-keyword">and</span> il.primary_supp &lt;&gt;<span class="sql-string">'91796839'</span>
-<span class="sql-comment">---and il.store_ord_mult &lt;&gt; 'I'</span>
-<span class="sql-keyword">order by</span> sd.skulist, lld.location <span class="sql-keyword">asc</span>;</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.loc_list_detail
+<span class="sql-keyword">WHERE</span> loc_list = <span class="sql-string">&#x27;609219&#x27;</span>;</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g15"><strong>Confirm a Supplier Exists in RMS</strong></p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g29">
+      <p class="sql-query-title"><strong>Item List Items That Have a Supplier</strong></p>
+      <p class="sql-query-desc">Shows which items on an item list already have a given supplier attached, with the supplier name.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">Select</span> *
-<span class="sql-keyword">from</span> rms.sups
-<span class="sql-keyword">where</span> supplier = <span class="sql-string">'107257560'</span>;</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> sd.item,
+       s.supplier,
+       s.sup_name
+<span class="sql-keyword">FROM</span> rms.skulist_detail sd
+<span class="sql-keyword">JOIN</span> rms.item_supplier isp <span class="sql-keyword">ON</span> sd.item = isp.item
+<span class="sql-keyword">JOIN</span> rms.sups s <span class="sql-keyword">ON</span> isp.supplier = s.supplier
+<span class="sql-keyword">WHERE</span> sd.skulist = <span class="sql-string">&#x27;22420417&#x27;</span>
+  <span class="sql-keyword">AND</span> s.supplier = <span class="sql-string">&#x27;118828241&#x27;</span>;</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g16"><strong>Check Default Unit of Purchase (UOP)</strong></p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g30">
+      <p class="sql-query-title"><strong>Item List Items Missing a Supplier</strong></p>
+      <p class="sql-query-desc">Shows which items on an item list do <strong>not</strong> have a given supplier attached, so you know which still need it added.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">Select</span> item, supplier, default_uop, create_datetime, last_update_id, last_update_datetime
-<span class="sql-keyword">from</span> rms.item_supp_country 
-<span class="sql-keyword">where</span> item <span class="sql-keyword">in</span> (<span class="sql-string">'13284518'</span>)
-<span class="sql-keyword">and</span> supplier <span class="sql-keyword">in</span> (<span class="sql-string">'9207775'</span>,<span class="sql-string">'8086'</span>);</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> sd.item
+<span class="sql-keyword">FROM</span> rms.skulist_detail sd
+<span class="sql-keyword">WHERE</span> sd.skulist = <span class="sql-string">&#x27;22490360&#x27;</span>
+  <span class="sql-keyword">AND</span> <span class="sql-keyword">NOT EXISTS</span> (
+      <span class="sql-keyword">SELECT</span> 1
+      <span class="sql-keyword">FROM</span> rms.item_supplier isp
+      <span class="sql-keyword">WHERE</span> isp.item = sd.item
+        <span class="sql-keyword">AND</span> isp.supplier = <span class="sql-string">&#x27;505794&#x27;</span>);</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g17"><strong>Look Up Primary Supplier — Single Item, Item List, or Loc List</strong> (General-purpose template. Swap in the commented lines to search by SKULIST or LOC_LIST instead of a single item/location.)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g31">
+      <p class="sql-query-title"><strong>Item List Items That Have Locations from a Location List</strong></p>
+      <p class="sql-query-desc">For every item on an item list and every location on one or more location lists, shows the item/location pairs that already exist in RMS.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span> item, loc, primary_supp, status 
-<span class="sql-keyword">from</span> rms.item_loc 
-<span class="sql-keyword">where</span> item <span class="sql-keyword">in</span> (<span class="sql-string">''</span>) 
-<span class="sql-comment">--where item in (select item from rms.skulist_detail where skulist = '') </span>
-<span class="sql-comment">--and loc in (select location from rms.loc_list_detail where loc_list = '486217') </span>
-<span class="sql-keyword">and</span> loc <span class="sql-keyword">in</span> (<span class="sql-string">'746'</span>) 
+<pre><code><span class="sql-keyword">SELECT</span> sd.item,
+       lld.location
+<span class="sql-keyword">FROM</span> rms.skulist_detail sd
+<span class="sql-keyword">CROSS JOIN</span> rms.loc_list_detail lld
+<span class="sql-keyword">WHERE</span> sd.skulist = <span class="sql-string">&#x27;22435542&#x27;</span>
+  <span class="sql-keyword">AND</span> lld.loc_list <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;481320&#x27;</span>, <span class="sql-string">&#x27;481311&#x27;</span>)
+  <span class="sql-keyword">AND</span> <span class="sql-keyword">EXISTS</span> (
+      <span class="sql-keyword">SELECT</span> 1
+      <span class="sql-keyword">FROM</span> rms.item_loc il
+      <span class="sql-keyword">WHERE</span> il.item = sd.item
+        <span class="sql-keyword">AND</span> il.loc = lld.location
+  )
+<span class="sql-keyword">ORDER BY</span> sd.item, lld.location;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g32">
+      <p class="sql-query-title"><strong>Item List Items Missing Locations from a Location List</strong></p>
+      <p class="sql-query-desc">The opposite of the query above: shows each item/location pair from the item list and location list that is <strong>not</strong> set up yet.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> sd.item,
+       lld.location
+<span class="sql-keyword">FROM</span> rms.skulist_detail sd
+<span class="sql-keyword">CROSS JOIN</span> rms.loc_list_detail lld
+<span class="sql-keyword">WHERE</span> sd.skulist = <span class="sql-string">&#x27;22430800&#x27;</span>
+  <span class="sql-keyword">AND</span> lld.loc_list <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;1600005&#x27;</span>)
+  <span class="sql-keyword">AND</span> <span class="sql-keyword">NOT EXISTS</span> (
+      <span class="sql-keyword">SELECT</span> 1
+      <span class="sql-keyword">FROM</span> rms.item_loc il
+      <span class="sql-keyword">WHERE</span> il.item = sd.item
+        <span class="sql-keyword">AND</span> il.loc = lld.location
+  )
+<span class="sql-keyword">ORDER BY</span> sd.item, lld.location;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-section-title" id="sql-general-locations" style="margin-top:28px;">Locations, Retail &amp; Quantity Key</h3>
+    <p class="sql-group-desc">Check an item's locations, retail by location, primary supplier at location level, and order multiple / quantity key settings.</p>
+    <div class="sql-query" id="sql-g10">
+      <p class="sql-query-title"><strong>Count of Locations on an Item</strong></p>
+      <p class="sql-query-desc">Returns how many locations an item is ranged to.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> item, <span class="sql-keyword">COUNT</span>(loc)
+<span class="sql-keyword">FROM</span> rms.item_loc
+<span class="sql-keyword">WHERE</span> item <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;20273384&#x27;</span>)
+<span class="sql-keyword">GROUP BY</span> item
+<span class="sql-keyword">ORDER BY</span> item <span class="sql-keyword">ASC</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g33">
+      <p class="sql-query-title"><strong>Item Locations That Are on a Location List</strong></p>
+      <p class="sql-query-desc">Shows which locations from a location list are already attached to a single item.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> il.item,
+       il.loc,
+       lld.loc_list
+<span class="sql-keyword">FROM</span> rms.item_loc il
+<span class="sql-keyword">JOIN</span> rms.loc_list_detail lld <span class="sql-keyword">ON</span> il.loc = lld.location
+<span class="sql-keyword">WHERE</span> il.item = <span class="sql-string">&#x27;13105994&#x27;</span>
+  <span class="sql-keyword">AND</span> lld.loc_list = <span class="sql-string">&#x27;609219&#x27;</span>
+<span class="sql-keyword">ORDER BY</span> il.loc;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g34">
+      <p class="sql-query-title"><strong>Location List Locations Missing from an Item</strong></p>
+      <p class="sql-query-desc">Shows which locations on a location list are <strong>not</strong> attached to a single item yet. Enter the item number in both places.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> <span class="sql-string">&#x27;13105994&#x27;</span> <span class="sql-keyword">AS</span> item,
+       lld.location <span class="sql-keyword">AS</span> loc,
+       lld.loc_list
+<span class="sql-keyword">FROM</span> rms.loc_list_detail lld
+<span class="sql-keyword">WHERE</span> lld.loc_list = <span class="sql-string">&#x27;609219&#x27;</span>
+  <span class="sql-keyword">AND</span> <span class="sql-keyword">NOT EXISTS</span> (
+      <span class="sql-keyword">SELECT</span> 1
+      <span class="sql-keyword">FROM</span> rms.item_loc il
+      <span class="sql-keyword">WHERE</span> il.loc = lld.location
+        <span class="sql-keyword">AND</span> il.item = <span class="sql-string">&#x27;13105994&#x27;</span>
+  )
+<span class="sql-keyword">ORDER BY</span> lld.location;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g35">
+      <p class="sql-query-title"><strong>Retail by Location for a Parent Item</strong></p>
+      <p class="sql-query-desc">Lists the unit retail and selling unit retail at every location for the items under a parent. Use it to confirm a price change or check retail differences between stores.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> im.item_parent, il.loc, il.unit_retail, il.selling_unit_retail
+<span class="sql-keyword">FROM</span> rms.item_master im
+<span class="sql-keyword">JOIN</span> rms.item_loc il <span class="sql-keyword">ON</span> il.item = im.item
+<span class="sql-keyword">WHERE</span> im.item_parent = <span class="sql-string">&#x27;19948102&#x27;</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g12">
+      <p class="sql-query-title"><strong>Primary Supplier and Status at the Location Level</strong></p>
+      <p class="sql-query-desc">Shows the primary supplier and status of an item at its locations. Swap in the commented lines to check every item on an item list, or every location on a location list, instead of a single item or location. Used to verify Manual Maintenance primary supplier updates.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> item, loc, primary_supp, status
+<span class="sql-keyword">FROM</span> rms.item_loc
+<span class="sql-keyword">WHERE</span> item <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;14857302&#x27;</span>)
+<span class="sql-comment">--WHERE item IN (SELECT item FROM rms.skulist_detail WHERE skulist = &#x27;&#x27;)</span>
+<span class="sql-comment">--AND loc IN (SELECT location FROM rms.loc_list_detail WHERE loc_list = &#x27;&#x27;)</span>
+<span class="sql-comment">--AND loc IN (&#x27;350&#x27;)</span>
 ;</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g18"><strong>Check Item/Supplier/Country Record</strong></p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g14">
+      <p class="sql-query-title"><strong>Item/Locations Missing the Expected Primary Supplier</strong></p>
+      <p class="sql-query-desc">Cross-checks an item list against a location list and returns each item/location whose primary supplier isn't the one expected, with order multiple, source and last update details.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span>* 
-<span class="sql-keyword">from</span> rms.item_supp_country 
-<span class="sql-keyword">where</span> item <span class="sql-keyword">in</span> (<span class="sql-string">'7465374'</span>);</code></pre>
+<pre><code><span class="sql-keyword">SELECT</span> sd.skulist, sd.item, lld.loc_list, il.loc, il.primary_supp, il.store_ord_mult, il.source_method, il.source_wh,
+       il.last_update_datetime, il.last_update_id
+<span class="sql-keyword">FROM</span> rms.skulist_detail sd, rms.loc_list_detail lld, rms.item_loc il
+<span class="sql-keyword">WHERE</span> sd.item = il.item
+  <span class="sql-keyword">AND</span> il.loc = lld.location
+  <span class="sql-keyword">AND</span> sd.skulist <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;20740102&#x27;</span>)
+  <span class="sql-keyword">AND</span> lld.loc_list <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;109220&#x27;</span>)
+  <span class="sql-keyword">AND</span> il.primary_supp &lt;&gt; <span class="sql-string">&#x27;91796839&#x27;</span>
+  <span class="sql-comment">---AND il.store_ord_mult &lt;&gt; &#x27;I&#x27;</span>
+<span class="sql-keyword">ORDER BY</span> sd.skulist, lld.location <span class="sql-keyword">ASC</span>;</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g19"><strong>Look Up Vendor &amp; Transaction Details by GTIN</strong></p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g36">
+      <p class="sql-query-title"><strong>Quantity Key: Store Order Multiple by Location</strong></p>
+      <p class="sql-query-desc">For a list of items at one location, shows the primary supplier, status and store order multiple spelled out (I = Inner, C = Cases, E = Eaches). Results come back in the same order as the item list you paste in, so they line up with your spreadsheet.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select distinct</span> <span class="sql-keyword">TRUNC</span>(IM.CREATE_DATETIME) CREATE_DATE, im.dept DEPT, s.supplier VENDOR, s.sup_name VENDOR_NAME, im.item_grandparent PARENT, im.ITEM_DESC_SECONDARY PARENT_NAME, iss.vpn VPN, im.item_parent TRANSACTION, IM.ITEM_DESC TRANSACTION_NAME, im.item GTIN, IM.STATUS 
-<span class="sql-keyword">from</span> rms.item_master im, rms.item_supplier iss, rms.sups s 
-<span class="sql-keyword">where</span> im.item_parent = iss.item 
-<span class="sql-keyword">and</span> iss.supplier = s.supplier 
-<span class="sql-keyword">and</span> im.item <span class="sql-keyword">in</span> (<span class="sql-string">'847280052899'</span>)
-<span class="sql-keyword">and</span> iss.primary_supp_ind = <span class="sql-string">'Y'</span>
-<span class="sql-keyword">order by</span> im.item_grandparent, im.item_parent <span class="sql-keyword">asc</span>;</code></pre>
+<pre><code><span class="sql-keyword">WITH</span> item_order <span class="sql-keyword">AS</span> (
+    <span class="sql-keyword">SELECT</span> ROWNUM <span class="sql-keyword">AS</span> seq,
+           column_value <span class="sql-keyword">AS</span> item
+    <span class="sql-keyword">FROM</span> <span class="sql-keyword">TABLE</span>(sys.odcivarchar2list(
+        <span class="sql-string">&#x27;12183476&#x27;</span>
+    ))
+)
+<span class="sql-keyword">SELECT</span> i.item,
+       i.loc,
+       i.primary_supp,
+       i.status,
+       <span class="sql-keyword">CASE</span> i.store_ord_mult
+           <span class="sql-keyword">WHEN</span> <span class="sql-string">&#x27;I&#x27;</span> <span class="sql-keyword">THEN</span> <span class="sql-string">&#x27;Inner&#x27;</span>
+           <span class="sql-keyword">WHEN</span> <span class="sql-string">&#x27;C&#x27;</span> <span class="sql-keyword">THEN</span> <span class="sql-string">&#x27;Cases&#x27;</span>
+           <span class="sql-keyword">WHEN</span> <span class="sql-string">&#x27;E&#x27;</span> <span class="sql-keyword">THEN</span> <span class="sql-string">&#x27;Eaches&#x27;</span>
+           <span class="sql-keyword">ELSE</span> i.store_ord_mult
+       <span class="sql-keyword">END</span> <span class="sql-keyword">AS</span> store_ord_mult
+<span class="sql-keyword">FROM</span> rms.item_loc i
+<span class="sql-keyword">JOIN</span> item_order o <span class="sql-keyword">ON</span> i.item = o.item
+<span class="sql-keyword">WHERE</span> i.loc = <span class="sql-string">&#x27;715&#x27;</span>
+<span class="sql-keyword">ORDER BY</span> o.seq;</code></pre>
         </div>
+      </div>
     </div>
 
-    <p id="sql-g20"><strong>Check Item/Supplier/Country Dimension Record</strong> (Same as the staging check above (G5), but against the live table rather than the staging table.)</p>
-    <div class="code-container">
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
+    <div class="sql-query" id="sql-g37">
+      <p class="sql-query-title"><strong>Quantity Key: Confirm Updates at a Location</strong></p>
+      <p class="sql-query-desc">Confirms quantity key updates for a list of items at one location. Only items whose QTY_KEY_OPTIONS is R (the expected value after the update) are returned, in the order you paste them, so any missing item still needs updating.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
         <div class="code-wrapper">
-<pre><code><span class="sql-keyword">select</span> *
-<span class="sql-keyword">from</span> rms.item_supp_country_dim
-<span class="sql-keyword">where</span> item <span class="sql-keyword">in</span> (<span class="sql-string">'14508609'</span>);</code></pre>
+<pre><code><span class="sql-keyword">WITH</span> item_order <span class="sql-keyword">AS</span> (
+    <span class="sql-keyword">SELECT</span> ROWNUM <span class="sql-keyword">AS</span> seq,
+           column_value <span class="sql-keyword">AS</span> item
+    <span class="sql-keyword">FROM</span> <span class="sql-keyword">TABLE</span>(sys.odcivarchar2list(
+        <span class="sql-string">&#x27;127176&#x27;</span>,
+        <span class="sql-string">&#x27;537701&#x27;</span>,
+        <span class="sql-string">&#x27;7124146&#x27;</span>
+    ))
+)
+<span class="sql-keyword">SELECT</span> i.item,
+       i.loc,
+       i.qty_key_options
+<span class="sql-keyword">FROM</span> rms.item_loc_traits i
+<span class="sql-keyword">JOIN</span> item_order o <span class="sql-keyword">ON</span> i.item = o.item
+<span class="sql-keyword">WHERE</span> i.loc = <span class="sql-string">&#x27;461&#x27;</span>
+  <span class="sql-keyword">AND</span> i.qty_key_options = <span class="sql-string">&#x27;R&#x27;</span>
+<span class="sql-keyword">ORDER BY</span> o.seq;</code></pre>
         </div>
+      </div>
     </div>
 
-    <h1 id="reclass-query-index">Item Re-Class Process Query Index</h1>
+    <h3 class="sub-section-title" id="sql-general-supplier" style="margin-top:28px;">Suppliers &amp; Costing</h3>
+    <p class="sql-group-desc">Confirm suppliers exist, are attached to items, and have the right VPN, unit of purchase and country records.</p>
+    <div class="sql-query" id="sql-g13">
+      <p class="sql-query-title"><strong>Suppliers and VPNs Attached to an Item</strong></p>
+      <p class="sql-query-desc">Lists the suppliers attached to an item and the VPN for each. Add <code>AND supplier IN ('…')</code> to check one supplier.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> item, supplier, vpn
+<span class="sql-keyword">FROM</span> rms.item_supplier
+<span class="sql-keyword">WHERE</span> item <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;20328903&#x27;</span>);</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g15">
+      <p class="sql-query-title"><strong>Look Up a Supplier</strong></p>
+      <p class="sql-query-desc">Confirms a supplier site exists in RMS and shows its details.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.sups
+<span class="sql-keyword">WHERE</span> supplier = <span class="sql-string">&#x27;107257560&#x27;</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g38">
+      <p class="sql-query-title"><strong>All Suppliers</strong></p>
+      <p class="sql-query-desc">Lists every supplier with its DUNS number, parent, name, status and create date.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> supplier, duns_number, supplier_parent, sup_name, sup_status, create_datetime
+<span class="sql-keyword">FROM</span> rms.sups
+<span class="sql-keyword">ORDER BY</span> supplier;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g16">
+      <p class="sql-query-title"><strong>Default Unit of Purchase (UOP)</strong></p>
+      <p class="sql-query-desc">Shows the default unit of purchase for an item and supplier, with who last updated it and when.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> item, supplier, default_uop, create_datetime, last_update_id, last_update_datetime
+<span class="sql-keyword">FROM</span> rms.item_supp_country
+<span class="sql-keyword">WHERE</span> item <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;13284518&#x27;</span>)
+  <span class="sql-keyword">AND</span> supplier <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;9207775&#x27;</span>, <span class="sql-string">&#x27;8086&#x27;</span>);</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g18">
+      <p class="sql-query-title"><strong>Item/Supplier/Country Record</strong></p>
+      <p class="sql-query-desc">Shows the full item/supplier/country record (cost, pack sizes, Ti/Hi and more) for an item.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.item_supp_country
+<span class="sql-keyword">WHERE</span> item <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;7465374&#x27;</span>);</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g20">
+      <p class="sql-query-title"><strong>Item/Supplier/Country Dimensions</strong></p>
+      <p class="sql-query-desc">Shows the live dimension records for an item. This is the same check as the staging query above, run against the live table.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.item_supp_country_dim
+<span class="sql-keyword">WHERE</span> item <span class="sql-keyword">IN</span> (<span class="sql-string">&#x27;14508609&#x27;</span>);</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-section-title" id="sql-general-udas" style="margin-top:28px;">UDAs, Brands &amp; Diffs</h3>
+    <p class="sql-group-desc">Look up UDA values, brands and differentiator (size/color) codes.</p>
+    <div class="sql-query" id="sql-g39">
+      <p class="sql-query-title"><strong>Look Up a UDA Value</strong></p>
+      <p class="sql-query-desc">Finds a UDA value by UDA ID and value number, or by its description (swap the WHERE lines).</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.uda_values
+<span class="sql-keyword">WHERE</span> uda_id = <span class="sql-string">&#x27;9267&#x27;</span>
+  <span class="sql-keyword">AND</span> uda_value = <span class="sql-string">&#x27;2&#x27;</span>;
+<span class="sql-comment">--WHERE uda_value_desc = &#x27;Fruitables&#x27;;</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g40">
+      <p class="sql-query-title"><strong>Required (Mandatory) UDAs</strong></p>
+      <p class="sql-query-desc">Lists the UDA defaults flagged as required, i.e. the UDAs that must be on an item in the departments they apply to.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.uda_item_defaults
+<span class="sql-keyword">WHERE</span> required_ind = <span class="sql-string">&#x27;Y&#x27;</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g41">
+      <p class="sql-query-title"><strong>Look Up a Brand</strong></p>
+      <p class="sql-query-desc">Finds a brand by name. Remove the WHERE line to list every brand alphabetically.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.brand
+<span class="sql-keyword">WHERE</span> brand_name = <span class="sql-string">&#x27;OMBRE&#x27;</span>
+<span class="sql-keyword">ORDER BY</span> brand_name;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g42">
+      <p class="sql-query-title"><strong>Look Up a Diff (Size/Color) ID</strong></p>
+      <p class="sql-query-desc">Lists differentiator IDs. Uncomment a line to search by description or by diff ID.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.diff_ids;
+<span class="sql-comment">--WHERE diff_desc = &#x27;&#x27;;</span>
+<span class="sql-comment">--WHERE diff_id = &#x27;0000&#x27;;</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="sql-query" id="sql-g43">
+      <p class="sql-query-title"><strong>Which Diff Groups Contain a Diff ID</strong></p>
+      <p class="sql-query-desc">Shows the diff groups a size or color ID belongs to, or swap the WHERE line to list every ID in one diff group.</p>
+      <div class="code-container">
+        <div class="code-header"><span>SQL</span><div class="header-controls"><button class="control-btn" title="Copy code" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+        <div class="code-wrapper">
+<pre><code><span class="sql-keyword">SELECT</span> *
+<span class="sql-keyword">FROM</span> rms.diff_group_detail dgd
+<span class="sql-comment">--WHERE dgd.diff_group_id = &#x27;&#x27;</span>
+<span class="sql-keyword">WHERE</span> dgd.diff_id = <span class="sql-string">&#x27;16OZ&#x27;</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h1 id="reclass-query-index">Item Re-Class Query Index</h1>
     <div class="info-box">
-        <p><strong>Note:</strong> These queries are utilized during the item re-class sequence. They are centrally managed within the Item Re-class working directory.</p>
+        <p><strong>Note:</strong> These are the queries referenced by number (Q2, Q3…) in the <a href="#reclass">Item Reclassification</a> procedure. A copy is also saved as "Queries for Re-classes" in the Item Re-class folder.</p>
     </div>
 
-    <h3 class="sub-section-title" id="sql-reclass-overview" style="margin-top:24px;">1. Overview (Section 2.2.1.8)</h3>
+    <h3 class="sub-section-title" id="sql-reclass-overview" style="margin-top:24px;">Mandatory UDAs</h3>
     
-    <p id="sql-q2"><strong>Find UDAs attached to a Skulist</strong> (Mandatory UDAs Step 2)</p>
+    <p id="sql-q2" class="sql-query-title"><strong>Q2: UDAs on an Item List</strong></p>
+    <p class="sql-query-desc">Lists the UDA IDs and values attached to every item on an item list (SKULIST). Step 2 of the mandatory UDA check.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5719,9 +6085,10 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <h3 class="sub-section-title" id="sql-reclass-forecasted">2. Forecasted Items on Re-Classes (Section 2.2.2)</h3>
+    <h3 class="sub-section-title" id="sql-reclass-forecasted">Forecasting Checks</h3>
 
-    <p id="sql-q3"><strong>Check if Departments are forecastable</strong></p>
+    <p id="sql-q3" class="sql-query-title"><strong>Q3: Is a Department Forecastable?</strong></p>
+    <p class="sql-query-desc">Returns the departments in the list that have forecastable items. The destination department must match the item's forecastability.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5739,7 +6106,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p id="sql-q4"><strong>Determine if an item is on forecasting</strong> (Must match the destination Dept.)</p>
+    <p id="sql-q4" class="sql-query-title"><strong>Q4: Is an Item on Forecasting?</strong></p>
+    <p class="sql-query-desc">Shows whether an item is on forecasting (active replenishment). This must match the destination department.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5759,7 +6127,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p id="sql-q5"><strong>Determine if an item list is on forecasting</strong> (The forecastability of the item must match the destination Dept.)</p>
+    <p id="sql-q5" class="sql-query-title"><strong>Q5: Is an Item List on Forecasting?</strong></p>
+    <p class="sql-query-desc">Shows which items on an item list are forecastable, with their current hierarchy.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5778,7 +6147,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p><strong>Identify domains attached to forecastable departments</strong></p>
+    <p class="sql-query-title"><strong>Domains for Forecastable Departments</strong></p>
+    <p class="sql-query-desc">Lists the forecasting domains attached to departments. A destination department must be in a domain before it can be forecastable.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5795,9 +6165,10 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <h3 class="sub-section-title" id="sql-reclass-pack-components">3. Components of Pack Items on Order & Error Resolution (Section 2.2.3 & 2.4)</h3>
+    <h3 class="sub-section-title" id="sql-reclass-pack-components">Pack Components on Order</h3>
 
-    <p id="sql-q6"><strong>Identifying component items on order</strong> (POs on this list will need to be closed)</p>
+    <p id="sql-q6" class="sql-query-title"><strong>Q6: Component Items on Open Orders</strong></p>
+    <p class="sql-query-desc">Finds open purchase orders for packs that contain the item. Those POs must be closed before the component can be re-classed.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5823,9 +6194,10 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <h3 class="sub-section-title" id="sql-reclass-open-orders">4. Identifying Open Orders for Item Profiles & Item Lists (Section 2.3.1 & 2.5.1)</h3>
+    <h3 class="sub-section-title" id="sql-reclass-open-orders">Open Orders, Deals Tables &amp; Appointments</h3>
 
-    <p id="sql-q7"><strong>Find items on an open order that is partially received</strong></p>
+    <p id="sql-q7" class="sql-query-title"><strong>Q7: Items on Partially Received Open Orders</strong></p>
+    <p class="sql-query-desc">Finds open, partially received orders for the items under a parent. These POs can block a re-class.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5847,7 +6219,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p id="sql-q8"><strong>Check deals tables</strong> (Check BOTH queries below using PO numbers from step Q7)</p>
+    <p id="sql-q8" class="sql-query-title"><strong>Q8: Check the Deals Tables</strong></p>
+    <p class="sql-query-desc">Checks both deals tables for the PO numbers found with Q7. Run both queries.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL Profile 1</span>
@@ -5881,7 +6254,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p id="sql-q9"><strong>Check for open appointments on POs</strong> (Appointments must be closed before closing a PO)</p>
+    <p id="sql-q9" class="sql-query-title"><strong>Q9: Open Appointments on POs</strong></p>
+    <p class="sql-query-desc">Shows appointments on the POs and their status. Appointments must be closed before a PO can be closed.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5903,9 +6277,10 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <h3 class="sub-section-title" id="sql-reclass-resolving-errors">5. Resolving Re-Class Errors (Section 2.4)</h3>
+    <h3 class="sub-section-title" id="sql-reclass-resolving-errors">Rejections &amp; Validation</h3>
 
-    <p id="sql-q11"><strong>Find a recent rejection</strong> (By user name or item; only tracks previous batch errors)</p>
+    <p id="sql-q11" class="sql-query-title"><strong>Q11: Recent Re-class Rejections</strong></p>
+    <p class="sql-query-desc">Shows rejection reasons from the last batch, by user ID (or by item). Only the previous batch's errors are kept here.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5923,7 +6298,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p id="sql-q12"><strong>Find a historical rejection</strong> (By User, date, or item)</p>
+    <p id="sql-q12" class="sql-query-title"><strong>Q12: Past Re-class Rejections</strong></p>
+    <p class="sql-query-desc">Searches the rejection archive by change type, date keyed, user ID or item.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5943,7 +6319,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p id="sql-q13"><strong>Validate if Item List / SKULIST re-classed</strong>  </p>
+    <p id="sql-q13" class="sql-query-title"><strong>Q13: Did an Item List Re-class?</strong></p>
+    <p class="sql-query-desc">Shows the current dept/class/subclass of every item on an item list. Filter it in Excel to spot items that didn't move.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5961,7 +6338,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p id="sql-q14"><strong>Validate if a single item re-classed</strong></p>
+    <p id="sql-q14" class="sql-query-title"><strong>Q14: Did a Single Item Re-class?</strong></p>
+    <p class="sql-query-desc">Shows an item's current dept/class/subclass.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5978,9 +6356,10 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <h3 class="sub-section-title" id="sql-reclass-lawson">6. Lawson Department Re-Classes (Section 4.1.2)</h3>
+    <h3 class="sub-section-title" id="sql-reclass-lawson">Lawson (Financial) Moves</h3>
 
-    <p id="sql-q15"><strong>Check for a department move by Item List</strong> (Can catch mis-keyed items from an outside department)</p>
+    <p id="sql-q15" class="sql-query-title"><strong>Q15: Departments on an Item List</strong></p>
+    <p class="sql-query-desc">Lists the departments of the items on an item list. More than one department can mean a mis-keyed item or a financial move.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -5998,7 +6377,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p id="sql-q16"><strong>Check for financial moves by Departments</strong></p>
+    <p id="sql-q16" class="sql-query-title"><strong>Q16: Is It a Financial (Lawson) Move?</strong></p>
+    <p class="sql-query-desc">Shows the group for each department, to confirm whether a re-class crosses financial groups.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -6016,9 +6396,10 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <h3 class="sub-section-title" id="sql-reclass-nightly-batch">7. Nightly Batch Communication to RAVE (Section 6.1)</h3>
+    <h3 class="sub-section-title" id="sql-reclass-nightly-batch">Nightly Batch</h3>
 
-    <p id="sql-q18"><strong>Check re-classes scheduled to run in the nightly batch</strong></p>
+    <p id="sql-q18" class="sql-query-title"><strong>Q18: Re-classes Scheduled for the Nightly Batch</strong></p>
+    <p class="sql-query-desc">Lists every pending re-class in the re-class header table.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -6035,7 +6416,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p id="sql-q19"><strong>Identify re-class effective dates / submission verification</strong></p>
+    <p id="sql-q19" class="sql-query-title"><strong>Q19: Look Up Specific Re-class Numbers</strong></p>
+    <p class="sql-query-desc">Shows the effective date and details for specific re-class numbers, to confirm a re-class was submitted correctly.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -6052,7 +6434,8 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <p><strong>Compare item hierarchies in v16 and v10</strong> (Must be executed the following week)</p>
+    <p class="sql-query-title"><strong>Compare v16 and v10 Hierarchies After Re-classing</strong></p>
+    <p class="sql-query-desc">Run the week after a re-class. Compares each re-classed item's dept/class/subclass in RMS v16 with RMS v10 to confirm both systems match.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
@@ -6076,9 +6459,10 @@ XIM.diff_2 <span class="sql-keyword">as</span> size_group_id, IM.diff_2 <span cl
         </div>
     </div>
 
-    <h3 class="sub-section-title" id="sql-reclass-additional">8. Additional Queries</h3>
+    <h3 class="sub-section-title" id="sql-reclass-additional">Additional Re-Class Queries</h3>
     
-    <p><strong>Item count per SKULIST</strong> (Target range is between 100-150 items for optimal performance)</p>
+    <p class="sql-query-title"><strong>Item Count per Item List</strong></p>
+    <p class="sql-query-desc">Counts the items on each item list. Lists of about 100–150 items process best.</p>
     <div class="code-container">
         <div class="code-header">
             <span>SQL</span>
