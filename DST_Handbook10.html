@@ -345,6 +345,9 @@
     text-align: center;
     padding-top: 1px;
   }
+  /* Lists nested inside a step are plain bullets, not numbered steps */
+  .steps li li { counter-increment: none; position: static; padding: 2px 0; margin: 0; background: none; border: 0; border-radius: 0; }
+  .steps li li::before { content: none; }
   .steps li.steps-note {
     background: #fffbea;
     border-color: #ffe083;
@@ -13300,459 +13303,186 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
   </div>
 </section>
 <section class="section" id="reportuda">
-    <div class="page-container">
-    <h1 class="section-title">Creating a New Report UDA Value</h1>
-    <p style="font-style: italic; color: #555555;">*Adding to an existing UDA (ID)*</p>
+  <h2 class="section-title">Creating a New Report UDA (ID) &amp; Report UDA Value</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Document</span><span class="doc-meta-value">SOP: Report UDA Value (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Author</span><span class="doc-meta-value">Data Steward Team</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Systems</span><span class="doc-meta-value">RMS v16, Excel, SQL/Toad, Outlook</span></div>
+  </div>
 
-    <h2 class="sub-section-title">Download UDA Foundation Template</h2>
-    <p>In RMS, navigate through the menu selections to access the foundation data downloading terminal:</p>
-    
-<ol class="steps">
-    <li>Go to: <span class="path-highlight">Tasks</span> &rarr; <span class="path-highlight">Foundation Data</span> &rarr; <span class="path-highlight">Data Loading</span> &rarr; <span class="path-highlight">Download</span></li>
-    <li>For Template Type - select Items</li>
-    <li>For Template - select User Defined Attributes</li>
-    <br>
-
-<div class="oracle-system-container">
-    
-    <header class="oracle-top-bar">
-        <div class="header-left-group">
-            <span class="hamburger-menu-icon">☰</span>
-            <span class="brand-oracle">ORACLE</span>
-            <span class="brand-app-name">Merchandising</span>
-        </div>
-        <div class="header-right-group">
-            <span class="user-profile-menu"><span class="user-avatar-icon">👤</span> <span class="redacted" title="Redacted for privacy">username</span> ▼</span>
-            <span class="help-circle-icon">❓</span>
-        </div>
-    </header>
-
-    <div class="oracle-main-split-body">
-        
-        <aside class="oracle-left-sidebar">
-            <div class="sidebar-icon-btn grid-apps-btn">⋮⋮⋮</div>
-            <div class="sidebar-icon-btn active-star-tab">⭐</div>
-            <div class="sidebar-icon-btn">📋</div>
-            <div class="sidebar-icon-btn badge-notification-container">
-                🔔
-                <span class="red-alert-badge">1</span>
-            </div>
-            <div class="sidebar-icon-btn">📊</div>
-        </aside>
-
-        <main class="oracle-workspace-canvas">
-            
-            <div class="workspace-tabs-bar">
-                <div class="module-tab active-workspace-tab">
-                    Download Data <span class="close-tab-x">×</span>
-                </div>
-            </div>
-
-            <div class="configuration-card-outer">
-                <div class="configuration-fields-form">
-                    
-                    <div class="form-selection-row">
-                        <label class="field-label-bold">Template Type</label>
-                        <div class="custom-select-wrapper">
-                            <select class="select-field-input input-active-state">
-                                <option value="">Items</option>
-                            </select>
-                            <span class="select-dropdown-caret">▼</span>
-                        </div>
-                    </div>
-
-                    <div class="form-selection-row">
-                        <label class="field-label-bold">Template</label>
-                        <div class="custom-select-wrapper">
-                            <select class="select-field-input input-active-state">
-                                <option value="">User Defined Attributes</option>
-                            </select>
-                            <span class="select-dropdown-caret">▼</span>
-                        </div>
-                    </div>
-
-                </div>
-
-                <footer class="configuration-actions-footer">
-                    <div class="footer-left-icons">
-                        <button class="footer-glyph-btn help-blue-btn">❓</button>
-                        <button class="footer-glyph-btn page-export-btn">📋</button>
-                    </div>
-                    <div class="footer-right-buttons">
-                        <button class="action-btn btn-primary-dark" >Download</button>
-                        <button class="action-btn btn-primary-dark">Done</button>
-                    </div>
-                </footer>
-            </div>
-
-        </main>
-    </div>
-
-</div>
-   <br>
-
-    <li>Click <strong>Download</strong> &rarr; Select <strong>Open with Microsoft Excel</strong> &rarr; Click <strong>OK</strong>.</li>
-<li>Once Excel Spreadsheet opens, there will be 5 tabs listed:<br>
-             UDAs, UDA_Translations, UDA_Values, UDA_Value_Translations, & UDA_Defaults</li>
-    </ol>
-    <br>
-    <h2 class="sub-section-title">Worksheet Architecture Overview</h2>
-    <p>When the spreadsheet opens in Microsoft Excel, you will observe 5 primary structure tabs across the workbook footer:</p>
-    <ul>
-        <li><span class="path-highlight">UDAs</span></li>
-        <li><span class="path-highlight">UDA_Translations</span></li>
-        <li><span class="path-highlight">UDA_Values</span></li>
-        <li><span class="path-highlight">UDA_Value_Translations</span></li>
-        <li><span class="path-highlight">UDA_Defaults</span></li>
-    </ul>
-
-
-    <p>To create a new Report UDA Value to add to an existing Report UDA (ID) in the previous steps, clear all data from the <strong>UDAs & UDA_Defaults</strong> tabs below the Headers (Row 1) and do as follows on the <strong>UDA_Values</strong> tab:</p>
-
+  <div class="sub-section" id="reportuda-overview">
+    <h3 class="sub-section-title">What it is</h3>
+    <p><strong>Report UDAs</strong> (User Defined Attributes) are reporting attributes attached to items. Each <strong>UDA ID</strong> is an attribute, and each <strong>UDA Value</strong> is one of its options. When a buying team needs a new option, DST adds it as a new value on the existing UDA ID. You do this with the UDA foundation data template: <strong>download</strong> it from RMS, add the value, <strong>upload</strong> it back, confirm it processed, and then tell the buyer which ID and value to use on the Item Induction template.</p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Template</td><td>Template Type <strong>Items</strong>, Template <strong>User Defined Attributes (UDA)</strong>, under Foundation Data → Data Loading.</td></tr>
+        <tr><td>Value limit</td><td>A UDA ID can have at most <strong>999 values</strong>.</td></tr>
+        <tr><td>Value number</td><td>Use the <strong>next available</strong> number after the UDA ID's highest existing value.</td></tr>
+        <tr><td>Description</td><td>Enter it in <strong>Proper Case</strong>.</td></tr>
+        <tr><td>File format</td><td>Save the upload file as <strong>.ods</strong> (OpenDocument Spreadsheet).</td></tr>
+        <tr><td>Existing values</td><td>Check the current UDA listing first: Code M/Code MS/Data Steward Team/ORUP/QRGs on the HUB, or the <a href="#reportuda-queries">full UDA list query</a>.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="step-heading"><strong>Process at a glance</strong></p>
     <ol class="steps">
-        <li>Convert UDA (B) and UDA Values (C) to Numbers</li>
-        <li>Sort data by UDA (B) and then by UDA Values (C)</li>
-        <li>Add Filter to Header (Row 1)</li>
-        <li>Filter UDA (B) to UDA (ID) wanting to add new Report UDA Value to; scroll to bottom of list</li>
-        <p>Current listing of UDA with Description and Value can be found under Code M/Code MS/Data Steward Team/ORUP/QRGs/Added to HUB for reference*</p>
-        <li>Action (A) - select CREATE on drop-down list</li>
-        <li>UDA (B) - copy the same UDA (ID) number from the row above</li>
-        <li>UDA Value (C) - enter the next available numerical value</li>
-        <p style="color: red">*There can only be a max of 999 UDA Values per UDA (ID)*  </p>
-        <li>UDA Value Description (D) - enter the Report UDA Value requested in Proper Case</li>
-<br>
-        <!-- Oracle Workspace Data Grid Table Layer -->
-<div class="table-scroll-container" style="width: 100%; max-width: 650px; overflow-x: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; box-sizing: border-box;">
-    <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; border: 1px solid #cccccc;">
-        <thead>
-            <tr style="background-color: #f4f4f4; border-bottom: 1px solid #b5b5b5;">
-                <th style="font-weight: bold; color: #000000; padding: 4px 8px; border-right: 1px solid #cccccc; width: 20%;">Action</th>
-                <th style="font-weight: bold; color: #000000; padding: 4px 8px; border-right: 1px solid #cccccc; width: 20%; text-align: left;">UDA</th>
-                <th style="font-weight: bold; color: #000000; padding: 4px 8px; border-right: 1px solid #cccccc; width: 20%; text-align: left;">UDA Value</th>
-                <th style="font-weight: bold; color: #000000; padding: 4px 8px; width: 40%;">UDA Value Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr style="background-color: #ffffff; border-bottom: 1px solid #e0e0e0;">
-                <td style="padding: 6px 8px; color: #333333; border-right: 1px solid #cccccc; text-align: left;">Create</td>
-                <td style="padding: 6px 8px; color: #333333; border-right: 1px solid #cccccc; text-align: right; padding-right: 25px;">50005</td>
-                <td style="padding: 6px 8px; color: #333333; border-right: 1px solid #cccccc; text-align: right; padding-right: 25px;">1</td>
-                <td style="padding: 6px 8px; color: #333333; text-align: left;">SOP Test Value</td>
-            </tr>
-        </tbody>
+      <li><a href="#reportuda-download">Download</a> the UDA template from RMS.</li>
+      <li><a href="#reportuda-prepare">Prepare the workbook</a> and <a href="#reportuda-add-value">add the new value</a> on the UDA_Values tab.</li>
+      <li><a href="#reportuda-upload">Save as .ods and upload</a> it to RMS.</li>
+      <li><a href="#reportuda-confirm">Confirm it processed</a>, and fix any errors.</li>
+      <li><a href="#reportuda-finish">Update the QRG and reply</a> to the buyer.</li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="reportuda-download">
+    <h3 class="sub-section-title">Step 1: Download the UDA Template</h3>
+    <ol class="steps">
+      <li>In RMS v16 go to <span class="path-highlight">Tasks</span> &rarr; <span class="path-highlight">Foundation Data</span> &rarr; <span class="path-highlight">Data Loading</span> &rarr; <span class="path-highlight">Download</span>.
+        <img class="sop-shot" src="Pictures/DST/ReportUDA/rms-download-blank.jpg" alt="RMS Download Data tab with empty Template Type and Template fields." loading="lazy"></li>
+      <li>Set <strong>Template Type</strong> to <strong>Items</strong> and <strong>Template</strong> to <strong>User Defined Attributes (UDA)</strong>.
+        <img class="sop-shot" src="Pictures/DST/ReportUDA/rms-download-uda-template.jpg" alt="Download Data with Template Type Items and Template User Defined Attributes selected." loading="lazy"></li>
+      <li>Click <strong>Download</strong>, choose <strong>Open with Microsoft Excel</strong>, and click <strong>OK</strong>.
+        <img class="sop-shot" src="Pictures/DST/ReportUDA/rms-download-open-excel.jpg" alt="Browser dialog to open the User Defined Attributes .ods file with Microsoft Excel." loading="lazy"></li>
+      <li>The workbook opens with five tabs: <strong>UDAs</strong>, <strong>UDA_Translations</strong>, <strong>UDA_Values</strong>, <strong>UDA_Value_Translations</strong> and <strong>UDA_Defaults</strong>.
+        <img class="sop-shot" src="Pictures/DST/ReportUDA/uda-template-tabs.jpg" alt="Downloaded UDA workbook showing the UDAs tab and the five tabs along the bottom." loading="lazy"></li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="reportuda-prepare">
+    <h3 class="sub-section-title">Step 2: Prepare the Workbook</h3>
+    <ol class="steps">
+      <li>On the <strong>UDAs</strong> and <strong>UDA_Defaults</strong> tabs, clear all data <strong>below the header row (row 1)</strong>. Leave the headers in place.</li>
+      <li>Go to the <strong>UDA_Values</strong> tab and convert <strong>UDA (column B)</strong> and <strong>UDA Value (column C)</strong> to numbers.</li>
+      <li>Sort by <strong>UDA (B)</strong>, then by <strong>UDA Value (C)</strong>.</li>
+      <li>Add a filter to the header row (row 1).</li>
+      <li>Filter <strong>UDA (B)</strong> to the UDA ID you're adding to, and scroll to the bottom of the list to find its highest value.</li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="reportuda-add-value">
+    <h3 class="sub-section-title">Step 3: Add the New UDA Value</h3>
+    <p>Add one row per new value, directly below the UDA ID's last value:</p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Column</th><th>What to enter</th></tr></thead>
+      <tbody>
+        <tr><td>A: Action</td><td>Select <code>CREATE</code> from the drop-down.</td></tr>
+        <tr><td>B: UDA</td><td>The same UDA ID number as the row above.</td></tr>
+        <tr><td>C: UDA Value</td><td>The next available number. A UDA ID can have no more than 999 values.</td></tr>
+        <tr><td>D: UDA Value Description</td><td>The requested value, in Proper Case.</td></tr>
+      </tbody>
+    </table></div>
+    <p><em>Example:</em></p>
+    <table class="result-grid">
+      <tr><th>Action</th><th>UDA</th><th>UDA Value</th><th>UDA Value Description</th></tr>
+      <tr><td>Create</td><td>50005</td><td>1</td><td>SOP Test Value</td></tr>
     </table>
-</div>
-<br>
-<li>Save as an .ods file</li>
-<li>Save in Code M/Code MS/Data Steward/UDA Creation v16 </li>
-<li>Save as Report UDA Updates (todays date)</li>
-<li>Navigate back to RMSv16 > Tasks > Foundation Data >  Data Loading > Upload</li>
-<br>
-<p>Once in the Upload Data tab input the following:</p>
-<li>For the Template Type - select Items</li>
-<li>For Template - select User Defined Attributes (UDA)</li>
-<li>For Process Description - can be left as auto-populated description or edited</li>
-<li>For Source File - click Browse - find .ods file that was saved</li>
-    
-<br></br>
-<!-- Oracle Merchandising Workspace Content Pane (Upload Data - Fully Separated Left/Right Columns) -->
-<div class="oracle-system-container" style="display: block; background-color: #ffffff; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; width: 100%; min-width: 1000px; box-sizing: border-box;">
-    
-    <!-- Top Application Branding Bar -->
-    <header class="oracle-top-bar" style="border-bottom: 1px solid #e0e0e0; height: 45px; display: flex; align-items: center; justify-content: space-between; background-color: #ffffff; width: 100%;">
-        <div class="header-left-group" style="display: flex; align-items: center; height: 100%;">
-            <div class="hamburger-container" style="background-color: #f4f4f4; width: 50px; text-align: center; height: 45px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #e0e0e0; margin-right: 15px;">
-                <div style="display: inline-block; width: 18px; text-align: left; opacity: 0.7;">
-                    <div style="border-top: 2px solid #333; width: 12px; margin: 3px 0;"></div>
-                    <div style="border-top: 2px solid #333; width: 16px; margin: 3px 0;"></div>
-                    <div style="border-top: 2px solid #333; width: 10px; margin: 3px 0;"></div>
-                </div>
-            </div>
-            <span class="brand-oracle" style="font-weight: 800; color: #ff0000; font-size: 18px; letter-spacing: 0.5px;">ORACLE</span>
-            <span class="brand-app-name" style="color: #333333; font-size: 16px; font-weight: 400; margin-left: 5px;">Merchandising</span>
-        </div>
-        <div class="header-right-group" style="display: flex; align-items: center; gap: 5px; padding-right: 15px; color: #555555; font-size: 12px;">
-            <span class="user-profile-menu" style="cursor: pointer;"><span class="user-avatar-icon">👤</span> <span class="redacted" title="Redacted for privacy">username</span> ▼</span>
-            <span class="help-circle-icon" style="margin-left: 5px; color: #0250bb; font-weight: bold; font-size: 14px; cursor: pointer;">❓</span>
-        </div>
-    </header>
+    <img class="sop-shot" src="Pictures/DST/ReportUDA/uda-values-create-example.jpg" alt="UDA_Values tab with a single Create row for UDA 50005, value 1, SOP Test Value." loading="lazy">
+  </div>
 
-    <!-- Main Workspace Split Interface Section -->
-    <div class="oracle-main-split-body" style="display: flex; background-color: #ffffff; width: 100%;">
-        
-        <!-- Global Left Utility Drawer Menu Column -->
-        <aside class="oracle-left-sidebar" style="background-color: #f4f4f4; width: 50px; min-width: 50px; border-right: 1px solid #e0e0e0; padding-top: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;">
-            <div class="sidebar-icon-btn grid-apps-btn" style="width: 50px; height: 40px; display: flex; align-items: center; justify-content: center; opacity: 0.6; padding-bottom: 5px;">
-                <div style="display: grid; grid-template-columns: repeat(3, 4px); gap: 2px;">
-                    <div style="width:4px; height:4px; background:#333;"></div><div style="width:4px; height:4px; background:#333;"></div><div style="width:4px; height:4px; background:#333;"></div>
-                    <div style="width:4px; height:4px; background:#333;"></div><div style="width:4px; height:4px; background:#333;"></div><div style="width:4px; height:4px; background:#333;"></div>
-                    <div style="width:4px; height:4px; background:#333;"></div><div style="width:4px; height:4px; background:#333;"></div><div style="width:4px; height:4px; background:#333;"></div>
-                </div>
-            </div>
-            <div class="sidebar-icon-btn" style="width: 50px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #666666; opacity: 0.6;">★</div>
-            
-            <div class="sidebar-icon-btn active-star-tab" style="padding: 4px; margin: 5px auto; width: 38px; height: 38px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;">
-                <div style="background-color: #2a5cb3; width: 100%; height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-                    <div style="width: 14px; height: 16px; border: 2px solid #ffffff; border-radius: 2px; position: relative;">
-                        <div style="position: absolute; top: -4px; left: 3px; width: 4px; height: 2px; background-color: #ffffff; border-radius: 1px;"></div>
-                        <div style="position: absolute; color: #ffffff; font-size: 9px; font-weight: bold; top: 0px; left: 2px; font-family: Arial, sans-serif;">✓</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sidebar-icon-btn badge-notification-container" style="width: 50px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative; margin-top: 5px;">
-                <span style="opacity: 0.6;">🔔</span>
-                <span class="red-alert-badge" style="position: absolute; top: 4px; right: 4px; background-color: #ffffff; color: #b33939; border: 1px solid #b33939; font-size: 8px; font-weight: bold; padding: 0px 2px; border-radius: 8px; font-family: Arial, sans-serif; scale: 0.85;">99+</span>
-            </div>
-
-            <div class="sidebar-icon-btn" style="width: 50px; height: 40px; display: flex; align-items: center; justify-content: center; opacity: 0.6; padding-top: 5px;">
-                <div style="display: flex; align-items: flex-end; gap: 2px; height: 12px;">
-                    <div style="width: 3px; height: 6px; background: #333;"></div>
-                    <div style="width: 3px; height: 12px; background: #333;"></div>
-                    <div style="width: 3px; height: 9px; background: #333;"></div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Right Core View Canvas Space Container -->
-        <main class="oracle-workspace-canvas" style="flex: 1; vertical-align: top; background-color: #ffffff; display: flex; flex-direction: column;">
-            
-            <!-- Internal Workspace Tab Layout Selection Strip -->
-            <div class="workspace-tabs-bar" style="width: 100%; border-bottom: 1px solid #2a5cb3; height: 32px; display: flex; align-items: flex-end; padding-left: 10px; background-color: #ffffff; box-sizing: border-box;">
-                <div class="module-tab active-workspace-tab" style="border: 1px solid #2a5cb3; border-bottom: 1px solid #ffffff; padding: 4px 12px; font-size: 12px; font-weight: bold; color: #2a5cb3; display: flex; align-items: center; gap: 8px; background-color: #ffffff; position: relative; bottom: -1px; border-top-left-radius: 3px; border-top-right-radius: 3px;">
-                    Upload Data <span class="close-tab-x" style="font-size: 10px; color: #2a5cb3; font-weight: normal; font-family: monospace; cursor: pointer; scale: 1.1;">×</span>
-                </div>
-            </div>
-
-            <!-- Outer Canvas Wrapper with Full-Width Extension Area -->
-            <div style="padding: 20px; background-color: #ffffff; flex: 1; display: flex;">
-                <div class="configuration-card-outer" style="border: 1px solid #e2e2e2; padding: 35px 45px; border-radius: 2px; width: 100%; box-sizing: border-box; background-color: #ffffff;">
-                    
-                    <!-- Form fields table setup spanning all the way over from left to right -->
-                    <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
-                        <tr>
-                            <!-- Left Column (Template Type & Template) -->
-                            <td style="vertical-align: top; width: 45%;">
-                                <div style="display: flex; flex-direction: column; gap: 16px;">
-                                    
-                                    <!-- Template Type Row -->
-                                    <div class="form-selection-row" style="display: flex; align-items: center; justify-content: flex-start;">
-                                        <label class="field-label-bold" style="text-align: right; padding-right: 15px; font-size: 13px; font-weight: bold; color: #333333; white-space: nowrap; width: 110px;">Template Type</label>
-                                        <div class="custom-select-wrapper" style="display: flex; width: 180px; border: 1px solid #b5b5b5; border-radius: 3px; overflow: hidden; height: 26px; align-items: center; box-sizing: border-box; background-color: #ffffff; position: relative;">
-                                            <select class="select-field-input input-active-state" style="width: 100%; border: none; background: transparent; padding-left: 8px; font-size: 13px; color: #000000; -webkit-appearance: none; -moz-appearance: none; appearance: none; z-index: 2; height: 100%; cursor: pointer; font-family: inherit;">
-                                                <option value="">Items</option>
-                                            </select>
-                                            <span class="select-dropdown-caret" style="position: absolute; right: 0; top: 0; width: 22px; background: linear-gradient(to bottom, #f9f9f9, #e0e0e0); border-left: 1px solid #b5b5b5; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #333333; z-index: 1; pointer-events: none;">▼</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Template Configuration Row -->
-                                    <div class="form-selection-row" style="display: flex; align-items: center; justify-content: flex-start;">
-                                        <label class="field-label-bold" style="text-align: right; padding-right: 15px; font-size: 13px; font-weight: bold; color: #333333; white-space: nowrap; width: 110px;">Template</label>
-                                        <div class="custom-select-wrapper" style="display: flex; width: 250px; border: 1px solid #d5d5d5; border-radius: 3px; overflow: hidden; height: 26px; align-items: center; box-sizing: border-box; background-color: #fcfcfc; position: relative;">
-                                            <select class="select-field-input input-active-state" style="width: 100%; border: none; background: transparent; padding-left: 8px; font-size: 13px; color: #333333; -webkit-appearance: none; -moz-appearance: none; appearance: none; z-index: 2; height: 100%; cursor: pointer; font-family: inherit;">
-                                                <option value="">User Defined Attributes</option>
-                                            </select>
-                                            <span class="select-dropdown-caret" style="position: absolute; right: 0; top: 0; width: 22px; background: linear-gradient(to bottom, #fafafa, #eaeaea); border-left: 1px solid #d5d5d5; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #777777; z-index: 1; pointer-events: none;">▼</span>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </td>
-
-                            <!-- Middle Spacer to push content completely to edges -->
-                            <td style="width: 10%;"></td>
-
-                            <!-- Right Column (Process Description & Source File) placed on the far right side -->
-                            <td style="vertical-align: top; width: 45%;">
-                                <div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-end;">
-                                    
-                                    <!-- Process Description Text Field -->
-                                    <div class="form-selection-row" style="display: flex; align-items: center; width: 100%; justify-content: flex-end;">
-                                        <label class="field-label-bold" style="text-align: right; padding-right: 15px; font-size: 13px; font-weight: bold; color: #333333; white-space: nowrap; width: 140px;">Process Description</label>
-                                        <input type="text" value="User Defined Attributes - 10/12/18 2:53 PM" style="width: 300px; height: 26px; border: 1px solid #cccccc; border-radius: 3px; padding-left: 8px; font-size: 13px; color: #333333; box-sizing: border-box; background-color: #ffffff; font-family: inherit;" readonly />
-                                    </div>
-
-                                    <!-- Source File Field Row -->
-                                    <div class="form-selection-row" style="display: flex; align-items: center; width: 100%; justify-content: flex-end;">
-                                        <label class="field-label-bold" style="text-align: right; padding-right: 15px; font-size: 13px; font-weight: bold; color: #333333; white-space: nowrap; width: 140px;">Source File</label>
-                                        <div style="display: flex; align-items: center; gap: 10px; width: 300px; justify-content: flex-start;">
-                                            <span style="font-size: 13px; color: #000000; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;" title="Size Uni Test 2 101218.ods">UDA ID Updates 1.19.21 .ods</span>
-                                            <button type="button" style="height: 26px; padding: 0 12px; font-size: 12px; font-weight: bold; color: #333333; background: linear-gradient(to bottom, #ffffff, #e6e6e6); border: 1px solid #b5b5b5; border-radius: 3px; cursor: pointer; box-shadow: 0 1px 1px rgba(0,0,0,0.05); font-family: inherit; white-space: nowrap; margin-left: auto;">Update...</button>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                    
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-</div>
-
-    <br></br><br></br>
-
-<li>Upload File</li>
-<p>To determine if induction was successful:</p>
-<li>If you do not receive a notification, new Report UDA Value has been created </li>
-<li>If you receive a notification, there was an error; check Issues and troubleshoot</li>
-    </ol>
-
-    <p style="color: red">Run below query with LOWERCASED RMSv16 User ID to find out if PS or PE</p>
-    
-<div class="code-container">
-        <!-- Header Controls Context -->
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Download source">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                </button>
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Code Content Block with Internalized Scroll -->
-        <div class="code-wrapper">
-<pre><code><span class="sql-keyword">SELECT</span> to_char(s.action_date, <span class="sql-string">'DD-Mon-YY HH:MI:SS'</span>) a_date,
-       s.process_id, s.process_desc, s.status, s.user_id, s.file_path 
-<span class="sql-keyword">FROM</span> rms.svc_process_tracker s 
-<span class="sql-keyword">WHERE</span> user_id = <span class="sql-string">'yourusernamehere'</span> 
-<span class="sql-keyword">ORDER BY</span> action_date <span class="sql-keyword">DESC</span>;</code></pre>
-        </div>
-    </div>
-    <br>
-    <h2 class="sub-section-title">Deleting UDA Values</h2>
+  <div class="sub-section" id="reportuda-upload">
+    <h3 class="sub-section-title">Step 4: Save and Upload</h3>
     <ol class="steps">
-    <li>In RMS v16:<br> <strong>Tasks → Foundation Data → Data Loading → Download</strong></li>
-      <br></br>
-    <div class="oracle-system-container">
-    
-    <header class="oracle-top-bar">
-        <div class="header-left-group">
-            <span class="hamburger-menu-icon">☰</span>
-            <span class="brand-oracle">ORACLE</span>
-            <span class="brand-app-name">Merchandising</span>
-        </div>
-        <div class="header-right-group">
-            <span class="user-profile-menu"><span class="user-avatar-icon">👤</span> <span class="redacted" title="Redacted for privacy">username</span> ▼</span>
-            <span class="help-circle-icon">❓</span>
-        </div>
-    </header>
+      <li>Save the workbook as an <strong>.ods</strong> file named <code>Report UDA Updates MM.DD.YY</code> (today's date) in Code M/Code MS/Data Steward/<strong>UDA Creation v16</strong>.</li>
+      <li>In RMS v16 go to <span class="path-highlight">Tasks</span> &rarr; <span class="path-highlight">Foundation Data</span> &rarr; <span class="path-highlight">Data Loading</span> &rarr; <span class="path-highlight">Upload</span>.
+        <img class="sop-shot" src="Pictures/DST/ReportUDA/rms-upload-blank.jpg" alt="RMS Upload Data tab with empty fields." loading="lazy"></li>
+      <li>Fill in the Upload Data tab:
+        <ul>
+          <li><strong>Template Type:</strong> Items</li>
+          <li><strong>Template:</strong> User Defined Attributes (UDA)</li>
+          <li><strong>Process Description:</strong> keep the auto-filled description or edit it</li>
+          <li><strong>Source File:</strong> click <strong>Browse</strong> and select the .ods file you saved</li>
+        </ul>
+        <img class="sop-shot" src="Pictures/DST/ReportUDA/rms-upload-filled.jpg" alt="Upload Data filled in with Items, User Defined Attributes and the .ods source file." loading="lazy"></li>
+      <li>Click <strong>Upload</strong>.</li>
+    </ol>
+  </div>
 
-    <div class="oracle-main-split-body">
-        
-        <aside class="oracle-left-sidebar">
-            <div class="sidebar-icon-btn grid-apps-btn">⋮⋮⋮</div>
-            <div class="sidebar-icon-btn active-star-tab">⭐</div>
-            <div class="sidebar-icon-btn">📋</div>
-            <div class="sidebar-icon-btn badge-notification-container">
-                🔔
-                <span class="red-alert-badge">1</span>
-            </div>
-            <div class="sidebar-icon-btn">📊</div>
-        </aside>
-
-        <main class="oracle-workspace-canvas">
-            
-            <div class="workspace-tabs-bar">
-                <div class="module-tab active-workspace-tab">
-                    Download Data <span class="close-tab-x">×</span>
-                </div>
-            </div>
-
-            <div class="configuration-card-outer">
-                <div class="configuration-fields-form">
-                    
-                    <div class="form-selection-row">
-                        <label class="field-label-bold">Template Type</label>
-                        <div class="custom-select-wrapper">
-                            <select class="select-field-input input-active-state">
-                                <option value="">Items</option>
-                            </select>
-                            <span class="select-dropdown-caret">▼</span>
-                        </div>
-                    </div>
-
-                    <div class="form-selection-row">
-                        <label class="field-label-bold">Template</label>
-                        <div class="custom-select-wrapper">
-                            <select class="select-field-input input-active-state">
-                                <option value="">User Defined Attributes</option>
-                            </select>
-                            <span class="select-dropdown-caret">▼</span>
-                        </div>
-                    </div>
-
-                </div>
-
-                <footer class="configuration-actions-footer">
-                    <div class="footer-left-icons">
-                        <button class="footer-glyph-btn help-blue-btn">❓</button>
-                        <button class="footer-glyph-btn page-export-btn">📋</button>
-                    </div>
-                    <div class="footer-right-buttons">
-                        <button class="action-btn btn-primary-dark" >Download</button>
-                        <button class="action-btn btn-primary-dark">Done</button>
-                    </div>
-                </footer>
-            </div>
-
-        </main>
-    </div>
-
-</div>
-<br></br>
-      <li>Click <strong>Download</strong>. Open the downloaded file in Microsoft Excel</li>
-      <li>Once Excel Spreadsheet opens, go to the tab you are deleting from, either<strong> UDAs</strong> or <strong>UDA-Values</strong></li>
-      <br></br>
-<p style="color: red">*Note: If deleting from the UDAs tab, you will need to delete all UDA Values associated with that UDA (ID) first*</p>
-      <li>Add filter to the Header Row (Row 1)</li>
-      <li>Search/Select the UDA (ID) and/or UDA Value wanting to delete; search by either number or name</li>
-      <li>Action (A) - select DELETE from the drop-down</li>
-      <li>Filter Action (A) to show the updates only (uncheck Delete from the listing)</li>
-      <li>Delete all Update rows</li>
-      <li>Remove Filter so that only the Delete UDA (ID) and or UDA Value are showing</li>
-      <br></br>
-    
-    <ol>
-        
-
-    <h2>Queries</h2>
-    
+  <div class="sub-section" id="reportuda-confirm">
+    <h3 class="sub-section-title">Step 5: Confirm the Upload Processed</h3>
+    <ul>
+      <li><strong>No notification:</strong> the new value was created. Continue to <a href="#reportuda-finish">Step 6</a>.</li>
+      <li><strong>A notification appears:</strong> the upload had an error. Check the issues and fix them as follows.</li>
+    </ul>
+    <ol class="steps">
+      <li>Run the process tracker query with your RMS v16 user ID in <strong>lowercase</strong>. The <strong>STATUS</strong> column shows <code>PS</code> (processed successfully) or <code>PE</code> (processed with errors).
     <div class="code-container">
-        <!-- Header Controls Context -->
-        <div class="code-header">
-            <span>SQL</span>
-            <div class="header-controls">
-                <button class="control-btn" title="Download source">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                </button>
-                <button class="control-btn" title="Copy code" onclick="copyCode(this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Code Content Block with Internalized Scroll -->
-        <div class="code-wrapper">
-<pre><code><span class="sql-comment" data-nosave="true">---Full List of UDA's with Descriptions---</span>
-<span class="sql-keyword">SELECT</span> U1.UDA_ID, U1.UDA_DESC, U2.UDA_VALUE,
-       U2.UDA_VALUE_DESC 
-<span class="sql-keyword">FROM</span> rms.uda u1, rms.UDA_VALUES u2 
-<span class="sql-keyword">WHERE</span> U1.UDA_ID = U2.UDA_ID 
-<span class="sql-comment" data-nosave="true">----and u1.uda_id = 5261 </span>
-<span class="sql-keyword">ORDER BY</span> U1.UDA_ID, U2.UDA_VALUE;</code></pre>
-        </div>
+      <div class="code-header"><span>SQL: Process tracker</span><div class="header-controls"><button class="control-btn" title="Copy text" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+      <div class="code-wrapper">
+<pre><code>SELECT to_char(s.action_date, &#x27;DD-Mon-YY HH:MI:SS&#x27;) a_date, s.process_id, s.process_desc,
+       s.status, s.user_id, s.file_path
+FROM rms.svc_process_tracker s
+WHERE user_id = &#x27;yourusernamehere&#x27;
+ORDER BY action_date DESC;</code></pre>
+      </div>
     </div>
+        <img class="sop-shot" src="Pictures/DST/ReportUDA/process-tracker-query.jpg" alt="Process tracker query results showing one upload with status PS and one with status PE." loading="lazy"></li>
+      <li>For a <code>PE</code> upload, click the <strong>Data Loading Status</strong> notification, select the process and click <strong>View Issues</strong>.
+        <img class="sop-shot" src="Pictures/DST/ReportUDA/data-loading-status.jpg" alt="Data Loading Status tab with a process selected and the View Issues button." loading="lazy"></li>
+      <li>The <strong>Foundation Data Issues</strong> tab lists the worksheet, row, column and issue description for each error.
+        <img class="sop-shot" src="Pictures/DST/ReportUDA/foundation-data-issues.jpg" alt="Foundation Data Issues showing an error on row 2: Duplicate Brand name exists." loading="lazy">
+        <div class="callout info"><span class="callout-icon">ℹ</span><div>These example screenshots are from a brand upload; your screens may look slightly different.</div></div></li>
+      <li>Correct the error in the workbook, then save and upload it again (<a href="#reportuda-upload">Step 4</a>).</li>
+    </ol>
+  </div>
 
+  <div class="sub-section" id="reportuda-finish">
+    <h3 class="sub-section-title">Step 6: Update the QRG and Reply to the Buyer</h3>
+    <ol class="steps">
+      <li>Run the <a href="#reportuda-queries">full UDA list query</a> so the Senior Supply Chain Tech or the DST Manager can add the new value to the Quick Reference Guide (QRG) listing on the SharePoint HUB.</li>
+      <li>Reply to the buyer's email with the new UDA ID and UDA Value:
+    <div class="code-container">
+      <div class="code-header"><span>Email reply</span><div class="header-controls"><button class="control-btn" title="Copy text" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+      <div class="code-wrapper">
+<pre><code>Hi [Buyer Name],
+
+The new Report UDA Value has been processed and created. Please use the following in the UDA ID (starting at column CG) and UDA Value columns on the Item Induction template:
+
+UDA ID: [UDA ID #]
+UDA Value: [UDA Value #] - [Description in Proper Case]
+
+(The description is for reference only and is not entered on the Item Induction template.)</code></pre>
+      </div>
+    </div>
+      </li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="reportuda-new-id">
+    <h3 class="sub-section-title">Creating a New Report UDA (ID)</h3>
+    <p>The steps above add a value to an <strong>existing</strong> UDA ID. A brand-new UDA ID is created on the <strong>UDAs</strong> tab of the same template. It must be created with <strong>at least one UDA Value</strong> on the UDA_Values tab, and is then saved and uploaded the same way. For the brand example, see <a href="#brand-create-uda-ids">Creating New Brand UDA IDs</a>.</p>
+  </div>
+
+  <div class="sub-section" id="reportuda-delete">
+    <h3 class="sub-section-title">Deleting a UDA (ID) or UDA Value</h3>
+    <ol class="steps">
+      <li>Download the UDA template the same way as <a href="#reportuda-download">Step 1</a>.</li>
+      <li>Open the tab you're deleting from: <strong>UDAs</strong> for a UDA ID, or <strong>UDA_Values</strong> for a value. The remaining steps are the same on either tab.
+        <img class="sop-shot" src="Pictures/DST/ReportUDA/uda-tab-delete.jpg" alt="UDAs tab of the downloaded workbook with Update in the Action column." loading="lazy">
+        <div class="callout warn"><span class="callout-icon">⚠</span><div>To delete a UDA ID from the UDAs tab, first delete <strong>all of its UDA Values</strong>.</div></div></li>
+      <li>Add a filter to the header row (row 1).</li>
+      <li>Find the UDA ID or value to delete, searching by number or name, and set <strong>Action (A)</strong> to <code>DELETE</code>.</li>
+      <li>Clear the filter, then filter <strong>Action (A)</strong> to show only the <code>Update</code> rows (uncheck <code>Delete</code>).</li>
+      <li><strong>Delete all of the Update rows.</strong></li>
+      <li>Remove the filter. Only your <code>DELETE</code> rows should remain.</li>
+      <li>Save as .ods and upload, then confirm it processed (<a href="#reportuda-upload">Steps 4</a> and <a href="#reportuda-confirm">5</a>).</li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="reportuda-queries">
+    <h3 class="sub-section-title">Queries</h3>
+    <p>Full list of UDA IDs and values with descriptions. Remove the <code>----</code> to filter to one UDA ID:</p>
+    <div class="code-container">
+      <div class="code-header"><span>SQL: Full UDA list</span><div class="header-controls"><button class="control-btn" title="Copy text" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+      <div class="code-wrapper">
+<pre><code>--- Full list of UDAs with descriptions ---
+SELECT U1.UDA_ID, U1.UDA_DESC, U2.UDA_VALUE, U2.UDA_VALUE_DESC
+FROM rms.uda u1, rms.UDA_VALUES u2
+WHERE U1.UDA_ID = U2.UDA_ID
+----AND u1.uda_id = 5261
+ORDER BY U1.UDA_ID, U2.UDA_VALUE;</code></pre>
+      </div>
+    </div>
+  </div>
 </section>
 <script>
 function copyCode(button) {
