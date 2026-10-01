@@ -91,7 +91,18 @@
     </div>
   </div>
 
-  <a class="nav-top-link" href="#dns">DNS</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">DNS <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#dns-what">What DNS Is</a>
+      <a class="nav-sub-link" href="#dns-how">How a Lookup Works</a>
+      <a class="nav-sub-link" href="#dns-records">Record Types</a>
+      <a class="nav-sub-link" href="#dns-uses">How DNS Is Used</a>
+      <a class="nav-sub-link" href="#dns-example">Example: GitHub Pages</a>
+      <a class="nav-sub-link" href="#dns-tools">Command-Line Checks</a>
+      <a class="nav-sub-link" href="#dns-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Deploy HTML Site <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
@@ -1306,7 +1317,221 @@ ip -c a</code></pre>
 
         <div id="dns">
             <h2>DNS</h2>
-            <p class="tool-overview"><strong>What it is:</strong> DNS (Domain Name System) is the internet’s phone book: it translates names like <code>ryanpgray.com</code> into the IP addresses computers use to connect. Records at your DNS provider decide where a domain and its subdomains point: A records for IPv4 addresses, CNAME records for aliases, and MX records for email.</p>
+            <p class="tool-overview"><strong>What it is:</strong> DNS (Domain Name System) is the internet’s phone book. People use names like <code>ryanpgray.com</code>; computers connect using IP addresses like <code>185.199.108.153</code>. DNS translates one into the other, every time you open a website, send an email or connect to a server by name. Records at your DNS provider decide where a domain and each of its subdomains point.</p>
+
+            <div id="dns-what">
+                <h3>What DNS Is and Why It Exists</h3>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=937" target="_blank" rel="noopener">▶ Watch this in the tutorial (15:37)</a></p>
+                <ul>
+                    <li><strong>IP address:</strong> every device on a network (your PC, your phone, a web server) has an IP address, like a phone number for the internet. IPv4 looks like <code>192.168.1.10</code>; IPv6 looks like <code>2606:50c0:8000::153</code> and exists because the world is running out of IPv4 numbers.</li>
+                    <li><strong>Domain name:</strong> a human-friendly name that is easy to remember and doesn’t change when the server behind it moves to a new address.</li>
+                    <li><strong>DNS:</strong> a worldwide, distributed database that maps names to addresses (and other information, such as which servers handle email). No single server holds everything; each domain’s records live with that domain’s DNS provider.</li>
+                </ul>
+                <p>Without DNS you would have to type an IP address for every site. With it, a site can move to a new server and only its DNS record changes; everyone keeps using the same name.</p>
+            </div>
+
+            <div id="dns-how">
+                <h3>How a DNS Lookup Works</h3>
+                <p>When you type <code>www.example.com</code> into a browser, this happens in a fraction of a second:</p>
+                <ol>
+                    <li><strong>Local cache:</strong> your browser and operating system first check whether they looked the name up recently. If so, they reuse the answer.</li>
+                    <li><strong>Recursive resolver:</strong> if not, the computer asks its configured DNS server, usually your router, your ISP, or a public resolver such as <code>1.1.1.1</code> (Cloudflare) or <code>8.8.8.8</code> (Google). The resolver does the legwork.</li>
+                    <li><strong>Root servers:</strong> the resolver asks a root server, “Who handles <code>.com</code>?”</li>
+                    <li><strong>TLD servers:</strong> the <code>.com</code> servers answer, “<code>example.com</code> is handled by these nameservers” (the domain’s <strong>NS</strong> records, set at the registrar).</li>
+                    <li><strong>Authoritative nameserver:</strong> the domain’s own DNS provider returns the actual record, for example the A record with the IP address.</li>
+                    <li><strong>Answer and caching:</strong> the resolver returns the IP to your computer, and every step caches the answer for the record’s <strong>TTL</strong>. The browser then connects to that IP and asks the web server for the page.</li>
+                </ol>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Registrar vs. DNS host:</strong> the <em>registrar</em> is where you buy the domain (Namecheap, Cloudflare, GoDaddy…). The <em>DNS host</em> is whoever answers DNS questions for it, set by the domain’s NS records. They’re often the same company, but you can buy a domain at Namecheap and point its nameservers to Cloudflare, as the <a href="#nginx-wildcard-cert">NGINX / Vaultwarden</a> guide does.</div></div>
+            </div>
+
+            <div id="dns-records">
+                <h3>DNS Record Types</h3>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1225" target="_blank" rel="noopener">▶ Watch this in the tutorial (20:25)</a></p>
+                <p>Every record has the same four parts: <strong>Type</strong>, <strong>Host</strong> (name), <strong>Value</strong> and <strong>TTL</strong>.</p>
+                <table>
+                    <thead><tr><th>Type</th><th>What it does</th><th>Example</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>A</code></td><td>Points a name to an <strong>IPv4</strong> address.</td><td><code>@ → 185.199.108.153</code></td></tr>
+                        <tr><td><code>AAAA</code></td><td>Points a name to an <strong>IPv6</strong> address.</td><td><code>@ → 2606:50c0:8000::153</code></td></tr>
+                        <tr><td><code>CNAME</code></td><td>Makes a name an <strong>alias</strong> of another name; the lookup continues with that name. Only allowed on subdomains, not the bare domain.</td><td><code>www → username.github.io</code></td></tr>
+                        <tr><td><code>MX</code></td><td>Says which mail servers receive email for the domain, with a priority (lower number is tried first).</td><td><code>@ → 10 mail.example.com</code></td></tr>
+                        <tr><td><code>TXT</code></td><td>Free text, used to prove domain ownership (Google, Microsoft 365, GitHub) and for email security (SPF, DKIM, DMARC).</td><td><code>@ → "v=spf1 include:_spf.google.com ~all"</code></td></tr>
+                        <tr><td><code>NS</code></td><td>Names the authoritative nameservers for the domain (which DNS host answers for it).</td><td><code>@ → dns1.registrar-servers.com</code></td></tr>
+                        <tr><td><code>SOA</code></td><td>Start of Authority: administrative details for the zone (primary nameserver, serial number, refresh timers). Created automatically.</td><td>—</td></tr>
+                        <tr><td><code>PTR</code></td><td>Reverse lookup: maps an IP address back to a name. Common on mail servers and internal networks.</td><td><code>10 → server1.lab.local</code></td></tr>
+                        <tr><td><code>SRV</code></td><td>Points to the host and port for a specific service. Active Directory uses SRV records to find domain controllers.</td><td><code>_ldap._tcp → 0 100 389 dc1.lab.local</code></td></tr>
+                        <tr><td><code>CAA</code></td><td>Lists which certificate authorities may issue SSL certificates for the domain.</td><td><code>@ → 0 issue "letsencrypt.org"</code></td></tr>
+                    </tbody>
+                </table>
+                <h4>Host / name field</h4>
+                <ul>
+                    <li><code>@</code> means the <strong>bare (root) domain</strong> itself, e.g. <code>example.com</code>. Some providers leave the field blank instead.</li>
+                    <li>Anything else is a <strong>subdomain</strong> in front of the domain: <code>www</code> → <code>www.example.com</code>, <code>studio</code> → <code>studio.example.com</code>. Subdomains let one domain host several separate sites.</li>
+                    <li><code>*</code> is a <strong>wildcard</strong> that matches any subdomain without its own record, e.g. <code>*.tail.example.com</code>.</li>
+                </ul>
+                <h4>TTL and propagation</h4>
+                <p><strong>TTL</strong> (time to live) is how many seconds resolvers may cache a record. A short TTL such as <code>300</code> (5 minutes) means changes take effect quickly; a long TTL such as <code>3600</code> or <code>86400</code> means fewer lookups but slower changes. Lower the TTL a day <em>before</em> a planned move, then raise it again afterwards. “Propagation” is simply old cached answers expiring around the world, which is why new records can take anywhere from minutes to 24–48 hours to work everywhere.</p>
+            </div>
+
+            <div id="dns-uses">
+                <h3>How DNS Is Used</h3>
+                <ul>
+                    <li><strong>Websites:</strong> A/AAAA and CNAME records point a domain at a web host, such as GitHub Pages (see the worked example below and <a href="#website-online">Deploy an HTML Site</a>).</li>
+                    <li><strong>Email:</strong> MX records route incoming mail; TXT records hold SPF, DKIM and DMARC so other servers trust mail sent from the domain.</li>
+                    <li><strong>Proving ownership:</strong> services ask you to add a TXT record (or CNAME) to verify a domain, and Let’s Encrypt can issue certificates through a <strong>DNS challenge</strong>, as in the <a href="#nginx-wildcard-cert">wildcard certificate</a> steps.</li>
+                    <li><strong>Internal networks:</strong> companies run their own DNS (for example on <a href="#windows-server">Windows Server</a>) so PCs find file servers, printers and domain controllers by name; Active Directory depends on it.</li>
+                    <li><strong>Home lab:</strong> a local DNS server such as <a href="#pi-hole">Pi-hole</a> answers for your devices, can create local names like <code>nas.home</code>, and blocks ads by refusing to resolve ad domains.</li>
+                    <li><strong>Load balancing and failover:</strong> several A records for one name spread visitors across servers, as GitHub Pages does with its four addresses.</li>
+                </ul>
+            </div>
+
+            <div id="dns-example">
+                <h3>Worked Example: Point a Domain at GitHub Pages</h3>
+                <p>From the <a href="#website-online">Deploy an HTML Site</a> tutorial: link a domain bought at Namecheap to a website hosted on GitHub Pages.</p>
+                <h4>Step 1: Open the domain’s DNS settings</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1131" target="_blank" rel="noopener">▶ Watch this in the tutorial (18:51)</a></p>
+                <p>Namecheap: <strong>Account</strong> → <strong>Domain List</strong> → <strong>Manage</strong> → <strong>Advanced DNS</strong> → <strong>Host Records</strong>. Other registrars have a similar <strong>DNS records</strong> or <strong>Manage DNS</strong> page.</p>
+                <h4>Step 2: Look up GitHub Pages’ IP addresses</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1316" target="_blank" rel="noopener">▶ Watch this in the tutorial (21:56)</a></p>
+                <p>Use <a href="https://mxtoolbox.com/DNSLookup.aspx" target="_blank" rel="noopener">MxToolbox DNS Lookup</a> on <code>YOUR-USERNAME.github.io</code>, or:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nslookup YOUR-USERNAME.github.io</code></pre>
+                    </div>
+                </div>
+                <h4>Step 3: Add the records</h4>
+                <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1340" target="_blank" rel="noopener">▶ Watch this in the tutorial (22:20)</a></p>
+                <table>
+                    <thead><tr><th>Type</th><th>Host</th><th>Value</th><th>TTL</th><th>Why</th></tr></thead>
+                    <tbody>
+                        <tr><td>A</td><td><code>@</code></td><td><code>185.199.108.153</code></td><td>5 min</td><td>Bare domain → GitHub (IPv4)</td></tr>
+                        <tr><td>A</td><td><code>@</code></td><td><code>185.199.109.153</code></td><td>5 min</td><td>Second GitHub server</td></tr>
+                        <tr><td>A</td><td><code>@</code></td><td><code>185.199.110.153</code></td><td>5 min</td><td>Third GitHub server</td></tr>
+                        <tr><td>A</td><td><code>@</code></td><td><code>185.199.111.153</code></td><td>5 min</td><td>Fourth GitHub server</td></tr>
+                        <tr><td>CNAME</td><td><code>www</code></td><td><code>YOUR-USERNAME.github.io</code></td><td>5 min</td><td><code>www.</code> follows GitHub’s name, so it keeps working if GitHub changes IPs</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>The bare domain needs A records because a CNAME isn’t allowed there; only subdomains like <code>www</code> can use a CNAME. Optionally add GitHub’s IPv6 addresses as <code>AAAA</code> records. Then set the <strong>Custom domain</strong> in the repository’s <strong>Settings → Pages</strong> and turn on <strong>Enforce HTTPS</strong> (see <a href="#deploy-link-domain">Part 4</a> and <a href="#deploy-https">Part 5</a> of the deploy guide).</div></div>
+            </div>
+
+            <div id="dns-tools">
+                <h3>Checking DNS from the Command Line</h3>
+                <p>Look up a domain’s A records (works on Windows, macOS and Linux):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nslookup example.com</code></pre>
+                    </div>
+                </div>
+                <p>Ask a specific DNS server, to compare answers or bypass your local cache:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nslookup example.com 1.1.1.1</code></pre>
+                    </div>
+                </div>
+                <p>Look up a specific record type:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nslookup -type=MX example.com
+nslookup -type=TXT example.com
+nslookup -type=NS example.com</code></pre>
+                    </div>
+                </div>
+                <p>Linux/macOS: <code>dig</code> gives more detail, including the TTL left on each answer:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>dig example.com A +noall +answer
+dig www.example.com CNAME +short
+dig example.com MX +short
+dig @1.1.1.1 example.com +short</code></pre>
+                    </div>
+                </div>
+                <p>Windows PowerShell:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>powershell</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>Resolve-DnsName example.com -Type A
+Resolve-DnsName example.com -Type MX -Server 1.1.1.1</code></pre>
+                    </div>
+                </div>
+                <p>Clear your computer’s DNS cache after changing records:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>powershell</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code># Windows
+ipconfig /flushdns</code></pre>
+                    </div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code># Ubuntu / systemd-resolved
+sudo resolvectl flush-caches
+# macOS
+sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dns-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <table>
+                    <thead><tr><th>Symptom</th><th>Likely cause and fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>New domain or record doesn’t work yet</td><td>Propagation: cached answers haven’t expired. Check with <code>nslookup example.com 1.1.1.1</code>; if the public resolver has the new value, it’s only your cache, so flush it and wait.</td></tr>
+                        <tr><td><code>NXDOMAIN</code> / “non-existent domain”</td><td>No record exists for that name. Check the spelling of the Host field (<code>@</code> vs <code>www</code>) and that the record was saved.</td></tr>
+                        <tr><td>Old IP still returned</td><td>The previous record is still cached until its TTL expires. Use a short TTL before making changes.</td></tr>
+                        <tr><td>Records saved but nothing changes</td><td>You may be editing DNS at the wrong place. Check <code>nslookup -type=NS example.com</code>: whichever provider is listed is where records must be edited.</td></tr>
+                        <tr><td>Can’t add a CNAME on the bare domain</td><td>Not allowed by DNS. Use A/AAAA records for <code>@</code>, or your provider’s ALIAS/flattening feature.</td></tr>
+                        <tr><td>Email not arriving or going to spam</td><td>Missing or wrong MX, SPF, DKIM or DMARC records. Check them with <code>nslookup -type=MX</code> and <code>-type=TXT</code>.</td></tr>
+                        <tr><td>Works on Wi-Fi but not elsewhere (or vice versa)</td><td>Different resolvers: a local DNS (Pi-hole, router or corporate DNS) may be overriding or blocking the name.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="website-online">
@@ -1440,6 +1665,7 @@ ip -c a</code></pre>
 
             <div id="deploy-dns-records">
                 <h3>Part 3: Point the Domain at GitHub Pages (DNS Records)</h3>
+                <p>For a deeper explanation of DNS, record types and lookup tools, see the <a href="#dns">DNS</a> section.</p>
                 <h4>Step 1: Open your domain’s DNS settings</h4>
                 <p class="video-step"><a href="https://youtu.be/p1QU3kLFPdg?t=1131" target="_blank" rel="noopener">▶ Watch this step (18:51)</a></p>
 
