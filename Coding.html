@@ -1031,7 +1031,6 @@ td.red-border-cell:nth-child(4) {
       <a class="nav-sub-link" href="#promo-tracker">4. Check the Tracker</a>
       <a class="nav-sub-link" href="#promo-troubleshooting">Troubleshooting</a>
       <a class="nav-sub-link" href="#promo-code">The Code</a>
-      <a class="nav-sub-link" href="#sale-fact-tags">Sale Fact Tags</a>
     </div>
   </div>
   <div class="nav-section">
@@ -1047,7 +1046,13 @@ td.red-border-cell:nth-child(4) {
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Fact Tags <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#Fact-Tags">Overview</a>
-      <a class="nav-sub-link" href="#sale-master">Sale Master</a>
+      <a class="nav-sub-link" href="#sale-fact-tags">Sale Fact Tags</a>
+      <a class="nav-sub-link" href="#sale-load">1. Load the Items</a>
+      <a class="nav-sub-link" href="#sale-na">2. Check for #N/A</a>
+      <a class="nav-sub-link" href="#sale-export">3. Export &amp; Prompts</a>
+      <a class="nav-sub-link" href="#sale-email">4. Review &amp; Hold Email</a>
+      <a class="nav-sub-link" href="#sale-troubleshooting">Troubleshooting</a>
+      <a class="nav-sub-link" href="#sale-master">The Code</a>
     </div>
   </div>
   <div class="nav-section">
@@ -1417,72 +1422,6 @@ CleanUp:
 <span class="vba-keyword">End Sub</span></code></pre>
     </div>
 </div>
-
-      <!-- SALE FACT TAGS sub-section -->
-      <h3 id="sale-fact-tags">Sale Fact Tags</h3>
-
-      <p>If you answered <strong>Yes</strong> to “Do you want to generate sale tags?”, the macro loads the RINs, regular and promo prices, and promotion dates into the <strong>Sale Master</strong> sheet of the Fact Tags workbook.</p>
-      <p>*Macro will auto input RINS into item column of "Sale Master" sheet of Fact tags Document and VLOOKUP the fact tags for those RINS.</p>
-      <p class="red">*If there are #NAs on the items, then there is no fact tag for that item.</p>
-      <p class="red">Either build fact tag for the item</p>
-      <p class="red">or</p>
-      <p class="red">*if fact tag is not needed for the item remove rows that have NA's</p>
-
-      <p class="sign-warning">SIGN TEAM WILL NOT ACCEPT TEMPLATES WITH NA ITEMS</p>
-
-      <ol>
-        <li><span class="underline">Once #NAs are removed click "SALE EXPORT" macro</span></li>
-        <li><span class="underline">Enter Department/Brand</span>
-          <div style="margin-top:8px;">
-            <div class="dialog-box">
-              <div class="dialog-title">Department Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ✕</div>
-              <label>Enter the Department (e.g., Electronics):</label>
-              <div style="display:flex;gap:8px;justify-content:flex-end;">
-                <button style="padding:3px 12px;font-size:12px;">OK</button>
-                <button style="padding:3px 12px;font-size:12px;">Cancel</button>
-              </div>
-            </div>
-          </div>
-        </li>
-        <li><span class="underline">Enter Start &amp; End Date of Promotion following MM/DD/YY format</span>
-          <div class="dialog-row" style="margin-top:8px;">
-            <div class="dialog-box">
-              <div class="dialog-title">Start Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ✕</div>
-              <label>Enter Promotion Start Date (MM/DD/YY):</label>
-              <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:6px;">
-                <button style="padding:3px 12px;font-size:12px;">OK</button>
-                <button style="padding:3px 12px;font-size:12px;">Cancel</button>
-              </div>
-              <input type="text" style="width:100%;border:none;border-bottom:2px solid #3a7bd5;background:transparent;font-size:13px;padding:3px 0;" placeholder="|" />
-            </div>
-            <div class="dialog-box">
-              <div class="dialog-title">End Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ✕</div>
-              <label>Enter Promotion End Date (MM/DD/YY):</label>
-              <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:6px;">
-                <button style="padding:3px 12px;font-size:12px;">OK</button>
-                <button style="padding:3px 12px;font-size:12px;">Cancel</button>
-              </div>
-              <input type="text" style="width:100%;border:none;border-bottom:2px solid #3a7bd5;background:transparent;font-size:13px;padding:3px 0;" placeholder="|" />
-            </div>
-          </div>
-        </li>
-      </ol>
-
-      <p style="margin-top:14px;font-weight:600;">*Email will be generated to sign team with fact tag template with correct file name and dates</p>
-
-      <div class="email-preview">
-        <div class="ep-toolbar">Week 5 Apple Unadvertised Promotion Fact Tags 03.01.2026-03.31.2026 — Message (Plain Text)</div>
-        <div class="ep-field"><span class="ep-label">To</span><span>PLUS-SignTeam</span></div>
-        <div class="ep-field"><span class="ep-label">Cc</span><span></span></div>
-        <div class="ep-field"><span class="ep-label">Subject</span><span>Week 5 Apple Unadvertised Promotion Fact Tags 03.01.2026-03.31.2026</span></div>
-        <div class="ep-field"><span class="ep-label">Attach</span><span class="attach-pill">📎 Week 5 Unadvertised Apple Promotion Fact Tag_99999_Promotion_SIGNS_HQ Distributed_20260301_20260331.xlsx &nbsp;14 KB</span></div>
-        <div class="ep-body">Sign Team,<br><br>Please see attached Sale signs for Week 5 for Apple.<br><br>Thanks,</div>
-      </div>
-
-      <ol start="4">
-        <li><span class="underline">Verify information looks correct.</span><br><span class="red">*START DOES NOT WANT TO BE SENT SIGNS UNTIL PROMOTION HAS BEEN KEYED/APPROVED</span></li>
-        <li><span class="underline">Save file to send tags once. promotion has been keyed by START.</span></li>
-      </ol>
     </div>
 
 <div class="section" id="buyer-promo-tracker">
@@ -2101,9 +2040,88 @@ CleanUp:
     <!-- SALE MASTER -->
     <div class="section" id="Fact-Tags">
       <h2>Fact Tags</h2>
-<h3 id="sale-master">Sale Master</h3>
-<p>Code:</p>
+      <p>The <strong>Fact Tags V4</strong> workbook holds every fact tag the team has built (the shelf signs for out-of-box, on-display items) and creates the import files the sign team uses to print them. Each tab has a job:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Tab</th><th>What it’s for</th></tr></thead><tbody><tr><td><strong>Category tabs</strong> (Apple, Audio, Cameras, Computers, TV-Video, Video Games, Majors, Small Appliances, …)</td><td>Where fact tags are built and kept: one row per item, starting on row 6.</td></tr><tr><td><strong>Master</strong></td><td>A combined copy of the category tabs. The Sale Master looks every RIN up here. Refresh it after adding or changing fact tags.</td></tr><tr><td><strong>SALE MASTER</strong></td><td>Builds <strong>sale</strong> signs for a promotion and sends them to the sign team (this section).</td></tr><tr><td>Clearance Master</td><td>The same idea for clearance signs.</td></tr><tr><td>Examples / Instructions</td><td>The sign team’s rules: character limits, <code>//</code> line breaks, required columns.</td></tr></tbody></table></div>
 
+      <h3 id="sale-fact-tags">Sale Fact Tags (SALE MASTER)</h3>
+      <p>The SALE MASTER tab turns a list of RINs and sale prices into a sale-sign file for the sign team. You load the items, check that every item has a fact tag, then click <strong>EXPORT TO SIGN TEAM</strong>. The macro builds the sign-team file, removes items with no fact tag, names the file the way the sign team requires, and drafts the email.</p>
+      <img src="Pictures/Coding/Fact Tags/Sale-Master.png" alt="SALE MASTER tab with Copies, Template, UPC, ItemID, Model, Name, Description, StartDate, StopDate, UserDefined4, SalePriceType, RegPrice and SalePrice columns, rows showing #N/A, and the Export to Sign Team button" loading="lazy">
+      <h3 id="sale-load">Step 1: Load the Items</h3>
+      <p><strong>Automatically:</strong> run the <a href="#promotion-macro">Promotion Macro</a> and answer <strong>Yes</strong> to “Do you want to generate sale tags?”. It writes the RINs, regular and promo prices, and dates into the SALE MASTER for you.</p>
+      <p><strong>Manually:</strong> paste RINs into <strong>ItemID (D)</strong>, starting on row 2 with no blank rows, then fill in the dates (H–I) and prices (L–M).</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Column</th><th>Filled by</th><th>Notes</th></tr></thead><tbody><tr><td><strong>ItemID</strong> (D)</td><td>You, or the <a href="#promotion-macro">Promotion Macro</a></td><td>The Navy RIN. Everything else is looked up from this.</td></tr><tr><td>UPC (C), Model (E), Name (F), Description (G)</td><td>Formula (VLOOKUP on the <strong>Master</strong> tab)</td><td>Shows <strong>#N/A</strong> when the RIN has no fact tag on Master.</td></tr><tr><td><strong>StartDate / StopDate</strong> (H–I)</td><td>You, or the Promotion Macro</td><td>The dates printed on the sign.</td></tr><tr><td><strong>RegPrice / SalePrice</strong> (L–M)</td><td>You, or the Promotion Macro</td><td>Regular NEX price and the promo price.</td></tr><tr><td>Copies (A), Template (B)</td><td>Pre-filled</td><td><code>1</code> and <code>5X3FACT</code>.</td></tr><tr><td>UserDefined4 (J), SalePriceType (K)</td><td>Pre-filled</td><td><code>Sale</code> and <code>Sale</code> (the sign header).</td></tr></tbody></table></div>
+      <div class="note red-note"><strong>Clear the old promotion first.</strong> The export takes every row down to the last RIN in column D, and the Promotion Macro only overwrites as many rows as the new promotion has. Delete leftover rows from a previous promotion (columns D, H, I, L and M) before loading a new one.</div>
+
+      <h3 id="sale-na">Step 2: Check for #N/A</h3>
+      <p>After the RINs are in, the lookup columns fill in automatically. A row showing <strong>#N/A</strong> means that item has <strong>no fact tag</strong> on the Master tab. For each one, either:</p>
+      <ul>
+        <li><strong>Build the fact tag:</strong> add the item to its category tab, following the sign team’s rules on the Instructions tab (Name up to 105 characters, Description up to 250, <code>//</code> for a line break, no leading or trailing spaces). Then refresh the Master tab so the SALE MASTER can find it.</li>
+        <li><strong>Skip it:</strong> if the item doesn’t need a sign, leave it. The export now <strong>removes #N/A rows automatically</strong>, so no error rows reach the sign team.</li>
+      </ul>
+      <div class="note red-note">Items with #N/A are dropped from the file without a warning. Check the list before exporting so an item that needs a sign isn’t missed. <span class="sign-warning">The sign team will not accept templates with #N/A items.</span></div>
+
+      <h3 id="sale-export">Step 3: Click EXPORT TO SIGN TEAM and Answer the Prompts</h3>
+      <p>Stay on the <strong>SALE MASTER</strong> tab (the macro reads whichever tab is active) and click <strong>EXPORT TO SIGN TEAM</strong>. Answer three prompts:</p>
+      <ol>
+        <li><span class="underline">Department/Brand</span>, e.g. <code>Apple</code>. Used in the file name, subject and email.
+          <div style="margin-top:8px;">
+            <div class="dialog-box">
+              <div class="dialog-title">Department Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ✕</div>
+              <label>Enter the Department (e.g., Electronics):</label>
+              <div style="display:flex;gap:8px;justify-content:flex-end;">
+                <button style="padding:3px 12px;font-size:12px;">OK</button>
+                <button style="padding:3px 12px;font-size:12px;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li><span class="underline">Start and end date</span> in <strong>MM/DD/YY</strong> format. These set the <strong>week number</strong>, file name and subject; the dates printed on the signs come from columns H–I.
+          <div class="dialog-row" style="margin-top:8px;">
+            <div class="dialog-box">
+              <div class="dialog-title">Start Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ✕</div>
+              <label>Enter Promotion Start Date (MM/DD/YY):</label>
+              <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:6px;">
+                <button style="padding:3px 12px;font-size:12px;">OK</button>
+                <button style="padding:3px 12px;font-size:12px;">Cancel</button>
+              </div>
+              <input type="text" style="width:100%;border:none;border-bottom:2px solid #3a7bd5;background:transparent;font-size:13px;padding:3px 0;" placeholder="|" />
+            </div>
+            <div class="dialog-box">
+              <div class="dialog-title">End Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ✕</div>
+              <label>Enter Promotion End Date (MM/DD/YY):</label>
+              <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:6px;">
+                <button style="padding:3px 12px;font-size:12px;">OK</button>
+                <button style="padding:3px 12px;font-size:12px;">Cancel</button>
+              </div>
+              <input type="text" style="width:100%;border:none;border-bottom:2px solid #3a7bd5;background:transparent;font-size:13px;padding:3px 0;" placeholder="|" />
+            </div>
+          </div>
+        </li>
+      </ol>
+      <p>Then the macro runs on its own:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Step</th><th>What the macro does</th></tr></thead><tbody><tr><td>1. Reads your answers</td><td>Department, start date and end date. Stops if any are blank or the dates aren’t valid.</td></tr><tr><td>2. Works out the fiscal week</td><td>The fiscal year starts <strong>February 1</strong>. Week = days since Feb 1 ÷ 7, rounded down, + 1 (kept between 1 and 52). Example: start 03/01/26 → 28 days → <strong>Week 5</strong>.</td></tr><tr><td>3. Opens the sign team’s template</td><td>Opens the shared <code>Fact Tags.xlsx</code> template <strong>read-only</strong>, so the original is never changed.</td></tr><tr><td>4. Copies your rows</td><td>Pastes columns A–M of the SALE MASTER, down to the last RIN in column D, as plain values into the template’s <strong>ItemImport</strong> tab.</td></tr><tr><td>5. Removes #N/A rows</td><td>Deletes every row whose UPC is <strong>#N/A</strong> (items with no fact tag), so the sign team never receives error rows.</td></tr><tr><td>6. Saves the file</td><td>Saves the ItemImport tab as its own workbook in your Windows temp folder, using the sign team’s file-name format.</td></tr><tr><td>7. Drafts the email</td><td>Opens an Outlook email to the sign team with the file attached. It is <strong>not</strong> sent automatically.</td></tr></tbody></table></div>
+
+      <h3 id="sale-email">Step 4: Review and Hold the Email</h3>
+      <p>Outlook opens a draft to the sign team with the file attached. The file name and subject follow the sign team’s format:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Item</th><th>Format</th><th>Example (Apple, 03/01/26–03/31/26)</th></tr></thead><tbody><tr><td>File name</td><td><code>Week [#] Unadvertised [Dept] Promotion Fact Tag_99999_Promotion_SIGNS_HQ Distributed_[YYYYMMDD]_[YYYYMMDD].xlsx</code></td><td><code>Week 5 Unadvertised Apple Promotion Fact Tag_99999_Promotion_SIGNS_HQ Distributed_20260301_20260331.xlsx</code></td></tr><tr><td>Subject</td><td><code>Week [#] [Dept] Unadvertised Promotion Fact Tags [MM.DD.YYYY]-[MM.DD.YYYY]</code></td><td><code>Week 5 Apple Unadvertised Promotion Fact Tags 03.01.2026-03.31.2026</code></td></tr><tr><td>To</td><td>Sign team mailbox</td><td>PLUS-SignTeam</td></tr></tbody></table></div>
+      <div class="email-preview">
+        <div class="ep-toolbar">Week 5 Apple Unadvertised Promotion Fact Tags 03.01.2026-03.31.2026 — Message (Plain Text)</div>
+        <div class="ep-field"><span class="ep-label">To</span><span>PLUS-SignTeam</span></div>
+        <div class="ep-field"><span class="ep-label">Cc</span><span></span></div>
+        <div class="ep-field"><span class="ep-label">Subject</span><span>Week 5 Apple Unadvertised Promotion Fact Tags 03.01.2026-03.31.2026</span></div>
+        <div class="ep-field"><span class="ep-label">Attach</span><span class="attach-pill">📎 Week 5 Unadvertised Apple Promotion Fact Tag_99999_Promotion_SIGNS_HQ Distributed_20260301_20260331.xlsx &nbsp;14 KB</span></div>
+        <div class="ep-body">Sign Team,<br><br>Please see attached Sale signs for Week 5 for Apple.<br><br>Thanks,</div>
+      </div>
+      <ol>
+        <li><span class="underline">Open the attachment and verify</span> the items, prices and dates.</li>
+        <li><span class="underline">Hold the email until START has keyed/approved the promotion</span>, then send it.<br><span class="red">*START DOES NOT WANT SIGNS SENT UNTIL THE PROMOTION HAS BEEN KEYED/APPROVED.</span></li>
+        <li>The attachment lives in your Windows temp folder, so keep the draft open (or save the attachment) until you send it.</li>
+      </ol>
+      <h3 id="sale-troubleshooting">Troubleshooting</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td>Lots of <strong>#N/A</strong> rows</td><td>Those RINs have no fact tag on the Master tab. Build them on the category tab, refresh Master, or let the export drop them.</td></tr><tr><td>A fact tag exists but still shows #N/A</td><td>The Master tab hasn’t been refreshed since the tag was added, or the RIN has a leading/trailing space.</td></tr><tr><td>Old items appear in the export</td><td>Leftover rows from a previous promotion. Delete them from the SALE MASTER before loading new items.</td></tr><tr><td>Wrong dates on the signs</td><td>The signs use columns H–I, not the dates you type at the prompts. Fix the dates in H–I and export again.</td></tr><tr><td><em>“Target file not found.”</em></td><td>The sign-team template path in the code is wrong, or you don’t have access to that folder.</td></tr><tr><td><em>“Invalid date format.”</em></td><td>Type the dates as MM/DD/YY, e.g. <code>03/01/26</code>.</td></tr><tr><td>Wrong week number</td><td>The week comes from the <strong>start date</strong> you typed, counting from February 1.</td></tr><tr><td>Attachment missing later</td><td>The file is saved in your Windows temp folder, which can be cleaned up. Keep the draft open or save the attachment until you send it.</td></tr></tbody></table></div>
+
+      <h3 id="sale-master">The Code</h3>
+      <p>The macro behind <strong>EXPORT TO SIGN TEAM</strong>. The template path and sign-team address are redacted; replace them with yours.</p>
 <div class="code-container">
     <div class="code-header">
         <span>VBA</span>
@@ -2118,27 +2136,25 @@ CleanUp:
     </div>
     
     <div class="code-wrapper">
-<pre><code><span class="vba-keyword">Option Explicit</span>
-
-<span class="vba-keyword">Sub</span> SALEMASTER()
-    <span class="vba-keyword">Dim</span> sourceSheet <span class="vba-type">As Worksheet</span>
-    <span class="vba-keyword">Dim</span> targetWB <span class="vba-type">As Workbook</span>
-    <span class="vba-keyword">Dim</span> tempWB <span class="vba-type">As Workbook</span>
-    <span class="vba-keyword">Dim</span> lastRow <span class="vba-type">As Long</span>, i <span class="vba-type">As Long</span>
-    <span class="vba-keyword">Dim</span> targetPath <span class="vba-type">As String</span>, tempFilePath <span class="vba-type">As String</span>
-    <span class="vba-keyword">Dim</span> fileName <span class="vba-type">As String</span>, emailSubject <span class="vba-type">As String</span>, emailBody <span class="vba-type">As String</span>
-    <span class="vba-keyword">Dim</span> rawStart <span class="vba-type">As String</span>, rawEnd <span class="vba-type">As String</span>, deptName <span class="vba-type">As String</span>
-    <span class="vba-keyword">Dim</span> dateStart <span class="vba-type">As Date</span>, dateEnd <span class="vba-type">As Date</span>
-    <span class="vba-keyword">Dim</span> fiscalYearStart <span class="vba-type">As Date</span>
-    <span class="vba-keyword">Dim</span> weekNum <span class="vba-type">As Long</span>
-    <span class="vba-keyword">Dim</span> OutApp <span class="vba-type">As Object</span>, OutMail <span class="vba-type">As Object</span>
+<pre><code><span class="vba-keyword">Sub</span> SALEMASTER()
+    <span class="vba-keyword">Dim</span> sourceSheet <span class="vba-keyword">As</span> <span class="vba-type">Worksheet</span>
+    <span class="vba-keyword">Dim</span> targetWB <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>
+    <span class="vba-keyword">Dim</span> tempWB <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>
+    <span class="vba-keyword">Dim</span> lastRow <span class="vba-keyword">As</span> <span class="vba-type">Long</span>, i <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    <span class="vba-keyword">Dim</span> targetPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>, tempFilePath <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> fileName <span class="vba-keyword">As</span> <span class="vba-type">String</span>, emailSubject <span class="vba-keyword">As</span> <span class="vba-type">String</span>, emailBody <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> rawStart <span class="vba-keyword">As</span> <span class="vba-type">String</span>, rawEnd <span class="vba-keyword">As</span> <span class="vba-type">String</span>, deptName <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> dateStart <span class="vba-keyword">As</span> <span class="vba-type">Date</span>, dateEnd <span class="vba-keyword">As</span> <span class="vba-type">Date</span>
+    <span class="vba-keyword">Dim</span> fiscalYearStart <span class="vba-keyword">As</span> <span class="vba-type">Date</span>
+    <span class="vba-keyword">Dim</span> weekNum <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    <span class="vba-keyword">Dim</span> OutApp <span class="vba-keyword">As</span> <span class="vba-type">Object</span>, OutMail <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
     
     <span class="vba-comment">' 1. Get User Inputs</span>
     deptName = InputBox("Enter the Department (e.g., Electronics):", "Department Name")
     rawStart = InputBox("Enter Promotion Start Date (MM/DD/YY):", "Start Date")
     rawEnd = InputBox("Enter Promotion End Date (MM/DD/YY):", "End Date")
     
-    <span class="vba-keyword">If</span> deptName = "" <span class="vba-keyword">Or</span> rawStart = "" <span class="vba-keyword">Or</span> rawEnd = "" <span class="vba-keyword">Then Exit Sub</span>
+    <span class="vba-keyword">If</span> deptName = "" <span class="vba-keyword">Or</span> rawStart = "" <span class="vba-keyword">Or</span> rawEnd = "" <span class="vba-keyword">Then</span> <span class="vba-keyword">Exit Sub</span>
 
     <span class="vba-comment">' Convert text inputs to Date variables</span>
     <span class="vba-keyword">On Error Resume Next</span>
@@ -2161,18 +2177,18 @@ CleanUp:
     <span class="vba-keyword">If</span> weekNum &lt; 1 <span class="vba-keyword">Then</span> weekNum = 1
 
     <span class="vba-comment">' 3. Format Naming Strings</span>
-    <span class="vba-keyword">Dim</span> fStart <span class="vba-type">As String</span>, fEnd <span class="vba-type">As String</span>, sStart <span class="vba-type">As String</span>, sEnd <span class="vba-type">As String</span>
+    <span class="vba-keyword">Dim</span> fStart <span class="vba-keyword">As</span> <span class="vba-type">String</span>, fEnd <span class="vba-keyword">As</span> <span class="vba-type">String</span>, sStart <span class="vba-keyword">As</span> <span class="vba-type">String</span>, sEnd <span class="vba-keyword">As</span> <span class="vba-type">String</span>
     fStart = Format(dateStart, "yyyymmdd"): fEnd = Format(dateEnd, "yyyymmdd")
     sStart = Format(dateStart, "mm.dd.yyyy"): sEnd = Format(dateEnd, "mm.dd.yyyy")
     
-    fileName = "Week " & weekNum & " Unadvertised " & deptName & " Promotion Fact Tag_99999_Promotion_SIGNS_HQ Distributed_" & fStart & "_" & fEnd & ".xlsx"
-    emailSubject = "Week " & weekNum & " " & deptName & " Unadvertised Promotion Fact Tags " & sStart & "-" & sEnd
-    emailBody = "Sign Team," & vbCrLf & vbCrLf & "Please see attached Sale signs for Week " & weekNum & " for " & deptName & "." & vbCrLf & vbCrLf & "Thanks,"
+    fileName = "Week " &amp; weekNum &amp; " Unadvertised " &amp; deptName &amp; " Promotion Fact Tag_99999_Promotion_SIGNS_HQ Distributed_" &amp; fStart &amp; "_" &amp; fEnd &amp; ".xlsx"
+    emailSubject = "Week " &amp; weekNum &amp; " " &amp; deptName &amp; " Unadvertised Promotion Fact Tags " &amp; sStart &amp; "-" &amp; sEnd
+    emailBody = "Sign Team," &amp; vbCrLf &amp; vbCrLf &amp; "Please see attached Sale signs for Week " &amp; weekNum &amp; " for " &amp; deptName &amp; "." &amp; vbCrLf &amp; vbCrLf &amp; "Thanks,"
 
     <span class="vba-comment">' 4. Process Files</span>
     <span class="vba-keyword">Set</span> sourceSheet = ThisWorkbook.ActiveSheet
     lastRow = sourceSheet.Cells(sourceSheet.Rows.Count, "D").End(xlUp).Row
-    targetPath = "<span class="redacted" title="Redacted for privacy">\\server\share\folder</span>"
+    targetPath = "<span class="redacted" title="Redacted for privacy">\\SERVER\Shared\Templates\Fact Tags\Fact Tags.xlsx</span>"
     
     Application.ScreenUpdating = <span class="vba-keyword">False</span>
 
@@ -2180,20 +2196,20 @@ CleanUp:
     <span class="vba-keyword">Set</span> targetWB = Workbooks.Open(fileName:=targetPath, ReadOnly:=<span class="vba-keyword">True</span>)
     <span class="vba-keyword">On Error GoTo</span> 0
     
-    <span class="vba-keyword">If</span> targetWB <span class="vba-keyword">Is Nothing Then</span>
+    <span class="vba-keyword">If</span> targetWB <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
         MsgBox "Target file not found.", vbCritical
         Application.ScreenUpdating = <span class="vba-keyword">True</span>
         <span class="vba-keyword">Exit Sub</span>
     <span class="vba-keyword">End If</span>
 
     <span class="vba-comment">' Paste everything as values into ItemImport tab</span>
-    sourceSheet.Range("A2:M" & lastRow).Copy
+    sourceSheet.Range("A2:M" &amp; lastRow).Copy
     targetWB.Sheets("ItemImport").Range("A2").PasteSpecial Paste:=xlPasteValues
     Application.CutCopyMode = <span class="vba-keyword">False</span>
 
     <span class="vba-comment">' --- NEW CLEANING LOGIC: DELETE ROWS WITH #N/A IN COLUMN C ---</span>
     <span class="vba-keyword">With</span> targetWB.Sheets("ItemImport")
-        <span class="vba-keyword">Dim</span> templateLastRow <span class="vba-type">As Long</span>
+        <span class="vba-keyword">Dim</span> templateLastRow <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
         templateLastRow = .Cells(.Rows.Count, "C").End(xlUp).Row
         
         <span class="vba-comment">' Loop backwards when deleting rows to avoid skipping</span>
@@ -2211,7 +2227,7 @@ CleanUp:
     targetWB.Sheets("ItemImport").Copy
     <span class="vba-keyword">Set</span> tempWB = ActiveWorkbook
     
-    tempFilePath = Environ$("temp") & "\" & fileName
+    tempFilePath = Environ$("temp") &amp; "\" &amp; fileName
     <span class="vba-keyword">If</span> Dir(tempFilePath) &lt;&gt; "" <span class="vba-keyword">Then</span> Kill tempFilePath
     
     tempWB.SaveAs tempFilePath
@@ -2223,7 +2239,7 @@ CleanUp:
     <span class="vba-keyword">Set</span> OutMail = OutApp.CreateItem(0)
 
     <span class="vba-keyword">With</span> OutMail
-        .To = "<span class="redacted" title="Redacted for privacy">name@company.com</span>"
+        .<span class="vba-keyword">To</span> = "<span class="redacted" title="Redacted for privacy">SignTeam@example.org</span>"
         .Subject = emailSubject
         .Body = emailBody
         .Attachments.Add tempFilePath
