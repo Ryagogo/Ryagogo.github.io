@@ -189,6 +189,7 @@
       <a class="nav-sub-link" href="#nas-network">2. Static IP &amp; SSH</a>
       <a class="nav-sub-link" href="#nas-share">3. Share a Folder (Samba)</a>
       <a class="nav-sub-link" href="#nas-connect">4. Connect from PCs</a>
+      <a class="nav-sub-link" href="#nas-automount">Auto-Mount at Boot (Linux)</a>
       <a class="nav-sub-link" href="#nas-planning">Storage &amp; Protection</a>
       <a class="nav-sub-link" href="#nas-troubleshooting">Troubleshooting</a>
     </div>
@@ -2962,6 +2963,134 @@ sudo ufw allow samba</code></pre>
                 <p><strong>macOS:</strong> Finder → <strong>Go → Connect to Server</strong>, enter <code>smb://192.168.1.51/haven-share</code>, click <strong>Connect</strong> and sign in the same way.</p>
                 <p><strong>Linux (Ubuntu desktop):</strong> open <strong>Files → Other Locations</strong>, type <code>smb://192.168.1.51/haven-share</code> in <strong>Connect to Server</strong> and sign in.</p>
                 <p><strong>Phones and TVs:</strong> most file-manager and media apps have an “SMB” or “network share” option. Use the same IP, share name, username and password.</p>
+                <h4 id="nas-automount">Optional: Mount the Share Automatically at Boot (Linux)</h4>
+                <p>On Windows, ticking <strong>Reconnect at sign-in</strong> in Map network drive already does this. On another <strong>Linux computer</strong> (not the server), follow these steps so the share is always available as a normal folder at <code>/mnt/haven-share</code>. The example assumes your username on that computer is also <code>haven</code>.</p>
+                <p><strong>1. Install the tools for mounting Windows/Samba shares:</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the Linux computer</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt install -y cifs-utils</code></pre>
+                    </div>
+                </div>
+                <p><strong>2. Create the folder the share will appear in</strong> (the “mount point”):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the Linux computer</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mkdir -p /mnt/haven-share</code></pre>
+                    </div>
+                </div>
+                <p><strong>3. Save the Samba login in a private file</strong>, so you don’t have to put the password in a system file. Open a new file:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the Linux computer</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nano ~/.smbcredentials</code></pre>
+                    </div>
+                </div>
+                <p>Paste these two lines, replacing the password with the Samba password from Step 3, then save with <kbd>Ctrl</kbd>+<kbd>X</kbd>, <kbd>Y</kbd>, <kbd>Enter</kbd>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>text · contents of ~/.smbcredentials</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>username=haven
+password=YourSambaPassword</code></pre>
+                    </div>
+                </div>
+                <p>Make the file readable only by you:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the Linux computer</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>chmod 600 ~/.smbcredentials</code></pre>
+                    </div>
+                </div>
+                <p><strong>4. Find your user and group ID numbers</strong> (so the files show up as yours). On most single-user systems both are <code>1000</code>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the Linux computer</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>id -u
+id -g</code></pre>
+                    </div>
+                </div>
+                <p><strong>5. Add the share to <code>/etc/fstab</code></strong>, the file Linux reads at startup to know what to mount:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the Linux computer</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo nano /etc/fstab</code></pre>
+                    </div>
+                </div>
+                <p>Go to the bottom of the file and paste this as <strong>one line</strong>. If step 4 showed numbers other than <code>1000</code>, change them. Save and exit:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>text · add to the end of /etc/fstab</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>//192.168.1.51/haven-share  /mnt/haven-share  cifs  credentials=/home/haven/.smbcredentials,uid=1000,gid=1000,_netdev,nofail  0  0</code></pre>
+                    </div>
+                </div>
+                <table>
+                    <thead><tr><th>Part of the line</th><th>Meaning</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>//192.168.1.51/haven-share</code></td><td>The share to connect to: the server’s IP and share name.</td></tr>
+                        <tr><td><code>/mnt/haven-share</code></td><td>The folder on this computer where the share appears (from step 2).</td></tr>
+                        <tr><td><code>cifs</code></td><td>The type of share (Windows/Samba file sharing).</td></tr>
+                        <tr><td><code>credentials=/home/haven/.smbcredentials</code></td><td>Where to read the username and password (from step 3).</td></tr>
+                        <tr><td><code>uid=1000,gid=1000</code></td><td>Make the files owned by your user and group (from step 4), so you can edit them.</td></tr>
+                        <tr><td><code>_netdev</code></td><td>Wait until the network is up before mounting.</td></tr>
+                        <tr><td><code>nofail</code></td><td>If the server is off, keep booting normally instead of stopping with an error.</td></tr>
+                        <tr><td><code>0  0</code></td><td>Skip the old “dump” backup and the startup disk check (always <code>0 0</code> for network shares).</td></tr>
+                    </tbody>
+                </table>
+                <p><strong>6. Test it without rebooting.</strong> <code>mount -a</code> mounts everything in <code>/etc/fstab</code>; if it prints no errors and <code>ls</code> shows your files, it will also work at boot:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the Linux computer</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo systemctl daemon-reload
+sudo mount -a
+ls /mnt/haven-share</code></pre>
+                    </div>
+                </div>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>A typo in <code>/etc/fstab</code> can cause boot problems, which is why the line uses <code>nofail</code> and why you test with <code>sudo mount -a</code> first. If something goes wrong, open the file again and delete or fix the line. Error 13 (permission denied) means the username or password in <code>~/.smbcredentials</code> is wrong.</div></div>
             </div>
 
             <div id="nas-planning">
