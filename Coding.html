@@ -1112,7 +1112,9 @@ td.red-border-cell:nth-child(4) {
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Inspection Tools <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#inspection-tools">Open Document in Background</a>
+      <a class="nav-sub-link" href="#inspection-tools">Overview</a>
+      <a class="nav-sub-link" href="#insp-how">How These Tools Work</a>
+      <a class="nav-sub-link" href="#insp-background">Open Document in Background</a>
       <a class="nav-sub-link" href="#supplier-inspect-1">Supplier Inspect 1</a>
       <a class="nav-sub-link" href="#supplier-inspect-2">Supplier Inspect 2</a>
       <a class="nav-sub-link" href="#ffinspect-1">FFInspect 1</a>
@@ -7541,10 +7543,23 @@ PathErr:
 
 <div class="section" id="inspection-tools">
 <h2>Inspection Tools</h2>
-<h3>Open Document in Background</h3>
-<ol>
-<li>Paste code into "This Workbook"</li>
-</ol>
+      <p>These are small, single-purpose lookup tools. Each one is its own workbook: you open it, it hides itself in the background, and then from <strong>any</strong> spreadsheet you select a column of RINs (or VPNs/UPCs) and run the tool. It looks the items up in RMS and shows the results in a pop-up window you can keep open and copy from while you work.</p>
+      <h3 id="insp-how">How These Tools Work</h3>
+      <ol>
+        <li><strong>Open the tool workbook</strong> (e.g. <code>Supplierins2.xlsm</code>) and enable macros. It hides itself straight away (see <em>Open Document in Background</em> below), so it looks like nothing opened. It stays available until you close Excel.</li>
+        <li>Go to the spreadsheet you’re working in and <strong>select the cells</strong> with the item numbers, in <strong>one column</strong>.</li>
+        <li>Press <kbd>Alt</kbd>+<kbd>F8</kbd>, pick the tool’s macro (listed with each tool below) and click <strong>Run</strong>. To make it one click, add the macro to the Quick Access Toolbar (<strong>File → Options → Quick Access Toolbar → Choose commands from: Macros</strong>).</li>
+        <li>The results open in the <strong>RIN Inspection</strong> window, one line per item, lined up across the boxes. The window doesn’t block Excel, so you can keep working and copy values out of it.</li>
+      </ol>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Tool</th><th>You select</th><th>You get</th><th>Best for</th></tr></thead><tbody><tr><td><a href="#supplier-inspect-1">Supplier Inspect 1</a></td><td>Transaction RINs</td><td>Parent RIN, Dept, primary Supplier ID & name, total stock on hand</td><td>Who supplies an item and how much stock exists</td></tr><tr><td><a href="#supplier-inspect-2">Supplier Inspect 2</a></td><td>Transaction or Parent RINs</td><td>Everything in v1 plus description, average cost and retail (all children of a parent)</td><td>Checking cost, retail and margin before a deal</td></tr><tr><td><a href="#ffinspect-1">FFInspect 1</a></td><td>Transaction or Parent RINs + warehouse group(s)</td><td>Each location’s stock, total on hand incl. in-transit, last sold/received dates, min/max</td><td>Frustrated freight and replenishment questions</td></tr><tr><td><a href="#ffinspect">FFInspect 2</a></td><td>Same + a sales date range</td><td>Each location’s stock and units sold in the date range, plus total units sold</td><td>Is the item selling where it’s stocked?</td></tr><tr><td><a href="#class-inspector">CLASS Inspector</a></td><td>Transaction or Parent RINs</td><td>Dept, Class and Subclass with names</td><td>Checking an item’s hierarchy (reclasses, reporting)</td></tr><tr><td><a href="#vpnrinfinder">VPN RIN Finder</a></td><td>RINs, VPNs (model numbers) or UPCs</td><td>Transaction RIN, Parent RIN, primary UPC, VPN</td><td>Turning a vendor’s model list or a UPC into RINs</td></tr></tbody></table></div>
+      <div class="note"><strong>You’ll need:</strong> RMS read access through the Microsoft ODBC for Oracle driver, and the network drive / VPN connection the tools use to read the read-only database password. If you see <em>“Problem connecting to network drive”</em> or <em>“Oracle Error”</em>, check your VPN and network access first.</div>
+<h3 id="insp-background">Open Document in Background</h3>
+      <p>Every tool workbook has this code in its <strong>ThisWorkbook</strong> module. When the file opens it turns off screen updating and hides its own window, so the tool runs quietly in the background and its macros can be used on any other workbook.</p>
+      <ol>
+        <li>To add it to a new tool: press <kbd>Alt</kbd>+<kbd>F11</kbd>, double-click <strong>ThisWorkbook</strong> in the project list, paste the code and save as <code>.xlsm</code>.</li>
+        <li>To see or edit a tool workbook again: <strong>View → Unhide</strong>, pick the workbook, make your changes, then hide it again (<strong>View → Hide</strong>) before saving so it keeps opening in the background.</li>
+        <li>Use case: keep several tools open at once (e.g. VPN RIN Finder and Supplier Inspect 2) while you build a deal sheet, without extra windows getting in the way.</li>
+      </ol>
 <p>Code:</p>
 <div class="code-container">
     <div class="code-header">
@@ -7570,6 +7585,21 @@ PathErr:
     <div id="supplier-inspect-1">
       <h3>Supplier Inspect 1</h3>
       <p class="file-link"><a href="Files/Supplierins1.xlsm">Supplier Information Macro.v1</a></p>
+      <p>Looks up the <strong>primary supplier</strong> and <strong>total stock</strong> for a list of transaction RINs.</p>
+      <h4 style="margin:14px 0 6px;">How to use it</h4>
+      <ol>
+        <li>Open <code>Supplierins1.xlsm</code> (it hides itself).</li>
+        <li>Select the transaction RINs, in a single column.</li>
+        <li>Run <strong>SupplierInspect</strong> (<kbd>Alt</kbd>+<kbd>F8</kbd>).</li>
+      </ol>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Result</th><th>Meaning</th></tr></thead><tbody><tr><td>Trans RIN / Parent RIN</td><td>The item and the parent it rolls up to.</td></tr><tr><td>Dept</td><td>RMS department.</td></tr><tr><td>Supplier ID / Supplier Name</td><td>The item’s <strong>primary</strong> supplier.</td></tr><tr><td>SOH</td><td>Total stock on hand across all locations.</td></tr></tbody></table></div>
+      <div class="note">Only transaction RINs return results. A parent RIN, a blank cell or a RIN with no primary supplier is skipped; use <a href="#supplier-inspect-2">Supplier Inspect 2</a> for parent RINs. Selecting more than one column shows <em>“Please select only one column of data.”</em></div>
+      <h4 style="margin:14px 0 6px;">Use case examples</h4>
+      <ul>
+        <li>A vendor emails a list of RINs for a deal: confirm they are the primary supplier for every item before entering the promotion.</li>
+        <li>Finding which department (and so which buyer) owns a list of items someone asked about.</li>
+        <li>Checking whether there’s any stock in the system before agreeing to advertise an item.</li>
+      </ul>
       <p>Code:</p>
 
 <div class="code-container">
@@ -7724,6 +7754,21 @@ CantFind:
     <div id="supplier-inspect-2">
       <h3>Supplier Inspect 2</h3>
       <p class="file-link"><a href="Files/Supplierins2.xlsm">Supplier Information Macro.v2</a></p>
+      <p>An expanded Supplier Inspect that also shows <strong>description, cost and retail</strong>, and accepts <strong>parent RINs</strong> (it lists every child item under the parent).</p>
+      <h4 style="margin:14px 0 6px;">How to use it</h4>
+      <ol>
+        <li>Open <code>Supplierins2.xlsm</code> (it hides itself).</li>
+        <li>Select transaction or parent RINs, in a single column.</li>
+        <li>Run <strong>SupplierINSPECTORv2</strong> (<kbd>Alt</kbd>+<kbd>F8</kbd>).</li>
+      </ol>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Result</th><th>Meaning</th></tr></thead><tbody><tr><td>Trans RIN / Parent RIN / Description</td><td>Each item (all children if you selected a parent).</td></tr><tr><td>Cost</td><td>Average unit cost across locations.</td></tr><tr><td>Retail</td><td>Average unit retail across locations.</td></tr><tr><td>Supplier ID / Supplier Name</td><td>Primary supplier.</td></tr><tr><td>Dept / SOH</td><td>Department and total stock on hand.</td></tr></tbody></table></div>
+      <div class="note">Cost and retail are <strong>averages across locations</strong>, so use them as a quick check, not as the official price for a specific store.</div>
+      <h4 style="margin:14px 0 6px;">Use case examples</h4>
+      <ul>
+        <li>Building a Deal Offer Form or promotion: check cost and regular retail so the promo price still leaves margin.</li>
+        <li>A vendor quotes a new cost: compare it with the current average cost in RMS.</li>
+        <li>Select a parent RIN to see every size/color under it, with each one’s cost, retail and stock, before deciding which to include in an ad.</li>
+      </ul>
       <p>Code:</p>
 
 <div class="code-container">
@@ -7890,6 +7935,21 @@ CantFind:
     <div id="ffinspect-1">
       <h3>FFInspect 1</h3>
       <p class="file-link"><a href="Files/FFINS1.xlsm">Frustrated Freight Macro.v1</a></p>
+      <p>A <strong>frustrated freight</strong> tool: shows where an item’s stock is, by location, and when it last sold and was received, so you can work out why freight is stuck or not moving.</p>
+      <h4 style="margin:14px 0 6px;">How to use it</h4>
+      <ol>
+        <li>Open <code>FFINS1.xlsm</code> (it hides itself).</li>
+        <li>Select transaction or parent RINs.</li>
+        <li>Run <strong>FFINS1</strong> (<kbd>Alt</kbd>+<kbd>F8</kbd>).</li>
+        <li>In the <strong>Which Warehouse?</strong> window, tick one or more location groups (<strong>9830</strong>, <strong>9930</strong>, <strong>9840</strong>, <strong>9950</strong>) and click <strong>Use Form</strong>. Closing the window without choosing cancels.</li>
+      </ol>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Result</th><th>Meaning</th></tr></thead><tbody><tr><td>Trans RIN / Parent RIN / Description / Dept</td><td>The item.</td></tr><tr><td>Supplier ID / Supplier Name</td><td>Primary supplier and vendor.</td></tr><tr><td>Location</td><td>Each location in the chosen group(s), with its name.</td></tr><tr><td>Last Sold Date / Last Received</td><td>When the item last sold and was last received there.</td></tr><tr><td>SOH</td><td>Store stock on hand at that location.</td></tr><tr><td>OH (Total)</td><td>Store + warehouse stock + quantity in transit.</td></tr><tr><td>Min / Max</td><td>Replenishment minimum and maximum (0 if not set up).</td></tr></tbody></table></div>
+      <h4 style="margin:14px 0 6px;">Use case examples</h4>
+      <ul>
+        <li>A DC reports frustrated freight for an item: see which locations have it, how much is in transit, and when it last sold.</li>
+        <li>A store says it never gets an item: check whether its <strong>Min/Max is 0</strong> (no replenishment set up) or it simply hasn’t been received.</li>
+        <li>Spotting stale stock: items with stock on hand but no sale in months are candidates for transfer or markdown.</li>
+      </ul>
       <p>Code:</p>
       
 <div class="code-container">
@@ -8068,6 +8128,22 @@ CantFind:
     <div id="ffinspect">
       <h3>FFInspect 2</h3>
       <p class="file-link"><a href="Files/FFINS2.xlsm">Frustrated Freight Macro.v2</a></p>
+      <p>Everything in FFInspect 1, plus <strong>units sold</strong> at each location over a date range you choose, with a total. Use it to see whether an item is actually selling where it’s stocked.</p>
+      <h4 style="margin:14px 0 6px;">How to use it</h4>
+      <ol>
+        <li>Open <code>FFINS2.xlsm</code> (it hides itself).</li>
+        <li>Select transaction or parent RINs.</li>
+        <li>Run <strong>FFINSPECT</strong> (<kbd>Alt</kbd>+<kbd>F8</kbd>).</li>
+        <li>Tick the location group(s) in <strong>Which Warehouse?</strong> and click <strong>Use Form</strong>.</li>
+        <li>Enter the <strong>Sales Start</strong> and <strong>Sales End</strong> dates (MM/DD/YYYY). They default to the last 7 days; leaving either blank cancels.</li>
+      </ol>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Result</th><th>Meaning</th></tr></thead><tbody><tr><td>Trans RIN / Parent RIN / Description</td><td>The item.</td></tr><tr><td>Location</td><td>Each location in the chosen group(s).</td></tr><tr><td>SOH</td><td>Store stock on hand there.</td></tr><tr><td>Units Sold</td><td>Units sold at that location between your dates.</td></tr><tr><td>Total Sales</td><td>All units sold across the listed locations.</td></tr></tbody></table></div>
+      <h4 style="margin:14px 0 6px;">Use case examples</h4>
+      <ul>
+        <li>Before moving frustrated freight: see which stores are selling the item so stock goes where it will sell.</li>
+        <li>After a promotion: enter the promo dates to see units sold by store and in total.</li>
+        <li>Comparing two periods: run it once for last week and once for the week before to see if sales are slowing.</li>
+      </ul>
       <p>Code:</p>
 
 
@@ -8087,114 +8163,119 @@ CantFind:
     <div class="code-wrapper">
 <pre><code><span class="vba-keyword">Option Explicit</span>
 
-<span class="vba-comment">' --- MAIN MACRO ---</span>
-<span class="vba-keyword">Sub</span> FFINS1()
+<span class="vba-keyword">Sub</span> FFINSPECT()
     <span class="vba-keyword">Dim</span> cn <span class="vba-keyword">As</span> <span class="vba-type">Object</span>, rs <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
     <span class="vba-keyword">Dim</span> cell <span class="vba-keyword">As</span> <span class="vba-type">Range</span>, mySelection <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
     <span class="vba-keyword">Dim</span> strSQL <span class="vba-keyword">As</span> <span class="vba-type">String</span>, selectedLocs <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> startDate <span class="vba-keyword">As</span> <span class="vba-type">String</span>, endDate <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> totalSalesSum <span class="vba-keyword">As</span> <span class="vba-type">Double</span>
     
     <span class="vba-keyword">Set</span> mySelection = Selection
-    <span class="vba-keyword">If</span> mySelection <span class="vba-keyword">Is Nothing Then Exit Sub</span>
+    <span class="vba-keyword">If</span> mySelection <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span> <span class="vba-keyword">Exit Sub</span>
     
-    <span class="vba-comment">' 1. Trigger the Choice Form</span>
+    <span class="vba-comment">' 1. Trigger Warehouse Selection</span>
     frmChoice.Tag = ""
-    frmChoice.Show <span class="vba-comment">' Macro pauses here until frmChoice is hidden</span>
-    
+    frmChoice.Show
     selectedLocs = frmChoice.Tag
-    <span class="vba-keyword">If</span> selectedLocs = "" <span class="vba-keyword">Then Exit Sub</span> <span class="vba-comment">' Exit if user closed form without selection</span>
+    <span class="vba-keyword">If</span> selectedLocs = "" <span class="vba-keyword">Then</span> <span class="vba-keyword">Exit Sub</span>
     Unload frmChoice
 
-    <span class="vba-comment">' 2. Database Connection</span>
+    <span class="vba-comment">' 2. Prompt for Date Range for Units Sold</span>
+    startDate = InputBox("Enter Start Date for Sales (MM/DD/YYYY):", "Sales Start", Format(<span class="vba-type">Date</span> - 7, "mm/dd/yyyy"))
+    <span class="vba-keyword">If</span> startDate = "" <span class="vba-keyword">Then</span> <span class="vba-keyword">Exit Sub</span>
+    endDate = InputBox("Enter End Date for Sales (MM/DD/YYYY):", "Sales End", Format(<span class="vba-type">Date</span>, "mm/dd/yyyy"))
+    <span class="vba-keyword">If</span> endDate = "" <span class="vba-keyword">Then</span> <span class="vba-keyword">Exit Sub</span>
+
+    <span class="vba-comment">' 3. Database Connection</span>
     <span class="vba-keyword">On Error GoTo</span> oraerror
     <span class="vba-keyword">Set</span> cn = CreateObject("ADODB.Connection")
-    cn.Open "Driver={Microsoft ODBC for Oracle};Server=<span class="redacted" title="Redacted for privacy">YOUR_SERVER</span>;Uid=<span class="redacted" title="Redacted for privacy">YOUR_USER_ID</span>;Pwd=" & zzz() & ";"
+    cn.<span class="vba-keyword">Open</span> "Driver={Microsoft ODBC for Oracle};Server=<span class="redacted" title="Redacted for privacy">RMS_SERVER</span>;Uid=<span class="redacted" title="Redacted for privacy">READ_ONLY_USER</span>;Pwd=" &amp; zzz() &amp; ";"
 
-    <span class="vba-comment">' 3. Reset Inspection Form Textboxes</span>
+    <span class="vba-comment">' 4. Clear the 7 Boxes</span>
+    totalSalesSum = 0
     <span class="vba-keyword">With</span> frmRINInspection
-        .txtTransRIN.Value = ""     <span class="vba-comment">' Box 1</span>
-        .txtParentRIN.Value = ""    <span class="vba-comment">' Box 2</span>
-        .txtDescription.Value = ""  <span class="vba-comment">' Box 3</span>
-        .txtDept.Value = ""         <span class="vba-comment">' Box 4</span>
-        .txtSupplierID.Value = ""   <span class="vba-comment">' Box 5 (Primary Supplier)</span>
-        .txtSupplierName.Value = "" <span class="vba-comment">' Box 6 (Vendor)</span>
-        .txtLoc.Value = ""          <span class="vba-comment">' Box 7 (Location)</span>
-        .txtLastSold.Value = ""     <span class="vba-comment">' Box 8</span>
-        .txtSOH.Value = ""          <span class="vba-comment">' Box 9 (Store OH)</span>
-        .txtOHTotal.Value = ""      <span class="vba-comment">' Box 10</span>
-        .txtMin.Value = ""          <span class="vba-comment">' Box 11</span>
-        .txtMax.Value = ""          <span class="vba-comment">' Box 12</span>
-        .txtLastRec.Value = ""      <span class="vba-comment">' Box 13 (NEW: Last Received)</span>
+        .txtTrans.Value = ""      <span class="vba-comment">' Box 1</span>
+        .txtParent.Value = ""     <span class="vba-comment">' Box 2</span>
+        .txtDesc.Value = ""       <span class="vba-comment">' Box 3</span>
+        .txtLoc.Value = ""        <span class="vba-comment">' Box 4</span>
+        .txtSOH.Value = ""        <span class="vba-comment">' Box 5</span>
+        .txtSales.Value = ""      <span class="vba-comment">' Box 6 (Units Sold per Loc)</span>
+        .txtTotalSales.Value = "" <span class="vba-comment">' Box 7 (Total Sum)</span>
     <span class="vba-keyword">End With</span>
 
-    <span class="vba-comment">' 4. Main Data Loop</span>
-    <span class="vba-keyword">For Each</span> cell <span class="vba-keyword">In</span> mySelection
-        <span class="vba-keyword">If Not</span> IsEmpty(cell) <span class="vba-keyword">Then</span>
-            strSQL = GetDetailedFormSQL("'" & Trim(cell.Value) & "'", selectedLocs)
+    <span class="vba-comment">' 5. Data Loop</span>
+    <span class="vba-keyword">For</span> <span class="vba-keyword">Each</span> cell <span class="vba-keyword">In</span> mySelection
+        <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsEmpty(cell) <span class="vba-keyword">Then</span>
+            strSQL = GetSimplifiedSQL("'" &amp; Trim(cell.Value) &amp; "'", selectedLocs, startDate, endDate)
             
             <span class="vba-keyword">Set</span> rs = CreateObject("ADODB.Recordset")
-            rs.Open strSQL, cn
+            rs.<span class="vba-keyword">Open</span> strSQL, cn
             
-            <span class="vba-keyword">Do While Not</span> rs.EOF
+            <span class="vba-keyword">Do While</span> <span class="vba-keyword">Not</span> rs.EOF
                 <span class="vba-keyword">With</span> frmRINInspection
-                    .txtTransRIN.Value = .txtTransRIN.Value & rs("ITEM_TRANS") & vbCrLf
-                    .txtParentRIN.Value = .txtParentRIN.Value & rs("ITEM_PARENT") & vbCrLf
-                    .txtDescription.Value = .txtDescription.Value & rs("DESCRIPTION") & vbCrLf
-                    .txtDept.Value = .txtDept.Value & rs("DEPT") & vbCrLf
-                    .txtSupplierID.Value = .txtSupplierID.Value & rs("PRIMARY_SUPPLIER") & vbCrLf
-                    .txtSupplierName.Value = .txtSupplierName.Value & rs("VENDOR") & vbCrLf
-                    .txtLoc.Value = .txtLoc.Value & rs("LOCATION") & " - " & rs("LOC_NAME") & vbCrLf
-                    .txtLastSold.Value = .txtLastSold.Value & rs("LAST_SOLD") & vbCrLf
-                    .txtSOH.Value = .txtSOH.Value & rs("STORE_OH") & vbCrLf
-                    .txtOHTotal.Value = .txtOHTotal.Value & rs("OH_TOTAL") & vbCrLf
-                    .txtMin.Value = .txtMin.Value & rs("MIN_QTY") & vbCrLf
-                    .txtMax.Value = .txtMax.Value & rs("MAX_QTY") & vbCrLf
-                    .txtLastRec.Value = .txtLastRec.Value & rs("LAST_REC") & vbCrLf
+                    .txtTrans.Value = .txtTrans.Value &amp; rs("ITEM_TRANS") &amp; vbCrLf
+                    .txtParent.Value = .txtParent.Value &amp; rs("ITEM_PARENT") &amp; vbCrLf
+                    .txtDesc.Value = .txtDesc.Value &amp; rs("DESCRIPTION") &amp; vbCrLf
+                    .txtLoc.Value = .txtLoc.Value &amp; rs("LOCATION") &amp; " - " &amp; rs("LOC_NAME") &amp; vbCrLf
+                    .txtSOH.Value = .txtSOH.Value &amp; rs("STORE_OH") &amp; vbCrLf
+                    .txtSales.Value = .txtSales.Value &amp; rs("UNITS_SOLD") &amp; vbCrLf
+                    
+                    <span class="vba-comment">' Add to the running total for Box 7</span>
+                    totalSalesSum = totalSalesSum + nvl(rs("UNITS_SOLD"), 0)
                 <span class="vba-keyword">End With</span>
                 rs.MoveNext
             <span class="vba-keyword">Loop</span>
-            rs.Close
+            rs.<span class="vba-keyword">Close</span>
         <span class="vba-keyword">End If</span>
     <span class="vba-keyword">Next</span> cell
+    
+    <span class="vba-comment">' Populate the Total Sales Box</span>
+    frmRINInspection.txtTotalSales.Value = totalSalesSum
 
-    <span class="vba-comment">' 5. Display the Final Results</span>
     frmRINInspection.Show 0
     <span class="vba-keyword">Exit Sub</span>
 
 oraerror:
-    MsgBox "Oracle Error: " & Err.Description, vbCritical
-    <span class="vba-keyword">If Not</span> cn <span class="vba-keyword">Is Nothing Then</span> cn.Close
+    MsgBox "Oracle Error: " &amp; Err.Description, vbCritical
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> cn <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span> cn.<span class="vba-keyword">Close</span>
 <span class="vba-keyword">End Sub</span>
 
-<span class="vba-comment">' --- SQL BUILDER ---</span>
-<span class="vba-keyword">Private Function</span> GetDetailedFormSQL(itemVal <span class="vba-keyword">As String</span>, locs <span class="vba-keyword">As String</span>) <span class="vba-keyword">As String</span>
-    <span class="vba-keyword">Dim</span> s <span class="vba-keyword">As String</span>
+<span class="vba-comment">' --- SIMPLIFIED SQL BUILDER ---</span>
+<span class="vba-keyword">Private</span> <span class="vba-keyword">Function</span> GetSimplifiedSQL(itemVal <span class="vba-keyword">As</span> <span class="vba-type">String</span>, locs <span class="vba-keyword">As</span> <span class="vba-type">String</span>, sDate <span class="vba-keyword">As</span> <span class="vba-type">String</span>, eDate <span class="vba-keyword">As</span> <span class="vba-type">String</span>) <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> s <span class="vba-keyword">As</span> <span class="vba-type">String</span>
     s = "SELECT il.loc ""LOCATION"", (SELECT Store_Name FROM Store WHERE Store=il.loc) ""LOC_NAME"", "
-    s = s & "im.item ""ITEM_TRANS"", im.item_parent ""ITEM_PARENT"", im.item_desc ""DESCRIPTION"", im.dept ""DEPT"", "
-    s = s & "isu.supplier ""PRIMARY_SUPPLIER"", (SELECT sup2.sup_name FROM sups sup2 WHERE sup2.supplier=il.primary_supp) ""VENDOR"", "
-    s = s & "TO_CHAR(ils.last_sold, 'mm/dd/yyyy') ""LAST_SOLD"", "
-    s = s & "TO_CHAR(ils.last_received, 'mm/dd/yyyy') ""LAST_REC"", " <span class="vba-comment">' Added Field</span>
-    s = s & "decode(ils.loc_type,'S', ils.stock_on_hand,0) ""STORE_OH"", "
-    s = s & "(decode(ils.loc_type,'S', ils.stock_on_hand,0)+decode(ils.loc_type,'W', ils.stock_on_hand,0)+ils.in_transit_qty) AS ""OH_TOTAL"", "
-    s = s & "nvl(ril.min_stock,0) ""MIN_QTY"", nvl(ril.max_stock,0) ""MAX_QTY"" "
-    s = s & "FROM (SELECT * from item_master WHERE (item IN (" & itemVal & ") OR item_parent IN (" & itemVal & ")) AND tran_level = item_level) im "
-    s = s & "LEFT JOIN rms.item_loc il ON im.item=il.item "
-    s = s & "LEFT JOIN rms.item_supplier isu ON im.item=isu.item AND il.item=isu.item "
-    s = s & "LEFT JOIN rms.item_loc_soh ils ON im.item=ils.item AND il.loc=ils.loc "
-    s = s & "LEFT JOIN rms.repl_item_loc ril ON im.item=ril.item AND il.loc=ril.location "
-    s = s & "WHERE im.item_number_type='ITEM' AND isu.primary_supp_ind = 'Y' "
-    s = s & "AND il.loc IN (" & locs & ") "
-    s = s & "ORDER BY il.loc ASC"
-    GetDetailedFormSQL = s
+    s = s &amp; "im.item ""ITEM_TRANS"", im.item_parent ""ITEM_PARENT"", im.item_desc ""DESCRIPTION"", "
+    s = s &amp; "decode(ils.loc_type,'S', ils.stock_on_hand,0) ""STORE_OH"", "
+    <span class="vba-comment">' Subquery using the User-Selected Date Range</span>
+    s = s &amp; "(SELECT nvl(sum(nvl(td.UNITS,0)),0) FROM tran_data_history td "
+    s = s &amp; " WHERE (td.tran_date BETWEEN TO_DATE('" &amp; sDate &amp; "','MM/DD/YYYY') AND TO_DATE('" &amp; eDate &amp; "','MM/DD/YYYY')) "
+    s = s &amp; " AND td.tran_code = 1 AND td.store = il.loc AND td.item=im.item GROUP BY item, store) ""UNITS_SOLD"" "
+    s = s &amp; "FROM (SELECT * from item_master WHERE (item IN (" &amp; itemVal &amp; ") OR item_parent IN (" &amp; itemVal &amp; ")) AND tran_level = item_level) im "
+    s = s &amp; "LEFT JOIN rms.item_loc il ON im.item=il.item "
+    s = s &amp; "LEFT JOIN rms.item_loc_soh ils ON im.item=ils.item AND il.loc=ils.loc "
+    s = s &amp; "WHERE im.item_number_type='ITEM' "
+    s = s &amp; "AND il.loc IN (" &amp; locs &amp; ") "
+    s = s &amp; "ORDER BY il.loc ASC"
+    GetSimplifiedSQL = s
+<span class="vba-keyword">End Function</span>
+
+<span class="vba-comment">' --- HELPER FOR NULLS ---</span>
+<span class="vba-keyword">Private</span> <span class="vba-keyword">Function</span> nvl(val <span class="vba-keyword">As</span> <span class="vba-type">Variant</span>, defaultVal <span class="vba-keyword">As</span> <span class="vba-type">Double</span>) <span class="vba-keyword">As</span> <span class="vba-type">Double</span>
+    <span class="vba-keyword">If</span> IsNull(val) <span class="vba-keyword">Or</span> val = "" <span class="vba-keyword">Then</span>
+        nvl = defaultVal
+    <span class="vba-keyword">Else</span>
+        nvl = CDbl(val)
+    <span class="vba-keyword">End If</span>
 <span class="vba-keyword">End Function</span>
 
 <span class="vba-comment">' --- PASSWORD HANDLER ---</span>
-<span class="vba-keyword">Public Function</span> zzz() <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+<span class="vba-keyword">Public</span> <span class="vba-keyword">Function</span> zzz() <span class="vba-keyword">As</span> <span class="vba-type">String</span>
     <span class="vba-keyword">Dim</span> TextLine <span class="vba-keyword">As</span> <span class="vba-type">String</span>, TargetFile <span class="vba-keyword">As</span> <span class="vba-type">String</span>
-    TargetFile = "<span class="redacted" title="Redacted for privacy">\\server\share\folder</span>"
+    TargetFile = "<span class="redacted" title="Redacted for privacy">\\SERVER\secure\password.txt</span>"
     <span class="vba-keyword">On Error GoTo</span> CantFind
     <span class="vba-keyword">Dim</span> fNum <span class="vba-keyword">As</span> <span class="vba-type">Integer</span>: fNum = FreeFile
-    <span class="vba-keyword">Open</span> TargetFile <span class="vba-keyword">For Input As</span> #fNum
-    <span class="vba-keyword">Do While Not</span> EOF(fNum): <span class="vba-keyword">Line Input</span> #fNum, TextLine: <span class="vba-keyword">Loop</span>
+    <span class="vba-keyword">Open</span> TargetFile <span class="vba-keyword">For</span> <span class="vba-keyword">Input</span> <span class="vba-keyword">As</span> #fNum
+    <span class="vba-keyword">Do While</span> <span class="vba-keyword">Not</span> EOF(fNum): <span class="vba-keyword">Line Input</span> #fNum, TextLine: <span class="vba-keyword">Loop</span>
     <span class="vba-keyword">Close</span> #fNum
     zzz = Trim(TextLine): <span class="vba-keyword">Exit Function</span>
 CantFind:
@@ -8245,6 +8326,21 @@ CantFind:
       <h3>CLASS Inspector</h3>
       <p class="file-link"><a href="Files/CLASS.xlsm">CLASS Macro</a></p>
      
+      <p>Shows an item’s <strong>merchandise hierarchy</strong>: department, class and subclass, with names.</p>
+      <h4 style="margin:14px 0 6px;">How to use it</h4>
+      <ol>
+        <li>Open <code>CLASS.xlsm</code> (it hides itself).</li>
+        <li>Select transaction or parent RINs, in a single column.</li>
+        <li>Run <strong>CLASS</strong> (<kbd>Alt</kbd>+<kbd>F8</kbd>). All selected items are looked up in one pass, so it’s quick even for long lists.</li>
+      </ol>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Result</th><th>Meaning</th></tr></thead><tbody><tr><td>Trans RIN / Parent RIN</td><td>The item (all children if you selected a parent).</td></tr><tr><td>Dept</td><td>Department number.</td></tr><tr><td>Class</td><td>Class number and name, e.g. <code>1001 - HOUSEHOLD BAT</code>.</td></tr><tr><td>Subclass</td><td>Subclass number and name, e.g. <code>1 - ALKALINE</code>.</td></tr></tbody></table></div>
+      <div class="note"><em>“No hierarchy data found.”</em> means none of the selected values matched an item in RMS; check for typos or that you selected the RIN column.</div>
+      <h4 style="margin:14px 0 6px;">Use case examples</h4>
+      <ul>
+        <li>Before submitting an <a href="DST_Handbook10.html#reclass">item reclassification</a>: confirm the item’s current class and subclass.</li>
+        <li>Checking a list of items is in the right class before a class-level promotion or report.</li>
+        <li>Finding the Class/Sub-Class text to use in the Ad Planner’s <a href="#adp-lift-query">Lift Query</a> filters.</li>
+      </ul>
       <p>Code:</p>
 
 <div class="code-container">
@@ -8401,6 +8497,21 @@ CantFind:
     <div id="vpnrinfinder">
       <h3>VPN RIN Finder</h3>
       <p class="file-link"><a href="Files/VPNrinFinder.xlsm">VPN Rin Finder Macro</a></p>
+      <p>Finds RINs from whatever you have: a <strong>transaction RIN</strong>, <strong>parent RIN</strong>, <strong>VPN</strong> (vendor model number) or <strong>UPC</strong>. It returns the transaction RIN, parent RIN, primary UPC and VPN for every matching item.</p>
+      <h4 style="margin:14px 0 6px;">How to use it</h4>
+      <ol>
+        <li>Open <code>VPNrinFinder.xlsm</code> (it hides itself).</li>
+        <li>Select the values to look up, in a single column. You can mix RINs, VPNs and UPCs.</li>
+        <li>Run <strong>VPNRINFIND</strong> (<kbd>Alt</kbd>+<kbd>F8</kbd>).</li>
+      </ol>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>You enter</th><th>You get</th></tr></thead><tbody><tr><td>VPN / model number</td><td>The RIN(s) with that VPN.</td></tr><tr><td>UPC</td><td>The RIN the UPC belongs to.</td></tr><tr><td>Parent RIN</td><td>Every child item under it.</td></tr><tr><td>Transaction RIN</td><td>Its parent, primary UPC and VPN.</td></tr></tbody></table></div>
+      <div class="note">VPNs must match RMS exactly (including dashes and letters). Items with no separate parent (“one-off” items) are found too.</div>
+      <h4 style="margin:14px 0 6px;">Use case examples</h4>
+      <ul>
+        <li>A vendor sends a deal sheet with only model numbers: paste the VPNs, select them, and get the RINs for the Deal Offer Form or Promotion Macro.</li>
+        <li>You have a product in hand: type or scan the UPC to find its RIN.</li>
+        <li>Getting the primary UPC for every item under a parent, e.g. for sign or fact-tag requests.</li>
+      </ul>
       <p>Code:</p>
 
 
