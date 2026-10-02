@@ -180,8 +180,42 @@
       <a class="nav-sub-link" href="#vw-maintenance">Backups &amp; Updates</a>
     </div>
   </div>
-  <a class="nav-top-link" href="#home-assistant">Home Assistant</a>
-  <a class="nav-top-link" href="#plex">Plex</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">NAS <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#nas-hardware">Choosing the Hardware</a>
+      <a class="nav-sub-link" href="#nas-install">1. Install Ubuntu</a>
+      <a class="nav-sub-link" href="#nas-network">2. Static IP &amp; SSH</a>
+      <a class="nav-sub-link" href="#nas-share">3. Share a Folder (Samba)</a>
+      <a class="nav-sub-link" href="#nas-connect">4. Connect from PCs</a>
+      <a class="nav-sub-link" href="#nas-planning">Storage &amp; Protection</a>
+      <a class="nav-sub-link" href="#nas-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Plex <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#plex-install">1. Install Plex</a>
+      <a class="nav-sub-link" href="#plex-setup">2. First-Time Setup</a>
+      <a class="nav-sub-link" href="#plex-folders">3. Folders &amp; Naming</a>
+      <a class="nav-sub-link" href="#plex-libraries">4. Add Libraries</a>
+      <a class="nav-sub-link" href="#plex-watching">5. Watch Anywhere</a>
+      <a class="nav-sub-link" href="#plex-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Home Assistant <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#ha-install-types">Ways to Install</a>
+      <a class="nav-sub-link" href="#ha-docker">1. Install Docker</a>
+      <a class="nav-sub-link" href="#ha-run">2. Run the Container</a>
+      <a class="nav-sub-link" href="#ha-onboarding">3. First-Time Setup</a>
+      <a class="nav-sub-link" href="#ha-devices">4. Add Devices</a>
+      <a class="nav-sub-link" href="#ha-automations">5. First Automation</a>
+      <a class="nav-sub-link" href="#ha-maintenance">Updates, Backups &amp; Remote</a>
+      <a class="nav-sub-link" href="#ha-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">RAID <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
@@ -2719,16 +2753,610 @@ sudo docker image prune -f</code></pre>
             </div>
         </div>
 
-        <div id="home-assistant">
-            <h2>Home assistant</h2>
-            <p class="tool-overview"><strong>What it is:</strong> Home Assistant is a free, open-source smart-home platform that runs on your own hardware. It brings thousands of devices and services (lights, sensors, thermostats, cameras) into one dashboard and runs automations locally, without depending on the cloud.</p>
-            <div class="placeholder-section">Section referencing automation device rules pending interface integration.</div>
+        <div id="nas">
+            <h2>NAS (Network Storage)</h2>
+            <p class="tool-overview"><strong>What it is:</strong> A NAS (network-attached storage) is a computer on your network whose job is to store files and share them with every other device: PCs, laptops, phones and TVs. Any always-on machine can be one. This guide turns a cheap old desktop running Ubuntu into a home server that shares a folder over the network with <a href="#samba">Samba</a>, then uses the same box for <a href="#plex">Plex</a> and <a href="#home-assistant">Home Assistant</a>.</p>
+            <p>These notes follow the video tutorial below. Each step links to the matching point in the video.</p>
+                <iframe class="video-embed" src="https://www.youtube.com/embed/72D3MvPk3Xs"
+                    title="Turn an old desktop into a budget home server: NAS, Plex, Home Assistant" loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/72D3MvPk3Xs" target="_blank" rel="noopener">https://youtu.be/72D3MvPk3Xs</a></p>
+
+            <div id="nas-hardware">
+                <h3>Choosing the Hardware</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=37" target="_blank" rel="noopener">▶ Watch this step (0:37)</a></p>
+                <p>The video uses a 2013 <strong>HP Pavilion 500-a60</strong> bought for about $15: a quad-core AMD A6-5200 (2 GHz), 8 GB RAM and a 65 W external power supply. Its 128 GB SSD was swapped for a used <strong>2 TB hard drive</strong> (about $15–20) for more storage.</p>
+                <ul>
+                    <li><strong>Low power draw matters most</strong> for a machine that runs 24/7. Look for small or “low-power” desktops, laptops or mini PCs.</li>
+                    <li><strong>RAM:</strong> 4 GB is enough for file sharing; 8 GB+ if you’ll also run Plex, Home Assistant and Docker containers.</li>
+                    <li><strong>Storage:</strong> boot from a small SSD if you can, and store data on larger hard drives. Speed matters little for a home server.</li>
+                    <li><strong>Network:</strong> use wired gigabit Ethernet. The Pavilion’s built-in port was only 100 Mb/s, so the video switched to a cheap USB 3 gigabit adapter.</li>
+                </ul>
+                <table>
+                    <thead><tr><th>Workload (video’s measurements)</th><th>Power draw</th><th>Approx. cost per year</th></tr></thead>
+                    <tbody>
+                        <tr><td>Idle, file sharing, Plex or Home Assistant</td><td>about 20 W</td><td>about $21</td></tr>
+                        <tr><td>Running a Minecraft server</td><td>about 30 W (spikes 35–40 W)</td><td>about $37</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Yearly cost = watts × 24 × 365 ÷ 1000 × your price per kWh. At $0.15/kWh every 10 W running all year costs about $13.</div></div>
+            </div>
+
+            <div id="nas-install">
+                <h3>Step 1: Install Ubuntu</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=148" target="_blank" rel="noopener">▶ Watch this step (2:28)</a></p>
+                <ol>
+                    <li>Download the <strong>LTS</strong> (long-term support) release of Ubuntu from <a href="https://ubuntu.com/download" target="_blank" rel="noopener">ubuntu.com</a>. The video uses Ubuntu <strong>Desktop</strong> to keep things simple; <strong>Ubuntu Server</strong> (no desktop) is lighter and better once you’re comfortable with the command line.</li>
+                    <li>Create a bootable USB drive with <strong>Rufus</strong> (Windows): select the USB drive, select the Ubuntu <code>.iso</code>, click <strong>Start</strong>, and accept the prompts. The default settings are fine.</li>
+                    <li>Boot the server from the USB drive and choose <strong>Install Ubuntu</strong>.</li>
+                    <li>Skip Wi-Fi (use wired Ethernet), choose <strong>Minimal installation</strong>, and tick <strong>download updates</strong> and <strong>install third-party drivers</strong> (set a Secure Boot password if asked).</li>
+                    <li>On <strong>Installation type</strong>, choose <strong>Erase disk and install Ubuntu</strong> (this wipes the drive), then set your time zone, computer name, username and password.</li>
+                </ol>
+            </div>
+
+            <div id="nas-network">
+                <h3>Step 2: Static IP and SSH</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=265" target="_blank" rel="noopener">▶ Watch this step (4:25)</a></p>
+                <p>Give the server a fixed address so the share, Plex and Home Assistant are always in the same place. In Ubuntu Desktop: <strong>Settings → Network → (gear icon) → IPv4 → Manual</strong>, then enter an unused address (the video uses <code>192.168.1.51</code>), netmask <code>255.255.255.0</code>, your router as the gateway (often <code>192.168.1.1</code>) and a DNS server. Turn the connection off and on to apply it. On Ubuntu Server use Netplan; see <a href="#static-ip">Static IP</a>. A DHCP reservation on your router works too.</p>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=305" target="_blank" rel="noopener">▶ Watch this step (5:05)</a></p>
+                <p>Install the SSH server so you can manage the machine from another computer and put it away without a monitor (see <a href="#ssh">SSH</a>):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt update
+sudo apt install -y openssh-server
+sudo systemctl status ssh</code></pre>
+                    </div>
+                </div>
+                <p>From Windows PowerShell (type <code>yes</code> the first time, then your password):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>powershell</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>ssh YOURUSER@192.168.1.51</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="nas-share">
+                <h3>Step 3: Share a Folder with Samba</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=377" target="_blank" rel="noopener">▶ Watch this step (6:17)</a></p>
+                <p>Install Samba and check it worked:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt update
+sudo apt install -y samba
+samba --version</code></pre>
+                    </div>
+                </div>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=398" target="_blank" rel="noopener">▶ Watch this step (6:38)</a></p>
+                <p>Create the folder to share in your home directory:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkdir ~/media-share</code></pre>
+                    </div>
+                </div>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=411" target="_blank" rel="noopener">▶ Watch this step (6:51)</a></p>
+                <p>Open the Samba configuration file:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo nano /etc/samba/smb.conf</code></pre>
+                    </div>
+                </div>
+                <p>Scroll to the very bottom and add your share (replace <code>YOURUSER</code>). Save with <kbd>Ctrl</kbd>+<kbd>X</kbd>, <kbd>Y</kbd>, <kbd>Enter</kbd>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>ini</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>[media-share]
+   comment = Home server share
+   path = /home/YOURUSER/media-share
+   browseable = yes
+   read only = no
+   guest ok = no
+   valid users = YOURUSER
+   create mask = 0664
+   directory mask = 0775</code></pre>
+                    </div>
+                </div>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=437" target="_blank" rel="noopener">▶ Watch this step (7:17)</a></p>
+                <p>Restart Samba and allow it through the firewall:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo systemctl restart smbd
+sudo ufw allow samba</code></pre>
+                    </div>
+                </div>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=445" target="_blank" rel="noopener">▶ Watch this step (7:25)</a></p>
+                <p>Set a Samba password for your user (it can differ from your login password):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo smbpasswd -a YOURUSER</code></pre>
+                    </div>
+                </div>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Check the config for typos at any time with <code>testparm</code>. The <a href="#samba">Samba</a> section covers a guest (no-password) share too.</div></div>
+            </div>
+
+            <div id="nas-connect">
+                <h3>Step 4: Connect from Your Computers</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=461" target="_blank" rel="noopener">▶ Watch this step (7:41)</a></p>
+                <p><strong>Windows:</strong> File Explorer → <strong>This PC</strong> → <strong>Map network drive</strong>, pick a drive letter, enter the folder path below, tick <strong>Connect using different credentials</strong>, then sign in with your username and Samba password.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>text</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>\\192.168.1.51\media-share</code></pre>
+                    </div>
+                </div>
+                <p>Or map it from Command Prompt / PowerShell:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>powershell</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>net use M: \\192.168.1.51\media-share /user:YOURUSER /persistent:yes</code></pre>
+                    </div>
+                </div>
+                <p><strong>macOS:</strong> Finder → <strong>Go → Connect to Server</strong> → <code>smb://192.168.1.51/media-share</code>.</p>
+                <p><strong>Linux:</strong> mount it with CIFS (install <code>cifs-utils</code> first):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt install -y cifs-utils
+sudo mkdir -p /mnt/media-share
+sudo mount -t cifs //192.168.1.51/media-share /mnt/media-share -o username=YOURUSER,uid=$(id -u),gid=$(id -g)</code></pre>
+                    </div>
+                </div>
+                <p>To mount it automatically at boot, store the login in <code>~/.smbcredentials</code> (lines <code>username=YOURUSER</code> and <code>password=…</code>, then <code>chmod 600</code> it) and add a line to <code>/etc/fstab</code>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>text</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code># /etc/fstab: mount the share at boot on a Linux client
+//SERVER-IP/media-share  /mnt/media-share  cifs  credentials=/home/YOURUSER/.smbcredentials,uid=1000,gid=1000,_netdev  0  0</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="nas-planning">
+                <h3>Storage, Protection and Next Steps</h3>
+                <ul>
+                    <li><strong>One drive means no redundancy.</strong> The video stores everything on a single 2 TB disk; if it fails, the data is gone. Add a second drive and mirror them with <a href="#raid">RAID</a> 1, or use a NAS OS that handles redundancy for you.</li>
+                    <li><strong>RAID is not a backup.</strong> Follow the <strong>3-2-1 rule</strong>: 3 copies of important data, on 2 different types of storage, with 1 copy off-site (see <a href="#backups">Backups</a>).</li>
+                    <li><strong>Folder layout:</strong> keep media in one place, e.g. <code>~/media-share/plex/movies</code> and <code>~/media-share/plex/shows</code>, so Plex and the share use the same folders.</li>
+                    <li><strong>Keep it on the LAN:</strong> don’t forward Samba (port 445) through your router. For access away from home, use a VPN such as <a href="#tailscale">Tailscale</a>.</li>
+                    <li><strong>Check disk health</strong> now and then: <code>sudo apt install smartmontools</code>, then <code>sudo smartctl -H /dev/sda</code>.</li>
+                    <li><strong>Dedicated NAS systems:</strong> if you’d rather click than type, <strong>TrueNAS</strong>, <strong>OpenMediaVault</strong> and <strong>Unraid</strong> are operating systems built just for NAS boxes, with web dashboards, RAID and app support.</li>
+                </ul>
+            </div>
+
+            <div id="nas-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <table>
+                    <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>Windows can’t find <code>\\SERVER-IP\share</code></td><td>Check the server is on (<code>ping SERVER-IP</code>), that <code>sudo ufw allow samba</code> was run, and that the share name matches the <code>[name]</code> in <code>smb.conf</code>.</td></tr>
+                        <tr><td>Login is rejected</td><td>Use the <strong>Samba</strong> password set with <code>smbpasswd -a</code>, and make sure the user is listed in <code>valid users</code>.</td></tr>
+                        <tr><td>Files can be read but not saved</td><td>Set <code>read only = no</code> and make sure your user owns the folder: <code>sudo chown -R YOURUSER: ~/media-share</code>.</td></tr>
+                        <tr><td>Changes to <code>smb.conf</code> do nothing</td><td>Run <code>testparm</code> to find errors, then <code>sudo systemctl restart smbd</code>.</td></tr>
+                        <tr><td>Transfers are slow (about 11 MB/s)</td><td>The network port is only 100 Mb/s. Use a gigabit port or USB gigabit adapter.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="plex">
             <h2>Plex</h2>
-            <p class="tool-overview"><strong>What it is:</strong> Plex is a media server that organizes your own movies, TV shows, music and photos and streams them to phones, TVs and browsers, at home or remotely. It downloads artwork and details automatically and can convert video on the fly for devices that cannot play the original format.</p>
-            <div class="placeholder-section">Section targeting directory volume mounts pending storage architecture setup.</div>
+            <p class="tool-overview"><strong>What it is:</strong> Plex is a media server that organizes your own movies, TV shows, music and photos and streams them to phones, TVs and browsers, at home or remotely, like your own Netflix. It downloads artwork and details automatically and can convert video on the fly for devices that can’t play the original format.</p>
+            <p>These steps continue the home-server video from the <a href="#nas">NAS</a> section and assume Ubuntu, a static IP, SSH and a Samba share are already set up.</p>
+                <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/72D3MvPk3Xs" target="_blank" rel="noopener">https://youtu.be/72D3MvPk3Xs</a> (embedded in the <a href="#nas">NAS</a> section)</p>
+
+            <div id="plex-install">
+                <h3>Step 1: Install Plex Media Server</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=498" target="_blank" rel="noopener">▶ Watch this step (8:18)</a></p>
+                <p>Plex isn’t in Ubuntu’s own package lists, so install Plex’s package. The simplest way: on <a href="https://www.plex.tv/media-server-downloads/" target="_blank" rel="noopener">plex.tv/media-server-downloads</a>, choose <strong>Plex Media Server → Linux → Ubuntu (64-bit)</strong>, right-click the download button and copy the link. Then on the server:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>wget -O plexmediaserver.deb &quot;PASTE-DOWNLOAD-LINK-HERE&quot;
+sudo apt install -y ./plexmediaserver.deb</code></pre>
+                    </div>
+                </div>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>The video adds Plex’s package repository first, so <code>sudo apt install plexmediaserver</code> works and Plex updates along with the rest of the system (<code>sudo apt update &amp;&amp; sudo apt upgrade</code>). Plex’s support article “Enable repository updating for supported Linux server distributions” has the current repository commands.</div></div>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=514" target="_blank" rel="noopener">▶ Watch this step (8:34)</a></p>
+                <p>Check that it’s running (press <kbd>Q</kbd> to exit):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo systemctl status plexmediaserver</code></pre>
+                    </div>
+                </div>
+                <p>If the firewall is on, allow Plex’s port:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo ufw allow 32400/tcp</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="plex-setup">
+                <h3>Step 2: First-Time Setup</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=521" target="_blank" rel="noopener">▶ Watch this step (8:41)</a></p>
+                <ol>
+                    <li>From a computer on the <strong>same network</strong>, open <code>http://192.168.1.51:32400/web</code> (use your server’s IP; the path must end in <code>/web</code>).</li>
+                    <li>Sign in or create a free Plex account. This “claims” the server so it belongs to your account.</li>
+                    <li>Give the server a name. Leave <strong>Allow me to access my media outside my home</strong> on if you want remote streaming.</li>
+                    <li>Skip adding libraries for now; you’ll add them in Step 4 once the folders exist.</li>
+                </ol>
+            </div>
+
+            <div id="plex-folders">
+                <h3>Step 3: Create Media Folders and Name Files Correctly</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=550" target="_blank" rel="noopener">▶ Watch this step (9:10)</a></p>
+                <p>Create Plex folders inside the network share so you can copy media to them from any PC:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkdir -p ~/media-share/plex/movies ~/media-share/plex/shows</code></pre>
+                    </div>
+                </div>
+                <p>Plex runs as its own <code>plex</code> user, which can’t see inside other users’ home folders on newer Ubuntu versions. Give it read access:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt install -y acl
+sudo setfacl -m u:plex:x /home/YOURUSER /home/YOURUSER/media-share
+sudo setfacl -R -m u:plex:rX -m d:u:plex:rX /home/YOURUSER/media-share/plex</code></pre>
+                    </div>
+                </div>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=587" target="_blank" rel="noopener">▶ Watch this step (9:47)</a></p>
+                <p>Copy media into the folders over the network share. <strong>Plex identifies movies and episodes from their names</strong>, so follow its naming scheme:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>text</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>plex/
+├── movies/
+│   └── Over the Hedge (2006)/
+│       └── Over the Hedge (2006).mkv
+└── shows/
+    └── The Office (US) (2005)/
+        └── Season 03/
+            ├── The Office (US) (2005) - s03e01 - Gay Witch Hunt.mkv
+            └── The Office (US) (2005) - s03e02 - The Convention.mkv</code></pre>
+                    </div>
+                </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Include the year (and a country tag like <code>(US)</code> when there are several versions) so Plex picks the right title. The video’s Office episodes matched the wrong show because only a few episodes were copied; if that happens, use <strong>⋯ → Fix Match</strong> on the show in Plex.</div></div>
+            </div>
+
+            <div id="plex-libraries">
+                <h3>Step 4: Add Libraries</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=597" target="_blank" rel="noopener">▶ Watch this step (9:57)</a></p>
+                <ol>
+                    <li>In Plex, open <strong>Settings → Manage → Libraries → Add Library</strong> (or the <strong>+</strong> next to your server in the sidebar).</li>
+                    <li>Choose <strong>Movies</strong>, click <strong>Browse for media folder</strong> and go to <code>/</code> → <code>home</code> → <code>YOURUSER</code> → <code>media-share</code> → <code>plex</code> → <code>movies</code>. Click <strong>Add Library</strong>.</li>
+                    <li>Repeat with <strong>TV Shows</strong> and the <code>shows</code> folder.</li>
+                    <li>Plex scans the folders and downloads posters and descriptions. New files you copy in are picked up automatically, or use <strong>⋯ → Scan Library Files</strong>.</li>
+                </ol>
+            </div>
+
+            <div id="plex-watching">
+                <h3>Step 5: Watch Anywhere</h3>
+                <ul>
+                    <li><strong>Apps:</strong> Plex has apps for smart TVs, Roku, Fire TV, Apple TV, game consoles, phones and tablets, or use <code>app.plex.tv</code> in a browser.</li>
+                    <li><strong>Remote access:</strong> <strong>Settings → Remote Access</strong>. If it can’t connect automatically, forward TCP port 32400 on your router to the server, or skip port forwarding and watch over a VPN like <a href="#tailscale">Tailscale</a>.</li>
+                    <li><strong>Transcoding:</strong> if a device can’t play a file, Plex converts it on the fly, which is CPU-heavy on an old machine. Files in common formats (H.264 MP4/MKV) stream without converting. Hardware-accelerated transcoding requires <strong>Plex Pass</strong>.</li>
+                    <li><strong>Share with family:</strong> <strong>Settings → Manage Library Access</strong> to invite other Plex accounts.</li>
+                </ul>
+            </div>
+
+            <div id="plex-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <table>
+                    <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>Web page won’t load</td><td>Use <code>http://SERVER-IP:32400/web</code>, check <code>sudo systemctl status plexmediaserver</code> and run <code>sudo ufw allow 32400/tcp</code>.</td></tr>
+                        <tr><td>Folders are empty when browsing in Plex</td><td>The <code>plex</code> user can’t read them. Re-run the <code>setfacl</code> commands in Step 3.</td></tr>
+                        <tr><td>Wrong movie or show matched</td><td>Rename files to the naming scheme and use <strong>Fix Match</strong>; then <strong>Refresh Metadata</strong>.</td></tr>
+                        <tr><td>Video buffers or stutters</td><td>The CPU is transcoding. Lower the quality on the player or use a format the device plays directly.</td></tr>
+                        <tr><td>“Server unavailable” on first setup</td><td>Claim the server from a browser on the same network as the server, not over the internet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="home-assistant">
+            <h2>Home Assistant</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Home Assistant is a free, open-source smart-home platform that runs on your own hardware. It brings thousands of devices and services (lights, sensors, thermostats, cameras) into one dashboard and runs automations locally, without depending on a big tech company’s cloud.</p>
+            <p>These steps continue the home-server video from the <a href="#nas">NAS</a> section and run Home Assistant as a <a href="#docker">Docker</a> container on the same Ubuntu server.</p>
+                <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/72D3MvPk3Xs" target="_blank" rel="noopener">https://youtu.be/72D3MvPk3Xs</a> (embedded in the <a href="#nas">NAS</a> section)</p>
+
+            <div id="ha-install-types">
+                <h3>Ways to Install Home Assistant</h3>
+                <table>
+                    <thead><tr><th>Method</th><th>Best for</th><th>Notes</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Home Assistant OS</strong></td><td>A dedicated device (Raspberry Pi, mini PC) or a VM on <a href="#proxmox">Proxmox</a></td><td>Full experience, including the Add-on store and one-click backups. Recommended if the machine only runs Home Assistant.</td></tr>
+                        <tr><td><strong>Container (Docker)</strong>, used in the video</td><td>A server that already runs other things (Plex, file sharing)</td><td>Lightweight and shares the machine. No Add-on store; run extra tools as separate containers.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="ha-docker">
+                <h3>Step 1: Install Docker</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=673" target="_blank" rel="noopener">▶ Watch this step (11:13)</a></p>
+                <p>Install Docker Engine from Docker’s official repository (see <a href="#docker">Docker</a> for the full steps), then confirm it works:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker run hello-world</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ha-run">
+                <h3>Step 2: Run the Home Assistant Container</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=688" target="_blank" rel="noopener">▶ Watch this step (11:28)</a></p>
+                <p>Create a folder to hold Home Assistant’s configuration, so it survives container updates:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkdir ~/hass</code></pre>
+                    </div>
+                </div>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=704" target="_blank" rel="noopener">▶ Watch this step (11:44)</a></p>
+                <p>Run the official image. Before pasting, change <code>TZ</code> to your <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" target="_blank" rel="noopener">time zone</a> (the video uses <code>America/Chicago</code>) and <code>YOURUSER</code> to your username:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker run -d \
+  --name homeassistant \
+  --privileged \
+  --restart=unless-stopped \
+  -e TZ=America/New_York \
+  -v /home/YOURUSER/hass:/config \
+  -v /run/dbus:/run/dbus:ro \
+  --network=host \
+  ghcr.io/home-assistant/home-assistant:stable</code></pre>
+                    </div>
+                </div>
+                <table>
+                    <thead><tr><th>Option</th><th>What it does</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>--restart=unless-stopped</code></td><td>Starts Home Assistant again after a reboot or crash.</td></tr>
+                        <tr><td><code>-e TZ=…</code></td><td>Time zone, so automations run at the right time.</td></tr>
+                        <tr><td><code>-v /home/YOURUSER/hass:/config</code></td><td>Keeps all settings in the <code>~/hass</code> folder on the server.</td></tr>
+                        <tr><td><code>--network=host</code></td><td>Lets Home Assistant discover devices on your network automatically.</td></tr>
+                        <tr><td><code>--privileged</code>, <code>/run/dbus</code></td><td>Access to Bluetooth and USB devices (e.g. Zigbee/Z-Wave sticks).</td></tr>
+                    </tbody>
+                </table>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=744" target="_blank" rel="noopener">▶ Watch this step (12:24)</a></p>
+                <p>Check it’s running:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker ps</code></pre>
+                    </div>
+                </div>
+                <p>Prefer Docker Compose? Save this as <code>~/docker/homeassistant/docker-compose.yml</code> and run <code>sudo docker compose up -d</code> in that folder:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    privileged: true
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      TZ: America/New_York
+    volumes:
+      - ./config:/config
+      - /run/dbus:/run/dbus:ro</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ha-onboarding">
+                <h3>Step 3: First-Time Setup</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=751" target="_blank" rel="noopener">▶ Watch this step (12:31)</a></p>
+                <ol>
+                    <li>Open <code>http://192.168.1.51:8123</code> (your server’s IP, port <strong>8123</strong>). The first start can take a few minutes.</li>
+                    <li>Create your owner account (name, username, password).</li>
+                    <li>Set your home location, time zone and units. These drive sunrise/sunset automations and weather.</li>
+                    <li>Choose whether to share analytics, then finish. You land on the dashboard.</li>
+                    <li>Optional: your profile (bottom-left) → <strong>Theme → Dark</strong>.</li>
+                </ol>
+            </div>
+
+            <div id="ha-devices">
+                <h3>Step 4: Add Devices (Integrations)</h3>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=776" target="_blank" rel="noopener">▶ Watch this step (12:56)</a></p>
+                <p>Home Assistant automatically finds many devices on your network. Go to <strong>Settings → Devices &amp; Services</strong>:</p>
+                <ul>
+                    <li><strong>Discovered</strong> devices appear at the top. Click <strong>Configure</strong> to add one, or <strong>Ignore</strong> to hide it.</li>
+                    <li>To add something not discovered, click <strong>+ Add Integration</strong> and search for the brand.</li>
+                </ul>
+                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=785" target="_blank" rel="noopener">▶ Watch this step (13:05)</a></p>
+                <p>The video adds <strong>LIFX</strong> smart bulbs: click Configure, pick the bulbs, and they appear on the dashboard, where you can change brightness and color.</p>
+            </div>
+
+            <div id="ha-automations">
+                <h3>Step 5: Your First Automation</h3>
+                <p>Automations are “when <em>this</em> happens, if <em>conditions</em> are met, do <em>that</em>”. Example: turn the living-room lamp on at sunset.</p>
+                <ol>
+                    <li><strong>Settings → Automations &amp; Scenes → + Create Automation → Create new automation</strong>.</li>
+                    <li><strong>When</strong> (trigger): <strong>+ Add Trigger → Sun → Sunset</strong>.</li>
+                    <li><strong>And if</strong> (optional condition): e.g. only when someone is home.</li>
+                    <li><strong>Then do</strong> (action): <strong>+ Add Action → Light → Turn on</strong> and pick the lamp.</li>
+                    <li>Click <strong>Save</strong> and give it a name. Use <strong>⋯ → Run actions</strong> to test it.</li>
+                </ol>
+                <p>Other popular ideas: lights on when motion is detected, notifications to your phone (install the <strong>Home Assistant Companion</strong> app), or turning everything off when the last person leaves.</p>
+            </div>
+
+            <div id="ha-maintenance">
+                <h3>Updates, Backups and Remote Access</h3>
+                <p><strong>Update</strong> the container by pulling the new image and recreating it (your settings in <code>~/hass</code> are kept):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker pull ghcr.io/home-assistant/home-assistant:stable
+sudo docker stop homeassistant
+sudo docker rm homeassistant
+# then run the same docker run command from Step 2 again</code></pre>
+                    </div>
+                </div>
+                <p>With Docker Compose: <code>sudo docker compose pull &amp;&amp; sudo docker compose up -d</code>.</p>
+                <p><strong>Back up</strong> by copying the config folder (stop the container first for a clean copy):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker stop homeassistant
+sudo tar -czf ~/hass-backup-$(date +%F).tar.gz -C ~ hass
+sudo docker start homeassistant</code></pre>
+                    </div>
+                </div>
+                <p><strong>Remote access:</strong> don’t forward port 8123 straight to the internet. Use a VPN such as <a href="#tailscale">Tailscale</a>, a reverse proxy with HTTPS (see <a href="#nginx">NGINX</a>), or the paid Home Assistant Cloud (Nabu Casa).</p>
+            </div>
+
+            <div id="ha-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <table>
+                    <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>Page at :8123 won’t load</td><td>Give it a few minutes on first start, then check <code>sudo docker ps</code> and <code>sudo docker logs homeassistant</code>. If the firewall is on: <code>sudo ufw allow 8123/tcp</code>.</td></tr>
+                        <tr><td>Devices aren’t discovered</td><td>Make sure the container uses <code>--network=host</code> and the devices are on the same network/VLAN as the server.</td></tr>
+                        <tr><td>Automations run at the wrong time</td><td>Wrong <code>TZ</code> value or home location. Fix the container’s time zone and <strong>Settings → System → General</strong>.</td></tr>
+                        <tr><td>Settings lost after an update</td><td>The <code>/config</code> folder wasn’t mapped to the server. Always use <code>-v /home/YOURUSER/hass:/config</code>.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="raid">
