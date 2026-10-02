@@ -189,7 +189,7 @@
       <a class="nav-sub-link" href="#nas-network">2. Static IP &amp; SSH</a>
       <a class="nav-sub-link" href="#nas-share">3. Share a Folder (Samba)</a>
       <a class="nav-sub-link" href="#nas-connect">4. Connect from PCs</a>
-      <a class="nav-sub-link" href="#nas-automount">Auto-Mount at Boot (Linux)</a>
+      <a class="nav-sub-link" href="#nas-linux-routes">Linux: Two Ways to Connect</a>
       <a class="nav-sub-link" href="#nas-planning">Storage &amp; Protection</a>
       <a class="nav-sub-link" href="#nas-troubleshooting">Troubleshooting</a>
     </div>
@@ -2962,10 +2962,76 @@ sudo ufw allow samba</code></pre>
                     </div>
                 </div>
                 <p><strong>macOS:</strong> Finder → <strong>Go → Connect to Server</strong>, enter <code>smb://192.168.1.51/haven-share</code>, click <strong>Connect</strong> and sign in the same way.</p>
-                <p><strong>Linux (Ubuntu desktop):</strong> open <strong>Files → Other Locations</strong>, type <code>smb://192.168.1.51/haven-share</code> in <strong>Connect to Server</strong> and sign in.</p>
+                <p><strong>Linux:</strong> there are two ways to connect; see <a href="#nas-linux-routes">Linux: Two Ways to Connect</a> below.</p>
                 <p><strong>Phones and TVs:</strong> most file-manager and media apps have an “SMB” or “network share” option. Use the same IP, share name, username and password.</p>
-                <h4 id="nas-automount">Optional: Mount the Share Automatically at Boot (Linux)</h4>
-                <p>On Windows, ticking <strong>Reconnect at sign-in</strong> in Map network drive already does this. On another <strong>Linux computer</strong> (not the server), follow these steps so the share is always available as a normal folder at <code>/mnt/haven-share</code>. The example assumes your username on that computer is also <code>haven</code>.</p>
+
+                <h4 id="nas-linux-routes">Linux: Two Ways to Connect</h4>
+                <p>Both routes do the same thing in the end: the <code>haven-share</code> folder on the server shows up as a folder on your Linux computer, and you log in with the same username (<code>haven</code>) and the same Samba password. The difference is <strong>who types the password, and when</strong>.</p>
+                <p>First, it helps to know the two password pieces involved, because they’re easy to mix up:</p>
+                <table>
+                    <thead><tr><th>Piece</th><th>Where</th><th>What it does</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>sudo smbpasswd -a haven</code></td><td><strong>On the server</strong></td><td>Sets the password the share will accept. Every route needs this. <em>Like setting the combination on a lock.</em></td></tr>
+                        <tr><td><code>~/.smbcredentials</code></td><td>A file <strong>on the Linux computer</strong></td><td>Stores a copy of that same password so the computer can log in by itself, with nobody there to type it. <em>Like a note of the combination kept by the door.</em></td></tr>
+                    </tbody>
+                </table>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>The Linux computer can’t read the server’s Samba password list, so <code>smbpasswd</code> alone can’t log it in automatically. Something on the client has to supply the password: <strong>you</strong> (Route A) or the <strong>credentials file</strong> (Route B). In both cases it must match the password you set with <code>smbpasswd</code>.</div></div>
+                <table>
+                    <thead><tr><th></th><th>Route A: Sign in with your Samba password (recommended)</th><th>Route B: Auto-mount at boot with fstab</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>How you log in</strong></td><td>You type the password when you connect (the desktop can remember it for you).</td><td>The computer reads the password from <code>~/.smbcredentials</code> and connects on its own.</td></tr>
+                        <tr><td><strong>When it connects</strong></td><td>When you open it (usually after you sign in).</td><td>Every time the computer starts, before anyone signs in.</td></tr>
+                        <tr><td><strong>What you set up</strong></td><td><code>smbpasswd</code> on the server, then a few clicks or one command.</td><td><code>smbpasswd</code> on the server, plus a credentials file, a mount folder and an <code>/etc/fstab</code> line.</td></tr>
+                        <tr><td><strong>Password stored</strong></td><td>Only in your desktop’s encrypted keyring, if you choose “remember”.</td><td>In a plain-text file (protected with <code>chmod 600</code>).</td></tr>
+                        <tr><td><strong>If you make a mistake</strong></td><td>It just won’t connect; try again.</td><td>A bad fstab line can slow or interrupt startup (the <code>nofail</code> option protects against this).</td></tr>
+                        <tr><td><strong>Best for</strong></td><td>Desktops and laptops you sit at.</td><td>Always-on machines that need the share without anyone logging in (another server, a Plex box, backup jobs).</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>Recommendation: use Route A</strong> unless the computer has to reach the share on its own at startup. It has fewer steps, edits no system files, and keeps the password out of a plain-text file. Use Route B only for unattended machines.</div></div>
+
+                <h4 id="nas-route-password">Route A: Sign In with Your Samba Password (Recommended)</h4>
+                <p><strong>1. Make sure the Samba password is set.</strong> You already did this in Step 3; run it again any time to reset the password:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo smbpasswd -a haven</code></pre>
+                    </div>
+                </div>
+                <p><strong>2. Connect from the Linux computer.</strong> Open <strong>Files → Other Locations</strong>, type the address below in <strong>Connect to Server</strong> and click <strong>Connect</strong>. Choose <strong>Registered User</strong>, enter username <code>haven</code> and the Samba password, and pick <strong>Remember forever</strong> so next time it’s one click. Right-click the share in the sidebar and <strong>Add Bookmark</strong> to keep it handy.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>text · type in Connect to Server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>smb://192.168.1.51/haven-share</code></pre>
+                    </div>
+                </div>
+                <p><strong>Prefer the terminal?</strong> This mounts the share at <code>/mnt/haven-share</code> and asks for the Samba password (nothing shows while you type). It stays connected until you restart the computer:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the Linux computer</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt install -y cifs-utils
+sudo mkdir -p /mnt/haven-share
+sudo mount -t cifs //192.168.1.51/haven-share /mnt/haven-share -o username=haven,uid=$(id -u),gid=$(id -g)</code></pre>
+                    </div>
+                </div>
+                <p>To disconnect: <code>sudo umount /mnt/haven-share</code>.</p>
+
+                <h4 id="nas-automount">Route B: Auto-Mount at Boot with fstab</h4>
+                <p>Use this on a Linux computer (not the server) that should always have the share at <code>/mnt/haven-share</code>, even before anyone signs in. On Windows, ticking <strong>Reconnect at sign-in</strong> in Map network drive is the equivalent. The example assumes your username on that computer is also <code>haven</code>, and that the Samba password is already set on the server with <code>sudo smbpasswd -a haven</code>.</p>
                 <p><strong>1. Install the tools for mounting Windows/Samba shares:</strong></p>
                 <div class="code-container">
                     <div class="code-header">
@@ -2990,7 +3056,23 @@ sudo ufw allow samba</code></pre>
 <pre><code>sudo mkdir -p /mnt/haven-share</code></pre>
                     </div>
                 </div>
-                <p><strong>3. Save the Samba login in a private file</strong>, so you don’t have to put the password in a system file. Open a new file:</p>
+                <p><strong>3. Save a copy of the Samba password on this computer</strong> in <code>~/.smbcredentials</code>. This is the “note by the door”: the same password you set with <code>smbpasswd</code>, kept here so the computer can log in at startup. Pick either way:</p>
+                <p><strong>Option 1 (easiest): one command.</strong> It asks for the password and hides it as you type, then writes the file and makes it readable only by you:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the Linux computer</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>read -rsp &quot;Samba password for haven: &quot; SMBPASS; echo
+printf &#x27;username=haven\npassword=%s\n&#x27; &quot;$SMBPASS&quot; &gt; ~/.smbcredentials
+unset SMBPASS
+chmod 600 ~/.smbcredentials</code></pre>
+                    </div>
+                </div>
+                <p><strong>Option 2: write it in a text editor.</strong> Open a new file:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the Linux computer</span>
@@ -3002,7 +3084,7 @@ sudo ufw allow samba</code></pre>
 <pre><code>nano ~/.smbcredentials</code></pre>
                     </div>
                 </div>
-                <p>Paste these two lines, replacing the password with the Samba password from Step 3, then save with <kbd>Ctrl</kbd>+<kbd>X</kbd>, <kbd>Y</kbd>, <kbd>Enter</kbd>:</p>
+                <p>Paste these two lines, replacing the password with your Samba password, then save with <kbd>Ctrl</kbd>+<kbd>X</kbd>, <kbd>Y</kbd>, <kbd>Enter</kbd>:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>text · contents of ~/.smbcredentials</span>
@@ -3027,22 +3109,7 @@ password=YourSambaPassword</code></pre>
 <pre><code>chmod 600 ~/.smbcredentials</code></pre>
                     </div>
                 </div>
-                <p><strong>Alternative: create the file with one command.</strong> Instead of using <code>nano</code>, paste this. Like <code>smbpasswd</code>, it asks for the password and hides it while you type, then writes the file and locks it down for you (it already includes the <code>chmod 600</code>):</p>
-                <div class="code-container">
-                    <div class="code-header">
-                        <span>bash · on the Linux computer</span>
-                        <div class="header-controls">
-                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                        </div>
-                    </div>
-                    <div class="code-scroll-wrapper">
-<pre><code>read -rsp &quot;Samba password for haven: &quot; SMBPASS; echo
-printf &#x27;username=haven\npassword=%s\n&#x27; &quot;$SMBPASS&quot; &gt; ~/.smbcredentials
-unset SMBPASS
-chmod 600 ~/.smbcredentials</code></pre>
-                    </div>
-                </div>
-                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Why not just <code>sudo smbpasswd -a</code>?</strong> They do different jobs. <code>sudo smbpasswd -a haven</code> runs <strong>on the server</strong> and <em>sets</em> the password the share accepts (Step 3). <code>~/.smbcredentials</code> lives <strong>on the Linux computer</strong> and <em>remembers</em> that same password so it can log in by itself at boot. The mount can’t read the server’s Samba password list, so both are needed, and the passwords must match. Check the file with <code>cat ~/.smbcredentials</code>.</div></div>
+                <p>Either way, check it with <code>cat ~/.smbcredentials</code>. If you ever change the password with <code>smbpasswd</code> on the server, update this file too.</p>
                 <p><strong>4. Find your user and group ID numbers</strong> (so the files show up as yours). On most single-user systems both are <code>1000</code>:</p>
                 <div class="code-container">
                     <div class="code-header">
