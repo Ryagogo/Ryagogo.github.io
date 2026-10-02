@@ -1081,6 +1081,21 @@ td.red-border-cell:nth-child(4) {
     </div>
   </div>
   <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Ad Bible (Standalone) <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#ad-bible">Overview &amp; Download</a>
+      <a class="nav-sub-link" href="#adb-planner-vs">Ad Bible vs. Ad Planner</a>
+      <a class="nav-sub-link" href="#adb-before">Before You Start</a>
+      <a class="nav-sub-link" href="#adb-sheet">The Sheet</a>
+      <a class="nav-sub-link" href="#adb-step1">1. Enter the Items</a>
+      <a class="nav-sub-link" href="#adb-step2">2. Update Information</a>
+      <a class="nav-sub-link" href="#adb-step3">3. Finish the Ad Details</a>
+      <a class="nav-sub-link" href="#adb-step4">4. Upload (Ctrl+A)</a>
+      <a class="nav-sub-link" href="#adb-troubleshooting">Troubleshooting</a>
+      <a class="nav-sub-link" href="#adb-code">The Code</a>
+    </div>
+  </div>
+  <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Files &amp; Templates <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#files-templates">All Files</a>
@@ -6488,6 +6503,975 @@ NextPair:
 </div>
     </div>
 
+    <!-- AD BIBLE (STANDALONE) -->
+    <div class="section" id="ad-bible">
+      <h2>Ad Bible (Standalone)</h2>
+      <p>The <strong>Ad Bible</strong> is a stand-alone copy of the Ad Planner’s <a href="#adp-db-import">Ad Database Import</a> sheet and its DB Uploader. Use it to key items straight into the Ad Database <strong>without</strong> the planner: no QuantaSense data, lift analysis or PowerPoint export. It’s handy for vendor submissions, last-minute additions, or anyone who only needs to enter ad items.</p>
+      <ol>
+        <li>Type the RINs.</li>
+        <li>Click <strong>Update Information</strong> to fill in item details from RMS and past ad copy from the Ad Database.</li>
+        <li>Finish the ad details and upload the rows with <kbd>Ctrl</kbd>+<kbd>A</kbd>.</li>
+      </ol>
+      <p class="file-link"><a href="Files/AD_BIBLE_Standalone.xlsm" download>Ad Bible (Standalone)</a></p>
+      <h3 id="adb-planner-vs">Ad Bible vs. Ad Planner</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th></th><th>Ad Bible (standalone)</th><th>Ad Planner</th></tr></thead><tbody><tr><td>Purpose</td><td>Enter and upload ad items only</td><td>Measure past ads, plan the week, build the PowerPoint, then upload</td></tr><tr><td>How rows get on the sheet</td><td>You type the RINs (and Wk) yourself</td><td>Export To PowerPoint bulk-loads them from the Planner</td></tr><tr><td>Item details</td><td><strong>Update Information</strong> button, on just the RINs you select</td><td>Bulk load during the export</td></tr><tr><td>Header row</td><td>Row <strong>5</strong> (row 4 holds the group labels)</td><td>Row 4</td></tr><tr><td>Parent RIN on upload</td><td>PARENT column → Ad Database <em>Featured RIN</em></td><td>RIN column → <em>Featured RIN</em></td></tr><tr><td>Long ad copy</td><td>Over 255 characters is split into <em>Ad Information</em> + <em>Ad Like Item</em></td><td>Single field</td></tr></tbody></table></div>
+      <h3 id="adb-before">Before You Start</h3>
+      <ul>
+        <li><strong>Enable macros</strong> when you open the workbook.</li>
+        <li><strong>Network access</strong> to the Ad Database on the shared drive and to RMS. RMS is read through the Oracle ODBC driver with a read-only login; the password is read from a protected network file.</li>
+        <li><strong>Installed:</strong> the Microsoft Access Database Engine (ACE OLEDB) and Microsoft ODBC for Oracle driver. In the VBA editor under <strong>Tools → References</strong>, <em>Microsoft ActiveX Data Objects 6.1 Library</em> must be ticked.</li>
+        <li>The upload form copies the department lookup list to <code>C:\temp</code> (created if missing).</li>
+      </ul>
+      <h3 id="adb-sheet">The Ad Database Import Sheet</h3>
+      <img src="Pictures/Coding/Ad Bible/Ad-Bible-left.png" alt="Ad Bible sheet left side: Update Information button, Week and Item Info columns, Marketing columns" loading="lazy">
+      <img src="Pictures/Coding/Ad Bible/Ad-Bible-right.png" alt="Ad Bible sheet right side: Pricing columns, Image, Year, Dept, Class, Theme, Parent, Reg Cost, Start and End Date" loading="lazy">
+      <p>One row per ad item from row 6. The column headers are in row 5, grouped under Week, Item Info, Marketing, Pricing, Image, Order Info and Coop. New Item and Online Exclusive default to <code>N</code>, Change Type to <code>FIXED</code>, Pricing Strategy to <code>YFB</code> and Year to <code>2026</code>.</p>
+      <h3 id="adb-step1">Step 1: Enter the Items</h3>
+      <p>For each item, type the <strong>Wk</strong> (A), e.g. <code>25AE</code>, and the <strong>RIN</strong> (D), one per row, starting on row 6. RINs need at least 6 digits to be looked up.</p>
+      <h3 id="adb-step2">Step 2: Click Update Information</h3>
+      <ol>
+        <li><strong>Select the RIN cells</strong> in column D that you want filled in. Only cells in the RIN column are processed, and the header row is skipped. If nothing in column D is selected you’ll see <em>“Please select the cells containing the RIN numbers…”</em>.</li>
+        <li>Click <strong>Update Information</strong>. For each selected RIN the macro reads RMS and the Ad Database and fills the row:</li>
+      </ol>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Column</th><th>Filled with</th></tr></thead><tbody><tr><td>Supplier # / Supplier Name (B–C)</td><td>From RMS</td></tr><tr><td>Style # (VPN) (E)</td><td>From RMS</td></tr><tr><td>Item Description (F)</td><td>RMS description</td></tr><tr><td>Ad Information (G)</td><td>The newest ad copy for that item in the Ad Database (blank if none)</td></tr><tr><td>NEX Price (P)</td><td>RMS retail</td></tr><tr><td>NEX Cost (U), Reg Cost (AQ)</td><td>RMS cost</td></tr><tr><td>IMAGE (AC)</td><td>The newest Image Delivery note in the Ad Database</td></tr><tr><td>DEPT, CLASS (AM–AN)</td><td>From RMS</td></tr><tr><td>PARENT (AP)</td><td>Parent RIN from RMS</td></tr></tbody></table></div>
+      <div class="note red-note">Update Information <strong>overwrites</strong> these columns on the selected rows, including any description, price or ad copy you edited. Run it first, then make your edits, or select only the rows you want refreshed.</div>
+      <h3 id="adb-step3">Step 3: Finish the Ad Details</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Column(s)</th><th>What to enter</th></tr></thead><tbody><tr><td>Page (H), Priority (I)</td><td>Ad page and order. Page uploads as two digits (<code>4</code> → <code>04</code>).</td></tr><tr><td>New Item Y/N, Online Exclusive Y/N (J–K)</td><td><code>Y</code> or <code>N</code> (blank uploads as <code>N</code>).</td></tr><tr><td>% OFF, $ OFF, FIXED, NoChg (L–O)</td><td>How the price changes.</td></tr><tr><td>Adv Price (Q)</td><td>The ad price.</td></tr><tr><td>Change Type, MSRP, % Off MSRP (R–T)</td><td>Pricing details.</td></tr><tr><td>Adv Cost, Pricing Strategy, Multi Buy, Billback (V–Y)</td><td>Cost and deal details.</td></tr><tr><td>Call Outs, Grouping Info (Z–AA)</td><td>Ad call outs and how items are grouped.</td></tr><tr><td>Order Frequency (AE)</td><td><code>BAS</code> uploads as <code>BAS (AR)</code>.</td></tr><tr><td>Coop $ (AJ)</td><td>Co-op dollars.</td></tr><tr><td>Item Description, Ad Information (F–G)</td><td>Edit the text as it should appear in the ad. Ad Information over 255 characters is split automatically (see Step 4).</td></tr></tbody></table></div>
+      <h3 id="adb-step4">Step 4: Upload to the Ad Database (Ctrl+A)</h3>
+      <div class="note red-note"><strong>Fix needed before uploading:</strong> the uploader (<code>Copy2DB</code>) reads its column headers from <strong>row 4</strong>, but in this workbook they’re in <strong>row 5</strong>; row 4 only has group labels. As shipped, the upload would miss almost every column. In the VBA editor (<kbd>Alt</kbd>+<kbd>F11</kbd>) open <code>modMain</code> and change <code>For Each cell In Range("A4:BA4")</code> to <code>For Each cell In Range("A5:BA5")</code>, then save.</div>
+      <ol>
+        <li><strong>Select one cell in each row</strong> to upload (500 at most). Rows with no Wk and no RIN are skipped.</li>
+        <li>Press <kbd>Ctrl</kbd>+<kbd>A</kbd> to open the <strong>Update Ad Database</strong> form and fill it in:
+          <ul>
+            <li><strong>Week #</strong>: two digits, no letter (e.g. <code>25</code>); leaving the box loads that week’s versions.</li>
+            <li><strong>Version</strong>: pick the letter. The Event/Promo Code, Event and Ad Date fill in from the Ad Database.</li>
+            <li><strong>Dept #</strong>: leaving the box fills Group #, Buyer, DMM and GMM.</li>
+            <li><strong>Phone Ext #</strong>: required. <strong>FY</strong> and <strong>Submitted By</strong> fill in automatically.</li>
+          </ul>
+        </li>
+        <li>Click <strong>Update Ad Database</strong>. Each selected row becomes a new record.</li>
+        <li>At <em>“Done!”</em>, open the Ad Database and check the new records; you may still need to add imaging, RPC dates or other details by hand.</li>
+      </ol>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Sheet column (row 5)</th><th>Ad Database field</th></tr></thead><tbody><tr><td>RIN</td><td><em>RIN or Item List</em> (numeric RINs get an <code>R</code> prefix, e.g. <code>12345678</code> → <code>R12345678</code>)</td></tr><tr><td>PARENT</td><td><em>Featured RIN</em> (digits only; a leading R or L is removed)</td></tr><tr><td>Ad Information</td><td><em>Ad Information</em>. Over 255 characters: the first 255 go here and the rest go to <em>Ad Like Item</em> as “Rich Content Continued: …”. Blank uploads as empty.</td></tr><tr><td>Supplier Name / Supplier #</td><td>Vendor / DUNS</td></tr><tr><td>Style # (VPN)</td><td>Vendor Style Number</td></tr><tr><td>Item Description</td><td>Item Description</td></tr><tr><td>Page / Priority</td><td>Page (two digits) / Priority</td></tr><tr><td>New Item Y/N, Online Exclusive Y/N</td><td>Same (blank = <code>N</code>)</td></tr><tr><td>NEX Price / Adv Price / NEX Cost / Adv Cost</td><td>NEX Retail / Adv Retail / NEX Cost / Adv Cost</td></tr><tr><td>MSRP, % Off MSRP, Change Type, Pricing Strategy, Multi Buy, Billback, Call Outs, Grouping Info, Coop $</td><td>Same names</td></tr><tr><td>IMAGE</td><td>Image Delivery</td></tr><tr><td>Order Frequency</td><td>Same (<code>BAS</code> → <code>BAS (AR)</code>)</td></tr></tbody></table></div>
+      <h3 id="adb-troubleshooting">Troubleshooting</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td>Uploaded records are missing most fields</td><td>The uploader is reading row 4. Apply the row 5 fix in Step 4.</td></tr><tr><td><em>“Could not find required header ‘RIN’ on Row 5”</em></td><td>The RIN header in D5 was changed or moved. Restore it.</td></tr><tr><td><em>“Please select the cells containing the RIN numbers…”</em></td><td>Select cells in the RIN column (D) before clicking Update Information.</td></tr><tr><td>A row didn’t fill in</td><td>The RIN is blank, not a number, or shorter than 6 digits (Ad Information and IMAGE are cleared), or RMS has no single match for it.</td></tr><tr><td><em>“Database Connectivity Error”</em></td><td>No access to RMS or the Ad Database share, or the Oracle ODBC / Access engine isn’t installed.</td></tr><tr><td>Ctrl+A: <em>“Could not find any Week Versions”</em></td><td>That week has no versions in the Ad Database yet; check the week number and fiscal year.</td></tr><tr><td>Ctrl+A: <em>“Error Posting”</em></td><td>A value doesn’t fit its database field (e.g. text in a price or date column). Clean up the cells and try again.</td></tr><tr><td>Ctrl+A: <em>“Too Many Cells”</em></td><td>Select one cell per row, 500 at most.</td></tr><tr><td><em>“Could not connect to database…”</em> box</td><td>Network problem or the database is open exclusively. Try again, or type the database’s new path if it moved.</td></tr></tbody></table></div>
+      <h3 id="adb-code">The Code</h3>
+      <p>The workbook’s modules. Network paths, the RMS server and login, and a contact’s name and extension are redacted.</p>
+      <p><strong>Update Information</strong>: <code>Update_Selected_RINs</code> and the password reader.</p>
+<div class="code-container">
+    <div class="code-header">
+        <span>VBA</span>
+        <div class="header-controls">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </button>
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="code-wrapper">
+<pre><code><span class="vba-keyword">Option Explicit</span>
+
+<span class="vba-keyword">Sub</span> Update_Selected_RINs()
+    <span class="vba-keyword">Dim</span> wsBulk <span class="vba-keyword">As</span> <span class="vba-type">Worksheet</span>
+    <span class="vba-keyword">Dim</span> headerRange <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
+    
+    <span class="vba-comment">' Variables for the RIN column</span>
+    <span class="vba-keyword">Dim</span> rinDestHeader <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
+    <span class="vba-keyword">Dim</span> destRinColumn <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    <span class="vba-keyword">Dim</span> cell <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
+    <span class="vba-keyword">Dim</span> selectedRinRange <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
+    
+    <span class="vba-comment">' Dynamic Header Variables</span>
+    <span class="vba-keyword">Dim</span> imgDestHeader <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
+    <span class="vba-keyword">Dim</span> destImgColumn <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    
+    <span class="vba-comment">' Oracle Database Variables</span>
+    <span class="vba-keyword">Dim</span> cn <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
+    <span class="vba-keyword">Dim</span> rs <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
+    <span class="vba-keyword">Dim</span> strSQL <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> currentBulkRow <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    <span class="vba-keyword">Dim</span> RCount <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    
+    <span class="vba-comment">' Access Database Variables</span>
+    <span class="vba-keyword">Dim</span> cnAccess <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
+    <span class="vba-keyword">Dim</span> rsAccess <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
+    <span class="vba-keyword">Dim</span> strAccessSQL <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> dbAccessPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> currentItem <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> recordFound <span class="vba-keyword">As</span> <span class="vba-type">Boolean</span>
+    <span class="vba-keyword">Dim</span> historicalInfo <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> imageDeliveryInfo <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    
+    <span class="vba-comment">' Validation boundary checking variables</span>
+    <span class="vba-keyword">Dim</span> testList <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> pos <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    <span class="vba-keyword">Dim</span> charBefore <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> charAfter <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> isTrueMatch <span class="vba-keyword">As</span> <span class="vba-type">Boolean</span>
+    
+    <span class="vba-comment">' Variable for splitting supplier information</span>
+    <span class="vba-keyword">Dim</span> rawSupplierInfo <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+
+    <span class="vba-comment">' Set sheet safely</span>
+    <span class="vba-keyword">Set</span> wsBulk = ThisWorkbook.Sheets("Ad Database Import")
+    
+    <span class="vba-comment">' Access file configuration path</span>
+    dbAccessPath = "<span class="redacted" title="Redacted for privacy">\\SERVER\Ad Database\AdDB.accdb</span>"
+    
+    <span class="vba-comment">' Find the "RIN" header on Row 5</span>
+    <span class="vba-keyword">Set</span> rinDestHeader = wsBulk.Rows(5).Find(What:="RIN", LookIn:=xlValues, LookAt:=xlWhole, MatchCase:=<span class="vba-keyword">False</span>)
+    
+    <span class="vba-comment">' Dynamically locate the "Image" Header on Row 5</span>
+    <span class="vba-keyword">Set</span> imgDestHeader = wsBulk.Rows(5).Find(What:="Image", LookIn:=xlValues, LookAt:=xlWhole, MatchCase:=<span class="vba-keyword">False</span>)
+    
+    <span class="vba-keyword">If</span> rinDestHeader <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+        MsgBox "Could not find required header 'RIN' on Row 5 of Ad Database Import!", vbCritical
+        <span class="vba-keyword">Exit Sub</span>
+    <span class="vba-keyword">End If</span>
+    
+    destRinColumn = rinDestHeader.Column
+    
+    <span class="vba-comment">' Determine Image Column destination safely (Fallback to Column 14 / N if header can't be matched)</span>
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> imgDestHeader <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+        destImgColumn = imgDestHeader.Column
+    <span class="vba-keyword">Else</span>
+        destImgColumn = 14 <span class="vba-comment">' Column N</span>
+    <span class="vba-keyword">End If</span>
+    
+    <span class="vba-comment">' Intersect selection with the actual RIN column to avoid processing wrong selections</span>
+    <span class="vba-keyword">Set</span> selectedRinRange = Intersect(Selection, wsBulk.Columns(destRinColumn))
+    
+    <span class="vba-keyword">If</span> selectedRinRange <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+        MsgBox "Please select the cells containing the RIN numbers in the correct column before clicking the button.", vbExclamation
+        <span class="vba-keyword">Exit Sub</span>
+    <span class="vba-keyword">End If</span>
+    
+    <span class="vba-comment">' ==========================================</span>
+    <span class="vba-comment">' QUERY ATTRIBUTES FROM ORACLE &amp; ACCESS</span>
+    <span class="vba-comment">' ==========================================</span>
+    <span class="vba-keyword">Set</span> cn = CreateObject("ADODB.Connection")
+    <span class="vba-keyword">Set</span> cnAccess = CreateObject("ADODB.Connection")
+    
+    <span class="vba-keyword">On Error GoTo</span> oraerror
+    
+    <span class="vba-comment">' Open connection to Oracle RMS</span>
+    cn.<span class="vba-keyword">Open</span> "Driver={Microsoft ODBC for Oracle};Server=<span class="redacted" title="Redacted for privacy">RMS_SERVER</span>;Uid=<span class="redacted" title="Redacted for privacy">READ_ONLY_USER</span>;Pwd=" &amp; zzz() &amp; ";"
+    
+    <span class="vba-comment">' Open connection to local Access AdDB File</span>
+    cnAccess.<span class="vba-keyword">Open</span> "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" &amp; dbAccessPath
+    
+    Application.Cursor = xlWait
+    Application.ScreenUpdating = <span class="vba-keyword">False</span>
+    
+    <span class="vba-comment">' Loop cell-by-cell strictly through highlighted cells</span>
+    <span class="vba-keyword">For</span> <span class="vba-keyword">Each</span> cell <span class="vba-keyword">In</span> selectedRinRange
+        <span class="vba-comment">' Skip the header row if accidentally included in selection</span>
+        <span class="vba-keyword">If</span> cell.Row &gt; 5 <span class="vba-keyword">And</span> Trim(CStr(cell.Value)) &lt;&gt; "" <span class="vba-keyword">Then</span>
+            
+            currentBulkRow = cell.Row
+            currentItem = Trim(CStr(cell.Value))
+            
+            <span class="vba-comment">' Pull query base text and swap placeholder token for current cell</span>
+            strSQL = ThisWorkbook.Sheets("SQL").<span class="vba-type">Range</span>("rngrmsquery").Value
+            strSQL = Replace(strSQL, "ITEMS", currentItem)
+            
+            <span class="vba-comment">' Verify cell contains a valid transaction key structure before querying databases</span>
+            <span class="vba-keyword">If</span> IsNumeric(currentItem) <span class="vba-keyword">And</span> Len(currentItem) &gt; 5 <span class="vba-keyword">Then</span>
+               
+                <span class="vba-comment">' --------------------------------------------------------</span>
+                <span class="vba-comment">' A. ORACLE DATA INGESTION</span>
+                <span class="vba-comment">' --------------------------------------------------------</span>
+                <span class="vba-keyword">Set</span> rs = CreateObject("ADODB.Recordset")
+                rs.CursorLocation = 3 <span class="vba-comment">' 3 = adUseClient</span>
+                rs.<span class="vba-keyword">Open</span> strSQL, cn
+                
+                <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> rs.EOF <span class="vba-keyword">Then</span>
+                    RCount = rs.RecordCount
+                    
+                    <span class="vba-keyword">If</span> RCount = 1 <span class="vba-keyword">Then</span>
+                        <span class="vba-comment">' Imports values matching the exact column names/aliases in your SQL string</span>
+                        wsBulk.<span class="vba-type">Range</span>("E" &amp; currentBulkRow).Value = rs("VPN")
+                        wsBulk.<span class="vba-type">Range</span>("AP" &amp; currentBulkRow).Value = rs("Parent RIN")
+                        wsBulk.<span class="vba-type">Range</span>("F" &amp; currentBulkRow).Value = rs("Description")
+                        wsBulk.<span class="vba-type">Range</span>("P" &amp; currentBulkRow).Value = rs("Retail")
+                        wsBulk.<span class="vba-type">Range</span>("AM" &amp; currentBulkRow).Value = rs("Dept")
+                        wsBulk.<span class="vba-type">Range</span>("AN" &amp; currentBulkRow).Value = rs("Class")
+                        wsBulk.<span class="vba-type">Range</span>("U" &amp; currentBulkRow).Value = rs("Cost")
+                        wsBulk.<span class="vba-type">Range</span>("AQ" &amp; currentBulkRow).Value = rs("Cost")
+                        
+                        <span class="vba-comment">' Pull Supplier Info (Format: "SupplierID:SupplierName")</span>
+                        rawSupplierInfo = Trim(CStr(rs("Supplier Information")))
+                        
+                        <span class="vba-comment">' Extract ID and Name via Split</span>
+                        <span class="vba-keyword">If</span> InStr(rawSupplierInfo, ":") &gt; 0 <span class="vba-keyword">Then</span>
+                            wsBulk.<span class="vba-type">Range</span>("B" &amp; currentBulkRow).Value = Split(rawSupplierInfo, ":")(0)
+                            wsBulk.<span class="vba-type">Range</span>("C" &amp; currentBulkRow).Value = Split(rawSupplierInfo, ":")(1)
+                        <span class="vba-keyword">Else</span>
+                            wsBulk.<span class="vba-type">Range</span>("B" &amp; currentBulkRow).Value = rawSupplierInfo
+                            wsBulk.<span class="vba-type">Range</span>("C" &amp; currentBulkRow).Value = ""
+                        <span class="vba-keyword">End If</span>
+                    <span class="vba-keyword">End If</span>
+                <span class="vba-keyword">End If</span>
+                
+                <span class="vba-keyword">If</span> rs.State = 1 <span class="vba-keyword">Then</span> rs.<span class="vba-keyword">Close</span>
+                <span class="vba-keyword">Set</span> rs = <span class="vba-keyword">Nothing</span>
+                
+                <span class="vba-comment">' --------------------------------------------------------</span>
+                <span class="vba-comment">' B. ACCESS HISTORICAL DATA PULL</span>
+                <span class="vba-comment">' --------------------------------------------------------</span>
+                recordFound = <span class="vba-keyword">False</span>
+                historicalInfo = ""
+                imageDeliveryInfo = ""
+                
+                <span class="vba-comment">' Strategy 1: Search by strict Numeric ID</span>
+                <span class="vba-keyword">If</span> IsNumeric(currentItem) <span class="vba-keyword">Then</span>
+                    strAccessSQL = "SELECT [Ad Information], [Image Delivery] FROM Main WHERE [ID] = " &amp; val(currentItem) &amp; " ORDER BY [ID] DESC"
+                    <span class="vba-keyword">Set</span> rsAccess = CreateObject("ADODB.Recordset")
+                    rsAccess.CursorLocation = 3
+                    <span class="vba-keyword">On Error Resume Next</span>
+                    rsAccess.<span class="vba-keyword">Open</span> strAccessSQL, cnAccess, 1, 1
+                    <span class="vba-keyword">On Error GoTo</span> oraerror
+                    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> rsAccess.EOF <span class="vba-keyword">Then</span>
+                        <span class="vba-keyword">Do While</span> <span class="vba-keyword">Not</span> rsAccess.EOF
+                            <span class="vba-keyword">If</span> historicalInfo = "" <span class="vba-keyword">Then</span>
+                                <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsNull(rsAccess.Fields("Ad Information").Value) <span class="vba-keyword">And</span> Trim(rsAccess.Fields("Ad Information").Value) &lt;&gt; "" <span class="vba-keyword">Then</span>
+                                    historicalInfo = rsAccess.Fields("Ad Information").Value
+                                <span class="vba-keyword">End If</span>
+                            <span class="vba-keyword">End If</span>
+                            <span class="vba-keyword">If</span> imageDeliveryInfo = "" <span class="vba-keyword">Then</span>
+                                <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsNull(rsAccess.Fields("Image Delivery").Value) <span class="vba-keyword">And</span> Trim(rsAccess.Fields("Image Delivery").Value) &lt;&gt; "" <span class="vba-keyword">Then</span>
+                                    imageDeliveryInfo = rsAccess.Fields("Image Delivery").Value
+                                <span class="vba-keyword">End If</span>
+                            <span class="vba-keyword">End If</span>
+                            <span class="vba-keyword">If</span> historicalInfo &lt;&gt; "" <span class="vba-keyword">And</span> imageDeliveryInfo &lt;&gt; "" <span class="vba-keyword">Then</span>
+                                recordFound = <span class="vba-keyword">True</span>
+                                <span class="vba-keyword">Exit Do</span>
+                            <span class="vba-keyword">End If</span>
+                            rsAccess.MoveNext
+                        <span class="vba-keyword">Loop</span>
+                        <span class="vba-keyword">If</span> historicalInfo &lt;&gt; "" <span class="vba-keyword">Or</span> imageDeliveryInfo &lt;&gt; "" <span class="vba-keyword">Then</span> recordFound = <span class="vba-keyword">True</span>
+                    <span class="vba-keyword">End If</span>
+                <span class="vba-keyword">End If</span>
+                
+                <span class="vba-comment">' Strategy 2: Text-based exact ID comparison</span>
+                <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> recordFound <span class="vba-keyword">Then</span>
+                    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> rsAccess <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span> <span class="vba-keyword">If</span> rsAccess.State = 1 <span class="vba-keyword">Then</span> rsAccess.<span class="vba-keyword">Close</span>
+                    strAccessSQL = "SELECT [Ad Information], [Image Delivery] FROM Main WHERE CStr([ID]) = '" &amp; currentItem &amp; "' ORDER BY [ID] DESC"
+                    <span class="vba-keyword">Set</span> rsAccess = CreateObject("ADODB.Recordset")
+                    rsAccess.CursorLocation = 3
+                    rsAccess.<span class="vba-keyword">Open</span> strAccessSQL, cnAccess, 1, 1
+                    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> rsAccess.EOF <span class="vba-keyword">Then</span>
+                        <span class="vba-keyword">Do While</span> <span class="vba-keyword">Not</span> rsAccess.EOF
+                            <span class="vba-keyword">If</span> historicalInfo = "" <span class="vba-keyword">Then</span>
+                                <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsNull(rsAccess.Fields("Ad Information").Value) <span class="vba-keyword">And</span> Trim(rsAccess.Fields("Ad Information").Value) &lt;&gt; "" <span class="vba-keyword">Then</span>
+                                    historicalInfo = rsAccess.Fields("Ad Information").Value
+                                <span class="vba-keyword">End If</span>
+                            <span class="vba-keyword">End If</span>
+                            <span class="vba-keyword">If</span> imageDeliveryInfo = "" <span class="vba-keyword">Then</span>
+                                <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsNull(rsAccess.Fields("Image Delivery").Value) <span class="vba-keyword">And</span> Trim(rsAccess.Fields("Image Delivery").Value) &lt;&gt; "" <span class="vba-keyword">Then</span>
+                                    imageDeliveryInfo = rsAccess.Fields("Image Delivery").Value
+                                <span class="vba-keyword">End If</span>
+                            <span class="vba-keyword">End If</span>
+                            <span class="vba-keyword">If</span> historicalInfo &lt;&gt; "" <span class="vba-keyword">And</span> imageDeliveryInfo &lt;&gt; "" <span class="vba-keyword">Then</span>
+                                recordFound = <span class="vba-keyword">True</span>
+                                <span class="vba-keyword">Exit Do</span>
+                            <span class="vba-keyword">End If</span>
+                            rsAccess.MoveNext
+                        <span class="vba-keyword">Loop</span>
+                        <span class="vba-keyword">If</span> historicalInfo &lt;&gt; "" <span class="vba-keyword">Or</span> imageDeliveryInfo &lt;&gt; "" <span class="vba-keyword">Then</span> recordFound = <span class="vba-keyword">True</span>
+                    <span class="vba-keyword">End If</span>
+                <span class="vba-keyword">End If</span>
+                
+                <span class="vba-comment">' Strategy 3: VBA-Validated Text Array Filter</span>
+                <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> recordFound <span class="vba-keyword">Then</span>
+                    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> rsAccess <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span> <span class="vba-keyword">If</span> rsAccess.State = 1 <span class="vba-keyword">Then</span> rsAccess.<span class="vba-keyword">Close</span>
+                    
+                    strAccessSQL = "SELECT [Ad Information], [Image Delivery], [RIN or Item List] FROM Main WHERE [RIN or Item List] LIKE '%" &amp; currentItem &amp; "%' ORDER BY [ID] DESC"
+                    <span class="vba-keyword">Set</span> rsAccess = CreateObject("ADODB.Recordset")
+                    rsAccess.CursorLocation = 3
+                    rsAccess.<span class="vba-keyword">Open</span> strAccessSQL, cnAccess, 1, 1
+                    
+                    <span class="vba-keyword">Do While</span> <span class="vba-keyword">Not</span> rsAccess.EOF
+                        testList = Trim(CStr(rsAccess.Fields("RIN or Item List").Value))
+                        pos = InStr(1, testList, currentItem)
+                        
+                        <span class="vba-keyword">Do While</span> pos &gt; 0
+                            isTrueMatch = <span class="vba-keyword">True</span>
+                            
+                            <span class="vba-keyword">If</span> pos &gt; 1 <span class="vba-keyword">Then</span>
+                                charBefore = Mid(testList, pos - 1, 1)
+                                <span class="vba-keyword">If</span> charBefore <span class="vba-keyword">Like</span> "[0-9]" <span class="vba-keyword">Then</span> isTrueMatch = <span class="vba-keyword">False</span>
+                            <span class="vba-keyword">End If</span>
+                            
+                            <span class="vba-keyword">If</span> pos + Len(currentItem) &lt;= Len(testList) <span class="vba-keyword">Then</span>
+                                charAfter = Mid(testList, pos + Len(currentItem), 1)
+                                <span class="vba-keyword">If</span> charAfter <span class="vba-keyword">Like</span> "[0-9]" <span class="vba-keyword">Then</span> isTrueMatch = <span class="vba-keyword">False</span>
+                            <span class="vba-keyword">End If</span>
+                            
+                            <span class="vba-keyword">If</span> isTrueMatch <span class="vba-keyword">Then</span>
+                                <span class="vba-keyword">If</span> historicalInfo = "" <span class="vba-keyword">Then</span>
+                                    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsNull(rsAccess.Fields("Ad Information").Value) <span class="vba-keyword">And</span> Trim(rsAccess.Fields("Ad Information").Value) &lt;&gt; "" <span class="vba-keyword">Then</span>
+                                        historicalInfo = rsAccess.Fields("Ad Information").Value
+                                    <span class="vba-keyword">End If</span>
+                                <span class="vba-keyword">End If</span>
+                                <span class="vba-keyword">If</span> imageDeliveryInfo = "" <span class="vba-keyword">Then</span>
+                                    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsNull(rsAccess.Fields("Image Delivery").Value) <span class="vba-keyword">And</span> Trim(rsAccess.Fields("Image Delivery").Value) &lt;&gt; "" <span class="vba-keyword">Then</span>
+                                        imageDeliveryInfo = rsAccess.Fields("Image Delivery").Value
+                                    <span class="vba-keyword">End If</span>
+                                <span class="vba-keyword">End If</span>
+                            <span class="vba-keyword">End If</span>
+                            
+                            pos = InStr(pos + 1, testList, currentItem)
+                        <span class="vba-keyword">Loop</span>
+                        
+                        <span class="vba-keyword">If</span> historicalInfo &lt;&gt; "" <span class="vba-keyword">And</span> imageDeliveryInfo &lt;&gt; "" <span class="vba-keyword">Then</span>
+                            recordFound = <span class="vba-keyword">True</span>
+                            <span class="vba-keyword">Exit Do</span>
+                        <span class="vba-keyword">End If</span>
+                        rsAccess.MoveNext
+                    <span class="vba-keyword">Loop</span>
+                    <span class="vba-keyword">If</span> historicalInfo &lt;&gt; "" <span class="vba-keyword">Or</span> imageDeliveryInfo &lt;&gt; "" <span class="vba-keyword">Then</span> recordFound = <span class="vba-keyword">True</span>
+                <span class="vba-keyword">End If</span>
+                
+                <span class="vba-comment">' Map Ad Information to Column G</span>
+                <span class="vba-keyword">If</span> historicalInfo &lt;&gt; "" <span class="vba-keyword">Then</span>
+                    wsBulk.<span class="vba-type">Range</span>("G" &amp; currentBulkRow).Value = historicalInfo
+                <span class="vba-keyword">Else</span>
+                    wsBulk.<span class="vba-type">Range</span>("G" &amp; currentBulkRow).Value = ""
+                <span class="vba-keyword">End If</span>
+                
+                <span class="vba-comment">' Output historical Image Delivery Info</span>
+                wsBulk.Cells(currentBulkRow, destImgColumn).Value = imageDeliveryInfo
+                
+                <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> rsAccess <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span> <span class="vba-keyword">If</span> rsAccess.State = 1 <span class="vba-keyword">Then</span> rsAccess.<span class="vba-keyword">Close</span>
+                <span class="vba-keyword">Set</span> rsAccess = <span class="vba-keyword">Nothing</span>
+                
+            <span class="vba-keyword">Else</span>
+                <span class="vba-comment">' Clear query fields if item number structure is fundamentally invalid</span>
+                wsBulk.Cells(currentBulkRow, destImgColumn).Value = ""
+                wsBulk.<span class="vba-type">Range</span>("G" &amp; currentBulkRow).Value = ""
+            <span class="vba-keyword">End If</span>
+        <span class="vba-keyword">End If</span>
+    <span class="vba-keyword">Next</span> cell
+    
+    <span class="vba-comment">' Close Active Database Connections safely</span>
+    <span class="vba-keyword">If</span> cn.State = 1 <span class="vba-keyword">Then</span> cn.<span class="vba-keyword">Close</span>
+    <span class="vba-keyword">Set</span> cn = <span class="vba-keyword">Nothing</span>
+    <span class="vba-keyword">If</span> cnAccess.State = 1 <span class="vba-keyword">Then</span> cnAccess.<span class="vba-keyword">Close</span>
+    <span class="vba-keyword">Set</span> cnAccess = <span class="vba-keyword">Nothing</span>
+    
+    Application.ScreenUpdating = <span class="vba-keyword">True</span>
+    Application.Cursor = xlDefault
+    
+    MsgBox "Processing Complete! Selected records updated contextually in-place.", vbInformation
+    <span class="vba-keyword">Exit Sub</span>
+
+oraerror:
+    Application.ScreenUpdating = <span class="vba-keyword">True</span>
+    Application.Cursor = xlDefault
+    MsgBox "Database Connectivity Error: " &amp; Err.Description, vbExclamation, "Data Refresh Failed"
+    
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> cn <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span> <span class="vba-keyword">If</span> cn.State = 1 <span class="vba-keyword">Then</span> cn.<span class="vba-keyword">Close</span>
+    <span class="vba-keyword">Set</span> cn = <span class="vba-keyword">Nothing</span>
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> cnAccess <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span> <span class="vba-keyword">If</span> cnAccess.State = 1 <span class="vba-keyword">Then</span> cnAccess.<span class="vba-keyword">Close</span>
+    <span class="vba-keyword">Set</span> cnAccess = <span class="vba-keyword">Nothing</span>
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-comment">' ============================================================</span>
+<span class="vba-comment">' SAFE PASSWORD READER</span>
+<span class="vba-comment">' ============================================================</span>
+<span class="vba-keyword">Public</span> <span class="vba-keyword">Function</span> zzz() <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> TextLine <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> TargetFile <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> f <span class="vba-keyword">As</span> <span class="vba-type">Integer</span>
+
+    TargetFile = "<span class="redacted" title="Redacted for privacy">\\SERVER\secure\password.txt</span>"
+    <span class="vba-keyword">On Error GoTo</span> CantFind
+
+    f = FreeFile
+    <span class="vba-keyword">Open</span> TargetFile <span class="vba-keyword">For</span> <span class="vba-keyword">Input</span> <span class="vba-keyword">As</span> #f
+    <span class="vba-keyword">Do While</span> <span class="vba-keyword">Not</span> EOF(f)
+        <span class="vba-keyword">Line Input</span> #f, TextLine
+    <span class="vba-keyword">Loop</span>
+    <span class="vba-keyword">Close</span> #f
+
+    zzz = Trim(TextLine)
+    <span class="vba-keyword">Exit Function</span>
+
+CantFind:
+    zzz = ""
+<span class="vba-keyword">End Function</span></code></pre>
+    </div>
+</div>
+      <p><strong>DB Uploader</strong>: <code>Copy2DB</code>, <code>ShowForm</code> (<kbd>Ctrl</kbd>+<kbd>A</kbd>) and the form’s lookups.</p>
+<div class="code-container">
+    <div class="code-header">
+        <span>VBA</span>
+        <div class="header-controls">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </button>
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="code-wrapper">
+<pre><code><span class="vba-keyword">Sub</span> Copy2DB()
+
+    <span class="vba-keyword">Dim</span> cn <span class="vba-keyword">As</span> <span class="vba-type">ADODB.Connection</span>
+    <span class="vba-keyword">Dim</span> rs <span class="vba-keyword">As</span> <span class="vba-type">ADODB.Recordset</span>
+    <span class="vba-keyword">Dim</span> IDCol <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> strSQL <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> ThisRow <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
+    <span class="vba-keyword">Dim</span> cell <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
+    <span class="vba-keyword">Dim</span> RawValue <span class="vba-keyword">As</span> <span class="vba-type">Variant</span>
+    <span class="vba-keyword">Dim</span> NumOnly <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    
+        
+    <span class="vba-keyword">Set</span> cn = <span class="vba-keyword">New</span> <span class="vba-type">ADODB.Connection</span>
+    cn.<span class="vba-keyword">Open</span> "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=<span class="redacted" title="Redacted for privacy">\\SERVER\Ad Database\AdDB.accdb</span>;Persist Security Info=False"
+
+
+    <span class="vba-keyword">For</span> <span class="vba-keyword">Each</span> ThisRow <span class="vba-keyword">In</span> Selection
+        
+        <span class="vba-keyword">If</span> IsEmpty(<span class="vba-type">Range</span>("A" &amp; ThisRow.Row).Value) <span class="vba-keyword">And</span> IsEmpty(<span class="vba-type">Range</span>("D" &amp; ThisRow.Row).Value) <span class="vba-keyword">Then</span> <span class="vba-keyword">GoTo</span> skip:
+        
+        <span class="vba-comment">'Create new record in Ad Database</span>
+        <span class="vba-keyword">Set</span> rs = <span class="vba-keyword">Nothing</span>
+        <span class="vba-keyword">Set</span> rs = <span class="vba-keyword">New</span> <span class="vba-type">ADODB.Recordset</span>
+        rs.<span class="vba-keyword">Open</span> "Main", cn, adOpenKeyset, adLockOptimistic
+    
+        <span class="vba-keyword">On Error GoTo</span> PostError:
+        <span class="vba-keyword">On Error GoTo</span> 0
+    
+        <span class="vba-comment">'UPDATE DATABASE WITH EACH ITEM INPUT:</span>
+        rs.AddNew
+
+            rs.Fields("Input Date") = Format(Now, "mm/dd/yyyy")
+            rs.Fields("Submit By") = UCase(UserName)
+            rs.Fields("Phone") = frmAdItems.txtPhone
+            rs.Fields("Week Prefix") = frmAdItems.txtWeekPrefix
+            rs.Fields("Week Suffix") = frmAdItems.cboWeekLetter
+            rs.Fields("FY") = frmAdItems.txtFY
+            rs("Dept") = frmAdItems.txtDept
+            rs("Group") = frmAdItems.lblGroup2.Caption
+            rs("Group Num") = frmAdItems.lblGroup3.Caption
+            rs("Buyer") = frmAdItems.lblBuyer2.Caption
+            rs("DMM") = frmAdItems.lblDMM2.Caption
+            rs("GMM") = frmAdItems.lblGMM2.Caption
+            rs.Fields("RPC Date From") = CDate(frmAdItems.txtAdDateFrom.Value)
+            rs.Fields("RPC Date To") = CDate(frmAdItems.txtAdDateTo.Value)
+            
+        <span class="vba-keyword">For</span> <span class="vba-keyword">Each</span> cell <span class="vba-keyword">In</span> <span class="vba-type">Range</span>("A4:BA4")
+            IDCol = Left(Cells(1, cell.Column).Address(4, 0), InStr(1, Cells(1, cell.Column).Address(4, 0), "$") - 1)
+
+            <span class="vba-keyword">Select Case</span> cell.Value
+
+                <span class="vba-keyword">Case</span> "RIN"
+                    <span class="vba-comment">' Target: "RIN or Item List" Database Field</span>
+                    RawValue = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                    
+                    <span class="vba-keyword">If</span> IsNumeric(RawValue) <span class="vba-keyword">And</span> RawValue &lt;&gt; "" <span class="vba-keyword">Then</span>
+                        rs("RIN or Item List") = "R" &amp; RawValue
+                    <span class="vba-keyword">Else</span>
+                        rs("RIN or Item List") = RawValue
+                    <span class="vba-keyword">End If</span>
+
+                <span class="vba-keyword">Case</span> "PARENT"
+                    <span class="vba-comment">' Target: "Featured RIN" Database Field (Numbers Only)</span>
+                    RawValue = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                    
+                    <span class="vba-comment">' Strip out leading "R" or "L" if they exist to isolate pure digits</span>
+                    <span class="vba-keyword">If</span> Left(RawValue, 1) = "R" <span class="vba-keyword">Or</span> Left(RawValue, 1) = "L" <span class="vba-keyword">Then</span>
+                        NumOnly = Mid(RawValue, 2)
+                    <span class="vba-keyword">Else</span>
+                        NumOnly = RawValue
+                    <span class="vba-keyword">End If</span>
+                    
+                    rs("Featured RIN") = NumOnly
+             
+
+                <span class="vba-keyword">Case</span> "Supplier Name"
+                    rs("Vendor") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "Supplier #"
+                    rs("DUNS") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "Style #   (VPN)"
+                    rs("Vendor Style Number") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "Item Description (as will appear in Ad)"
+                    rs("Item Description") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "Ad Information (as will appear in Ad)"
+                    <span class="vba-keyword">If</span> IsEmpty(<span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value) <span class="vba-keyword">Or</span> Trim(<span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value) = "" <span class="vba-keyword">Then</span>
+                        <span class="vba-comment">' If the cell is blank, push a clean blank value to the DB without breaking</span>
+                        rs("Ad Information") = Null
+                    <span class="vba-keyword">Else</span>
+                        FullAdInfo = Trim(CStr(<span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value))
+                        
+                        <span class="vba-keyword">If</span> Len(FullAdInfo) &gt; 255 <span class="vba-keyword">Then</span>
+                            <span class="vba-comment">' Slice out characters up to the 255 maximum bound</span>
+                            rs("Ad Information") = Left(FullAdInfo, 255)
+                            
+                            <span class="vba-comment">' Isolate residual data and prepend custom rich text prefix</span>
+                            ContinuedText = "Rich Content Continued: " &amp; Mid(FullAdInfo, 256)
+                            rs("Ad Like Item") = ContinuedText
+                        <span class="vba-keyword">Else</span>
+                            <span class="vba-comment">' Standard baseline pass-through route</span>
+                            rs("Ad Information") = FullAdInfo
+                        <span class="vba-keyword">End If</span>
+                    <span class="vba-keyword">End If</span>
+                <span class="vba-keyword">Case</span> "Page"
+                    rs("Page") = Format(<span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value, "00")
+                <span class="vba-keyword">Case</span> "Priority"
+                    rs("Priority") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "New Item Y/N"
+                    <span class="vba-keyword">If</span> Len(<span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value) &gt; 0 <span class="vba-keyword">Then</span>
+                        rs("New Item") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                    <span class="vba-keyword">Else</span>
+                        rs("New Item") = "N"
+                    <span class="vba-keyword">End If</span>
+                    
+                <span class="vba-keyword">Case</span> "Online Exclusive Y/N"
+                    <span class="vba-keyword">If</span> Len(<span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value) &gt; 0 <span class="vba-keyword">Then</span>
+                        rs("Online Exclusive") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                    <span class="vba-keyword">Else</span>
+                        rs("Online Exclusive") = "N"
+                    <span class="vba-keyword">End If</span>
+                    
+                <span class="vba-keyword">Case</span> "NEX Price"
+                    rs("NEX Retail") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "Adv Price"
+                    rs("Adv Retail") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "MSRP"
+                    rs("MSRP") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "Change Type"
+                    rs("Change Type") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+
+                <span class="vba-keyword">Case</span> "% Off MSRP"
+                    rs("% Off MSRP") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+
+                <span class="vba-keyword">Case</span> "NEX Cost"
+                    rs("NEX Cost") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "Adv Cost"
+                    rs("Adv Cost") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                    
+                <span class="vba-keyword">Case</span> "Pricing Strategy"
+                    rs("Pricing Strategy") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "Multi Buy"
+                    rs("Multi Buy") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "Billback"
+                    rs("Billback") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                    
+                <span class="vba-keyword">Case</span> "Call Outs"
+                    rs("Call Outs") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                <span class="vba-keyword">Case</span> "Grouping Info"
+                    rs("Grouping Info") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                    
+                <span class="vba-keyword">Case</span> "IMAGE"
+                    rs("Image Delivery") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+
+                <span class="vba-keyword">Case</span> "Coop $"
+                    rs("Coop $") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+    
+                <span class="vba-keyword">Case</span> "Order Frequency"
+                    <span class="vba-keyword">If</span> <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value = "BAS" <span class="vba-keyword">Then</span>
+                        rs("Order Frequency") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value &amp; " (AR)"
+                    <span class="vba-keyword">Else</span>
+                        rs("Order Frequency") = <span class="vba-type">Range</span>(IDCol &amp; ThisRow.Row).Value
+                    <span class="vba-keyword">End If</span>
+
+
+            <span class="vba-keyword">End Select</span>
+        <span class="vba-keyword">Next</span>
+
+        rs.Update
+skip:
+
+    <span class="vba-keyword">Next</span>
+
+    <span class="vba-keyword">Call</span> CloseRS
+    Unload frmAdItems
+    MsgBox "Please check your input in the Ad Database to verify.  You may need to add Imaging, Parent RIN, RPC Dates or other information manually...", vbInformation, "Done!"
+    
+    <span class="vba-keyword">Exit Sub</span>
+    
+PostError:
+    MsgBox "Error Posting"
+    <span class="vba-keyword">Call</span> CloseRS
+    Unload frmAdItems
+
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Sub</span> ShowForm()
+Attribute ShowForm.VB_ProcData.VB_Invoke_Func = "a\n14"
+
+    <span class="vba-comment">'Activate with Control-a</span>
+    
+    <span class="vba-keyword">Call</span> GetDataLists
+    frmAdItems.Show 1
+
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Sub</span> GetDataLists()
+
+    <span class="vba-comment">'COPIES A FILE TO LOCAL DESTINATION FROM NETWORK DRIVE, OR, IF THAT FAILS, FROM THE INTRANET</span>
+    
+    <span class="vba-keyword">Dim</span> SourceFile, DestinationFile
+    <span class="vba-keyword">Call</span> CheckFolder
+
+    <span class="vba-keyword">On Error GoTo</span> xit:
+
+    <span class="vba-keyword">Set</span> fso = CreateObject("Scripting.FileSystemObject")
+    <span class="vba-keyword">Set</span> d1 = fso.GetFolder("<span class="redacted" title="Redacted for privacy">\\INTRANET\Data Files\</span>")
+
+    <span class="vba-keyword">For</span> <span class="vba-keyword">Each</span> file <span class="vba-keyword">In</span> d1.Files
+        <span class="vba-keyword">If</span> file.Name = "LookupMaster.accdb" <span class="vba-keyword">Then</span>
+            SourceFile = file.Path  <span class="vba-comment">'file.name</span>
+            <span class="vba-comment">'SourceFile = "<span class="redacted" title="Redacted for privacy">\\INTRANET\Data Files\</span>" &amp; file.Name    ' Define source file name.</span>
+            DestinationFile = "c:\temp\LookupMaster.accdb"    <span class="vba-comment">' Define target file name.</span>
+            FileCopy SourceFile, DestinationFile    <span class="vba-comment">' Copy source to target.</span>
+        <span class="vba-keyword">End If</span>
+    <span class="vba-keyword">Next</span>
+
+    <span class="vba-keyword">Exit Sub</span>
+
+xit:
+
+    <span class="vba-comment">'MsgBox "Problem getting LookupMaster.accdb from Sharepoint 'Data Files' folder.", vbInformation, "Problem Finding File on Sharepoint"</span>
+
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Sub</span> CheckFolder()
+
+    <span class="vba-comment">'CHECK IF A TEMP FOLDER EXISTS, IF NOT, THEN CREATE IT</span>
+
+    <span class="vba-keyword">Dim</span> fso <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
+    <span class="vba-keyword">Dim</span> folder <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+
+    folder = "C:\temp"  <span class="vba-comment">'variable to store local folder name</span>
+
+    <span class="vba-keyword">Set</span> fso = CreateObject("Scripting.FileSystemObject")
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> fso.FolderExists(folder) <span class="vba-keyword">Then</span> fso.CreateFolder (folder)
+    
+<span class="vba-keyword">End Sub</span>
+
+
+<span class="vba-keyword">Sub</span> DeptInfo(sName <span class="vba-keyword">As</span> <span class="vba-type">String</span>)
+    
+    <span class="vba-keyword">Dim</span> cn <span class="vba-keyword">As</span> <span class="vba-type">ADODB.Connection</span>
+    <span class="vba-keyword">Dim</span> rs <span class="vba-keyword">As</span> <span class="vba-type">ADODB.Recordset</span>
+    <span class="vba-keyword">Dim</span> strSQL <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> slocalfile <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+
+    slocalfile = "c:\temp\LookupMaster.accdb"
+
+    <span class="vba-keyword">Set</span> cn = <span class="vba-keyword">New</span> <span class="vba-type">ADODB.Connection</span>
+    cn.<span class="vba-keyword">Open</span> "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" &amp; slocalfile &amp; ";Persist Security Info=False"
+
+
+    strSQL = "SELECT GroupMaster.GM AS GMM, GroupMaster.GMName AS [GMName], GroupMaster.DM AS DMM, GroupMaster.DMName AS [DMName], GroupMaster.Group AS [Group], GroupMaster.Description AS [Group Name], " &amp; _
+    "GroupMaster.AlphaDepts AS [ARMS Dept], Dept2Group.Buyer AS Buyer " &amp; _
+    "FROM GroupMaster INNER JOIN Dept2Group ON GroupMaster.Group = Dept2Group.Group WHERE [Dept] = '" + sName + "'"
+
+    <span class="vba-keyword">Set</span> rs = <span class="vba-keyword">New</span> <span class="vba-type">ADODB.Recordset</span>
+    rs.<span class="vba-keyword">Open</span> strSQL, cn, adOpenKeyset, adLockReadOnly
+
+    <span class="vba-keyword">If</span> rs.RecordCount &gt; 0 <span class="vba-keyword">Then</span>
+        <span class="vba-keyword">With</span> frmAdItems
+            .lblGroup2.Caption = rs("ARMS Dept")
+            .lblBuyer2.Caption = rs("Buyer")
+            .lblGroup3.Caption = rs("Group")
+            .lblDMM2.Caption = rs("DMM") &amp; " - " &amp; rs("DMName")
+            .lblGMM2.Caption = rs("GMM") &amp; " - " &amp; rs("GMName")
+        <span class="vba-keyword">End With</span>
+    <span class="vba-keyword">Else</span>
+        <span class="vba-keyword">With</span> frmAdItems
+            .lblGroup2.Caption = "..."
+            .lblGroup3.Caption = "..."
+            .lblBuyer2.Caption = "..."
+            .lblDMM2.Caption = "..."
+            .lblGMM2.Caption = "..."
+        <span class="vba-keyword">End With</span>
+    <span class="vba-keyword">End If</span>
+
+    rs.<span class="vba-keyword">Close</span>
+    <span class="vba-keyword">Set</span> rs = <span class="vba-keyword">Nothing</span>
+    cn.<span class="vba-keyword">Close</span>
+    <span class="vba-keyword">Set</span> cn = <span class="vba-keyword">Nothing</span>
+    
+<span class="vba-keyword">End Sub</span>
+
+
+<span class="vba-keyword">Sub</span> LoadWeeks()
+
+    <span class="vba-comment">'============================================</span>
+    <span class="vba-comment">' Populates the 'Week Version' textbox on</span>
+    <span class="vba-comment">' the Input Form.</span>
+    <span class="vba-comment">'============================================</span>
+
+    <span class="vba-keyword">Dim</span> slocalfile <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> strSQL <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    
+    <span class="vba-keyword">On Error GoTo</span> PathErr:
+    
+    <span class="vba-keyword">If</span> IsNumeric(frmAdItems.txtWeekPrefix.Value) = <span class="vba-keyword">True</span> <span class="vba-keyword">Then</span>
+        frmAdItems.txtEventPromoCode.Text = ""
+        slocalfile = "<span class="redacted" title="Redacted for privacy">\\SERVER\Ad Database\AdDB.accdb</span>"
+    
+        strSQL = "SELECT EventPromo.Version FROM EventPromo " &amp; _
+            "WHERE (((EventPromo.FY)='" &amp; frmAdItems.txtFY.Value &amp; "' AND (EventPromo.Week)='" &amp; frmAdItems.txtWeekPrefix.Value &amp; "'));"
+        Debug.Print strSQL
+        <span class="vba-keyword">Set</span> cn = <span class="vba-keyword">New</span> <span class="vba-type">ADODB.Connection</span>
+        cn.<span class="vba-keyword">Open</span> "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" &amp; slocalfile &amp; ";Persist Security Info=False"
+        
+        <span class="vba-keyword">Set</span> rs = <span class="vba-keyword">New</span> <span class="vba-type">ADODB.Recordset</span>
+        <span class="vba-keyword">With</span> rs
+            .CursorLocation = 3 <span class="vba-comment">'adUseClient</span>
+            .CursorType = 1 <span class="vba-comment">'adOpenKeyset</span>
+            .LockType = 1 <span class="vba-comment">'adLockReadOnly</span>
+            .<span class="vba-keyword">Open</span> strSQL, cn
+        <span class="vba-keyword">End With</span>
+
+        <span class="vba-keyword">If</span> rs.RecordCount = 0 <span class="vba-keyword">Then</span>
+            MsgBox "Could not find any Week Versions for " &amp; frmAdItems.txtWeekPrefix.Value, vbInformation, "Not Found"
+            CloseRS
+            <span class="vba-keyword">Exit Sub</span>
+        <span class="vba-keyword">End If</span>
+    
+        rs.MoveFirst
+        frmAdItems.cboWeekLetter.Clear
+        <span class="vba-keyword">Do Until</span> rs.EOF
+            <span class="vba-keyword">If</span> rs.Fields("Version").Value &lt;&gt; vbNull <span class="vba-keyword">Then</span>
+                frmAdItems.cboWeekLetter.AddItem Trim(rs.Fields("Version").Value)
+                <span class="vba-comment">'Debug.Print Trim(rs.Fields("Version").Value)</span>
+            <span class="vba-keyword">End If</span>
+            rs.MoveNext
+        <span class="vba-keyword">Loop</span>
+        
+    <span class="vba-keyword">End If</span>
+    
+    CloseRS
+    <span class="vba-keyword">Exit Sub</span>
+    
+PathErr:
+
+    <span class="vba-keyword">Dim</span> sPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    
+    sPath = InputBox("Could not connect to database.  Possible reasons: 1) Network problem (ie. not enough disk space), 2) Mapping difference, 3) Database may be locked .  Please try again. <span class="redacted" title="Redacted for privacy">Call the database owner</span> if problem persists.", "Connection Problem", <span class="vba-type">Range</span>("cellDBLoc").Value)
+    <span class="vba-keyword">If</span> sPath &lt;&gt; vbNullString <span class="vba-keyword">Then</span> <span class="vba-type">Range</span>("cellDBLoc").Value = sPath
+    DBLoc = <span class="vba-type">Range</span>("cellDBLoc").Value
+    
+    CloseRS
+    
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Sub</span> LoadEventPromo()
+
+    <span class="vba-comment">'============================================</span>
+    <span class="vba-comment">' Populates the 'EventPromo' textbox on</span>
+    <span class="vba-comment">' the Input Form.</span>
+    <span class="vba-comment">'============================================</span>
+
+    <span class="vba-keyword">Dim</span> slocalfile <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> strSQL <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    
+    <span class="vba-comment">'On Error GoTo PathErr:</span>
+    
+    <span class="vba-keyword">If</span> Left(frmAdItems.txtWeekPrefix.Value, 1) &lt;&gt; "&lt;" <span class="vba-keyword">And</span> frmAdItems.cboWeekLetter.Value &lt;&gt; "" <span class="vba-keyword">Then</span>
+        frmAdItems.txtEventPromoCode.Text = ""
+        slocalfile = "<span class="redacted" title="Redacted for privacy">\\SERVER\Ad Database\AdDB.accdb</span>"
+    
+        strSQL = "SELECT EventPromo.[Event/Promo Code], EventPromo.[Event Name], EventPromo.[Ad Date From], EventPromo.[Ad Date To] FROM EventPromo " &amp; _
+            "WHERE (((EventPromo.Week)='" &amp; frmAdItems.txtWeekPrefix.Value &amp; "') AND ((EventPromo.Version)='" &amp; frmAdItems.cboWeekLetter.Value &amp; "') AND ((EventPromo.FY)='" &amp; frmAdItems.txtFY &amp; "'));"
+        <span class="vba-comment">'Debug.Print strSQL</span>
+        <span class="vba-keyword">Set</span> cn = <span class="vba-keyword">New</span> <span class="vba-type">ADODB.Connection</span>
+        cn.<span class="vba-keyword">Open</span> "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" &amp; slocalfile &amp; ";Persist Security Info=False"
+        
+        <span class="vba-keyword">Set</span> rs = <span class="vba-keyword">New</span> <span class="vba-type">ADODB.Recordset</span>
+        <span class="vba-keyword">With</span> rs
+            .CursorLocation = 3 <span class="vba-comment">'adUseClient</span>
+            .CursorType = 1 <span class="vba-comment">'adOpenKeyset</span>
+            .LockType = 1 <span class="vba-comment">'adLockReadOnly</span>
+            .<span class="vba-keyword">Open</span> strSQL, cn
+        <span class="vba-keyword">End With</span>
+
+        <span class="vba-keyword">If</span> rs.RecordCount = 0 <span class="vba-keyword">Then</span>
+            MsgBox "Could not find the Event/Promo Code for " &amp; frmAdItems.txtWeekPrefix.Value &amp; frmAdItems.cboWeekLetter.Value, vbInformation, "Not Found"
+            CloseRS
+            <span class="vba-keyword">Exit Sub</span>
+        <span class="vba-keyword">End If</span>
+    
+        rs.MoveFirst
+        <span class="vba-keyword">While</span> <span class="vba-keyword">Not</span> rs.EOF
+            <span class="vba-keyword">If</span> rs.Fields("Event/Promo Code").Value &lt;&gt; vbNull <span class="vba-keyword">Then</span>
+                frmAdItems.txtEventPromoCode.Value = Trim(Left(rs.Fields("Event/Promo Code").Value, InStr(1, rs.Fields("Event/Promo Code").Value, "/") - 1)) &amp; " / " &amp; Trim(Mid(rs.Fields("Event/Promo Code").Value, InStr(1, rs.Fields("Event/Promo Code").Value, "/") + 1, 24))
+                frmAdItems.cboEvent.Value = rs.Fields("Event Name").Value
+                frmAdItems.txtAdDateFrom = rs.Fields("Ad Date From").Value
+                frmAdItems.txtAdDateTo = rs.Fields("Ad Date To").Value
+            <span class="vba-keyword">End If</span>
+            rs.MoveNext
+        <span class="vba-keyword">Wend</span>
+        
+    <span class="vba-keyword">End If</span>
+    
+    CloseRS
+    <span class="vba-keyword">Exit Sub</span>
+    
+PathErr:
+
+    <span class="vba-keyword">Dim</span> sPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    
+    sPath = InputBox("Could not connect to database.  Possible reasons: 1) Network problem (ie. not enough disk space), 2) Mapping difference, 3) Database may be locked .  Please try again. <span class="redacted" title="Redacted for privacy">Call the database owner</span> if problem persists.", "Connection Problem", <span class="vba-type">Range</span>("cellDBLoc").Value)
+    <span class="vba-keyword">If</span> sPath &lt;&gt; vbNullString <span class="vba-keyword">Then</span> <span class="vba-type">Range</span>("cellDBLoc").Value = sPath
+    DBLoc = <span class="vba-type">Range</span>("cellDBLoc").Value
+    
+    CloseRS
+    
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Public</span> <span class="vba-keyword">Function</span> UserName() <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+
+<span class="vba-comment">'---------------------------------------</span>
+<span class="vba-comment">' Returns the user's network name</span>
+<span class="vba-comment">'---------------------------------------</span>
+
+    <span class="vba-keyword">On Error Resume Next</span>
+    <span class="vba-keyword">Dim</span> objNetwork <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
+    <span class="vba-keyword">Set</span> objNetwork = CreateObject("WScript.Network")
+
+    <span class="vba-keyword">If</span> objNetwork <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+        Shell "Regsvr32 -s scrun.dll", vbHide
+        Application.Wait Now + (1# / 3600 / 24)
+        Shell "Regsvr32 -s wshom.ocx", vbHide
+        Application.Wait Now + (1# / 3600 / 24)
+        <span class="vba-keyword">Set</span> objNetwork = CreateObject("WScript.Network")
+    <span class="vba-keyword">End If</span>
+    
+    <span class="vba-keyword">If</span> objNetwork <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+        <span class="vba-keyword">Exit Function</span>
+    <span class="vba-keyword">End If</span>
+    UserName = objNetwork.UserName
+    
+    <span class="vba-keyword">Set</span> objNetwork = <span class="vba-keyword">Nothing</span>
+    
+<span class="vba-keyword">End Function</span>
+
+<span class="vba-keyword">Sub</span> CloseRS()
+
+    <span class="vba-comment">'Close Connection ============================================</span>
+    <span class="vba-keyword">On Error Resume Next</span>
+    
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> rs <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+        <span class="vba-comment">'Application.Cursor = xlWait</span>
+        rs.<span class="vba-keyword">Close</span>
+        <span class="vba-keyword">Set</span> rs = <span class="vba-keyword">Nothing</span>
+    <span class="vba-keyword">End If</span>
+    
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> cn <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+        <span class="vba-comment">'Application.Cursor = xlWait</span>
+        cn.<span class="vba-keyword">Close</span>
+        <span class="vba-keyword">Set</span> cn = <span class="vba-keyword">Nothing</span>
+    <span class="vba-keyword">End If</span>
+
+<span class="vba-keyword">End Sub</span></code></pre>
+    </div>
+</div>
+      <p><strong>Update Ad Database form</strong>: Form events and input checks.</p>
+<div class="code-container">
+    <div class="code-header">
+        <span>VBA</span>
+        <div class="header-controls">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </button>
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="code-wrapper">
+<pre><code><span class="vba-keyword">Private</span> <span class="vba-keyword">Sub</span> cmdCancel_Click()
+
+    Unload frmAdItems
+
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Private</span> <span class="vba-keyword">Sub</span> cmdReplicate_Click()
+
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsNumeric(txtWeekPrefix.Value) <span class="vba-keyword">Then</span>
+        MsgBox "Need to select a valid week before proceeding.", vbInformation, "Missing Input"
+    <span class="vba-keyword">ElseIf</span> Len(txtFY.Value) &lt;&gt; 6 <span class="vba-keyword">Or</span> Left(txtFY.Value, 2) &lt;&gt; "FY" <span class="vba-keyword">Then</span>
+        MsgBox "Check for valid Fiscal Year input.  ie 'FY2010'", vbInformation, "Invalid Input"
+    <span class="vba-keyword">ElseIf</span> Len(txtPhone.Value) &lt; 1 <span class="vba-keyword">Then</span>
+        MsgBox "Check for valid Phone # input.  ie <span class="redacted" title="Redacted for privacy">'x1234'</span>", vbInformation, "Missing Input"
+        txtPhone.SetFocus
+    <span class="vba-keyword">ElseIf</span> Selection.Count &gt; 500 <span class="vba-keyword">Then</span>
+        MsgBox "Possibly too many cells selected.  Just select one cell from each row and try again", vbInformation, "Too Many Cells"
+        Unload frmAdItems
+    <span class="vba-keyword">Else</span>
+        <span class="vba-keyword">Call</span> Copy2DB
+    <span class="vba-keyword">End If</span>
+    
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Private</span> <span class="vba-keyword">Sub</span> txtDept_Exit(<span class="vba-keyword">ByVal</span> Cancel <span class="vba-keyword">As</span> MSForms.ReturnBoolean)
+
+    <span class="vba-keyword">Call</span> DeptInfo(frmAdItems.txtDept)
+
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Private</span> <span class="vba-keyword">Sub</span> txtWeekPrefix_Change()
+
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsNumeric(txtWeekPrefix.Text) <span class="vba-keyword">And</span> txtWeekPrefix.Text &lt;&gt; vbNullString <span class="vba-keyword">Then</span>
+        MsgBox "Must be numeric. Do not include version", vbInformation, "Week # Must be Numeric"
+        txtWeekPrefix.Text = Left(txtWeekPrefix.Text, Len(txtWeekPrefix.Text) - 1)
+        cboWeekLetter.SetFocus
+        
+    <span class="vba-keyword">ElseIf</span> (Len(txtWeekPrefix) = 1 <span class="vba-keyword">Or</span> Len(txtWeekPrefix) &gt; 2) <span class="vba-keyword">And</span> IsNumeric(txtWeekPrefix) <span class="vba-keyword">Then</span>
+        txtWeekPrefix.Text = Right(Format(txtWeekPrefix, "0#"), 2)
+        
+    <span class="vba-keyword">End If</span>
+    
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Private</span> <span class="vba-keyword">Sub</span> txtWeekPrefix_Exit(<span class="vba-keyword">ByVal</span> Cancel <span class="vba-keyword">As</span> MSForms.ReturnBoolean)
+
+    <span class="vba-keyword">Call</span> LoadWeeks
+
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Private</span> <span class="vba-keyword">Sub</span> UserForm_Activate()
+
+    frmAdItems.Repaint
+    DoEvents
+  
+    <span class="vba-keyword">If</span> ActiveSheet.<span class="vba-type">Range</span>("B1").Value = "Year" <span class="vba-keyword">Then</span>
+        txtFY.Text = "FY" &amp; ActiveSheet.<span class="vba-type">Range</span>("B2").Value
+    <span class="vba-keyword">Else</span>
+        txtFY.Text = "FY" &amp; Format(Now() + 45, "YYYY")
+    <span class="vba-keyword">End If</span>
+    
+    <span class="vba-keyword">Call</span> DeptInfo(frmAdItems.txtDept)
+    txtSubmittedBy.Text = UCase(UserName)
+
+    Application.Cursor = xlDefault
+    Application.ScreenUpdating = <span class="vba-keyword">True</span>
+    
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Private</span> <span class="vba-keyword">Sub</span> cboWeekLetter_Change()
+
+    <span class="vba-keyword">Call</span> LoadEventPromo
+    
+<span class="vba-keyword">End Sub</span></code></pre>
+    </div>
+</div>
+    </div>
+
 <!-- FILES & TEMPLATES -->
 <div class="section" id="files-templates">
   <h2>Files &amp; Templates</h2>
@@ -6516,7 +7500,7 @@ NextPair:
     <div class="file-card" id="Ad-Bible">
       <span class="file-title">Ad Bible</span>
       <span class="file-type">Macro-enabled workbook (.xlsm)</span>
-      <a href="Files/Ad Bible.xlsm" download>Download Ad Bible</a>
+      <a href="Files/AD_BIBLE_Standalone.xlsm" download>Download Ad Bible</a>
     </div>
     <div class="file-card" id="Ad-Tracker">
       <span class="file-title">Ad Tracker</span>
