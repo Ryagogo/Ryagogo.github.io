@@ -1046,13 +1046,19 @@ td.red-border-cell:nth-child(4) {
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Fact Tags <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#Fact-Tags">Overview</a>
+      <a class="nav-sub-link" href="#regular-fact-tags">Regular Fact Tags</a>
+      <a class="nav-sub-link" href="#ft-add">Regular – 1. Add the Tag</a>
+      <a class="nav-sub-link" href="#ft-email">Regular – 2. Email Fact Tags</a>
+      <a class="nav-sub-link" href="#ft-update-master">Regular – 3. Update Master</a>
+      <a class="nav-sub-link" href="#ft-troubleshooting">Regular – Troubleshooting</a>
+      <a class="nav-sub-link" href="#ft-code">Regular – The Code</a>
       <a class="nav-sub-link" href="#sale-fact-tags">Sale Fact Tags</a>
-      <a class="nav-sub-link" href="#sale-load">1. Load the Items</a>
-      <a class="nav-sub-link" href="#sale-na">2. Check for #N/A</a>
-      <a class="nav-sub-link" href="#sale-export">3. Export &amp; Prompts</a>
-      <a class="nav-sub-link" href="#sale-email">4. Review &amp; Hold Email</a>
-      <a class="nav-sub-link" href="#sale-troubleshooting">Troubleshooting</a>
-      <a class="nav-sub-link" href="#sale-master">The Code</a>
+      <a class="nav-sub-link" href="#sale-load">Sale – 1. Load the Items</a>
+      <a class="nav-sub-link" href="#sale-na">Sale – 2. Check for #N/A</a>
+      <a class="nav-sub-link" href="#sale-export">Sale – 3. Export &amp; Prompts</a>
+      <a class="nav-sub-link" href="#sale-email">Sale – 4. Review &amp; Hold Email</a>
+      <a class="nav-sub-link" href="#sale-troubleshooting">Sale – Troubleshooting</a>
+      <a class="nav-sub-link" href="#sale-master">Sale – The Code</a>
     </div>
   </div>
   <div class="nav-section">
@@ -2041,7 +2047,290 @@ CleanUp:
     <div class="section" id="Fact-Tags">
       <h2>Fact Tags</h2>
       <p>The <strong>Fact Tags V4</strong> workbook holds every fact tag the team has built (the shelf signs for out-of-box, on-display items) and creates the import files the sign team uses to print them. Each tab has a job:</p>
-      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Tab</th><th>What it’s for</th></tr></thead><tbody><tr><td><strong>Category tabs</strong> (Apple, Audio, Cameras, Computers, TV-Video, Video Games, Majors, Small Appliances, …)</td><td>Where fact tags are built and kept: one row per item, starting on row 6.</td></tr><tr><td><strong>Master</strong></td><td>A combined copy of the category tabs. The Sale Master looks every RIN up here. Refresh it after adding or changing fact tags.</td></tr><tr><td><strong>SALE MASTER</strong></td><td>Builds <strong>sale</strong> signs for a promotion and sends them to the sign team (this section).</td></tr><tr><td>Clearance Master</td><td>The same idea for clearance signs.</td></tr><tr><td>Examples / Instructions</td><td>The sign team’s rules: character limits, <code>//</code> line breaks, required columns.</td></tr></tbody></table></div>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Tab</th><th>What it’s for</th></tr></thead><tbody><tr><td><strong>Category tabs</strong> (Apple, Audio, Cameras, Computers, TV-Video, Video Games, Majors, Small Appliances, …)</td><td>Where fact tags are built and kept: one row per item, starting on row 6. See <a href="#regular-fact-tags">Regular Fact Tags</a>.</td></tr><tr><td><strong>Master</strong></td><td>A combined copy of the category tabs. The SALE MASTER looks every RIN up here. Refresh it with <a href="#ft-update-master">Update Master</a> after adding or changing fact tags.</td></tr><tr><td><strong>SALE MASTER</strong></td><td>Builds <strong>sale</strong> signs for a promotion and sends them to the sign team (this section).</td></tr><tr><td>Clearance Master</td><td>The same idea for clearance signs.</td></tr><tr><td>Examples / Instructions</td><td>The sign team’s rules: character limits, <code>//</code> line breaks, required columns.</td></tr></tbody></table></div>
+
+      <h3 id="regular-fact-tags">Regular Fact Tags (Category Tabs)</h3>
+      <p>Regular fact tags are the everyday shelf signs for items on display. Each category (Apple, Audio, Cameras, Computers, TV-Video, etc.) has its own tab where its tags are kept, plus an <strong>Email Fact Tags</strong> button that sends that category’s tags to the sign team. The <strong>Master</strong> tab combines all the categories so the <a href="#sale-fact-tags">SALE MASTER</a> can find any item by RIN.</p>
+      <p>The workflow is: <strong>add the tag on its category tab → click Email Fact Tags → click Update Master</strong>.</p>
+
+      <h3 id="ft-add">Regular Tags Step 1: Add the Tag to Its Category Tab</h3>
+      <p>Go to the category tab, find the first empty row below the header (row 5; tags start on row 6) and fill in one row per item:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Column</th><th>What to enter</th><th>Rules</th></tr></thead><tbody><tr><td><strong>Copies</strong> (A)</td><td><code>1</code></td><td>Required. The export finds the last row from this column, so every tag needs it.</td></tr><tr><td><strong>Template</strong> (B)</td><td><code>5X3FACT</code> or <code>7X5FACT</code></td><td>Required. Sign size, chosen from the drop-down.</td></tr><tr><td><strong>UserDefined4</strong> (C)</td><td><code>Regular</code></td><td>Required. Marks a regular-price tag. Case-sensitive.</td></tr><tr><td><strong>SalePriceType</strong> (D)</td><td><code>Protection Plan</code></td><td>Required. The sign header image the team uses for regular tags. Pick from the drop-down.</td></tr><tr><td><strong>ItemID</strong> (E)</td><td>Navy RIN</td><td>The key the SALE MASTER uses to find the tag.</td></tr><tr><td>Model (F)</td><td>Vendor part number (VPN)</td><td>Case-sensitive; use capital letters as the vendor does.</td></tr><tr><td>UPC (G)</td><td>Full UPC</td><td>All digits.</td></tr><tr><td><strong>Name</strong> (H)</td><td>Item name, e.g. <code>Apple 11-Inch iPad Air M3 Wi-Fi 128GB</code></td><td>Required. Up to 105 characters (about 40 per printed line).</td></tr><tr><td>Description (I)</td><td>Key features separated by <code>//</code></td><td>Up to 250 characters (about 60 per printed line). <code>//</code> starts a new line on the sign.</td></tr><tr><td><strong>RegPrice</strong> (J)</td><td>Regular NEX price</td><td>Required.</td></tr><tr><td>SalePrice (K)</td><td>Leave blank</td><td>Only used for sale tags.</td></tr><tr><td><strong>StartDate</strong> (L)</td><td><strong>Today’s date</strong></td><td>The date you added the tag. The export uses the newest date to build the “New” file.</td></tr><tr><td>StopDate (M)</td><td>Leave blank</td><td>Only used for sale tags.</td></tr></tbody></table></div>
+      <p><strong>Example</strong> (from the Apple tab):</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Name (H)</th><th>Description (I)</th><th>RegPrice (J)</th><th>StartDate (L)</th></tr></thead><tbody><tr><td><code>Apple 11-Inch iPad Air M3 Wi-Fi 128GB</code></td><td><code>11" 2360x1640 Liquid Retina Display//Apple M3 Chip 8-Core CPU 9-Core GPU//128GB Storage//Apple Pencil Pro Supported//Available Colors: Blue, Starlight, Purple, Space Gray</code></td><td><code>589</code></td><td><code>10/02/26</code></td></tr></tbody></table></div>
+      <div class="note red-note"><strong>Sign team rules</strong> (from the workbook’s Instructions tab): no space at the start or end of any cell, or the import fails. Use sign-ready spelling and capitalization, and abbreviations only where appropriate. To remove a tag, <strong>delete</strong> the row rather than using Clear Contents, which leaves hidden data behind. Special characters: ° Alt+248, © Alt+0169, ™ Alt+0153, ® Alt+0174.</div>
+      <div class="note"><strong>Use today’s date in StartDate for every tag you add.</strong> The export sends the sign team a “New” file with only the tags that have the newest date, so that date is how it knows which tags are new. To reprint an existing tag, change its StartDate to today.</div>
+
+      <h3 id="ft-email">Regular Tags Step 2: Click Email Fact Tags</h3>
+      <p>On the category tab, click <strong>Email Fact Tags</strong>. The macro builds two files for the sign team and drafts the email:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Step</th><th>What the macro does</th></tr></thead><tbody><tr><td>1. Checks the tab</td><td>Stops with <em>“[Category] tab has no data to export.”</em> if there are no tags below row 5.</td></tr><tr><td>2. Prepares the folder</td><td>Uses the category’s folder in the shared <strong>Fact Tag Exports</strong> folder (e.g. <code>…\Fact Tag Exports\Apple\</code>) and creates it if it’s missing.</td></tr><tr><td>3. Saves the Master file</td><td>Copies the header (row 5) and <strong>every</strong> tag on the tab into a new workbook with one sheet named <strong>ItemImport</strong>, saved as <code>[Category] Master Fact Tag_99999_Promotion_SIGNS_HQ Distributed_[YYYYMMDD].xlsx</code>.</td></tr><tr><td>4. Saves the New file</td><td>Finds the <strong>newest StartDate</strong> in column L and saves only the tags with that date as <code>[Category] New Fact Tag_99999_Promotion_SIGNS_HQ Distributed_[YYYYMMDD].xlsx</code>. If no tag has a date, it skips this file and tells you.</td></tr><tr><td>5. Drafts the email</td><td>Opens an Outlook email to the sign team, copied to the fact tag team, with both files attached. It is <strong>not</strong> sent automatically.</td></tr><tr><td>6. Confirms</td><td>Shows <em>“[Category] Fact Tags exported and email is ready to fly!”</em></td></tr></tbody></table></div>
+      <div class="email-preview">
+        <div class="ep-toolbar">Apple Fact Tag Files – Master and Newest (20261002) — Message (Plain Text)</div>
+        <div class="ep-field"><span class="ep-label">To</span><span>PLUS-SignTeam</span></div>
+        <div class="ep-field"><span class="ep-label">Cc</span><span><span class="redacted" title="Redacted for privacy">Fact tag team</span></span></div>
+        <div class="ep-field"><span class="ep-label">Subject</span><span>Apple Fact Tag Files – Master and Newest (20261002)</span></div>
+        <div class="ep-field"><span class="ep-label">Attach</span><span class="attach-pill">📎 Apple Master Fact Tag_99999_Promotion_SIGNS_HQ Distributed_20261002.xlsx</span> <span class="attach-pill">📎 Apple New Fact Tag_99999_Promotion_SIGNS_HQ Distributed_20261002.xlsx</span></div>
+        <div class="ep-body">Hi team,<br><br>Please find attached the Apple Master Fact Tag file and the version with the newest date only.<br><br>Let me know if you need anything else.<br><br>Best,<br>The Apple Team</div>
+      </div>
+      <ol>
+        <li><span class="underline">Open both attachments and check them</span>: the <strong>New</strong> file should contain only the tags you just added.</li>
+        <li>Click <strong>Send</strong>. The sign team prints from the New file and keeps the Master file as the category’s full, current list.</li>
+      </ol>
+      <p>Every category tab works the same way; only the tab name, export folder and file names change (e.g. <code>Audio Master Fact Tag…</code>, <code>TV-Video New Fact Tag…</code>). Running it again on the same day replaces that day’s files.</p>
+
+      <h3 id="ft-update-master">Regular Tags Step 3: Click Update Master</h3>
+      <p>After adding or changing tags, go to the <strong>Master</strong> tab and click <strong>Update Master</strong> (the same button is on Clearance Master). Do this before building sale signs, or new items will show <strong>#N/A</strong> on the SALE MASTER.</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Step</th><th>What Update Master does</th></tr></thead><tbody><tr><td>1. Clears the Master tab</td><td>Removes everything below the header. Master is rebuilt from scratch each time, so never type on it.</td></tr><tr><td>2. Combines the category tabs</td><td>Copies rows 6 down (columns A–M) from Apple, Audio, Computers, Cameras, Mobile Electronics, Smart Home, TV-Video, Video Games, Majors, ASOS and Small Appliances.</td></tr><tr><td>3. Stores RINs and UPCs as text</td><td>Forces ItemID (E) and UPC (G) to text so the SALE MASTER lookups match them exactly.</td></tr><tr><td>4. Sorts newest first</td><td>Sorts by StartDate (L), newest on top.</td></tr><tr><td>5. Stamps the time</td><td>Writes <em>“Last updated: yyyy-mm-dd hh:mm”</em> in cell Z1.</td></tr><tr><td>6. Locks the tab</td><td>Re-protects Master (sorting and filtering still allowed) and shows a dad joke to confirm it finished.</td></tr></tbody></table></div>
+      <div class="note red-note"><strong>Floor Care and HomeGarden are not included.</strong> Those tabs have their own Email Fact Tags buttons, but Update Master doesn’t copy them to the Master tab, so their RINs show #N/A on the SALE MASTER. To include them, add <code>"Floor Care", "HomeGarden"</code> to the <code>sheetNames</code> list in the code below.</div>
+
+      <h3 id="ft-troubleshooting">Regular Tags Troubleshooting</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td><em>“[Category] tab has no data to export.”</em></td><td>There are no tags below row 5, or column A (Copies) is blank. Fill in Copies on every row.</td></tr><tr><td><em>“No rows matched the newest date…”</em></td><td>No tag on the tab has a StartDate. Put today’s date in column L for the tags you added; only the Master file was attached.</td></tr><tr><td>The New file has the wrong items</td><td>It contains every tag with the <strong>newest</strong> StartDate. Make sure only today’s new tags have today’s date, and that no tag has a future date.</td></tr><tr><td>Tags missing from the Master file</td><td>The bottom rows are missing Copies (A). The macro finds the last tag by looking up from the bottom of column A, so rows below the last filled Copies cell are left out.</td></tr><tr><td><em>“Error saving file…”</em></td><td>The Fact Tag Exports folder can’t be reached, or a file with the same name is open. Close it and run again.</td></tr><tr><td><em>“Outlook is not available.”</em></td><td>Open Outlook and run the button again; the files are already saved.</td></tr><tr><td>New tag shows #N/A on the SALE MASTER</td><td>Click <strong>Update Master</strong>. Tags on <strong>Floor Care</strong> and <strong>HomeGarden</strong> are not included in Update Master, so add those tab names to its list if they need sale signs.</td></tr><tr><td>Update Master didn’t sort</td><td>The workbook is in shared mode, which can block sorting. The data is still updated.</td></tr></tbody></table></div>
+
+      <h3 id="ft-code">Regular Tags: The Code</h3>
+      <p><strong>Update Master</strong> (<code>QuickConsolidateAndSort</code>), behind the button on the Master tab. The sheet password is redacted.</p>
+<div class="code-container">
+    <div class="code-header">
+        <span>VBA</span>
+        <div class="header-controls">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </button>
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="code-wrapper">
+<pre><code><span class="vba-keyword">Sub</span> QuickConsolidateAndSort()
+    <span class="vba-keyword">Dim</span> wsMaster <span class="vba-keyword">As</span> <span class="vba-type">Worksheet</span>, ws <span class="vba-keyword">As</span> <span class="vba-type">Worksheet</span>
+    <span class="vba-keyword">Dim</span> sheetNames <span class="vba-keyword">As</span> <span class="vba-type">Variant</span>
+    <span class="vba-keyword">Dim</span> dataArr <span class="vba-keyword">As</span> <span class="vba-type">Variant</span>, combinedArr() <span class="vba-keyword">As</span> <span class="vba-type">Variant</span>
+    <span class="vba-keyword">Dim</span> i <span class="vba-keyword">As</span> <span class="vba-type">Long</span>, r <span class="vba-keyword">As</span> <span class="vba-type">Long</span>, c <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    <span class="vba-keyword">Dim</span> totalRows <span class="vba-keyword">As</span> <span class="vba-type">Long</span>, totalCols <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    <span class="vba-keyword">Dim</span> lastRow <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    <span class="vba-keyword">Dim</span> rowOffset <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    <span class="vba-keyword">Dim</span> sourceRange <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
+    <span class="vba-keyword">Dim</span> cell <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
+
+    sheetNames = Array("Apple", "Audio", "Computers", "Cameras", "Mobile Electronics", "Smart Home", "TV-Video", "Video Games", "Majors", "ASOS", "Small Appliances")
+    <span class="vba-keyword">Set</span> wsMaster = ThisWorkbook.Sheets("Master")
+
+    <span class="vba-comment">' Unprotect Master sheet if needed</span>
+    <span class="vba-keyword">On Error Resume Next</span>
+    wsMaster.Unprotect Password:="<span class="redacted" title="Redacted for privacy">********</span>"
+    <span class="vba-keyword">On Error GoTo</span> 0
+
+    <span class="vba-comment">' Clear Master sheet except header</span>
+    wsMaster.Rows("2:" &amp; wsMaster.Rows.Count).ClearContents
+
+    <span class="vba-comment">' Define fixed column range: A to M (columns 1 to 13)</span>
+    totalCols = 13
+
+    <span class="vba-comment">' First pass: calculate total rows needed</span>
+    totalRows = 0
+    <span class="vba-keyword">For</span> i = LBound(sheetNames) <span class="vba-keyword">To</span> UBound(sheetNames)
+        <span class="vba-keyword">Set</span> ws = ThisWorkbook.Sheets(sheetNames(i))
+        lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+        <span class="vba-keyword">If</span> lastRow &gt;= 6 <span class="vba-keyword">Then</span>
+            totalRows = totalRows + (lastRow - 6 + 1)
+        <span class="vba-keyword">End If</span>
+    <span class="vba-keyword">Next</span> i
+
+    <span class="vba-comment">' Exit if no data</span>
+    <span class="vba-keyword">If</span> totalRows = 0 <span class="vba-keyword">Then</span>
+        MsgBox "No data to consolidate.", vbExclamation
+        <span class="vba-keyword">Exit Sub</span>
+    <span class="vba-keyword">End If</span>
+
+    <span class="vba-comment">' Initialize combined array</span>
+    <span class="vba-keyword">ReDim</span> combinedArr(1 <span class="vba-keyword">To</span> totalRows, 1 <span class="vba-keyword">To</span> totalCols)
+    rowOffset = 0
+
+    <span class="vba-comment">' Second pass: fill combined array</span>
+    <span class="vba-keyword">For</span> i = LBound(sheetNames) <span class="vba-keyword">To</span> UBound(sheetNames)
+        <span class="vba-keyword">Set</span> ws = ThisWorkbook.Sheets(sheetNames(i))
+        lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+        <span class="vba-keyword">If</span> lastRow &gt;= 6 <span class="vba-keyword">Then</span>
+            <span class="vba-keyword">Set</span> sourceRange = ws.<span class="vba-type">Range</span>("A6:M" &amp; lastRow)
+            <span class="vba-keyword">If</span> sourceRange.Rows.Count = 1 <span class="vba-keyword">Then</span>
+                <span class="vba-keyword">ReDim</span> dataArr(1 <span class="vba-keyword">To</span> 1, 1 <span class="vba-keyword">To</span> totalCols)
+                <span class="vba-keyword">For</span> c = 1 <span class="vba-keyword">To</span> totalCols
+                    dataArr(1, c) = sourceRange.Cells(1, c).Value
+                <span class="vba-keyword">Next</span> c
+            <span class="vba-keyword">Else</span>
+                dataArr = sourceRange.Value
+            <span class="vba-keyword">End If</span>
+
+            <span class="vba-keyword">For</span> r = 1 <span class="vba-keyword">To</span> UBound(dataArr, 1)
+                <span class="vba-keyword">For</span> c = 1 <span class="vba-keyword">To</span> totalCols
+                    combinedArr(rowOffset + r, c) = dataArr(r, c)
+                <span class="vba-keyword">Next</span> c
+            <span class="vba-keyword">Next</span> r
+            rowOffset = rowOffset + UBound(dataArr, 1)
+        <span class="vba-keyword">End If</span>
+    <span class="vba-keyword">Next</span> i
+
+    <span class="vba-comment">' Dump combined data into Master starting at A2</span>
+    wsMaster.<span class="vba-type">Range</span>("A2").Resize(totalRows, totalCols).Value = combinedArr
+
+    <span class="vba-comment">' Force columns E and G to text</span>
+    wsMaster.<span class="vba-type">Range</span>("E:E").NumberFormat = "@"
+    wsMaster.<span class="vba-type">Range</span>("G:G").NumberFormat = "@"
+    <span class="vba-keyword">For</span> <span class="vba-keyword">Each</span> cell <span class="vba-keyword">In</span> wsMaster.<span class="vba-type">Range</span>("E2:E" &amp; totalRows + 1)
+        <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsEmpty(cell.Value) <span class="vba-keyword">Then</span> cell.Value = CStr(cell.Value)
+    <span class="vba-keyword">Next</span> cell
+    <span class="vba-keyword">For</span> <span class="vba-keyword">Each</span> cell <span class="vba-keyword">In</span> wsMaster.<span class="vba-type">Range</span>("G2:G" &amp; totalRows + 1)
+        <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> IsEmpty(cell.Value) <span class="vba-keyword">Then</span> cell.Value = CStr(cell.Value)
+    <span class="vba-keyword">Next</span> cell
+
+    <span class="vba-comment">' Sort by column L (12th column)</span>
+    <span class="vba-keyword">On Error Resume Next</span> <span class="vba-comment">' Shared mode may block sorting</span>
+    <span class="vba-keyword">With</span> wsMaster.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=wsMaster.<span class="vba-type">Range</span>("L2:L" &amp; totalRows + 1), _
+            SortOn:=xlSortOnValues, Order:=xlDescending, DataOption:=xlSortNormal
+        .SetRange wsMaster.<span class="vba-type">Range</span>("A1").Resize(totalRows + 1, totalCols)
+        .Header = xlYes
+        .Apply
+    <span class="vba-keyword">End With</span>
+    <span class="vba-keyword">On Error GoTo</span> 0
+
+    <span class="vba-comment">' Log last update time</span>
+    wsMaster.<span class="vba-type">Range</span>("Z1").Value = "Last updated: " &amp; Format(Now, "yyyy-mm-dd hh:mm AM/PM")
+
+    <span class="vba-comment">' Re-protect Master sheet</span>
+    wsMaster.Protect Password:="<span class="redacted" title="Redacted for privacy">********</span>", AllowSorting:=<span class="vba-keyword">True</span>, AllowFiltering:=<span class="vba-keyword">True</span>
+
+    <span class="vba-comment">' Show random dad joke</span>
+    MsgBox GetRandomDadJoke(), vbInformation, "Master Tab Updated"
+<span class="vba-keyword">End Sub</span></code></pre>
+    </div>
+</div>
+      <p><strong>Email Fact Tags</strong>, Apple version (<code>ExportAppleFactTagsAndEmail</code>), with its two helpers. Every category tab has a copy of this macro with its own tab name, folder and file names. The export folder and email addresses are redacted.</p>
+<div class="code-container">
+    <div class="code-header">
+        <span>VBA</span>
+        <div class="header-controls">
+            <button type="button" class="control-btn download-btn" title="Download as .bas file" onclick="downloadCode(this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </button>
+            <button type="button" class="control-btn" title="Copy code" onclick="copyCode(this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="code-wrapper">
+<pre><code><span class="vba-keyword">Sub</span> ExportAppleFactTagsAndEmail()
+    <span class="vba-keyword">Dim</span> ws <span class="vba-keyword">As</span> <span class="vba-type">Worksheet</span>, tempWB <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>, tempWS <span class="vba-keyword">As</span> <span class="vba-type">Worksheet</span>
+    <span class="vba-keyword">Dim</span> folderPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>, fileNameAll <span class="vba-keyword">As</span> <span class="vba-type">String</span>, fileNameNewest <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> lastRow <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+    <span class="vba-keyword">Dim</span> newestDate <span class="vba-keyword">As</span> <span class="vba-type">Variant</span>
+    <span class="vba-keyword">Dim</span> todayStamp <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> exportRange <span class="vba-keyword">As</span> <span class="vba-type">Range</span>, cell <span class="vba-keyword">As</span> <span class="vba-type">Range</span>
+
+    <span class="vba-comment">' === CONFIGURE EXPORT FOLDER ===</span>
+    folderPath = "<span class="redacted" title="Redacted for privacy">\\SERVER\Fact Tags\Fact Tag Exports\Apple\</span>"
+    <span class="vba-keyword">If</span> Right(folderPath, 1) &lt;&gt; "\" <span class="vba-keyword">Then</span> folderPath = folderPath &amp; "\"
+    EnsureFolderExists folderPath
+
+    <span class="vba-comment">' === SETUP APPLE SHEET ===</span>
+    <span class="vba-keyword">Set</span> ws = ThisWorkbook.Sheets("Apple")
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    <span class="vba-keyword">If</span> lastRow &lt; 6 <span class="vba-keyword">Then</span>
+        MsgBox "Apple tab has no data to export.", vbExclamation
+        <span class="vba-keyword">Exit Sub</span>
+    <span class="vba-keyword">End If</span>
+
+    todayStamp = Format(<span class="vba-type">Date</span>, "yyyymmdd")
+
+    <span class="vba-comment">' === EXPORT ALL ITEMS (A5:M and below) ===</span>
+    fileNameAll = folderPath &amp; "Apple Master Fact Tag_99999_Promotion_SIGNS_HQ Distributed_" &amp; todayStamp &amp; ".xlsx"
+    <span class="vba-keyword">Set</span> tempWB = Workbooks.Add
+    <span class="vba-keyword">Set</span> tempWS = tempWB.Sheets(1)
+    tempWS.Name = "ItemImport"
+    ws.<span class="vba-type">Range</span>("A5:M" &amp; lastRow).Copy Destination:=tempWS.<span class="vba-type">Range</span>("A1")
+    SaveWorkbookSafe tempWB, fileNameAll
+    tempWB.Close SaveChanges:=<span class="vba-keyword">False</span>
+
+    <span class="vba-comment">' === EXPORT NEWEST DATE ONLY (A5:M and below, filtered by column L) ===</span>
+    newestDate = Application.WorksheetFunction.Max(ws.<span class="vba-type">Range</span>("L6:L" &amp; lastRow))
+    <span class="vba-keyword">Set</span> exportRange = <span class="vba-keyword">Nothing</span>
+
+    <span class="vba-keyword">For</span> <span class="vba-keyword">Each</span> cell <span class="vba-keyword">In</span> ws.<span class="vba-type">Range</span>("L6:L" &amp; lastRow)
+        <span class="vba-keyword">If</span> IsDate(cell.Value) <span class="vba-keyword">Then</span>
+            <span class="vba-keyword">If</span> Int(cell.Value) = Int(newestDate) <span class="vba-keyword">Then</span>
+                <span class="vba-keyword">If</span> exportRange <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+                    <span class="vba-keyword">Set</span> exportRange = ws.<span class="vba-type">Range</span>("A" &amp; cell.Row &amp; ":M" &amp; cell.Row)
+                <span class="vba-keyword">Else</span>
+                    <span class="vba-keyword">Set</span> exportRange = Union(exportRange, ws.<span class="vba-type">Range</span>("A" &amp; cell.Row &amp; ":M" &amp; cell.Row))
+                <span class="vba-keyword">End If</span>
+            <span class="vba-keyword">End If</span>
+        <span class="vba-keyword">End If</span>
+    <span class="vba-keyword">Next</span> cell
+
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> exportRange <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+        fileNameNewest = folderPath &amp; "Apple New Fact Tag_99999_Promotion_SIGNS_HQ Distributed_" &amp; todayStamp &amp; ".xlsx"
+        <span class="vba-keyword">Set</span> tempWB = Workbooks.Add
+        <span class="vba-keyword">Set</span> tempWS = tempWB.Sheets(1)
+        tempWS.Name = "ItemImport"
+        ws.<span class="vba-type">Range</span>("A5:M5").Copy Destination:=tempWS.<span class="vba-type">Range</span>("A1") <span class="vba-comment">' Copy header</span>
+        exportRange.Copy Destination:=tempWS.<span class="vba-type">Range</span>("A2")       <span class="vba-comment">' Copy filtered rows</span>
+        SaveWorkbookSafe tempWB, fileNameNewest
+        tempWB.Close SaveChanges:=<span class="vba-keyword">False</span>
+    <span class="vba-keyword">Else</span>
+        MsgBox "No rows matched the newest date. 'Apple New Fact Tag' file was not created.", vbExclamation
+    <span class="vba-keyword">End If</span>
+
+    <span class="vba-comment">' === PREPARE OUTLOOK EMAIL WITH ATTACHMENTS ===</span>
+    <span class="vba-keyword">Dim</span> OutlookApp <span class="vba-keyword">As</span> <span class="vba-type">Object</span>, OutlookMail <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
+    <span class="vba-keyword">On Error Resume Next</span>
+    <span class="vba-keyword">Set</span> OutlookApp = GetObject(, "Outlook.Application")
+    <span class="vba-keyword">If</span> OutlookApp <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span> <span class="vba-keyword">Set</span> OutlookApp = CreateObject("Outlook.Application")
+    <span class="vba-keyword">On Error GoTo</span> 0
+
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> OutlookApp <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+        <span class="vba-keyword">Set</span> OutlookMail = OutlookApp.CreateItem(0)
+        <span class="vba-keyword">With</span> OutlookMail
+            .<span class="vba-keyword">To</span> = "<span class="redacted" title="Redacted for privacy">SignTeam@example.org</span>"
+            .CC = "<span class="redacted" title="Redacted for privacy">teammate1@example.org;teammate2@example.org</span>"
+            .Subject = "Apple Fact Tag Files – Master and Newest (" &amp; todayStamp &amp; ")"
+            .Body = "Hi team," &amp; vbCrLf &amp; vbCrLf &amp; _
+                    "Please find attached the Apple Master Fact Tag file and the version with the newest date only." &amp; vbCrLf &amp; vbCrLf &amp; _
+                    "Let me know if you need anything else." &amp; vbCrLf &amp; vbCrLf &amp; _
+                    "Best," &amp; vbCrLf &amp; "The Apple Team"
+            <span class="vba-keyword">If</span> Len(Dir(fileNameAll)) &gt; 0 <span class="vba-keyword">Then</span> .Attachments.Add fileNameAll
+            <span class="vba-keyword">If</span> Len(Dir(fileNameNewest)) &gt; 0 <span class="vba-keyword">Then</span> .Attachments.Add fileNameNewest
+            .Display
+        <span class="vba-keyword">End With</span>
+    <span class="vba-keyword">Else</span>
+        MsgBox "Outlook is not available. Please open Outlook and try again.", vbExclamation
+    <span class="vba-keyword">End If</span>
+
+    MsgBox "Apple Fact Tags exported and email is ready to fly!", vbInformation
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Sub</span> EnsureFolderExists(path <span class="vba-keyword">As</span> <span class="vba-type">String</span>)
+    <span class="vba-keyword">Dim</span> fso <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
+    <span class="vba-keyword">Set</span> fso = CreateObject("Scripting.FileSystemObject")
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> fso.FolderExists(path) <span class="vba-keyword">Then</span> fso.CreateFolder path
+<span class="vba-keyword">End Sub</span>
+
+<span class="vba-keyword">Sub</span> SaveWorkbookSafe(wb <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>, fullPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>)
+    <span class="vba-keyword">On Error GoTo</span> SaveErr
+    Application.DisplayAlerts = <span class="vba-keyword">False</span>
+    <span class="vba-keyword">If</span> Dir(fullPath) &lt;&gt; "" <span class="vba-keyword">Then</span> Kill fullPath
+    wb.SaveAs fileName:=fullPath, FileFormat:=xlOpenXMLWorkbook
+    Application.DisplayAlerts = <span class="vba-keyword">True</span>
+    <span class="vba-keyword">Exit Sub</span>
+
+SaveErr:
+    MsgBox "? Error saving file: " &amp; fullPath &amp; vbCrLf &amp; Err.Description, vbCritical
+    Application.DisplayAlerts = <span class="vba-keyword">True</span>
+<span class="vba-keyword">End Sub</span></code></pre>
+    </div>
+</div>
 
       <h3 id="sale-fact-tags">Sale Fact Tags (SALE MASTER)</h3>
       <p>The SALE MASTER tab turns a list of RINs and sale prices into a sale-sign file for the sign team. You load the items, check that every item has a fact tag, then click <strong>EXPORT TO SIGN TEAM</strong>. The macro builds the sign-team file, removes items with no fact tag, names the file the way the sign team requires, and drafts the email.</p>
@@ -2055,7 +2344,7 @@ CleanUp:
       <h3 id="sale-na">Step 2: Check for #N/A</h3>
       <p>After the RINs are in, the lookup columns fill in automatically. A row showing <strong>#N/A</strong> means that item has <strong>no fact tag</strong> on the Master tab. For each one, either:</p>
       <ul>
-        <li><strong>Build the fact tag:</strong> add the item to its category tab, following the sign team’s rules on the Instructions tab (Name up to 105 characters, Description up to 250, <code>//</code> for a line break, no leading or trailing spaces). Then refresh the Master tab so the SALE MASTER can find it.</li>
+        <li><strong>Build the fact tag:</strong> add the item to its category tab, following the sign team’s rules on the Instructions tab (Name up to 105 characters, Description up to 250, <code>//</code> for a line break, no leading or trailing spaces). Then click <a href="#ft-update-master">Update Master</a> so the SALE MASTER can find it.</li>
         <li><strong>Skip it:</strong> if the item doesn’t need a sign, leave it. The export now <strong>removes #N/A rows automatically</strong>, so no error rows reach the sign team.</li>
       </ul>
       <div class="note red-note">Items with #N/A are dropped from the file without a warning. Check the list before exporting so an item that needs a sign isn’t missed. <span class="sign-warning">The sign team will not accept templates with #N/A items.</span></div>
