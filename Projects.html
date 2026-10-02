@@ -191,7 +191,24 @@
       <a class="nav-sub-link" href="#raid-troubleshooting">Troubleshooting</a>
     </div>
   </div>
-  <a class="nav-top-link" href="#pi-hole">Pi-Hole</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Pi-Hole <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#pihole-what">What Pi-hole Does</a>
+      <a class="nav-sub-link" href="#pihole-hardware">Choosing Hardware</a>
+      <a class="nav-sub-link" href="#pihole-os">1. Prepare the Server</a>
+      <a class="nav-sub-link" href="#pihole-static-ip">2. Fixed IP Address</a>
+      <a class="nav-sub-link" href="#pihole-install">3. Install Pi-hole</a>
+      <a class="nav-sub-link" href="#pihole-docker">Alternative: Docker</a>
+      <a class="nav-sub-link" href="#pihole-admin">4. Admin Page</a>
+      <a class="nav-sub-link" href="#pihole-test">5. Test on One PC</a>
+      <a class="nav-sub-link" href="#pihole-network">6. Whole Network</a>
+      <a class="nav-sub-link" href="#pihole-local-dns">7. Local DNS Records</a>
+      <a class="nav-sub-link" href="#pihole-lists">Lists &amp; Commands</a>
+      <a class="nav-sub-link" href="#pihole-extras">Security &amp; Extras</a>
+      <a class="nav-sub-link" href="#pihole-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
   <a class="nav-top-link" href="#html-section">HTML</a>
   <a class="nav-top-link" href="#gpg">GPG</a>
   <a class="nav-top-link" href="#backups">Backups</a>
@@ -3273,8 +3290,361 @@ sudo mdadm --zero-superblock /dev/sdb /dev/sdc</code></pre>
 
         <div id="pi-hole">
             <h2>Pi-Hole</h2>
-            <p class="tool-overview"><strong>What it is:</strong> Pi-hole is a network-wide ad blocker that acts as your network’s DNS server. When any device looks up a known ad or tracking domain, Pi-hole refuses to answer, blocking ads for every device on the network (smart TVs and phones included) without installing anything on them.</p>
-            <div class="placeholder-section">Section targeting DNS local blacklists pending tracking definitions.</div>
+            <p class="tool-overview"><strong>What it is:</strong> Pi-hole is a network-wide ad blocker that works as your network’s <a href="#dns">DNS</a> server. Devices ask Pi-hole to look up names like <code>google.com</code>; Pi-hole forwards normal lookups to a real (upstream) DNS server such as <code>1.1.1.1</code>, but when a device asks for a known ad or tracking domain, Pi-hole answers with nothing (<code>0.0.0.0</code>), so the ad never loads. Because it works at the DNS level, it covers every device on the network (phones, smart TVs, game consoles) without installing anything on them.</p>
+            <p>These notes follow the video tutorial below, which installs Pi-hole on Debian on a repurposed old Mac mini, then sets up ad blocking and local DNS names. Extra notes cover newer Pi-hole versions, Docker, and day-to-day management.</p>
+                <iframe class="video-embed" src="https://www.youtube.com/embed/Zbg1M-u_l3w"
+                    title="Pi-hole ad blocking and local DNS on an old Mac mini" loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/Zbg1M-u_l3w" target="_blank" rel="noopener">https://youtu.be/Zbg1M-u_l3w</a></p>
+
+            <div id="pihole-what">
+                <h3>What Pi-hole Does</h3>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=35" target="_blank" rel="noopener">▶ Watch this step (0:35)</a></p>
+                <ul>
+                    <li><strong>Network-wide ad and tracker blocking:</strong> blocklists (“adlists”) contain hundreds of thousands of ad, tracking and malware domains. Lookups for them are blocked for every device that uses Pi-hole as its DNS server.</li>
+                    <li><strong>DNS caching:</strong> answers are remembered, so repeat lookups are instant and browsing feels a little faster.</li>
+                    <li><strong>Local DNS records:</strong> give home-lab machines easy names, e.g. <code>ubuntu-server.home.arpa</code> instead of <code>192.168.1.93</code>.</li>
+                    <li><strong>Query log and dashboard:</strong> see which devices look up what, how many queries were blocked, and the top domains.</li>
+                    <li><strong>Optional DHCP server:</strong> Pi-hole can hand out IP addresses if your router can’t point clients at a custom DNS server.</li>
+                </ul>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Limits:</strong> DNS blocking can’t remove ads served from the same domain as the content (YouTube video ads, many social-media ads) and can’t block apps or devices that use their own hard-coded or encrypted DNS (DNS-over-HTTPS). Pair it with a browser ad blocker for the best results.</div></div>
+            </div>
+
+            <div id="pihole-hardware">
+                <h3>Choosing Hardware</h3>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=78" target="_blank" rel="noopener">▶ Watch this step (1:18)</a></p>
+                <p>Pi-hole needs very little: about 512&nbsp;MB of RAM and a few gigabytes of disk. It must be <strong>always on</strong>, because if it goes down, devices that rely on it can’t look up names.</p>
+                <table>
+                    <thead><tr><th>Option</th><th>Pros</th><th>Cons</th></tr></thead>
+                    <tbody>
+                        <tr><td>Raspberry Pi</td><td>Tiny, silent, about 2–5 W</td><td>Costs more than it used to; SD cards can wear out (use a good card or USB SSD)</td></tr>
+                        <tr><td>Old PC or laptop (the video uses a 2006 Mac mini with a Core Duo and 2 GB RAM)</td><td>Free if you already own it; reuses old hardware</td><td>Draws more power (the Mac mini idles at about 20 W)</td></tr>
+                        <tr><td>VM or container on a home server (e.g. <a href="#proxmox">Proxmox</a>)</td><td>No extra hardware; easy snapshots and backups</td><td>Goes down whenever the host is rebooted</td></tr>
+                        <tr><td><a href="#docker">Docker</a> container</td><td>Quick to install, update and move</td><td>Needs port 53 free on the host (see the Docker notes below)</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>Power cost:</strong> yearly cost = watts × 24 × 365 ÷ 1000 × price per kWh. At $0.15/kWh, a 21 W PC costs about <strong>$28/year</strong> and a 2 W Raspberry Pi about <strong>$2.60/year</strong>. A free old PC can still beat buying a Pi for the first year or two, especially where electricity is cheap.</div></div>
+            </div>
+
+            <div id="pihole-os">
+                <h3>Step 1: Prepare the Server (Debian)</h3>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=261" target="_blank" rel="noopener">▶ Watch this step (4:21)</a></p>
+                <ol>
+                    <li>Download a Debian netinst image (the video uses Debian 11 <strong>32-bit</strong> because the old Mac’s CPU is 32-bit; use 64-bit <code>amd64</code> on any modern PC), and flash it to a USB drive with <strong>balenaEtcher</strong> or Rufus.</li>
+                    <li>Boot from the USB drive and install Debian. At <strong>Software selection</strong>, <strong>untick every desktop environment</strong> (a server doesn’t need one) and <strong>tick “SSH server”</strong> so you can manage it remotely.</li>
+                    <li>Remove the USB drive and reboot.</li>
+                </ol>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Old Intel Macs can’t boot Linux installers directly because of their firmware; the video uses the <strong>rEFInd</strong> boot manager to fix that. On a normal PC, just choose the USB drive from the boot menu. Ubuntu Server or Raspberry Pi OS Lite work too.</div></div>
+                <h4>Update the system and install the basics</h4>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=291" target="_blank" rel="noopener">▶ Watch this step (4:51)</a></p>
+                <p>Log in at the console, switch to root, update everything and install <code>sudo</code>, <a href="#net-tools">net-tools</a> and <a href="#curl">curl</a>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>su -
+apt update &amp;&amp; apt upgrade -y
+apt install -y sudo net-tools curl</code></pre>
+                    </div>
+                </div>
+                <p>Find the server’s IP address (look for <code>inet 192.168.x.x</code>):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>ifconfig
+# or, without net-tools:
+ip a</code></pre>
+                    </div>
+                </div>
+                <h4>Give your user sudo rights and switch to SSH</h4>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=310" target="_blank" rel="noopener">▶ Watch this step (5:10)</a></p>
+                <p>Now you can unplug the monitor and keyboard and connect from another computer over <a href="#ssh">SSH</a>. Replace <code>YOURUSER</code> with the account you created during install:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>ssh YOURUSER@SERVER-IP
+su -
+usermod -aG sudo YOURUSER
+exit</code></pre>
+                    </div>
+                </div>
+                <p>Log out and back in, then confirm sudo works (it should print <code>root</code>):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo whoami</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pihole-static-ip">
+                <h3>Step 2: Give the Server a Fixed IP Address</h3>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=361" target="_blank" rel="noopener">▶ Watch this step (6:01)</a></p>
+                <p>Every device will be told “your DNS server is <em>this IP</em>”, so the IP must never change. Choose one:</p>
+                <ul>
+                    <li><strong>DHCP reservation (easiest, used in the video):</strong> in your router’s admin page, find the DHCP / LAN settings and reserve the server’s current IP for its MAC address (see <a href="#mac-addresses">MAC Addresses</a>).</li>
+                    <li><strong>Static IP on the server:</strong> set the address on the server itself. See <a href="#static-ip">Static IP</a> (Ubuntu uses Netplan; Debian uses <code>/etc/network/interfaces</code>). Pick an address outside the router’s DHCP range.</li>
+                </ul>
+            </div>
+
+            <div id="pihole-install">
+                <h3>Step 3: Install Pi-hole</h3>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=332" target="_blank" rel="noopener">▶ Watch this step (5:32)</a></p>
+                <p>Run the official one-line installer from <a href="https://pi-hole.net" target="_blank" rel="noopener">pi-hole.net</a>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>curl -sSL https://install.pi-hole.net | bash</code></pre>
+                    </div>
+                </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Prefer to read a script before running it? Download it first, review it, then run it:<br><code>curl -sSL https://install.pi-hole.net -o basic-install.sh</code> then <code>sudo bash basic-install.sh</code>.</div></div>
+                <p>The installer is a text menu (use arrow keys, <kbd>Space</kbd> to select, <kbd>Enter</kbd> to confirm):</p>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=381" target="_blank" rel="noopener">▶ Watch this step (6:21)</a></p>
+                <table>
+                    <thead><tr><th>Prompt</th><th>Choose</th><th>Why</th></tr></thead>
+                    <tbody>
+                        <tr><td>Static IP needed</td><td>Continue</td><td>You already set a reservation or static IP in Step 2.</td></tr>
+                        <tr><td>Upstream DNS provider</td><td><strong>Cloudflare</strong> (as in the video), Quad9 or Google</td><td>Where Pi-hole sends lookups it doesn’t block.</td></tr>
+                        <tr><td>Third-party blocklists</td><td><strong>Yes</strong></td><td>Installs the default StevenBlack list, a good starting adlist.</td></tr>
+                        <tr><td>Admin web interface</td><td><strong>Yes</strong></td><td>The dashboard you’ll use to manage everything.</td></tr>
+                        <tr><td>Query logging</td><td>Yes</td><td>Needed to see what’s being blocked; turn it off later if you prefer privacy.</td></tr>
+                        <tr><td>Privacy mode (FTL)</td><td>Show everything (0)</td><td>Shows device and domain names in the logs; choose a higher level to hide them.</td></tr>
+                    </tbody>
+                </table>
+                <p>When it finishes, it shows the admin address (<code>http://SERVER-IP/admin</code>) and a random password.</p>
+                <h4>Set your own admin password</h4>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=404" target="_blank" rel="noopener">▶ Watch this step (6:44)</a></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code># Pi-hole v6 (current)
+sudo pihole setpassword
+
+# Pi-hole v5 (older installs, as shown in the video)
+sudo pihole -a -p</code></pre>
+                    </div>
+                </div>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>The video was made with Pi-hole <strong>v5</strong>. Pi-hole <strong>v6</strong> (2025) has a redesigned admin page and a few renamed commands and menus (“whitelist/blacklist” became “allowlist/denylist”, and “Adlists” became “Lists”), but every step here works the same way. Check your version with <code>pihole -v</code>.</div></div>
+            </div>
+
+            <div id="pihole-docker">
+                <h3>Alternative: Run Pi-hole in Docker</h3>
+                <p>If you already run <a href="#docker">Docker</a> on a home server, Pi-hole runs well as a container. Create a folder (e.g. <code>~/docker/pihole</code>) with this <code>docker-compose.yml</code>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    ports:
+      - &quot;53:53/tcp&quot;
+      - &quot;53:53/udp&quot;
+      - &quot;8080:80/tcp&quot;      # admin page at http://SERVER-IP:8080/admin
+    environment:
+      TZ: &quot;America/New_York&quot;
+      FTLCONF_webserver_api_password: &quot;CHANGE-ME&quot;
+      FTLCONF_dns_listeningMode: &quot;all&quot;
+    volumes:
+      - ./etc-pihole:/etc/pihole
+    restart: unless-stopped</code></pre>
+                    </div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/docker/pihole
+sudo docker compose up -d
+sudo docker logs -f pihole</code></pre>
+                    </div>
+                </div>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div><strong>Port 53 already in use?</strong> Ubuntu’s <code>systemd-resolved</code> listens on port 53. Free it with:<br><code>sudo sed -i 's/#DNSStubListener=yes/DNSStubListener=no/' /etc/systemd/resolved.conf &amp;&amp; sudo systemctl restart systemd-resolved</code><br>The admin page is mapped to port 8080 here so it doesn’t clash with a reverse proxy like <a href="#nginx">NGINX</a> on port 80.</div></div>
+            </div>
+
+            <div id="pihole-admin">
+                <h3>Step 4: Tour the Admin Page</h3>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=414" target="_blank" rel="noopener">▶ Watch this step (6:54)</a></p>
+                <p>Open <code>http://SERVER-IP/admin</code> and sign in.</p>
+                <table>
+                    <thead><tr><th>Page</th><th>What it’s for</th></tr></thead>
+                    <tbody>
+                        <tr><td>Dashboard</td><td>Total queries, how many were blocked, top blocked domains and top clients.</td></tr>
+                        <tr><td>Query Log</td><td>Every lookup in real time: which device asked, what it asked for, and whether it was blocked. Click a domain to allow or deny it.</td></tr>
+                        <tr><td>Lists (v5: Adlists)</td><td>The blocklists Pi-hole downloads. Add list URLs here, then update “gravity”.</td></tr>
+                        <tr><td>Domains</td><td>Your own <strong>allowlist</strong> (never block) and <strong>denylist</strong> (always block) entries, including regex rules.</td></tr>
+                        <tr><td>Local DNS → DNS Records</td><td>Custom names for your own devices (Step 7).</td></tr>
+                        <tr><td>Settings → DNS</td><td>Upstream DNS servers and which network interfaces Pi-hole answers on.</td></tr>
+                        <tr><td>Settings → DHCP</td><td>Turn Pi-hole into the network’s DHCP server (Step 6, option C).</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="pihole-test">
+                <h3>Step 5: Test It on One Computer</h3>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=427" target="_blank" rel="noopener">▶ Watch this step (7:07)</a></p>
+                <p>Before switching the whole network, point a single PC at Pi-hole:</p>
+                <ol>
+                    <li><strong>Windows:</strong> Settings → Network &amp; Internet → your adapter → <strong>DNS server assignment</strong> → Edit → Manual → IPv4 on → Preferred DNS = the Pi-hole IP → Save.</li>
+                    <li>Open an ad-heavy web page, then hard-refresh (<kbd>Ctrl</kbd>+<kbd>F5</kbd>). Many of the ads should be gone.</li>
+                    <li>Open <strong>Query Log</strong> in the admin page to watch the blocked requests appear.</li>
+                </ol>
+                <p>Confirm from a terminal: a blocked domain returns <code>0.0.0.0</code>, a normal one returns a real IP.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nslookup doubleclick.net PIHOLE-IP
+nslookup google.com PIHOLE-IP</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pihole-network">
+                <h3>Step 6: Use Pi-hole for the Whole Network</h3>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=457" target="_blank" rel="noopener">▶ Watch this step (7:37)</a></p>
+                <p>Your router tells every device which DNS server to use when it hands out IP addresses (DHCP). Change that setting once and every device follows:</p>
+                <p><strong>Option A: router DHCP DNS setting (recommended).</strong> In the router’s admin page, find the <strong>DHCP / LAN</strong> settings and set the DNS server to the Pi-hole’s IP. Devices pick it up when they renew their address. Reconnect them or wait for their lease to renew.</p>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div><strong>About a backup DNS server:</strong> the video suggests adding a public DNS (like <code>1.1.1.1</code>) as the second DNS server in case Pi-hole goes down. That keeps the internet working, but devices often use the second server even when Pi-hole is fine, so <strong>some ads will get through</strong>. The cleaner fix is a second Pi-hole as the backup DNS.</div></div>
+                <p><strong>Option B: router WAN/Internet DNS.</strong> Some routers only let you change their own upstream DNS. Setting it to Pi-hole works, but every query then shows up as coming from the router, so you lose per-device stats.</p>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=488" target="_blank" rel="noopener">▶ Watch this step (8:08)</a></p>
+                <p><strong>Option C: Pi-hole as the DHCP server.</strong> If the router can’t change DNS at all, turn <strong>off</strong> DHCP on the router, then enable it in Pi-hole under <strong>Settings → DHCP</strong> (set the address range and the router’s IP as the gateway). Only ever run <strong>one</strong> DHCP server on a network.</p>
+                <p>Once devices switch over, their IP addresses start appearing in the Query Log.</p>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Devices can still bypass Pi-hole: phones with <strong>Private DNS</strong> (Android), browsers with <strong>secure DNS / DNS-over-HTTPS</strong> turned on, and devices with hard-coded DNS. Turn those settings off on devices you want covered.</div></div>
+            </div>
+
+            <div id="pihole-local-dns">
+                <h3>Step 7: Local DNS Records for Your Home Lab</h3>
+                <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=500" target="_blank" rel="noopener">▶ Watch this step (8:20)</a></p>
+                <p>Stop memorizing IP addresses: <strong>Local DNS → DNS Records</strong>, enter a <strong>Domain</strong> and the device’s <strong>IP</strong>, and click <strong>Add</strong>.</p>
+                <table>
+                    <thead><tr><th>Domain</th><th>IP</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>ubuntu-server.home.arpa</code></td><td><code>192.168.1.93</code></td></tr>
+                        <tr><td><code>pihole.home.arpa</code></td><td><code>PIHOLE-IP</code></td></tr>
+                        <tr><td><code>nas.home.arpa</code></td><td><code>192.168.1.50</code></td></tr>
+                    </tbody>
+                </table>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code># from any device that uses Pi-hole
+ping ubuntu-server.home.arpa
+ssh YOURUSER@ubuntu-server.home.arpa</code></pre>
+                    </div>
+                </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>The video uses <code>.local</code> names. That works, but <code>.local</code> is reserved for mDNS (Bonjour/Avahi), so Apple devices and some Linux machines may resolve it differently. <code>home.arpa</code> is the officially reserved suffix for home networks; <code>.lan</code> is also common. Use <strong>CNAME Records</strong> (same menu) to give one machine several names, e.g. <code>jellyfin.home.arpa → ubuntu-server.home.arpa</code>.</div></div>
+            </div>
+
+            <div id="pihole-lists">
+                <h3>Managing Blocklists, Allowlists and Updates</h3>
+                <ul>
+                    <li><strong>Add a blocklist:</strong> <strong>Lists</strong> (v5: Adlists) → paste the list URL → Add, then update gravity so it downloads. Start with the default list; adding many aggressive lists blocks more but breaks more sites.</li>
+                    <li><strong>A site broke?</strong> Open the Query Log, find the blocked domain from your device around that time, and click <strong>Allow</strong>. Or add it under <strong>Domains</strong>.</li>
+                    <li><strong>Block one extra domain:</strong> <strong>Domains</strong> → add it to the denylist.</li>
+                    <li><strong>Pause blocking</strong> for troubleshooting from the dashboard menu, or from the command line below.</li>
+                </ul>
+                <table>
+                    <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>pihole status</code></td><td>Is Pi-hole running and blocking?</td></tr>
+                        <tr><td><code>pihole -v</code></td><td>Show installed versions.</td></tr>
+                        <tr><td><code>sudo pihole -up</code></td><td>Update Pi-hole (bare-metal installs; for Docker, pull a new image).</td></tr>
+                        <tr><td><code>sudo pihole -g</code></td><td>Update gravity: re-download all blocklists.</td></tr>
+                        <tr><td><code>pihole -t</code></td><td>Watch queries live in the terminal (<kbd>Ctrl</kbd>+<kbd>C</kbd> to stop).</td></tr>
+                        <tr><td><code>pihole disable 5m</code> / <code>pihole enable</code></td><td>Pause blocking for 5 minutes, then turn it back on.</td></tr>
+                        <tr><td><code>pihole -q example.com</code></td><td>Which list (if any) blocks this domain?</td></tr>
+                        <tr><td><code>pihole restartdns</code></td><td>Restart the DNS service after changes.</td></tr>
+                        <tr><td><code>pihole -d</code></td><td>Generate a debug log to share when asking for help.</td></tr>
+                    </tbody>
+                </table>
+                <p>Update Debian itself regularly too:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt update &amp;&amp; sudo apt upgrade -y</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pihole-extras">
+                <h3>Security and Optional Extras</h3>
+                <ul>
+                    <li><strong>Never expose port 53 to the internet.</strong> An open DNS resolver gets abused in DDoS attacks. Keep Pi-hole on your LAN, or reach it remotely over a VPN such as <a href="#tailscale">Tailscale</a>, which can push Pi-hole as the DNS server for all your devices away from home.</li>
+                    <li><strong>Back up your settings:</strong> <strong>Settings → Teleporter</strong> exports and import all lists and records. For Docker, back up the <code>etc-pihole</code> folder.</li>
+                    <li><strong>Redundancy:</strong> run a second Pi-hole on another device and set it as the secondary DNS, so blocking keeps working if one goes down.</li>
+                    <li><strong>Unbound (optional):</strong> instead of forwarding to Cloudflare or Google, Pi-hole can use a local <strong>Unbound</strong> recursive resolver that asks the root servers directly, so no single upstream provider sees all your lookups. See the official “Pi-hole as All-Around DNS Solution” guide.</li>
+                </ul>
+            </div>
+
+            <div id="pihole-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <table>
+                    <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>No internet names resolve after switching</td><td>Pi-hole is down or unreachable. Check <code>pihole status</code>, ping its IP, and confirm the IP didn’t change (Step 2).</td></tr>
+                        <tr><td>Ads still show up</td><td>The device may be using a backup DNS, Private DNS or DNS-over-HTTPS; same-domain ads (YouTube) can’t be blocked by DNS. Flush the device’s DNS cache (<code>ipconfig /flushdns</code>) and hard-refresh.</td></tr>
+                        <tr><td>A website or app stopped working</td><td>Find the blocked domain in the Query Log and allow it, or pause blocking briefly to confirm Pi-hole is the cause.</td></tr>
+                        <tr><td>Query Log only shows the router</td><td>The router is forwarding all DNS (Option B). Set Pi-hole as the DNS in the router’s <em>DHCP</em> settings instead.</td></tr>
+                        <tr><td>Docker: “address already in use” on port 53</td><td>Disable the <code>systemd-resolved</code> stub listener (see the Docker notes).</td></tr>
+                        <tr><td>Can’t open the admin page</td><td>Use <code>http://PIHOLE-IP/admin</code> (or port 8080 for the Docker example). Reset the password with <code>sudo pihole setpassword</code>.</td></tr>
+                        <tr><td>Local names don’t resolve</td><td>The device isn’t using Pi-hole for DNS, or you’re using <code>.local</code>; try <code>.home.arpa</code> instead.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="html-section">
