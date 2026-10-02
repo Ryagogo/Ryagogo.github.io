@@ -230,6 +230,7 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Pi-Hole <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#pihole-example-values">Example Values</a>
       <a class="nav-sub-link" href="#pihole-what">What Pi-hole Does</a>
       <a class="nav-sub-link" href="#pihole-hardware">Choosing Hardware</a>
       <a class="nav-sub-link" href="#pihole-os">1. Prepare the Server</a>
@@ -2119,7 +2120,7 @@ cd ~/docker/npm</code></pre>
                     </div>
                 </div>
                 <p>Save with <code>Ctrl + O</code>, <code>Enter</code>, and exit with <code>Ctrl + X</code>.</p>
-                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>Optional: GoAccess traffic stats.</strong> The video’s Compose file also includes a GoAccess container that reads NPM’s logs and shows who is visiting your sites. It is not required; skip it if you do not want it. To add it, paste this under <code>services:</code> (indented two spaces, like <code>npm:</code>) and open <code>http://SERVER-IP:7880</code> afterwards.</div></div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>Optional: GoAccess traffic stats.</strong> The video’s Compose file also includes a GoAccess container that reads NPM’s logs and shows who is visiting your sites. It is not required; skip it if you do not want it. To add it, paste this under <code>services:</code> (indented two spaces, like <code>npm:</code>) and open <code>http://192.168.1.51:7880</code> (your server’s IP) afterwards.</div></div>
                 <div class="code-container">
                     <div class="code-header">
                         <span>yaml</span>
@@ -2162,7 +2163,7 @@ sudo docker compose ps</code></pre>
                 <p>The first start pulls the images, then the status shows <strong>running</strong>.</p>
                 <h4>Step 4: Log in and create your admin account</h4>
                 <p class="video-step"><a href="https://youtu.be/AwJXizTdth0?t=235" target="_blank" rel="noopener">▶ Watch this step (3:55)</a></p>
-                <p>Open <code>http://localhost:81</code> on the server, or <code>http://SERVER-IP:81</code> from another computer on your network.</p>
+                <p>Open <code>http://localhost:81</code> on the server, or <code>http://192.168.1.51:81</code> (your server’s IP) from another computer on your network.</p>
                 <ul>
                     <li>Log in with the default <strong>Email:</strong> <code>admin@example.com</code> and <strong>Password:</strong> <code>changeme</code>.</li>
                     <li>NPM immediately asks you to change the name, email and password. Use your real email and a strong password.</li>
@@ -4081,6 +4082,20 @@ sudo mdadm --zero-superblock /dev/sdb /dev/sdc</code></pre>
                     referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/Zbg1M-u_l3w" target="_blank" rel="noopener">https://youtu.be/Zbg1M-u_l3w</a></p>
 
+            <div id="pihole-example-values">
+                <h3>Example Values Used in the Commands</h3>
+                <p>The commands below use one consistent example setup so you can see exactly what goes where. The video doesn’t show its Pi-hole’s IP or username, so these are example values; change only these before pasting:</p>
+                <table>
+                    <thead><tr><th>Value in the commands</th><th>What it is</th><th>Where you get yours</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>haven</code></td><td>Username on the Pi-hole server</td><td>The account you created when installing Debian (run <code>whoami</code> to see it)</td></tr>
+                        <tr><td><code>192.168.1.53</code></td><td>The Pi-hole server’s IP address</td><td>Found with <code>ip a</code> in Step 1, then kept fixed in Step 2</td></tr>
+                        <tr><td><code>192.168.1.93</code></td><td>Another home-lab machine (the video’s Ubuntu server)</td><td>Any device you want a local name for</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>The <code>ssh</code> and <code>nslookup</code> commands are typed <strong>on your own computer</strong>. Once you’re connected over SSH, every other command runs <strong>on the Pi-hole server</strong>.</div></div>
+            </div>
+
             <div id="pihole-what">
                 <h3>What Pi-hole Does</h3>
                 <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=35" target="_blank" rel="noopener">▶ Watch this step (0:35)</a></p>
@@ -4151,7 +4166,7 @@ ip a</code></pre>
                 </div>
                 <h4>Give your user sudo rights and switch to SSH</h4>
                 <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=310" target="_blank" rel="noopener">▶ Watch this step (5:10)</a></p>
-                <p>Now you can unplug the monitor and keyboard and connect from another computer over <a href="#ssh">SSH</a>. Replace <code>YOURUSER</code> with the account you created during install:</p>
+                <p>Now you can unplug the monitor and keyboard and connect from another computer over <a href="#ssh">SSH</a>. The example user is <code>haven</code> and the server is <code>192.168.1.53</code>; use your own values from the table above:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash</span>
@@ -4160,9 +4175,9 @@ ip a</code></pre>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>ssh YOURUSER@SERVER-IP
+<pre><code>ssh haven@192.168.1.53
 su -
-usermod -aG sudo YOURUSER
+usermod -aG sudo haven
 exit</code></pre>
                     </div>
                 </div>
@@ -4219,7 +4234,7 @@ exit</code></pre>
                         <tr><td>Privacy mode (FTL)</td><td>Show everything (0)</td><td>Shows device and domain names in the logs; choose a higher level to hide them.</td></tr>
                     </tbody>
                 </table>
-                <p>When it finishes, it shows the admin address (<code>http://SERVER-IP/admin</code>) and a random password.</p>
+                <p>When it finishes, it shows the admin address (<code>http://192.168.1.53/admin</code>) and a random password.</p>
                 <h4>Set your own admin password</h4>
                 <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=404" target="_blank" rel="noopener">▶ Watch this step (6:44)</a></p>
                 <div class="code-container">
@@ -4258,7 +4273,7 @@ sudo pihole -a -p</code></pre>
     ports:
       - &quot;53:53/tcp&quot;
       - &quot;53:53/udp&quot;
-      - &quot;8080:80/tcp&quot;      # admin page at http://SERVER-IP:8080/admin
+      - &quot;8080:80/tcp&quot;      # admin page at http://192.168.1.53:8080/admin
     environment:
       TZ: &quot;America/New_York&quot;
       FTLCONF_webserver_api_password: &quot;CHANGE-ME&quot;
@@ -4287,7 +4302,7 @@ sudo docker logs -f pihole</code></pre>
             <div id="pihole-admin">
                 <h3>Step 4: Tour the Admin Page</h3>
                 <p class="video-step"><a href="https://youtu.be/Zbg1M-u_l3w?t=414" target="_blank" rel="noopener">▶ Watch this step (6:54)</a></p>
-                <p>Open <code>http://SERVER-IP/admin</code> and sign in.</p>
+                <p>Open <code>http://192.168.1.53/admin</code> and sign in.</p>
                 <table>
                     <thead><tr><th>Page</th><th>What it’s for</th></tr></thead>
                     <tbody>
@@ -4320,8 +4335,8 @@ sudo docker logs -f pihole</code></pre>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>nslookup doubleclick.net PIHOLE-IP
-nslookup google.com PIHOLE-IP</code></pre>
+<pre><code>nslookup doubleclick.net 192.168.1.53
+nslookup google.com 192.168.1.53</code></pre>
                     </div>
                 </div>
             </div>
@@ -4347,8 +4362,8 @@ nslookup google.com PIHOLE-IP</code></pre>
                     <thead><tr><th>Domain</th><th>IP</th></tr></thead>
                     <tbody>
                         <tr><td><code>ubuntu-server.home.arpa</code></td><td><code>192.168.1.93</code></td></tr>
-                        <tr><td><code>pihole.home.arpa</code></td><td><code>PIHOLE-IP</code></td></tr>
-                        <tr><td><code>nas.home.arpa</code></td><td><code>192.168.1.50</code></td></tr>
+                        <tr><td><code>pihole.home.arpa</code></td><td><code>192.168.1.53</code></td></tr>
+                        <tr><td><code>nas.home.arpa</code></td><td><code>192.168.1.51</code></td></tr>
                     </tbody>
                 </table>
                 <div class="code-container">
@@ -4361,7 +4376,7 @@ nslookup google.com PIHOLE-IP</code></pre>
                     <div class="code-scroll-wrapper">
 <pre><code># from any device that uses Pi-hole
 ping ubuntu-server.home.arpa
-ssh YOURUSER@ubuntu-server.home.arpa</code></pre>
+ssh haven@ubuntu-server.home.arpa</code></pre>
                     </div>
                 </div>
                 <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>The video uses <code>.local</code> names. That works, but <code>.local</code> is reserved for mDNS (Bonjour/Avahi), so Apple devices and some Linux machines may resolve it differently. <code>home.arpa</code> is the officially reserved suffix for home networks; <code>.lan</code> is also common. Use <strong>CNAME Records</strong> (same menu) to give one machine several names, e.g. <code>jellyfin.home.arpa → ubuntu-server.home.arpa</code>.</div></div>
@@ -4423,7 +4438,7 @@ ssh YOURUSER@ubuntu-server.home.arpa</code></pre>
                         <tr><td>A website or app stopped working</td><td>Find the blocked domain in the Query Log and allow it, or pause blocking briefly to confirm Pi-hole is the cause.</td></tr>
                         <tr><td>Query Log only shows the router</td><td>The router is forwarding all DNS (Option B). Set Pi-hole as the DNS in the router’s <em>DHCP</em> settings instead.</td></tr>
                         <tr><td>Docker: “address already in use” on port 53</td><td>Disable the <code>systemd-resolved</code> stub listener (see the Docker notes).</td></tr>
-                        <tr><td>Can’t open the admin page</td><td>Use <code>http://PIHOLE-IP/admin</code> (or port 8080 for the Docker example). Reset the password with <code>sudo pihole setpassword</code>.</td></tr>
+                        <tr><td>Can’t open the admin page</td><td>Use <code>http://192.168.1.53/admin</code> (or port 8080 for the Docker example). Reset the password with <code>sudo pihole setpassword</code>.</td></tr>
                         <tr><td>Local names don’t resolve</td><td>The device isn’t using Pi-hole for DNS, or you’re using <code>.local</code>; try <code>.home.arpa</code> instead.</td></tr>
                     </tbody>
                 </table>
