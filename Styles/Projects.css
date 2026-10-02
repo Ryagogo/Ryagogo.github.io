@@ -48,6 +48,14 @@ body {
   padding: 4px 10px;
   border-radius: 4px;
 }
+#topbar .site-badge {
+  display: inline-flex;
+  flex-shrink: 0;
+  border-radius: 9px;
+  line-height: 0;
+}
+#topbar .site-badge img { width: 34px; height: 34px; border-radius: 9px; box-shadow: 0 0 0 1px rgba(255,255,255,0.18); }
+#topbar .site-badge:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 #topbar h1 {
   font-size: 16px;
   font-weight: 600;
