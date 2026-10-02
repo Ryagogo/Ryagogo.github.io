@@ -1023,7 +1023,14 @@ td.red-border-cell:nth-child(4) {
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Promotion Macro <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#promotion-macro">Promotion Macro</a>
+      <a class="nav-sub-link" href="#promotion-macro">Overview &amp; Downloads</a>
+      <a class="nav-sub-link" href="#promo-before">Before You Run It</a>
+      <a class="nav-sub-link" href="#promo-fill">1. Fill In the DOF</a>
+      <a class="nav-sub-link" href="#promo-run">2. Export &amp; Prompts</a>
+      <a class="nav-sub-link" href="#promo-email">3. Review &amp; Send Email</a>
+      <a class="nav-sub-link" href="#promo-tracker">4. Check the Tracker</a>
+      <a class="nav-sub-link" href="#promo-troubleshooting">Troubleshooting</a>
+      <a class="nav-sub-link" href="#promo-code">The Code</a>
       <a class="nav-sub-link" href="#sale-fact-tags">Sale Fact Tags</a>
     </div>
   </div>
@@ -1076,8 +1083,75 @@ td.red-border-cell:nth-child(4) {
     <!-- PROMOTION MACRO -->
     <div class="section" id="promotion-macro">
       <h2>Promotion Macro</h2>
+      <p>The Promotion Macro turns a vendor’s <strong>Navy Deal Offer Form (DOF)</strong> into a ready-to-key START promotion template in one click. When you click <strong>Export Promotion</strong> it:</p>
+      <ol>
+        <li>Builds the START promotion template rows (item, zone, fixed price, retail, comments).</li>
+        <li>Logs the promotion to the brand’s tab in the <a href="#buyer-promo-tracker">Buyer Promo Tracker</a> and checks for <strong>overlapping promotions</strong>.</li>
+        <li>Optionally loads the items into the <a href="#sale-fact-tags">Fact Tags</a> workbook for sale signs.</li>
+        <li>Saves the template to the shared promotions folder, split into one file per month for long promotions.</li>
+        <li>Drafts the Outlook email to the right team with the file attached, ready for you to review and send.</li>
+      </ol>
+      <p class="file-link"><a href="Files/Promotion_Macro_2026.xlsm" download>Promotion Macro (2026)</a></p>
+      <p class="file-link"><a href="Files/Buyer_Promo_Tracker_2026.xlsm" download>Buyer Promo Tracker 2026</a></p>
+      <div class="note">Save both workbooks to a shared path your team can access. The macro opens the START template, the tracker and the Fact Tags workbook from the paths in its <code>CONFIGURATION</code> section, so update those paths to your team’s folders first (see <a href="#assign-tracker-path">Assign Tracker Path</a>).</div>
 
-        <p class="file-link"><a href="Files/Promotion-Macro.xlsm">Promotion Macro</a> (Save to shared path your team can access)</p>
+      <h3 id="promo-before">Before You Run It</h3>
+      <ul>
+        <li><strong>Brand tab exists in the tracker.</strong> The tracker must have a tab named <em>exactly</em> like the vendor/brand name you enter in the macro (e.g. <code>MSI</code>). See <a href="#brand-tabbing">Brand Tabbing</a>.</li>
+        <li><strong>Paths are set.</strong> The START template, tracker and Fact Tags paths in the code point to files you can open.</li>
+        <li><strong>Outlook is installed and signed in</strong>, so the macro can draft the email.</li>
+        <li><strong>Close the tracker</strong> on other computers if possible. The macro saves it, and a copy someone else has open will be read-only.</li>
+      </ul>
+
+      <h3 id="promo-fill">Step 1: Fill In the Deal Offer Form</h3>
+      <p>Paste or type the vendor’s DOF into the macro workbook. The yellow cells are inputs; the red boxes next to the arrows are the cells the macro reads for the brand, your ID and the buyer number.</p>
+      <img src="Pictures/Coding/Promotion Macro/Deal-Offer-Form.png" alt="Promotion Macro workbook: Navy Deal Offer Form with header fields, Export Promotion button, vendor name, submitted-by ID and buyer number boxes, and item rows" loading="lazy">
+<div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Field (cell)</th><th>Required?</th><th>What to enter</th><th>Where the macro uses it</th></tr></thead><tbody><tr><td><strong>Start Date</strong> (B14)</td><td>Yes</td><td>First day of the promotion</td><td>START template, tracker, Fact Tags, file name</td></tr><tr><td><strong>End Date</strong> (D14)</td><td>Yes</td><td>Last day of the promotion</td><td>Same as above; promotions over 31 days are split by month</td></tr><tr><td><strong>Input Vendor Name Here</strong> (C26)</td><td>Yes</td><td>Brand name, spelled exactly like the tracker tab (e.g. <code>MSI</code>)</td><td>Tracker tab, folder name, file name, email</td></tr><tr><td><strong>Submitted By ID</strong> (D26)</td><td>Yes</td><td>Your user ID</td><td>Template “Submitted By ID” (K2)</td></tr><tr><td><strong>Input Buyer Number Here</strong> (C27)</td><td>Yes</td><td>Buyer number</td><td>Template “Buyer ID” (G2)</td></tr></tbody></table></div>
+      <p><strong>Item rows</strong> start on row 30 (one item per row, up to row 333):</p>
+<div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>DOF column</th><th>Required?</th><th>Goes to</th></tr></thead><tbody><tr><td><strong>Navy RIN#</strong> (D)</td><td>Yes</td><td>Template/tracker <em>Item ID</em> (M) and Fact Tags item</td></tr><tr><td><strong>Reg Sell</strong> (F)</td><td>Yes</td><td>Template/tracker <em>Current Retail</em> (AB) and Fact Tags</td></tr><tr><td><strong>Promo Sell</strong> (G)</td><td>Yes, <strong>fixed price</strong></td><td>Template/tracker <em>Fixed Price</em> (W) and Fact Tags</td></tr><tr><td>Model/Description (B)</td><td>Optional</td><td>Template/tracker <em>Comments</em> (AA)</td></tr><tr><td>Scanback $ (I)</td><td>Optional</td><td>Tracker <em>TC/IR</em> (AC), used for trailing credit</td></tr><tr><td>UPC, Parent RIN, Reg Cost, Qty Sold, etc.</td><td>Optional</td><td>Not used by the macro; kept for reference</td></tr></tbody></table></div>
+      <div class="note red-note"><span class="red underline">Promo Sell must be a fixed price</span>, not a percent or dollar amount off. Double-check the prices before exporting, especially <strong>.00 endings</strong>. Every row is keyed as Item level, Zone <code>3391</code>, <em>Fixed Price</em>, applied to <em>Both Regular and Clearance</em>.</div>
+
+      <h3 id="promo-run">Step 2: Click Export Promotion and Answer the Two Questions</h3>
+<div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Question</th><th>Yes</th><th>No</th></tr></thead><tbody><tr><td><strong>Will you send promotion now?</strong></td><td>File saved to <code>…\2026\[Brand]\[Month]\</code>, tracker <em>Sent to START?</em> = Yes, and an email is drafted.</td><td>File saved to <code>…\2026\Send Later\[Month]\[Brand]\</code>, tracker <em>Sent to START?</em> = No, and <strong>no email</strong>. Send it yourself later.</td></tr><tr><td><strong>Do you want to generate sale tags?</strong></td><td>RINs, regular and promo prices, and dates are loaded into the <em>Sale Master</em> sheet of the Fact Tags workbook (see <a href="#sale-fact-tags">Sale Fact Tags</a>).</td><td>Fact Tags workbook is not touched.</td></tr></tbody></table></div>
+      <p>The macro then runs on its own. Here’s what happens, in order:</p>
+      <ol>
+        <li><strong>Builds the template.</strong> Opens the START promotion template and fills one row per item.</li>
+        <li><strong>Logs to the tracker.</strong> Opens the Buyer Promo Tracker, finds the tab named after the brand, adds the rows under the last entry with the promo dates, scanback $ and the Sent to START answer, then saves the tracker.</li>
+        <li><strong>Checks for overlaps.</strong> The tracker’s <em>Overlap Check</em> column (C) flags any item already on promotion for those dates. If any row says <strong>Overlap</strong>, you’ll see <em>“Overlap Detected! Check Tracker.”</em> and the macro <strong>stops</strong>: no file is saved and no email is drafted.</li>
+        <li><strong>Loads Fact Tags</strong> (if you said Yes).</li>
+        <li><strong>Saves the file(s).</strong> The file is named <code>m.d.yy-m.d.yy Brand Month Promotion.xlsx</code>, e.g. <code>3.1.26-3.31.26 MSI March Promotion.xlsx</code>. Missing brand/month folders are created automatically.</li>
+        <li><strong>Drafts the email</strong> (if sending now) and shows <em>“Process Complete.”</em></li>
+      </ol>
+      <div class="note"><strong>Long promotions are split by month.</strong> If the promotion runs longer than 31 days, the macro creates one file (and one email) per calendar month. Example: 3/15/26–5/10/26 produces <code>3.15.26-3.31.26 … March</code>, <code>4.1.26-4.30.26 … April</code> and <code>5.1.26-5.10.26 … May</code>.</div>
+      <div class="note red-note"><strong>If an overlap is detected:</strong> the new rows have already been added to the tracker (that’s how the overlap was found). Look at the brand tab, fix the dates or items, <strong>delete the rows the macro just added</strong>, then run the macro again.</div>
+
+      <h3 id="promo-email">Step 3: Review and Send the Email</h3>
+      <p>When you choose to send now, Outlook opens a draft for each file. The macro picks the recipient from how soon the promotion starts:</p>
+<div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Promotion starts</th><th>Sent to</th><th>Subject</th></tr></thead><tbody><tr><td>Within 7 days of today</td><td>DMM (<span class="redacted" title="Redacted for privacy">Name Redacted</span>)</td><td><code>URGENT Pricing - [file name]</code></td></tr><tr><td>More than 7 days out</td><td>S.T.A.R.T. team</td><td><code>BP - [file name]</code></td></tr></tbody></table></div>
+      <div class="email-preview">
+        <div class="ep-toolbar">BP - 3.1.26-3.31.26 MSI March Promotion — Message (Plain Text)</div>
+        <div class="ep-field"><span class="ep-label">To</span><span>SUPPORT TECH ACTION RESPONSE TEAM</span></div>
+        <div class="ep-field"><span class="ep-label">Cc</span><span></span></div>
+        <div class="ep-field"><span class="ep-label">Subject</span><span>BP - 3.1.26-3.31.26 MSI March Promotion</span></div>
+        <div class="ep-field"><span class="ep-label">Attach</span><span class="attach-pill">📎 3.1.26-3.31.26 MSI March Promotion.xlsx &nbsp;92 KB</span></div>
+        <div class="ep-body">Hello,<br><br>Attached is the promotion file for MSI during March.</div>
+      </div>
+      <ol>
+        <li>Open the attached file and <span class="underline">verify the START template</span>: items, fixed prices, dates, buyer ID and submitted-by ID.<br><span class="red">*The template always applies “Both Regular and Clearance”.</span></li>
+        <li>Click <strong>Send</strong>. The email is only drafted, never sent automatically.</li>
+      </ol>
+
+      <h3 id="promo-tracker">Step 4: Check the Tracker</h3>
+      <p>Each promotion is logged to the brand’s tab in the Buyer Promo Tracker, which the macro saves automatically:</p>
+      <img src="Pictures/Coding/Promotion Macro/Tracker-Brand-Tab.png" alt="Buyer Promo Tracker brand tab with promotion header fields, Generate RPC and Sales Units Update buttons, and promotion component columns" loading="lazy">
+<div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Tracker column</th><th>Filled with</th></tr></thead><tbody><tr><td><strong>Overlap Check</strong> (C)</td><td>Calculated: shows <strong>Overlap</strong> if the item is already on promotion for those dates</td></tr><tr><td>DTL Start / End Date (G–H)</td><td>Promotion start and end dates</td></tr><tr><td>Item Level (I), Location Type (P), Zone ID (R), Change Type (T), Apply To (Y)</td><td><code>Item</code>, <code>Zone</code>, <code>3391</code>, <code>Fixed Price</code>, <code>Both Regular and Clearance</code></td></tr><tr><td>Item ID (M)</td><td>Navy RIN</td></tr><tr><td>Fixed Price (W)</td><td>Promo Sell</td></tr><tr><td>Comments (AA)</td><td>Model/Description</td></tr><tr><td>Current Retail (AB)</td><td>Reg Sell</td></tr><tr><td>TC/IR (AC)</td><td>Scanback $</td></tr><tr><td>Sent to START? (AF)</td><td><code>Yes</code> or <code>No</code> from the first question</td></tr><tr><td>Units Sold / Trailing Credit (AG–AH)</td><td>Filled later with <a href="#sales-update-button">Sales Units Update</a>; trailing credit = TC/IR × units sold</td></tr></tbody></table></div>
+      <div class="note"><strong>Sent it later?</strong> Promotions saved with “No” are in <code>…\2026\Send Later\[Month]\[Brand]\</code>. When you send one, email the file yourself and change <em>Sent to START?</em> to <code>Yes</code> on the tracker.</div>
+
+      <h3 id="promo-troubleshooting">Troubleshooting</h3>
+<div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td><em>“Overlap Detected! Check Tracker.”</em></td><td>An item is already on promotion for those dates. Review column C on the brand tab, delete the rows just added, fix the DOF and run again.</td></tr><tr><td>Nothing was logged to the tracker</td><td>The brand name in C26 doesn’t match a tracker tab exactly (spaces and spelling count), or the tracker path is wrong.</td></tr><tr><td>Error opening the template, tracker or Fact Tags file</td><td>A path in the <code>CONFIGURATION</code> section is wrong or you don’t have access to that folder.</td></tr><tr><td>Wrong or missing items</td><td>Item rows must start on row 30 with no blank rows in between; the macro stops at the last filled row in columns B–G.</td></tr><tr><td>Wrong dates or file names</td><td>Enter real dates in B14 and D14 (not text).</td></tr><tr><td>No email appeared</td><td>You answered <em>No</em> to “send now”, or Outlook isn’t open/signed in.</td></tr></tbody></table></div>
+
+      <h3 id="promo-code">The Code</h3>
+      <p>The macro behind the <strong>Export Promotion</strong> button. Network paths and email addresses are redacted; replace them with your team’s.</p>
 <div class="code-container">
     <div class="code-header">
         <span>VBA</span>
@@ -1093,14 +1167,16 @@ td.red-border-cell:nth-child(4) {
     
     <div class="code-wrapper">
 <pre><code><span class="vba-keyword">Sub</span> VendorDOF()
-    <span class="vba-keyword">Dim</span> SourceWB <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>, TemplateWB <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>, FactMasterWB <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>
-    <span class="vba-keyword">Dim</span> SaveFolderPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>, FileName <span class="vba-keyword">As</span> <span class="vba-type">String</span>, FullSavePath <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> SourceWB <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>, TemplateWB <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>, TrackerWB <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>
+    <span class="vba-keyword">Dim</span> FactMasterWB <span class="vba-keyword">As</span> <span class="vba-type">Workbook</span>
+    <span class="vba-keyword">Dim</span> BaseSavePath <span class="vba-keyword">As</span> <span class="vba-type">String</span>, SaveFolderPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>, FileName <span class="vba-keyword">As</span> <span class="vba-type">String</span>, FullSavePath <span class="vba-keyword">As</span> <span class="vba-type">String</span>
     <span class="vba-keyword">Dim</span> OutApp <span class="vba-keyword">As</span> <span class="vba-type">Object</span>, OutMail <span class="vba-keyword">As</span> <span class="vba-type">Object</span>
-    <span class="vba-keyword">Dim</span> TemplatePath <span class="vba-keyword">As</span> <span class="vba-type">String</span>, FactMasterPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> TemplatePath <span class="vba-keyword">As</span> <span class="vba-type">String</span>, TrackerPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>, FactMasterPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>
     <span class="vba-keyword">Dim</span> LastDataRow <span class="vba-keyword">As</span> <span class="vba-type">Long</span>, i <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
     <span class="vba-keyword">Dim</span> DateDiffVal <span class="vba-keyword">As</span> <span class="vba-type">Long</span>, TotalDuration <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
     <span class="vba-keyword">Dim</span> EmailTo <span class="vba-keyword">As</span> <span class="vba-type">String</span>, EmailSubject <span class="vba-keyword">As</span> <span class="vba-type">String</span>, EmailBody <span class="vba-keyword">As</span> <span class="vba-type">String</span>
-    <span class="vba-keyword">Dim</span> BrandName <span class="vba-keyword">As</span> <span class="vba-type">String</span>, PromoMonth <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> BrandName <span class="vba-keyword">As</span> <span class="vba-type">String</span>, PromoMonth <span class="vba-keyword">As</span> <span class="vba-type">String</span>, PromoDates <span class="vba-keyword">As</span> <span class="vba-type">String</span>
+    <span class="vba-keyword">Dim</span> OverlapFound <span class="vba-keyword">As</span> <span class="vba-type">Boolean</span>
     <span class="vba-keyword">Dim</span> SendNowResponse <span class="vba-keyword">As</span> <span class="vba-type">VbMsgBoxResult</span>, FactTagResponse <span class="vba-keyword">As</span> <span class="vba-type">VbMsgBoxResult</span>
     
     <span class="vba-keyword">Dim</span> StartDate <span class="vba-keyword">As</span> <span class="vba-type">Date</span>, EndDate <span class="vba-keyword">As</span> <span class="vba-type">Date</span>
@@ -1123,8 +1199,9 @@ td.red-border-cell:nth-child(4) {
     TotalDuration = EndDate - StartDate
     
     <span class="vba-comment">' --- CONFIGURATION ---</span>
-    TemplatePath = "<span class="redacted" title="Redacted for privacy">\\server\share\folder</span>"
-    FactMasterPath = "<span class="redacted" title="Redacted for privacy">X:\shared\folder</span>"
+    TemplatePath = "<span class="redacted" title="Redacted for privacy">\\SERVER\Shared\Templates\Promotion Template.xlsx</span>"
+    TrackerPath = "<span class="redacted" title="Redacted for privacy">\\SERVER\Buyer Promos\2026\Buyer Promo Tracker 2026.xlsm</span>"
+    FactMasterPath = "<span class="redacted" title="Redacted for privacy">\\SERVER\Fact Tags\Fact Tags V4.xlsm</span>"
 
     LastDataRow = SourceWB.Worksheets(1).Range("B30:G333").Find("*", SearchOrder:=xlByRows, SearchDirection:=xlPrevious).Row
     <span class="vba-keyword">If</span> LastDataRow &lt; 30 <span class="vba-keyword">Then</span> LastDataRow = 30
@@ -1141,32 +1218,65 @@ td.red-border-cell:nth-child(4) {
             .Cells(i, "Y").Value = "Both Regular and Clearance"
         <span class="vba-keyword">Next</span> i
         .Range("M14:M317, W14:W317, AA14:AA317, AB14:AB317").UnMerge
-        SourceWB.Worksheets(1).Range("D30:D" & LastDataRow).Copy: .Range("M14").PasteSpecial xlPasteValues
-        SourceWB.Worksheets(1).Range("G30:G" & LastDataRow).Copy: .Range("W14").PasteSpecial xlPasteValues
-        SourceWB.Worksheets(1).Range("B30:B" & LastDataRow).Copy: .Range("AA14").PasteSpecial xlPasteValues
-        SourceWB.Worksheets(1).Range("F30:F" & LastDataRow).Copy: .Range("AB14").PasteSpecial xlPasteValues
+        SourceWB.Worksheets(1).Range("D30:D" &amp; LastDataRow).Copy: .Range("M14").PasteSpecial xlPasteValues
+        SourceWB.Worksheets(1).Range("G30:G" &amp; LastDataRow).Copy: .Range("W14").PasteSpecial xlPasteValues
+        SourceWB.Worksheets(1).Range("B30:B" &amp; LastDataRow).Copy: .Range("AA14").PasteSpecial xlPasteValues
+        SourceWB.Worksheets(1).Range("F30:F" &amp; LastDataRow).Copy: .Range("AB14").PasteSpecial xlPasteValues
     <span class="vba-keyword">End With</span>
 
-    <span class="vba-comment">' --- PART 2: UPDATE FACT TAGS ONCE ---</span>
+    <span class="vba-comment">' --- PART 2: UPDATE TRACKER ONCE ---</span>
+    <span class="vba-keyword">On Error Resume Next</span>
+    <span class="vba-keyword">Set</span> TrackerWB = Workbooks(Dir(TrackerPath))
+    <span class="vba-keyword">If</span> TrackerWB <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span> <span class="vba-keyword">Set</span> TrackerWB = Workbooks.Open(TrackerPath)
+    <span class="vba-keyword">On Error GoTo</span> 0
+    
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> TrackerWB <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+        <span class="vba-keyword">Dim</span> TargetSheet <span class="vba-keyword">As</span> <span class="vba-type">Worksheet</span>
+        <span class="vba-keyword">Set</span> TargetSheet = TrackerWB.Worksheets(BrandName)
+        <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> TargetSheet <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
+            <span class="vba-keyword">Dim</span> TrackerNextRow <span class="vba-keyword">As</span> <span class="vba-type">Long</span>
+            TrackerNextRow = TargetSheet.Cells(TargetSheet.Rows.Count, "M").End(xlUp).Row + 1
+            TemplateWB.Worksheets(1).Range("G14:AB" &amp; (14 + rowCount)).Copy
+            TargetSheet.Range("G" &amp; TrackerNextRow).PasteSpecial Paste:=xlPasteValues
+            TargetSheet.Range("G" &amp; TrackerNextRow).Resize(rowCount + 1).Value = StartDate
+            TargetSheet.Range("H" &amp; TrackerNextRow).Resize(rowCount + 1).Value = EndDate
+            SourceWB.Worksheets(1).Range("I30:I" &amp; LastDataRow).Copy: TargetSheet.Range("AC" &amp; TrackerNextRow).PasteSpecial Paste:=xlPasteValues
+            TargetSheet.Range("AF" &amp; TrackerNextRow).Resize(rowCount + 1).Value = IIf(SendNowResponse = vbYes, "Yes", "No")
+            Application.Calculate
+            DoEvents
+            <span class="vba-keyword">For</span> i = TrackerNextRow <span class="vba-keyword">To</span> (TrackerNextRow + rowCount)
+                <span class="vba-keyword">If</span> Trim(LCase(TargetSheet.Cells(i, "C").Text)) = "overlap" <span class="vba-keyword">Then</span> OverlapFound = <span class="vba-keyword">True</span>
+            <span class="vba-keyword">Next</span> i
+            TrackerWB.Save
+        <span class="vba-keyword">End If</span>
+    <span class="vba-keyword">End If</span>
+
+    <span class="vba-keyword">If</span> OverlapFound <span class="vba-keyword">Then</span>
+        MsgBox "Overlap Detected! Check Tracker.", vbCritical
+        TemplateWB.Close SaveChanges:=<span class="vba-keyword">False</span>
+        <span class="vba-keyword">GoTo</span> CleanUp
+    <span class="vba-keyword">End If</span>
+
+    <span class="vba-comment">' --- PART 3: UPDATE FACT TAGS ONCE ---</span>
     <span class="vba-keyword">If</span> FactTagResponse = vbYes <span class="vba-keyword">Then</span>
         <span class="vba-keyword">On Error Resume Next</span>
         <span class="vba-keyword">Set</span> FactMasterWB = Workbooks(Dir("Fact Tags V4.xlsm"))
-        <span class="vba-keyword">If</span> FactMasterWB <span class="vba-keyword">Is Nothing Then</span> <span class="vba-keyword">Set</span> FactMasterWB = Workbooks.Open(FactMasterPath)
+        <span class="vba-keyword">If</span> FactMasterWB <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span> <span class="vba-keyword">Set</span> FactMasterWB = Workbooks.Open(FactMasterPath)
         <span class="vba-keyword">On Error GoTo</span> 0
-        <span class="vba-keyword">If Not</span> FactMasterWB <span class="vba-keyword">Is Nothing Then</span>
+        <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> FactMasterWB <span class="vba-keyword">Is</span> <span class="vba-keyword">Nothing</span> <span class="vba-keyword">Then</span>
             <span class="vba-keyword">With</span> FactMasterWB.Worksheets("Sale Master")
                 <span class="vba-keyword">With</span> .Range("D2").Resize(rowCount + 1)
-                    .NumberFormat = "@": .Value = SourceWB.Worksheets(1).Range("D30:D" & LastDataRow).Value
+                    .NumberFormat = "@": .Value = SourceWB.Worksheets(1).Range("D30:D" &amp; LastDataRow).Value
                 <span class="vba-keyword">End With</span>
-                SourceWB.Worksheets(1).Range("F30:F" & LastDataRow).Copy: .Range("L2").PasteSpecial xlPasteValues
-                SourceWB.Worksheets(1).Range("G30:G" & LastDataRow).Copy: .Range("M2").PasteSpecial xlPasteValues
+                SourceWB.Worksheets(1).Range("F30:F" &amp; LastDataRow).Copy: .Range("L2").PasteSpecial xlPasteValues
+                SourceWB.Worksheets(1).Range("G30:G" &amp; LastDataRow).Copy: .Range("M2").PasteSpecial xlPasteValues
                 .Range("H2").Resize(rowCount + 1).Value = StartDate
                 .Range("I2").Resize(rowCount + 1).Value = EndDate
             <span class="vba-keyword">End With</span>
         <span class="vba-keyword">End If</span>
     <span class="vba-keyword">End If</span>
 
-    <span class="vba-comment">' --- PART 3: FILE GENERATION LOOP (SAVES TO DESKTOP) ---</span>
+    <span class="vba-comment">' --- PART 4: FILE GENERATION LOOP ---</span>
     <span class="vba-keyword">Set</span> OutApp = CreateObject("Outlook.Application")
     CurrentStart = StartDate
 
@@ -1181,25 +1291,27 @@ td.red-border-cell:nth-child(4) {
             PromoMonth = Format(StartDate, "mmmm")
         <span class="vba-keyword">End If</span>
         
-        PromoDates = Format(CurrentStart, "m.d.yy") & "-" & Format(CurrentEnd, "m.d.yy")
-        FileName = PromoDates & " " & BrandName & " " & PromoMonth & " Promotion"
+        PromoDates = Format(CurrentStart, "m.d.yy") &amp; "-" &amp; Format(CurrentEnd, "m.d.yy")
+        FileName = PromoDates &amp; " " &amp; BrandName &amp; " " &amp; PromoMonth &amp; " Promotion"
         
-        <span class="vba-comment">' --- DYNAMIC DESKTOP PATH LOGIC ---</span>
-        <span class="vba-keyword">Dim</span> DesktopPath <span class="vba-keyword">As</span> <span class="vba-type">String</span>
-        DesktopPath = CreateObject("WScript.Shell").SpecialFolders("Desktop") & "\"
-        
+        <span class="vba-comment">' --- REVISED DYNAMIC PATHS ---</span>
         <span class="vba-keyword">If</span> SendNowResponse = vbYes <span class="vba-keyword">Then</span>
-            SaveFolderPath = DesktopPath & "Promotions_SendNow\" & BrandName & "\" & PromoMonth & "\"
+            <span class="vba-comment">' Save to: ...\2026\[Brand Name]\[Month]\</span>
+            SaveFolderPath = "<span class="redacted" title="Redacted for privacy">\\SERVER\Buyer Promos\2026\</span>" &amp; BrandName &amp; "\" &amp; PromoMonth &amp; "\"
         <span class="vba-keyword">Else</span>
-            SaveFolderPath = DesktopPath & "Promotions_SendLater\" & PromoMonth & "\" & BrandName & "\"
+            <span class="vba-comment">' Save to: ...\2026\Send Later\[Month]\[Brand Name]\</span>
+            SaveFolderPath = "<span class="redacted" title="Redacted for privacy">\\SERVER\Buyer Promos\2026\</span>Send Later\" &amp; PromoMonth &amp; "\" &amp; BrandName &amp; "\"
         <span class="vba-keyword">End If</span>
         
-        <span class="vba-keyword">If Not</span> fso.FolderExists(SaveFolderPath) <span class="vba-keyword">Then</span> CreateFolderRecursive fso, SaveFolderPath
-        FullSavePath = SaveFolderPath & FileName & ".xlsx"
+        <span class="vba-comment">' Recursive creation ensures the full brand/month tree exists</span>
+        <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> fso.FolderExists(SaveFolderPath) <span class="vba-keyword">Then</span> CreateFolderRecursive fso, SaveFolderPath
+        FullSavePath = SaveFolderPath &amp; FileName &amp; ".xlsx"
 
         <span class="vba-comment">' Update Template Headers</span>
         <span class="vba-keyword">With</span> TemplateWB.Worksheets(1)
+            .Range("C4:I4").UnMerge
             .Range("C4").Value = FileName
+            .Range("C4:I4").Merge
             .Range("K2").Value = SourceWB.Worksheets(1).Range("D26").Value
             .Range("G2").Value = SourceWB.Worksheets(1).Range("C27").Value
             .Range("C6").Value = CurrentStart
@@ -1212,14 +1324,14 @@ td.red-border-cell:nth-child(4) {
 
         <span class="vba-comment">' --- EMAIL ---</span>
         <span class="vba-keyword">If</span> SendNowResponse = vbYes <span class="vba-keyword">Then</span>
-            DateDiffVal = DateDiff("d", Date, CurrentStart)
-            EmailTo = IIf(DateDiffVal &lt;= 7, "<span class="redacted" title="Redacted for privacy">name@company.com</span>", "<span class="redacted" title="Redacted for privacy">name@company.com</span>")
-            EmailSubject = IIf(DateDiffVal &lt;= 7, "URGENT Pricing - ", "BP - ") & FileName
+            DateDiffVal = DateDiff("d", <span class="vba-type">Date</span>, CurrentStart)
+            EmailTo = IIf(DateDiffVal &lt;= 7, "<span class="redacted" title="Redacted for privacy">DMM@example.org</span>", "<span class="redacted" title="Redacted for privacy">START-TEAM@example.org</span>")
+            EmailSubject = IIf(DateDiffVal &lt;= 7, "URGENT Pricing - ", "BP - ") &amp; FileName
             
             <span class="vba-keyword">Set</span> OutMail = OutApp.CreateItem(0)
             <span class="vba-keyword">With</span> OutMail
-                .To = EmailTo: .Subject = EmailSubject
-                .Body = "Hello," & vbCrLf & vbCrLf & "Attached is the promotion file for " & BrandName & " during " & PromoMonth & "."
+                .<span class="vba-keyword">To</span> = EmailTo: .Subject = EmailSubject
+                .Body = "Hello," &amp; vbCrLf &amp; vbCrLf &amp; "Attached is the promotion file for " &amp; BrandName &amp; " during " &amp; PromoMonth &amp; "."
                 .Attachments.Add FullSavePath: .Display
             <span class="vba-keyword">End With</span>
         <span class="vba-keyword">End If</span>
@@ -1234,21 +1346,21 @@ td.red-border-cell:nth-child(4) {
 CleanUp:
     Application.ScreenUpdating = <span class="vba-keyword">True</span>
     Application.CutCopyMode = <span class="vba-keyword">False</span>
-    MsgBox "Process Complete. Files saved to Desktop.", vbInformation
+    MsgBox "Process Complete.", vbInformation
 <span class="vba-keyword">End Sub</span>
 
 <span class="vba-comment">' Recursive Folder Helper</span>
 <span class="vba-keyword">Sub</span> CreateFolderRecursive(fso <span class="vba-keyword">As</span> <span class="vba-type">Object</span>, path <span class="vba-keyword">As</span> <span class="vba-type">String</span>)
-    <span class="vba-keyword">If Not</span> fso.FolderExists(fso.GetParentFolderName(path)) <span class="vba-keyword">Then</span>
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> fso.FolderExists(fso.GetParentFolderName(path)) <span class="vba-keyword">Then</span>
         CreateFolderRecursive fso, fso.GetParentFolderName(path)
     <span class="vba-keyword">End If</span>
-    <span class="vba-keyword">If Not</span> fso.FolderExists(path) <span class="vba-keyword">Then</span> fso.CreateFolder path
+    <span class="vba-keyword">If</span> <span class="vba-keyword">Not</span> fso.FolderExists(path) <span class="vba-keyword">Then</span> fso.CreateFolder path
 <span class="vba-keyword">End Sub</span></code></pre>
     </div>
 
 </div>
-      
-      <p><a href="#">This Workbook Code</a> (Document can't be saved over.)</p>
+
+      <p><strong>ThisWorkbook code</strong> (also in the download): after the first save the workbook locks itself, so the master copy can’t be saved over by accident. Use <strong>File → Save As</strong> if you need your own copy.</p>
 
 
 <div class="code-container">
@@ -1306,33 +1418,10 @@ CleanUp:
     </div>
 </div>
 
-      <ol>
-        <li><span class="underline">Fill in the information for all the red boxes</span> (Start &amp; End Dates, Brand, User ID, Buyer Number)<br>*Fill in or paste the information from the DOF form.</li>
-        <li><span class="underline">Highlighted Columns need to be filled out. Rin, Reg Sell, and Promo sell are required</span><br>*Promo Sell column <span class="red underline">MUST be</span> fixed pricing.<br>*Scan back column and Model/Description in not required but nice to have for tracking purposes.</li>
-        <li><span class="red underline">Verify Promotion fixed pricing is correct and what you want for promotion. Especially with .00 pricing endings</span></li>
-        <li><span class="underline">Click Export Button</span><br>*If Start date is within a week from today's date Email will be generated to DMM (<span class="redacted" title="Redacted for privacy">Name Redacted</span>)<br>*If Start date is not within a week from today's date Email will be Generated to S.T.A.R.T Team</li>
-      </ol>
-
-      <p style="margin-top:14px;font-weight:600;">*Email will be generated to source based on dates with START promotion template attached.</p>
-
-      <div class="email-preview">
-        <div class="ep-toolbar">BP - 3.1.26-3.1.26 MSI March Promotion — Message (Plain Text)</div>
-        <div class="ep-field"><span class="ep-label">To</span><span>SUPPORT TECH ACTION RESPONSE TEAM</span></div>
-        <div class="ep-field"><span class="ep-label">Cc</span><span></span></div>
-        <div class="ep-field"><span class="ep-label">Subject</span><span>BP - 3.1.26-3.1.26 MSI March Promotion</span></div>
-        <div class="ep-field"><span class="ep-label">Attach</span><span class="attach-pill">📎 3.1.26-3.1.26 MSI March Promotion.xlsx &nbsp;92 KB</span></div>
-        <div class="ep-body">Hello Team,<br><br>Attached is a standard promotion.</div>
-      </div>
-
-      <ol start="5">
-        <li><span class="underline">Verify Start Template information is correct before submission.</span><br><span class="red">*note template will always apply "Both Regular and Clearance"</span></li>
-      </ol>
-
-      <p style="margin-top:10px;">*On "Buyer Promo Tracking Document" Promotion will be logged to the Brand Tab that was entered on the macro sheet. This document will auto save upon logging the promotion</p>
-
       <!-- SALE FACT TAGS sub-section -->
       <h3 id="sale-fact-tags">Sale Fact Tags</h3>
 
+      <p>If you answered <strong>Yes</strong> to “Do you want to generate sale tags?”, the macro loads the RINs, regular and promo prices, and promotion dates into the <strong>Sale Master</strong> sheet of the Fact Tags workbook.</p>
       <p>*Macro will auto input RINS into item column of "Sale Master" sheet of Fact tags Document and VLOOKUP the fact tags for those RINS.</p>
       <p class="red">*If there are #NAs on the items, then there is no fact tag for that item.</p>
       <p class="red">Either build fact tag for the item</p>
@@ -1341,7 +1430,7 @@ CleanUp:
 
       <p class="sign-warning">SIGN TEAM WILL NOT ACCEPT TEMPLATES WITH NA ITEMS</p>
 
-      <ol start="6">
+      <ol>
         <li><span class="underline">Once #NAs are removed click "SALE EXPORT" macro</span></li>
         <li><span class="underline">Enter Department/Brand</span>
           <div style="margin-top:8px;">
@@ -1390,7 +1479,7 @@ CleanUp:
         <div class="ep-body">Sign Team,<br><br>Please see attached Sale signs for Week 5 for Apple.<br><br>Thanks,</div>
       </div>
 
-      <ol start="9">
+      <ol start="4">
         <li><span class="underline">Verify information looks correct.</span><br><span class="red">*START DOES NOT WANT TO BE SENT SIGNS UNTIL PROMOTION HAS BEEN KEYED/APPROVED</span></li>
         <li><span class="underline">Save file to send tags once. promotion has been keyed by START.</span></li>
       </ol>
