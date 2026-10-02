@@ -3026,6 +3026,22 @@ password=YourSambaPassword</code></pre>
 <pre><code>chmod 600 ~/.smbcredentials</code></pre>
                     </div>
                 </div>
+                <p><strong>Alternative: create the file with one command.</strong> Instead of using <code>nano</code>, paste this. Like <code>smbpasswd</code>, it asks for the password and hides it while you type, then writes the file and locks it down for you (it already includes the <code>chmod 600</code>):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the Linux computer</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>read -rsp &quot;Samba password for haven: &quot; SMBPASS; echo
+printf &#x27;username=haven\npassword=%s\n&#x27; &quot;$SMBPASS&quot; &gt; ~/.smbcredentials
+unset SMBPASS
+chmod 600 ~/.smbcredentials</code></pre>
+                    </div>
+                </div>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Why not just <code>sudo smbpasswd -a</code>?</strong> They do different jobs. <code>sudo smbpasswd -a haven</code> runs <strong>on the server</strong> and <em>sets</em> the password the share accepts (Step 3). <code>~/.smbcredentials</code> lives <strong>on the Linux computer</strong> and <em>remembers</em> that same password so it can log in by itself at boot. The mount can’t read the server’s Samba password list, so both are needed, and the passwords must match. Check the file with <code>cat ~/.smbcredentials</code>.</div></div>
                 <p><strong>4. Find your user and group ID numbers</strong> (so the files show up as yours). On most single-user systems both are <code>1000</code>:</p>
                 <div class="code-container">
                     <div class="code-header">
