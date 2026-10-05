@@ -4668,7 +4668,7 @@ gpg --output backup-2026-10-05.tar.gz --decrypt backup-2026-10-05.tar.gz.gpg</co
 <pre><code>gpg --keyid-format long --verify SHA256SUMS.gpg SHA256SUMS</code></pre>
                     </div>
                 </div>
-                <ol>
+                <ol start="3">
                     <li>Fetch that key from the project’s keyserver and <strong>compare its fingerprint with the one on the project’s official website</strong>:</li>
                 </ol>
                 <div class="code-container">
@@ -4684,7 +4684,7 @@ gpg --fingerprint &lt;KEY-ID-FROM-THE-MESSAGE&gt;
 gpg --keyid-format long --verify SHA256SUMS.gpg SHA256SUMS   # now: Good signature</code></pre>
                     </div>
                 </div>
-                <ol>
+                <ol start="4">
                     <li>Check the ISO against the now-trusted checksum list:</li>
                 </ol>
                 <div class="code-container">
@@ -4721,7 +4721,7 @@ git config --global commit.gpgsign true
 git config --global tag.gpgsign true</code></pre>
                     </div>
                 </div>
-                <ol>
+                <ol start="3">
                     <li>Add your public key to GitHub: copy the output of the command below into <strong>Settings → SSH and GPG keys → New GPG key</strong>.</li>
                 </ol>
                 <div class="code-container">
@@ -4735,7 +4735,7 @@ git config --global tag.gpgsign true</code></pre>
 <pre><code>gpg --armor --export 3AA5C34371567BD2</code></pre>
                     </div>
                 </div>
-                <ol>
+                <ol start="4">
                     <li>Commit as usual. GitHub shows a <strong>Verified</strong> badge when the key’s email matches a verified email on your account. Check locally with <code>git log --show-signature -1</code>.</li>
                 </ol>
                 <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>If commits fail with <code>gpg: signing failed: Inappropriate ioctl for device</code>, add <code>export GPG_TTY=$(tty)</code> to <code>~/.bashrc</code> (or <code>~/.zshrc</code>) and open a new terminal.</div></div>
