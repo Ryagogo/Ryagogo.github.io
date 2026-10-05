@@ -59,7 +59,7 @@
     }
     .intro p{ font-size: 0.95rem; color: var(--ink-soft); line-height: 1.7; }
 
-    .toc{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+    .toc{ display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-top: 24px; }
     .toc a{
         display: block;
         text-decoration: none;
@@ -172,10 +172,12 @@
 
   <section class="intro">
     <h1>Letters of Recommendation</h1>
-    <p>Letters from the people I've worked for and with at the Navy Exchange Service Command (NEXCOM), covering my work in merchandising systems, process automation and team support.</p>
+    <p>Letters from the people I've worked for and with at the Navy Exchange Service Command (NEXCOM), covering my work in merchandising systems, data stewardship, process automation and team support.</p>
     <nav class="toc" aria-label="Letters">
       <a href="#taylor"><div class="t-name">Chad Taylor</div><div class="t-role">Lead Merchant, NEXCOM</div></a>
       <a href="#bias"><div class="t-name">Kellie Bias</div><div class="t-role">Director, Merchandising Systems Upgrades &amp; Support, NEXCOM</div></a>
+      <a href="#liunas"><div class="t-name">Jeremy Liunas</div><div class="t-role">Director, Retail Item Governance, NEXCOM</div></a>
+      <a href="#gadell"><div class="t-name">Adina Gadell</div><div class="t-role">NEXCOM</div></a>
       <a href="#martinez"><div class="t-name">Danielle Martinez</div><div class="t-role">Colleague</div></a>
     </nav>
   </section>
@@ -224,6 +226,48 @@
     <div class="closing">Best Regards,</div>
     <div class="signature">Kellie Bias</div>
     <div class="sig-role">NEXCOM<br>Director Merchandising Systems Upgrades &amp; Support</div>
+  </article>
+
+  <article class="letter" id="liunas" aria-labelledby="liunas-name">
+    <div class="letter-head">
+      <div>
+        <h2 id="liunas-name">Jeremy Liunas</h2>
+        <div class="role">Director, Retail Item Governance · NEXCOM</div>
+      </div>
+      <div class="relation">Hiring Manager</div>
+    </div>
+    <blockquote class="pull">“The existing process required approximately two days of the manager’s time… That same work can now be completed in less than an hour.”</blockquote>
+    <div class="greeting">To Whom It May Concern:</div>
+    <div class="body-text">
+      <p>I am pleased to recommend Ryan Gray for consideration for this position. I hired Ryan onto the Navy Exchange Service Command’s Data Steward Team on June 29, 2026, and have had the opportunity to directly observe his technical aptitude, analytical ability, initiative, and attention to detail.</p>
+      <p>Ryan entered the position under unusually challenging circumstances. Within four days of his arrival, staffing changes left him as the team’s only technician available to perform work in a complex area that was entirely new to him. Our Data Stewards are responsible for creating and maintaining item data and product hierarchies that support numerous downstream systems and business processes. The work requires careful validation of incoming data and, when processing fails, researching records across multiple system tables to identify the point of failure, determine the cause, and implement the appropriate corrective action.</p>
+      <p>Despite having limited experienced support available to him, Ryan quickly developed proficiency by utilizing existing procedures and learning through hands-on experience. He demonstrated an ability to independently investigate problems, evaluate potential solutions, and accurately process incoming requests. These are qualities I have continued to observe as his experience has grown.</p>
+      <p>Ryan also demonstrated initiative beyond his assigned workload. He redesigned portions of the team’s Standard Operating Procedures to make technical documentation easier to search and use, improved the process used to track and assign incoming customer requests, and helped train newly hired technicians in both processing work and investigating errors.</p>
+      <p>One particularly noteworthy example involved a recurring process for managing UPC changes received from one of our product suppliers. The existing process required approximately two days of the manager’s time to research affected records and determine the necessary changes. Ryan worked with the manager to understand the requirements and then redesigned the process himself. That same work can now be completed in less than an hour.</p>
+      <p>Based on my personal experience supervising Ryan, I believe his analytical problem-solving, attention to detail, ability to learn unfamiliar technical systems, documentation skills, and willingness to take ownership of difficult problems provide an excellent foundation for continued growth in a technically focused position. While my experience with Ryan has been within our data-management environment, I have personally observed many of the underlying capabilities required for work involving research, identification of vulnerabilities or process weaknesses, corrective action, documentation, and ongoing system support.</p>
+      <p>I am pleased to recommend Ryan for consideration and would be happy to provide additional information regarding his performance and abilities if needed.</p>
+    </div>
+    <div class="closing">Sincerely,</div>
+    <div class="signature">Jeremy Liunas</div>
+    <div class="sig-role">Director, Retail Item Governance<br>Navy Exchange Service Command (NEXCOM)</div>
+  </article>
+
+  <article class="letter" id="gadell" aria-labelledby="gadell-name">
+    <div class="letter-head">
+      <div>
+        <h2 id="gadell-name">Adina Gadell</h2>
+        <div class="role">Navy Exchange Service Command</div>
+      </div>
+      <div class="relation">Working Group</div>
+    </div>
+    <blockquote class="pull">“He is professional, takes initiative as well as accountability, and positively influences those around him.”</blockquote>
+    <div class="greeting">To Whom It May Concern,</div>
+    <div class="body-text">
+      <p>I am pleased to write this letter of recommendation for Ryan Gray in support of his application for your agency’s role. In his time with our working group, he has consistently demonstrated the qualities that define strong and effective contributions. He is professional, takes initiative as well as accountability, and positively influences those around him. Ryan has earned the respect of both peers and leadership through his strong work ethic and commitment to excellence. He approaches challenges with a thoughtful and solution-oriented mindset and consistently looks for opportunities to improve processes, support our military patrons, and contribute to the team beyond the expectations of his role.</p>
+      <p>Please feel free to contact me if you have any questions or require any additional information.</p>
+    </div>
+    <div class="closing">Sincerely,</div>
+    <div class="signature">Adina Gadell</div>
   </article>
 
   <article class="letter" id="martinez" aria-labelledby="martinez-name">
