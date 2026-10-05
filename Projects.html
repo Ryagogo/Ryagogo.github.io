@@ -226,7 +226,25 @@
   <a class="nav-top-link" href="#central-logging">Central Logging</a>
   <a class="nav-top-link" href="#alerting">Alerting</a>
   <a class="nav-top-link" href="#backups">Backups</a>
-  <a class="nav-top-link" href="#gpg">GPG</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">GPG <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#gpg-example-values">Example Values</a>
+      <a class="nav-sub-link" href="#gpg-concepts">How GPG Works</a>
+      <a class="nav-sub-link" href="#gpg-install">1. Install GnuPG</a>
+      <a class="nav-sub-link" href="#gpg-create">2. Create a Key Pair</a>
+      <a class="nav-sub-link" href="#gpg-backup">3. Back Up &amp; Revocation</a>
+      <a class="nav-sub-link" href="#gpg-share">4. Share &amp; Import Keys</a>
+      <a class="nav-sub-link" href="#gpg-encrypt">5. Encrypt &amp; Decrypt</a>
+      <a class="nav-sub-link" href="#gpg-sign">6. Sign &amp; Verify</a>
+      <a class="nav-sub-link" href="#gpg-verify-downloads">Verify a Downloaded ISO</a>
+      <a class="nav-sub-link" href="#gpg-git">Sign Git Commits</a>
+      <a class="nav-sub-link" href="#gpg-manage">Managing Keys</a>
+      <a class="nav-sub-link" href="#gpg-cheatsheet">Cheat Sheet</a>
+      <a class="nav-sub-link" href="#gpg-best-practices">Best Practices</a>
+      <a class="nav-sub-link" href="#gpg-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
   <a class="nav-top-link" href="#sql">SQL</a>
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Deploy HTML Site <span class="chevron" aria-hidden="true">›</span></div>
@@ -4265,7 +4283,594 @@ sudo docker start homeassistant</code></pre>
         <div id="gpg">
             <h2>GPG</h2>
             <p class="tool-overview"><strong>What it is:</strong> GPG (GNU Privacy Guard) is a free implementation of the OpenPGP standard for encrypting and signing files and messages. It uses a key pair: anything encrypted with your public key can only be read with your private key, and a signature proves a file or software package really came from you and was not altered.</p>
-            <div class="placeholder-section">Section referencing key architecture validations pending templates definition.</div>
+            <p>Practical notes for creating and protecting a key, encrypting and signing files, verifying downloads and signing Git commits.</p>
+
+            <div id="gpg-example-values">
+                <h3>Example Values Used in the Commands</h3>
+                <p>Every command below uses the same example identity so you can see what goes where. Replace these with your own:</p>
+                <table>
+                    <thead><tr><th>Value in the commands</th><th>What it is</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>Haven Example</code></td><td>Your name on the key</td></tr>
+                        <tr><td><code>haven@example.com</code></td><td>Your email address on the key</td></tr>
+                        <tr><td><code>alice@example.com</code></td><td>Someone you exchange files with</td></tr>
+                        <tr><td><code>3AA5C34371567BD2</code></td><td>A long key ID (the last 16 characters of the fingerprint)</td></tr>
+                        <tr><td><code>A1B2…3AA5C34371567BD2</code></td><td>A full 40-character fingerprint (use your own from <code>gpg --list-keys</code>)</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Commands work the same on Linux, macOS and Windows (in PowerShell or Git Bash once GnuPG is installed). Most commands accept a name, an email address or a key ID/fingerprint to choose the key; the fingerprint is the most precise.</div></div>
+            </div>
+
+            <div id="gpg-concepts">
+                <h3>How GPG Works</h3>
+                <p>GPG uses <strong>public-key cryptography</strong>. You create a <strong>key pair</strong>: a <strong>public key</strong> you hand out freely, and a <strong>private (secret) key</strong> that never leaves your control and is protected by a passphrase.</p>
+                <table>
+                    <thead><tr><th>You want to…</th><th>You use</th><th>Who can undo/check it</th></tr></thead>
+                    <tbody>
+                        <tr><td>Send someone a file only they can read</td><td><strong>Their public key</strong> to encrypt</td><td>Only their private key can decrypt it</td></tr>
+                        <tr><td>Prove a file came from you and wasn’t changed</td><td><strong>Your private key</strong> to sign</td><td>Anyone with your public key can verify it</td></tr>
+                        <tr><td>Protect a file with just a password</td><td>A passphrase (symmetric encryption)</td><td>Anyone who knows the passphrase</td></tr>
+                    </tbody>
+                </table>
+                <table>
+                    <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Fingerprint</strong></td><td>A 40-character hash that uniquely identifies a key, e.g. <code>A1B2 C3D4 … 3AA5 C343 7156 7BD2</code>. Always compare fingerprints, not names, before trusting a key.</td></tr>
+                        <tr><td><strong>Key ID</strong></td><td>The last 16 characters of the fingerprint (long ID). Short 8-character IDs are easy to fake; don’t rely on them.</td></tr>
+                        <tr><td><strong>User ID (UID)</strong></td><td>The name and email attached to the key. A key can have several.</td></tr>
+                        <tr><td><strong>Primary key and subkeys</strong></td><td>The primary key certifies (<code>[C]</code>) and usually signs (<code>[S]</code>); an encryption subkey (<code>[E]</code>) handles encryption. Subkeys can be replaced without changing your identity.</td></tr>
+                        <tr><td><strong>Expiration</strong></td><td>A date after which the key stops being valid unless you extend it. Acts as a safety net if you lose access.</td></tr>
+                        <tr><td><strong>Revocation certificate</strong></td><td>A small file that tells the world “this key is no longer valid”. Make one when you create the key and store it safely.</td></tr>
+                        <tr><td><strong>Keyring</strong></td><td>Where GPG stores keys: <code>~/.gnupg</code> on Linux/macOS, <code>%APPDATA%\gnupg</code> on Windows.</td></tr>
+                        <tr><td><strong>Trust / Web of Trust</strong></td><td>How sure you are a key really belongs to its owner. You raise it by verifying the fingerprint in person (or another trusted channel) and signing their key.</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>Common uses in IT:</strong> verifying downloaded ISOs and installers, signing Git commits, encrypting backups and config files before storing them off-site, sending sensitive files by email, and the package-signing keys behind <code>apt</code> repositories (see the <a href="#plex">Plex</a> install).</div></div>
+            </div>
+
+            <div id="gpg-install">
+                <h3>Step 1: Install GnuPG</h3>
+                <table>
+                    <thead><tr><th>System</th><th>How to get it</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Linux</strong> (Ubuntu/Debian)</td><td>Usually preinstalled. If not: <code>sudo apt install gnupg</code></td></tr>
+                        <tr><td><strong>macOS</strong></td><td><code>brew install gnupg</code> (Homebrew), or GPG Suite for a graphical app and Mail plugin</td></tr>
+                        <tr><td><strong>Windows</strong></td><td>Install <a href="https://www.gpg4win.org/" target="_blank" rel="noopener">Gpg4win</a>. It includes the <code>gpg</code> command and <strong>Kleopatra</strong>, a graphical key manager. Git for Windows also ships a <code>gpg</code>.</td></tr>
+                    </tbody>
+                </table>
+                <p>Check it works and see the version (2.2 or newer is ideal):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --version</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gpg-create">
+                <h3>Step 2: Create Your Key Pair</h3>
+                <p>The guided way asks a few questions:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --full-generate-key</code></pre>
+                    </div>
+                </div>
+                <table>
+                    <thead><tr><th>Prompt</th><th>Recommended answer</th></tr></thead>
+                    <tbody>
+                        <tr><td>Kind of key</td><td><strong>ECC (sign and encrypt)</strong> (the default in GnuPG 2.4), or <strong>RSA and RSA</strong> at 4096 bits if you need to work with very old software</td></tr>
+                        <tr><td>Elliptic curve</td><td><strong>Curve 25519</strong> (default)</td></tr>
+                        <tr><td>Key is valid for</td><td><strong>2y</strong> (two years). You can extend it later; an expiry protects you if the key is ever lost</td></tr>
+                        <tr><td>Real name / Email</td><td><code>Haven Example</code> / <code>haven@example.com</code>. Use the email you’ll sign with (e.g. your GitHub email for commit signing)</td></tr>
+                        <tr><td>Comment</td><td>Leave blank</td></tr>
+                        <tr><td>Passphrase</td><td>A long, unique passphrase. Store it in your password manager (<a href="#vault-warden">Vaultwarden</a>)</td></tr>
+                    </tbody>
+                </table>
+                <p>Or create it in one line, with a separate encryption subkey:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --quick-generate-key &quot;Haven Example &lt;haven@example.com&gt;&quot; ed25519 sign,cert 2y
+# copy the fingerprint it prints, then add an encryption subkey:
+gpg --quick-add-key A1B2C3D4E5F6A7B8C9D0E1F23AA5C34371567BD2 cv25519 encr 2y</code></pre>
+                    </div>
+                </div>
+                <p>List your keys (secret keys only) with long IDs:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --list-secret-keys --keyid-format=long</code></pre>
+                    </div>
+                </div>
+                <p>Example output and how to read it:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>text</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sec   ed25519/3AA5C34371567BD2 2026-10-05 [SC] [expires: 2028-10-05]
+      A1B2C3D4E5F6A7B8C9D0E1F23AA5C34371567BD2
+uid                 [ultimate] Haven Example &lt;haven@example.com&gt;
+ssb   cv25519/9F8E7D6C5B4A3921 2026-10-05 [E] [expires: 2028-10-05]</code></pre>
+                    </div>
+                </div>
+                <ul>
+                    <li><code>sec</code> = your secret primary key; <code>ssb</code> = secret subkey.</li>
+                    <li><code>ed25519/3AA5C34371567BD2</code> = algorithm / long key ID.</li>
+                    <li><code>[SC]</code> = sign and certify; <code>[E]</code> = encrypt.</li>
+                    <li>The long hex line is the <strong>fingerprint</strong>; <code>[ultimate]</code> means it’s your own key.</li>
+                </ul>
+            </div>
+
+            <div id="gpg-backup">
+                <h3>Step 3: Back Up Your Key and Revocation Certificate</h3>
+                <p>Do this right after creating the key. If you lose your private key you can’t decrypt anything sent to you, and without a revocation certificate you can’t tell people to stop using it.</p>
+                <p>GnuPG 2.1+ creates a revocation certificate automatically in <code>~/.gnupg/openpgp-revocs.d/</code>. To make one yourself:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --output haven-revoke.asc --gen-revoke haven@example.com</code></pre>
+                    </div>
+                </div>
+                <p>Export a backup of your private key (it stays protected by your passphrase):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --armor --export-secret-keys haven@example.com &gt; haven-private-key.asc</code></pre>
+                    </div>
+                </div>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Store both files <strong>offline</strong>: an encrypted USB drive, or printed and kept somewhere safe. Never email them, put them in cloud storage unencrypted, or commit them to Git. Anyone with the revocation file can revoke your key.</div></div>
+                <p>Restore the backup on a new computer:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --import haven-private-key.asc
+gpg --edit-key haven@example.com   # then type: trust, 5 (ultimate), y, save</code></pre>
+                    </div>
+                </div>
+                <p>Keep the keyring folder private (GPG warns about “unsafe permissions” otherwise):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>chmod 700 ~/.gnupg
+chmod 600 ~/.gnupg/*</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gpg-share">
+                <h3>Step 4: Share Your Public Key and Import Others’</h3>
+                <p>Export your public key as text you can email, attach or publish:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --armor --export haven@example.com &gt; haven-public-key.asc</code></pre>
+                    </div>
+                </div>
+                <p>Or publish it to a keyserver so others can find it. <a href="https://keys.openpgp.org" target="_blank" rel="noopener">keys.openpgp.org</a> sends you an email to confirm your address before it’s searchable:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --keyserver hkps://keys.openpgp.org --send-keys A1B2C3D4E5F6A7B8C9D0E1F23AA5C34371567BD2</code></pre>
+                    </div>
+                </div>
+                <p>Import someone else’s key from a file or a keyserver:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --import alice-public-key.asc
+# or
+gpg --keyserver hkps://keys.openpgp.org --search-keys alice@example.com</code></pre>
+                    </div>
+                </div>
+                <p><strong>Verify before you trust.</strong> Show the fingerprint and compare it with the owner over a separate channel (in person, a phone call, their official website):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --fingerprint alice@example.com</code></pre>
+                    </div>
+                </div>
+                <p>If it matches, sign their key so GPG stops warning you. <code>--lsign-key</code> keeps the signature local (not shared with keyservers):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --lsign-key alice@example.com</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gpg-encrypt">
+                <h3>Step 5: Encrypt and Decrypt Files</h3>
+                <p><strong>Encrypt a file for someone</strong> (only Alice can open it). Add yourself as a second recipient so you can still read your copy:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --encrypt --recipient alice@example.com --recipient haven@example.com report.pdf
+# creates report.pdf.gpg</code></pre>
+                    </div>
+                </div>
+                <p>Use <code>--armor</code> to produce text (<code>.asc</code>) you can paste into an email or chat:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --armor --encrypt --recipient alice@example.com notes.txt
+# creates notes.txt.asc</code></pre>
+                    </div>
+                </div>
+                <p><strong>Decrypt</strong> a file sent to you (GPG asks for your passphrase):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --output report.pdf --decrypt report.pdf.gpg</code></pre>
+                    </div>
+                </div>
+                <p><strong>Password-only encryption</strong> (no keys needed), handy for backups:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --symmetric --cipher-algo AES256 backup-2026-10-05.tar.gz
+# creates backup-2026-10-05.tar.gz.gpg
+gpg --output backup-2026-10-05.tar.gz --decrypt backup-2026-10-05.tar.gz.gpg</code></pre>
+                    </div>
+                </div>
+                <p><strong>Encrypt and sign together</strong>, so Alice knows it came from you and wasn’t changed:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --sign --encrypt --recipient alice@example.com contract.pdf</code></pre>
+                    </div>
+                </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Encrypt backups before they leave the server, e.g. <code>tar czf - /etc | gpg --symmetric --cipher-algo AES256 -o etc-backup.tar.gz.gpg</code>, then copy the <code>.gpg</code> file off-site (see <a href="#backups">Backups</a>).</div></div>
+            </div>
+
+            <div id="gpg-sign">
+                <h3>Step 6: Sign and Verify</h3>
+                <table>
+                    <thead><tr><th>Signature type</th><th>Command</th><th>Result</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Detached</strong> (most common for files)</td><td><code>gpg --armor --detach-sign setup.zip</code></td><td>A separate <code>setup.zip.asc</code>; the original file is unchanged</td></tr>
+                        <tr><td><strong>Clear-signed</strong> text</td><td><code>gpg --clearsign message.txt</code></td><td><code>message.txt.asc</code> with the readable text plus a signature block</td></tr>
+                        <tr><td><strong>Inline</strong> (signed + compressed)</td><td><code>gpg --sign document.txt</code></td><td><code>document.txt.gpg</code>; needs GPG to read</td></tr>
+                    </tbody>
+                </table>
+                <p>Verify a detached signature (signature first, then the file):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --verify setup.zip.asc setup.zip</code></pre>
+                    </div>
+                </div>
+                <table>
+                    <thead><tr><th>GPG says</th><th>Meaning</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>Good signature from "Haven Example …"</code></td><td>The file is unchanged and was signed by that key.</td></tr>
+                        <tr><td><code>WARNING: This key is not certified with a trusted signature!</code></td><td>The signature is valid, but you haven’t verified the key’s owner yet. Check the fingerprint, then <code>--lsign-key</code> it.</td></tr>
+                        <tr><td><code>BAD signature</code></td><td>The file or signature was changed. <strong>Don’t use the file.</strong></td></tr>
+                        <tr><td><code>Can't check signature: No public key</code></td><td>Import the signer’s public key first.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="gpg-verify-downloads">
+                <h3>Real-World Example: Verify a Downloaded ISO</h3>
+                <p>Before installing an OS like Ubuntu, Debian or <a href="#proxmox">Proxmox</a>, confirm the ISO is genuine. Projects publish a checksum file and a GPG signature of that file. Using Ubuntu as the example:</p>
+                <ol>
+                    <li>Download the ISO plus <code>SHA256SUMS</code> and <code>SHA256SUMS.gpg</code> from the same release folder.</li>
+                    <li>Check the signature on the checksum file. The first time, it fails with “No public key” and shows the key ID it needs:</li>
+                </ol>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --keyid-format long --verify SHA256SUMS.gpg SHA256SUMS</code></pre>
+                    </div>
+                </div>
+                <ol>
+                    <li>Fetch that key from the project’s keyserver and <strong>compare its fingerprint with the one on the project’s official website</strong>:</li>
+                </ol>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys &lt;KEY-ID-FROM-THE-MESSAGE&gt;
+gpg --fingerprint &lt;KEY-ID-FROM-THE-MESSAGE&gt;
+gpg --keyid-format long --verify SHA256SUMS.gpg SHA256SUMS   # now: Good signature</code></pre>
+                    </div>
+                </div>
+                <ol>
+                    <li>Check the ISO against the now-trusted checksum list:</li>
+                </ol>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sha256sum -c SHA256SUMS --ignore-missing
+# ubuntu-24.04-live-server-amd64.iso: OK</code></pre>
+                    </div>
+                </div>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>On Windows, check the hash with <code>Get-FileHash .\ubuntu.iso -Algorithm SHA256</code> in PowerShell and compare it with the line in <code>SHA256SUMS</code>. Kleopatra can verify the <code>.gpg</code> signature.</div></div>
+            </div>
+
+            <div id="gpg-git">
+                <h3>Real-World Example: Sign Git Commits (GitHub “Verified”)</h3>
+                <ol>
+                    <li>Find your key ID: <code>gpg --list-secret-keys --keyid-format=long</code> (the part after <code>ed25519/</code>).</li>
+                    <li>Tell Git to use it and sign every commit:</li>
+                </ol>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>git config --global user.signingkey 3AA5C34371567BD2
+git config --global commit.gpgsign true
+git config --global tag.gpgsign true</code></pre>
+                    </div>
+                </div>
+                <ol>
+                    <li>Add your public key to GitHub: copy the output of the command below into <strong>Settings → SSH and GPG keys → New GPG key</strong>.</li>
+                </ol>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --armor --export 3AA5C34371567BD2</code></pre>
+                    </div>
+                </div>
+                <ol>
+                    <li>Commit as usual. GitHub shows a <strong>Verified</strong> badge when the key’s email matches a verified email on your account. Check locally with <code>git log --show-signature -1</code>.</li>
+                </ol>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>If commits fail with <code>gpg: signing failed: Inappropriate ioctl for device</code>, add <code>export GPG_TTY=$(tty)</code> to <code>~/.bashrc</code> (or <code>~/.zshrc</code>) and open a new terminal.</div></div>
+            </div>
+
+            <div id="gpg-manage">
+                <h3>Managing Keys: Expiry, Editing, Revoking</h3>
+                <p><strong>Extend the expiry</strong> before it runs out (do the primary key and all subkeys), then re-share your public key:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --quick-set-expire A1B2C3D4E5F6A7B8C9D0E1F23AA5C34371567BD2 2y
+gpg --quick-set-expire A1B2C3D4E5F6A7B8C9D0E1F23AA5C34371567BD2 2y &#x27;*&#x27;</code></pre>
+                    </div>
+                </div>
+                <p><strong>Interactive editing</strong> with <code>gpg --edit-key haven@example.com</code>, then:</p>
+                <table>
+                    <thead><tr><th>Command</th><th>Does</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>adduid</code></td><td>Add another name/email (e.g. a work address)</td></tr>
+                        <tr><td><code>passwd</code></td><td>Change the passphrase</td></tr>
+                        <tr><td><code>expire</code></td><td>Change the expiry (use <code>key 1</code> first to select a subkey)</td></tr>
+                        <tr><td><code>trust</code></td><td>Set how much you trust a key’s owner</td></tr>
+                        <tr><td><code>save</code> / <code>quit</code></td><td>Save changes / exit without saving</td></tr>
+                    </tbody>
+                </table>
+                <p><strong>Revoke a key</strong> that’s lost or compromised: import the revocation certificate, then publish the revoked key so others see it:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --import haven-revoke.asc
+gpg --keyserver hkps://keys.openpgp.org --send-keys A1B2C3D4E5F6A7B8C9D0E1F23AA5C34371567BD2</code></pre>
+                    </div>
+                </div>
+                <p><strong>Delete</strong> a key from your keyring (secret part first):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --delete-secret-keys alice@example.com
+gpg --delete-keys alice@example.com</code></pre>
+                    </div>
+                </div>
+                <p><strong>Passphrase caching:</strong> <code>gpg-agent</code> remembers your passphrase for a while. Clear it immediately with:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpgconf --kill gpg-agent</code></pre>
+                    </div>
+                </div>
+                <p>To change how long it remembers (seconds), add to <code>~/.gnupg/gpg-agent.conf</code>, then restart the agent:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>ini · ~/.gnupg/gpg-agent.conf</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>default-cache-ttl 600
+max-cache-ttl 7200</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gpg-cheatsheet">
+                <h3>Command Cheat Sheet</h3>
+                <table>
+                    <thead><tr><th>Task</th><th>Command</th></tr></thead>
+                    <tbody>
+                        <tr><td>List public / secret keys</td><td><code>gpg -k</code> / <code>gpg -K</code> (add <code>--keyid-format=long</code>)</td></tr>
+                        <tr><td>Show a fingerprint</td><td><code>gpg --fingerprint haven@example.com</code></td></tr>
+                        <tr><td>Create a key</td><td><code>gpg --full-generate-key</code></td></tr>
+                        <tr><td>Export public key</td><td><code>gpg --armor --export haven@example.com</code></td></tr>
+                        <tr><td>Back up private key</td><td><code>gpg --armor --export-secret-keys haven@example.com</code></td></tr>
+                        <tr><td>Import a key</td><td><code>gpg --import key.asc</code></td></tr>
+                        <tr><td>Encrypt for someone</td><td><code>gpg -e -r alice@example.com file</code></td></tr>
+                        <tr><td>Encrypt with a password</td><td><code>gpg -c --cipher-algo AES256 file</code></td></tr>
+                        <tr><td>Decrypt</td><td><code>gpg -o file -d file.gpg</code></td></tr>
+                        <tr><td>Detached signature</td><td><code>gpg --armor --detach-sign file</code></td></tr>
+                        <tr><td>Verify</td><td><code>gpg --verify file.asc file</code></td></tr>
+                        <tr><td>Extend expiry</td><td><code>gpg --quick-set-expire FINGERPRINT 2y</code></td></tr>
+                        <tr><td>Clear cached passphrase</td><td><code>gpgconf --kill gpg-agent</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="gpg-best-practices">
+                <h3>Best Practices</h3>
+                <ul>
+                    <li><strong>Protect the private key:</strong> strong passphrase, offline backup, never share or upload it.</li>
+                    <li><strong>Set an expiry</strong> (1–2 years) and extend it on schedule; put a calendar reminder a month before.</li>
+                    <li><strong>Create the revocation certificate now</strong>, not when you need it.</li>
+                    <li><strong>Verify fingerprints</strong> through a second channel before trusting a key; never trust a key just because a keyserver returned it.</li>
+                    <li><strong>Use modern algorithms:</strong> Ed25519/Cv25519, or RSA 4096 if compatibility requires it.</li>
+                    <li><strong>Encrypt to yourself too</strong> (add your own <code>--recipient</code>) so you can read what you sent.</li>
+                    <li><strong>Advanced:</strong> keep the primary key offline and use subkeys day-to-day, or store keys on a hardware token such as a YubiKey.</li>
+                </ul>
+            </div>
+
+            <div id="gpg-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <table>
+                    <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>gpg: signing failed: Inappropriate ioctl for device</code></td><td>GPG can’t find a terminal to ask for the passphrase. Run <code>export GPG_TTY=$(tty)</code> (add it to <code>~/.bashrc</code>).</td></tr>
+                        <tr><td><code>WARNING: unsafe permissions on homedir</code></td><td><code>chmod 700 ~/.gnupg</code> and <code>chmod 600 ~/.gnupg/*</code>.</td></tr>
+                        <tr><td><code>No public key</code> when verifying</td><td>Import the signer’s key (from their website or <code>--recv-keys</code>), check its fingerprint, then verify again.</td></tr>
+                        <tr><td><code>No secret key</code> when decrypting</td><td>The file was encrypted to a different key, or your private key isn’t on this computer. Import your backup.</td></tr>
+                        <tr><td><code>This key is not certified with a trusted signature</code></td><td>A warning, not an error. Verify the fingerprint, then <code>gpg --lsign-key</code>.</td></tr>
+                        <tr><td><code>key expired</code></td><td>Extend it with <code>--quick-set-expire</code> and re-share the public key.</td></tr>
+                        <tr><td>Keyserver search finds nothing</td><td>keys.openpgp.org only lists addresses the owner confirmed. Ask for the key file or fingerprint directly.</td></tr>
+                        <tr><td>Passphrase prompt never appears (Git, scripts)</td><td>Restart the agent: <code>gpgconf --kill gpg-agent</code>, and set <code>GPG_TTY</code> as above.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="sql">
