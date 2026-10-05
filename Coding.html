@@ -1157,6 +1157,17 @@ td.red-border-cell:nth-child(4) {
     </div>
   </div>
   <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Email Count <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#email-count">Overview &amp; Download</a>
+      <a class="nav-sub-link" href="#ec-run">How to Use It</a>
+      <a class="nav-sub-link" href="#ec-rules">What Gets Counted</a>
+      <a class="nav-sub-link" href="#ec-results">Reading the Results</a>
+      <a class="nav-sub-link" href="#ec-caveats">Things to Keep in Mind</a>
+      <a class="nav-sub-link" href="#ec-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+  <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Files &amp; Templates <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#files-templates">All Files</a>
@@ -2300,6 +2311,47 @@ td.red-border-cell:nth-child(4) {
       <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td><em>“Could not find headers ‘cpn_nbr’ or ‘prim_upc_cd’ in Row 1”</em></td><td>The list wasn’t pasted at A1, the headers are named differently, or you ran it from a different sheet. Paste the list with its headers in row 1 and run it from that sheet.</td></tr><tr><td><em>“No data found under headers”</em></td><td>Nothing below the <code>cpn_nbr</code> header.</td></tr><tr><td><em>“Destination file not found”</em></td><td>The shared induction template has moved or you can’t reach that drive. Connect to the network; if it moved, update the path in the macro.</td></tr><tr><td><em>“Could not find one or more required headers in Row 7”</em></td><td>The template’s first sheet doesn’t have <em>GTIN</em>, <em>Parent Item</em> and <em>Transaction Item</em> headers on row 7. Check the template wasn’t changed.</td></tr><tr><td><em>“Access Database not found”</em></td><td>The TPGC database is unreachable. The rows have already been added to the template without database values; close the template <strong>without saving</strong>, fix access, and run again.</td></tr><tr><td>Parent, Transaction or Retail blank on some rows</td><td>No TPGC Master record has that exact card number as its <em>Item Desc</em>. Add the card to the database or fill those cells by hand.</td></tr><tr><td>Supplier wrong or blank</td><td>The card number doesn’t start with <code>AGCE</code> or <code>PRGS</code> and the database has no supplier for it. Enter the supplier by hand.</td></tr><tr><td>The template opened read-only</td><td>Someone else has it open. Close it, wait, and run again, or Save As a copy.</td></tr><tr><td>Rows from the last run appear again</td><td>Sheet1 still had the previous list. Clear it before pasting a new one.</td></tr><tr><td><em>“An unexpected error occurred: …”</em></td><td>Usually the Access Database Engine isn’t installed, or the database is locked. The template may be left open with partial rows; close it without saving.</td></tr></tbody></table></div>
     </div>
 
+    <!-- EMAIL COUNT -->
+    <div class="section" id="email-count">
+      <h2>Email Count</h2>
+      <p><strong>Email Count</strong> measures the Data Steward Team’s workload straight from Outlook. One click scans the team’s shared mailbox, picks out the item induction and maintenance requests, and builds a <strong>PivotTable of request emails per day</strong>. Use it for weekly workload reports, to spot spikes around seasonal or ad deadlines, or to back up staffing and turnaround-time discussions with real numbers instead of estimates.</p>
+      <ul>
+        <li>Reads the <strong>Data Steward Team</strong> mailbox only, never your personal inbox.</li>
+        <li>Counts mail in the team’s working folders: <strong>Inbox</strong>, each team member’s personal folder, <strong>Item Induction</strong> and <strong>Item Maintenance</strong>.</li>
+        <li>Keeps only emails whose subject looks like a request (e.g. <em>Item Induction</em>, <em>Add Supplier</em>, <em>GTIN Delete</em>) and drops confirmations such as <em>Successful Upload</em>.</li>
+        <li>Writes every matching email to a <strong>RawData</strong> sheet and summarises it on <strong>PivotResult</strong>.</li>
+      </ul>
+      <p class="file-link"><a href="Files/ExportEmailToPivot.xlsm" download>Email Count workbook</a></p>
+      <h3 id="ec-run">How to Use It</h3>
+      <ol>
+        <li>Make sure <strong>Outlook (desktop)</strong> is open and the <strong>Data Steward Team</strong> shared mailbox appears in your folder pane.</li>
+        <li>Open <strong>ExportEmailToPivot.xlsm</strong> and <strong>enable macros</strong>.</li>
+        <li>On <strong>Sheet1</strong>, click <strong>Update Pivot Table</strong>. It can take 1–2 minutes on a full mailbox; Excel looks frozen while Outlook is read.</li>
+        <li>If a folder can’t be found you’ll get a list of the ones skipped; the rest are still counted.</li>
+        <li>When <em>“Done. n matching emails processed into the pivot table.”</em> appears, you’re taken to <strong>PivotResult</strong>.</li>
+      </ol>
+      <div class="note">Each run <strong>deletes and rebuilds</strong> the RawData and PivotResult sheets, so they always reflect the mailbox as it is now. Copy the numbers somewhere else (or save the workbook under a dated name) if you want to keep a weekly history.</div>
+      <h3 id="ec-rules">What Gets Counted</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Rule</th><th>Details</th></tr></thead><tbody><tr><td><strong>Mailbox</strong></td><td>The first Outlook mailbox whose name contains <em>Data Steward Team</em>.</td></tr><tr><td><strong>Folders</strong></td><td><em>Inbox</em>, each team member’s folder, <em>Item Induction</em> and <em>Item Maintenance</em>. Each is found by exact name anywhere in the mailbox; Deleted Items, Trash, Junk Email and Outbox are never searched.</td></tr><tr><td><strong>Inbox only</strong></td><td>Only <strong>unread</strong> emails, with category <em>(none)</em>, <em>Item Induction</em>, <em>Manual Maintenance</em> or <em>GTIN Deletes</em>. Read or differently categorised Inbox mail has been handled or isn’t a request.</td></tr><tr><td><strong>Other folders</strong></td><td>All emails, read or unread (they’ve been filed to that person or queue).</td></tr><tr><td><strong>Excluded subjects</strong></td><td>Anything containing <code>SUCCESSFUL UPLOAD</code>, <code>COMPLETE</code> is dropped first.</td></tr><tr><td><strong>Included subjects</strong></td><td>The subject must contain at least one request keyword (below). Matching ignores case and looks anywhere in the subject.</td></tr><tr><td><strong>Date</strong></td><td>The received date, with the time removed so the pivot groups by day.</td></tr></tbody></table></div>
+      <p>Request keywords:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Request type</th><th>Keywords</th></tr></thead><tbody><tr><td>New items / induction</td><td><code>New Item</code>, <code>New Items</code>, <code>New Item Build</code>, <code>Item Build</code>, <code>Item Induct</code>, <code>Item Induction</code>, <code>NIB</code>, <code>Add GTIN</code>, <code>Add Item Gtin</code></td></tr><tr><td>Suppliers</td><td><code>Add Supplier</code>, <code>Update Supplier</code>, <code>Update Primary Supplier</code>, <code>Range Supplier</code></td></tr><tr><td>Ranging</td><td><code>Range item</code>, <code>Range Location</code>, <code>Range Loc</code>, <code>Range Locs</code></td></tr><tr><td>Maintenance</td><td><code>Item Maintenance</code>, <code>MSRP Update</code>, <code>MIM</code>, <code>AIS</code>, <code>UDA Removal</code>, <code>BOPIP</code>, <code>RMS Download</code></td></tr><tr><td>GTIN deletes</td><td><code>GTIN Delete</code>, <code>GTIN Deletes</code></td></tr></tbody></table></div>
+      <h3 id="ec-results">Reading the Results</h3>
+      <p><strong>PivotResult</strong> shows one row per day and the total for the period (illustrative numbers):</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Row Labels</th><th>Total Emails</th></tr></thead><tbody><tr><td>08/17/2026</td><td>1</td></tr><tr><td>08/18/2026</td><td>4</td></tr><tr><td>08/19/2026</td><td>9</td></tr><tr><td>08/20/2026</td><td>12</td></tr><tr><td>08/21/2026</td><td>38</td></tr><tr><td>Grand Total</td><td>64</td></tr></tbody></table></div>
+      <p><strong>RawData</strong> holds the detail behind it, one row per email: <em>ReceivedDate</em>, <em>Folder</em> and <em>Subject</em>, as an Excel table named <em>EmailData</em>.</p>
+      <div class="note"><strong>Tips:</strong> drag <strong>Folder</strong> into the pivot’s Columns area to see the count per person and queue; right-click a date → <strong>Group</strong> → <em>Months</em> or <em>Days (7)</em> for monthly or weekly totals; filter RawData by subject to check exactly what was counted.</div>
+      <h3 id="ec-caveats">Things to Keep in Mind</h3>
+      <ul>
+        <li><strong>Every email counts, including replies.</strong> A request with three <em>RE:</em> replies in the same folder counts four times. Treat the number as email volume, not unique requests.</li>
+        <li><strong>Keywords match inside words.</strong> Short keywords such as <em>AIS</em>, <em>MIM</em> or <em>NIB</em> also match words that contain them, and <em>COMPLETE</em> also excludes subjects with <em>Completed</em> or <em>Incomplete</em>. Spot-check RawData if a number looks off.</li>
+        <li><strong>Only what’s still in the folders.</strong> Emails moved elsewhere, archived or deleted aren’t counted, and read Inbox mail is skipped.</li>
+        <li><strong>One folder per name.</strong> If the mailbox has two folders with the same name, only the first one found is counted.</li>
+        <li>Adding a team member or a new keyword means editing the folder and keyword lists in the macro (<kbd>Alt</kbd>+<kbd>F11</kbd>, Module1).</li>
+      </ul>
+      <h3 id="ec-troubleshooting">Troubleshooting</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td><em>“Could not connect to Outlook”</em></td><td>Install or open Outlook desktop (the new web-style Outlook doesn’t support macros), then run again.</td></tr><tr><td><em>“Could not find the mailbox: ‘Data Steward Team’”</em></td><td>The shared mailbox isn’t in your Outlook profile. Add it (File → Account Settings, or ask IT for access), restart Outlook and run again.</td></tr><tr><td>A list of folders <em>“not found … and were skipped”</em></td><td>Those folders were renamed or don’t exist. The others were still counted; update the folder list in the macro if a name changed.</td></tr><tr><td><em>“No mail items matched the subject line filters”</em></td><td>No email in those folders has a request keyword in its subject (or the Inbox has no unread, correctly categorised mail).</td></tr><tr><td>Outlook shows a security prompt</td><td>Allow access. Some security settings ask before a program reads mail.</td></tr><tr><td>Excel seems frozen</td><td>Normal for 1–2 minutes on a large mailbox. Wait for the Done message.</td></tr><tr><td>Counts look too high</td><td>Replies are counted separately and short keywords match inside other words. Check RawData.</td></tr></tbody></table></div>
+    </div>
+
 <!-- FILES & TEMPLATES -->
 <div class="section" id="files-templates">
   <h2>Files &amp; Templates</h2>
@@ -2355,6 +2407,11 @@ td.red-border-cell:nth-child(4) {
       <span class="file-title">AGC Macro</span>
       <span class="file-type">Macro-enabled workbook (.xlsm)</span>
       <a href="Files/AGC_Macro.xlsm" download>Download AGC Macro</a>
+    </div>
+    <div class="file-card" id="Email-Count">
+      <span class="file-title">Email Count</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm)</span>
+      <a href="Files/ExportEmailToPivot.xlsm" download>Download Email Count</a>
     </div>
     <div class="file-card" id="Ad-Tracker">
       <span class="file-title">Ad Tracker</span>
