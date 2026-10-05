@@ -1168,6 +1168,18 @@ td.red-border-cell:nth-child(4) {
     </div>
   </div>
   <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">TPGC Macro <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#tpgc-macro">Overview &amp; Downloads</a>
+      <a class="nav-sub-link" href="#tp-sheet">The Cheat Sheet</a>
+      <a class="nav-sub-link" href="#tp-types">What Each Type Creates</a>
+      <a class="nav-sub-link" href="#tp-run">How to Use It</a>
+      <a class="nav-sub-link" href="#tp-checks">What Gets Checked</a>
+      <a class="nav-sub-link" href="#tp-example">Example</a>
+      <a class="nav-sub-link" href="#tp-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+  <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Files &amp; Templates <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#files-templates">All Files</a>
@@ -2352,6 +2364,45 @@ td.red-border-cell:nth-child(4) {
       <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td><em>“Could not connect to Outlook”</em></td><td>Install or open Outlook desktop (the new web-style Outlook doesn’t support macros), then run again.</td></tr><tr><td><em>“Could not find the mailbox: ‘Data Steward Team’”</em></td><td>The shared mailbox isn’t in your Outlook profile. Add it (File → Account Settings, or ask IT for access), restart Outlook and run again.</td></tr><tr><td>A list of folders <em>“not found … and were skipped”</em></td><td>Those folders were renamed or don’t exist. The others were still counted; update the folder list in the macro if a name changed.</td></tr><tr><td><em>“No mail items matched the subject line filters”</em></td><td>No email in those folders has a request keyword in its subject (or the Inbox has no unread, correctly categorised mail).</td></tr><tr><td>Outlook shows a security prompt</td><td>Allow access. Some security settings ask before a program reads mail.</td></tr><tr><td>Excel seems frozen</td><td>Normal for 1–2 minutes on a large mailbox. Wait for the Done message.</td></tr><tr><td>Counts look too high</td><td>Replies are counted separately and short keywords match inside other words. Check RawData.</td></tr></tbody></table></div>
     </div>
 
+    <!-- TPGC MACRO -->
+    <div class="section" id="tpgc-macro">
+      <h2>TPGC Macro</h2>
+      <p>The <strong>TPGC Macro</strong> sets up <strong>third-party gift cards</strong> (TPGC) for the point-of-sale system. A gift card needs records in up to five POS tables: the UPC cross-reference, the non-merchandise item, its price or price range, and any activation fees attached to it. Each table has its own layout and a dozen fixed codes. Buyers fill in one simple row per card on the <strong>TPGC Cheat Sheet</strong>; one click then:</p>
+      <ol>
+        <li><strong>Checks</strong> every row and skips any with missing or invalid data, so the tables never get out of step.</li>
+        <li><strong>Writes</strong> each card to the right tabs of the <a href="#MNT-Master-Creator">MNT Master Creator</a> workbook, based on its <em>Type of Gift Card</em>, adding all the fixed codes for you.</li>
+        <li><strong>Builds the MNT files</strong>: one pipe-delimited upload file per populated tab, saved to a folder you choose.</li>
+      </ol>
+      <p class="file-link"><a href="Files/TPGC_Cheat_Sheet_2026.xlsm" download>TPGC Cheat Sheet (with macro)</a></p>
+      <p class="file-link"><a href="Files/CreateMNTFile_MasterCreator_2026_01.xlsm" download>MNT Master Creator 2026_01</a></p>
+      <h3 id="tp-sheet">The Cheat Sheet</h3>
+      <p>One row per gift card on the <strong>TPGC</strong> tab, headers on row 3, from row 4 down:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Column</th><th>What to enter</th></tr></thead><tbody><tr><td><strong>Type of Gift Card</strong></td><td>Pick from the list: <em>Fixed Price NoFee</em>, <em>Fixed Price Fee</em>, <em>Price Range No Fee</em> or <em>Price Range Fee</em>.</td></tr><tr><td><strong>Transaction Level RIN#</strong></td><td>The gift card’s item number.</td></tr><tr><td><strong>Group, Dept, Class, Subclass</strong></td><td>Its merchandise hierarchy. The <em>Group</em> tab lists every Dept with its Group number.</td></tr><tr><td><strong>Description with no Special Characters</strong></td><td>The name shown at the register.</td></tr><tr><td><strong>Price Range (Min) / (Max)</strong></td><td>Price range cards only: the lowest and highest amount a customer can load.</td></tr><tr><td><strong>Fixed Retail</strong></td><td>Fixed price cards only: the card’s price. <code>$</code> and commas are fine.</td></tr><tr><td><strong>Fee Rins Associated</strong></td><td>Fee cards only: the activation fee RIN(s). Pick from the list (e.g. <code>14243675 (3.95)</code>) or type several separated by commas; the amount in brackets is ignored.</td></tr><tr><td><strong>Effective Dates</strong></td><td>When the card goes live. Needed for fixed price cards and for any card with a fee.</td></tr><tr><td><strong>GTIN/UPC#</strong></td><td>The card’s barcode. Any format works; only the first 11 digits of the UPC-A are used.</td></tr></tbody></table></div>
+      <h3 id="tp-types">What Each Gift Card Type Creates</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>MNT Master Creator tab</th><th>Fixed Price NoFee</th><th>Fixed Price Fee</th><th>Price Range No Fee</th><th>Price Range Fee</th></tr></thead><tbody><tr><td><strong>TPGC_UPC</strong>: RIN + first 11 UPC digits</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr><tr><td><strong>TPGCNonMerchandise</strong>: item, name, merch levels</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr><tr><td><strong>ItemPriceAction</strong>: fixed retail and effective date</td><td>✔</td><td>✔</td><td></td><td></td></tr><tr><td><strong>GCITMProperties</strong>: minimum and maximum load amount</td><td></td><td></td><td>✔ (2 rows)</td><td>✔ (2 rows)</td></tr><tr><td><strong>TPGCAttachFee</strong>: one row per fee RIN</td><td></td><td>✔</td><td></td><td>✔</td></tr><tr><td>Attached Items flag / Prompt for Price flag</td><td>0 / 0</td><td>1 / 0</td><td>0 / 1</td><td>1 / 1</td></tr></tbody></table></div>
+      <p>Every row also gets the fixed codes those tables need (action <code>INSERT</code>, record identifiers, voucher type and sub-type, “disallow discounts/deals/self-checkout” flags, all-stores <code>*</code>, and so on). The merch levels are built from the hierarchy: Group <code>270</code> → <code>270G</code>, Dept <code>512</code> → <code>512D</code>, Class → <code>512-3C</code>, Subclass → <code>512-3-1S</code>.</p>
+      <h3 id="tp-run">How to Use It</h3>
+      <ol>
+        <li>Open the <strong>TPGC Cheat Sheet</strong> and <strong>enable macros</strong>. Fill in one row per gift card from row 4.</li>
+        <li>Click <strong>Export</strong>. The macro opens the MNT Master Creator from the shared templates folder (or uses it if it’s already open).</li>
+        <li>Read the summary: how many cards of each type were written, the fee and property rows created, and any <strong>skipped</strong> rows with the reason (e.g. <em>Row 7: missing/invalid Fixed Retail, Effective Date</em>).</li>
+        <li>Click <strong>Yes</strong> to create the MNT files now. A check box lists each tab’s row count, last column and last cell; if anything looks wrong click <strong>No</strong> (see below).</li>
+        <li>Choose the folder to save to. Files are named <code>MNTCreation_&lt;Tab&gt;-&lt;username&gt;&lt;yyyy_mm_dd_hhmm&gt;.mnt</code>.</li>
+        <li>Upload the MNT files as usual. Fix and re-export any skipped rows.</li>
+      </ol>
+      <div class="note red-note"><strong>Start from an empty MNT Master Creator.</strong> The export adds rows below whatever is already on each tab, and the MNT files include everything on the tab. If the summary’s row counts are higher than the cards you just exported, there’s old or hidden data. Click <strong>No</strong>, delete everything below the header row (and any stray columns to the right), then build the files again with <strong>CreateTPGCMNTFiles</strong> (<kbd>Alt</kbd>+<kbd>F8</kbd>). Don’t save the Master Creator with gift card rows in it.</div>
+      <div class="note"><strong>The Cheat Sheet can’t be saved, by design.</strong> It’s a fill-and-export form that stays blank for the next person: any save shows <em>“This workbook is locked and cannot be saved again.”</em> Export your rows, then close it without saving. To keep a record, copy the rows into another workbook first.</div>
+      <h3 id="tp-checks">What Gets Checked</h3>
+      <p>A card is only written if every check passes, so all its tabs stay in sync. Otherwise the whole row is skipped and listed in the summary.</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Type</th><th>Must have</th></tr></thead><tbody><tr><td>All types</td><td>Transaction Level RIN#, and a GTIN/UPC# with digits in it.</td></tr><tr><td>Fixed Price</td><td>A numeric Fixed Retail and a valid Effective Date.</td></tr><tr><td>Price Range</td><td>Numeric Min and Max, with Min not greater than Max.</td></tr><tr><td>Any Fee type</td><td>At least one fee RIN (digits only) and a valid Effective Date.</td></tr><tr><td>Unknown type</td><td>A Type of Gift Card that isn’t one of the four options is skipped.</td></tr></tbody></table></div>
+      <p>The macro also standardises what it writes: retail as <code>0.00</code>, dates as <code>yyyy-mm-dd</code>, and UPCs to 12 digits (restoring lost leading zeros, removing extra ones from 13- and 14-digit codes) before taking the first 11.</p>
+      <h3 id="tp-example">Example</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Type</th><th>RIN#</th><th>Retail / Range</th><th>Fee RINs</th><th>Effective</th><th>UPC</th></tr></thead><tbody><tr><td>Fixed Price Fee</td><td>20100001</td><td>$25</td><td>14243675 (3.95)</td><td>10/15/2026</td><td>0-12345-67890-5</td></tr><tr><td>Price Range No Fee</td><td>20100002</td><td>Min 15 / Max 500</td><td></td><td></td><td>812345678901</td></tr></tbody></table></div>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Tab</th><th>Rows written</th></tr></thead><tbody><tr><td>TPGC_UPC</td><td><code>20100001 | 01234567890</code> and <code>20100002 | 81234567890</code></td></tr><tr><td>TPGCNonMerchandise</td><td>Two items; the first flagged Attached Items = 1, the second Prompt for Price = 1</td></tr><tr><td>ItemPriceAction</td><td><code>20100001 | 25.00 | 2026-10-15</code></td></tr><tr><td>TPGCAttachFee</td><td><code>20100001 → 14243675</code>, effective 2026-10-15</td></tr><tr><td>GCITMProperties</td><td><code>20100002 TPGC_MIN_PRICE 15</code> and <code>20100002 TPGC_MAX_PRICE 500</code></td></tr></tbody></table></div>
+      <h3 id="tp-troubleshooting">Troubleshooting</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td><em>“Could not find these headers on row 3”</em></td><td>A Cheat Sheet header was renamed or moved, or you ran it from another sheet. Run it from the TPGC tab.</td></tr><tr><td><em>“Could not open target workbook”</em></td><td>The MNT Master Creator isn’t in the shared templates folder or you can’t reach the drive. Connect to the network; if the file was renamed (e.g. a new year’s version), update the path in the macro.</td></tr><tr><td><em>“Tab … not found”</em> or <em>“Headers not found on …”</em></td><td>The Master Creator’s tabs or headers changed. Use the current Master Creator or update the names in the macro.</td></tr><tr><td>Rows skipped</td><td>The summary gives the row and the missing field. Fix them and export again; only the fixed rows are added.</td></tr><tr><td>All rows skipped / nothing exported</td><td>Every row failed a check, or no Type of Gift Card was chosen.</td></tr><tr><td><em>“This workbook is locked and cannot be saved again.”</em></td><td>Expected: the Cheat Sheet is a reusable blank form. Close without saving.</td></tr><tr><td>MNT row counts too high</td><td>Old or hidden rows on the Master Creator. Clear them and rebuild with CreateTPGCMNTFiles.</td></tr><tr><td><em>“MNT creation failed”</em></td><td>Usually no permission to write to the chosen folder, or a file with the same name is open. Pick another folder.</td></tr></tbody></table></div>
+    </div>
+
 <!-- FILES & TEMPLATES -->
 <div class="section" id="files-templates">
   <h2>Files &amp; Templates</h2>
@@ -2370,7 +2421,7 @@ td.red-border-cell:nth-child(4) {
     <div class="file-card" id="TPGC-Cheat-Sheet">
       <span class="file-title">TPGC Cheat Sheet</span>
       <span class="file-type">Macro-enabled workbook (.xlsm)</span>
-      <a href="Files/TPGC_Cheat_Sheet.xlsm" download>Download TPGC Cheat Sheet</a>
+      <a href="Files/TPGC_Cheat_Sheet_2026.xlsm" download>Download TPGC Cheat Sheet</a>
     </div>
     <div class="file-card" id="MNT-Master-Creator">
       <span class="file-title">MNT Master Creator</span>
