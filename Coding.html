@@ -1091,6 +1091,22 @@ td.red-border-cell:nth-child(4) {
     </div>
   </div>
   <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Induction Checker <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#induction-checker">Overview &amp; Downloads</a>
+      <a class="nav-sub-link" href="#ind-process">Where It Fits</a>
+      <a class="nav-sub-link" href="#ind-before">Before You Start</a>
+      <a class="nav-sub-link" href="#ind-run">How to Run It</a>
+      <a class="nav-sub-link" href="#ind-results">Reading the Results</a>
+      <a class="nav-sub-link" href="#ind-checks">What It Checks</a>
+      <a class="nav-sub-link" href="#ind-examples">Use Case Examples</a>
+      <a class="nav-sub-link" href="#ind-workflow">Fix Order</a>
+      <a class="nav-sub-link" href="#ind-exceptions">Built-in Exceptions</a>
+      <a class="nav-sub-link" href="#ind-maintain">Keeping It Up to Date</a>
+      <a class="nav-sub-link" href="#ind-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+  <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Files &amp; Templates <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#files-templates">All Files</a>
@@ -1985,6 +2001,82 @@ td.red-border-cell:nth-child(4) {
       <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td>Uploaded records are missing most fields</td><td>The uploader is reading row 4. Apply the row 5 fix in Step 4.</td></tr><tr><td><em>“Could not find required header ‘RIN’ on Row 5”</em></td><td>The RIN header in D5 was changed or moved. Restore it.</td></tr><tr><td><em>“Please select the cells containing the RIN numbers…”</em></td><td>Select cells in the RIN column (D) before clicking Update Information.</td></tr><tr><td>A row didn’t fill in</td><td>The RIN is blank, not a number, or shorter than 6 digits (Ad Information and IMAGE are cleared), or RMS has no single match for it.</td></tr><tr><td><em>“Database Connectivity Error”</em></td><td>No access to RMS or the Ad Database share, or the Oracle ODBC / Access engine isn’t installed.</td></tr><tr><td>Ctrl+A: <em>“Could not find any Week Versions”</em></td><td>That week has no versions in the Ad Database yet; check the week number and fiscal year.</td></tr><tr><td>Ctrl+A: <em>“Error Posting”</em></td><td>A value doesn’t fit its database field (e.g. text in a price or date column). Clean up the cells and try again.</td></tr><tr><td>Ctrl+A: <em>“Too Many Cells”</em></td><td>Select one cell per row, 500 at most.</td></tr><tr><td><em>“Could not connect to database…”</em> box</td><td>Network problem or the database is open exclusively. Try again, or type the database’s new path if it moved.</td></tr></tbody></table></div>
     </div>
 
+    <!-- INDUCTION CHECKER -->
+    <div class="section" id="induction-checker">
+      <h2>Induction Checker (Item Validation Tool)</h2>
+      <p>The <strong>Induction Checker</strong> is an Excel pre-check for <strong>RMS item induction workbooks</strong>, the templates used to create new item families, add GTINs and sizes, and attach suppliers in Oracle RMS. One run reviews every row on the Item tab and the Location tab, and catches the mistakes that would otherwise get an induction rejected or need fixing after it’s loaded:</p>
+      <ul>
+        <li><strong>Missing or invalid data:</strong> required fields for each Action, allowed dropdown values, number formats, GTIN length and check digit, prohibited characters.</li>
+        <li><strong>Rules between fields:</strong> Case Size must be a multiple of Inner Size, one primary supplier per item, one Case/Each/Inner row per GTIN, department-specific requirements.</li>
+        <li><strong>Live RMS lookups:</strong> whether the supplier, Dept/Class/Subclass, size, UDA values or GTIN already exist, and whether a new child item matches its parent’s hierarchy and retail.</li>
+        <li><strong>Description quality:</strong> brand at the start, proper case, spelling, size and colour words that don’t belong, the 100-character limit.</li>
+      </ul>
+      <p>Every problem cell is <strong>colour-highlighted</strong>, many get a <strong>comment explaining the exact fix</strong>, and a pass/fail stamp with your user name and the time is written to cells A2–A4, so a reviewer can see the file was checked before it was submitted.</p>
+      <p class="file-link"><a href="Files/HighlightSizeColorDuplicates2.xlsm" download>Induction Checker workbook</a></p>
+      <p class="file-link"><a href="Files/Item_Validation_Tool_User_Guide_v2.0.docx" download>Item Validation Tool User Guide v2.0</a></p>
+      <h3 id="ind-process">Where It Fits in the Induction</h3>
+      <ol>
+        <li><strong>Build the induction workbook</strong> as usual: one row per item on the Item tab (headers on row 7, data from row 8), with the <strong>Action</strong> for each row, and the Location tab if the Action needs it.</li>
+        <li><strong>Run the Induction Checker</strong> on it.</li>
+        <li><strong>Fix everything highlighted</strong> and run it again. Repeat until cell A3 says <em>Successful, No Errors were Found</em>.</li>
+        <li><strong>Save and submit</strong> the workbook for RMS processing. The A2–A4 stamp shows who checked it and when.</li>
+      </ol>
+      <p>The checker understands the four induction Actions and applies different rules to each:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Action</th><th>Used to</th><th>Key checks</th></tr></thead><tbody><tr><td><strong>Create Item Family</strong></td><td>Set up a new item family (parent) with its first items</td><td>All red-header fields filled; Parent Item and Transaction Item left blank; Family ID 25 characters or fewer and not numbers only; dimensions for departments that need them; Family ID listed on the Location tab</td></tr><tr><td><strong>Add Tran Item or GTIN</strong></td><td>Add a new size/colour or GTIN under an existing parent</td><td>Initial Retail, Supplier Site, Unit Cost and Buyer filled; Dept/Class/Subclass match the parent in RMS; colour + size not already built; retail matches the parent’s other children</td></tr><tr><td><strong>Add Item Supplier</strong></td><td>Attach another supplier site to an item</td><td>Supplier Site, Primary Supplier Ind, Unit Cost and Buyer filled; at least one of Family ID, Parent Item or Transaction Item; only one primary supplier; not a repeat of the Create Item Family supplier</td></tr><tr><td><strong>Add Item Supp Country Dimension</strong></td><td>Add dimensions for a supplier/country</td><td>Skips the Inner/Case/Ti/Hi and colour description requirements that apply to the other Actions</td></tr></tbody></table></div>
+      <h3 id="ind-before">Before You Start</h3>
+      <ul>
+        <li><strong>Enable macros</strong> when you open the checker workbook.</li>
+        <li><strong>Network or VPN access</strong> to RMS. RMS is read through the Microsoft ODBC for Oracle driver with a read-only login; the password is read from a protected network file, so no one types it in.</li>
+        <li><strong>Access to the approved brand list</strong> on the shared induction drive. If it can’t be opened, only the brand-name check is skipped.</li>
+        <li>Keep the template’s <strong>header names</strong> intact. The checker finds columns by header text, not by column letter, so inserting or moving columns is fine but renaming a header is not.</li>
+      </ul>
+      <h3 id="ind-run">How to Run It</h3>
+      <ol>
+        <li>Open the <strong>induction workbook</strong> you want to check.</li>
+        <li>Open <strong>HighlightSizeColorDuplicates2.xlsm</strong> and enable macros. <strong>Its window hides itself</strong>; that’s expected. It stays open in the background so its macro can run on any workbook.</li>
+        <li>Click into the induction workbook, ideally on the <strong>Item</strong> tab. If you’re on the Location tab, the checker finds the Item tab itself (the sheet with an <em>Action</em> header on row 7).</li>
+        <li>Press <kbd>Alt</kbd>+<kbd>F8</kbd>, choose <strong>HighlightSizeColorDuplicates2</strong> and click <strong>Run</strong>.</li>
+        <li>Wait for the <strong>Check complete!</strong> box. It either says <em>No errors found</em> or lists each error type with how many were found.</li>
+        <li>Review the highlighted cells, fix them, and run it again.</li>
+      </ol>
+      <div class="note"><strong>Tip:</strong> add the macro to the Quick Access Toolbar (<strong>File → Options → Quick Access Toolbar → Choose commands from: Macros</strong>) for a one-click button. The workbook also contains an older <em>HighlightSizeColorDuplicates</em> macro (version 1); use the one ending in <strong>2</strong>, which is the version the user guide describes.</div>
+      <h3 id="ind-results">Reading the Results</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Where</th><th>What it shows</th></tr></thead><tbody><tr><td><strong>A2</strong></td><td>Your network user name and the date and time of the check.</td></tr><tr><td><strong>A3</strong></td><td><span style="color:#008000;font-weight:700;">Successful, No Errors were Found</span> or <span style="color:#c00000;font-weight:700;">Errors were found, Please visually Review, Correct, and Save</span></td></tr><tr><td><strong>A4</strong></td><td>The same error summary as the pop-up, e.g. <em>GTIN Invalid Check Digit: 2</em>. Blank when the check passes.</td></tr><tr><td><strong>Cell comments</strong></td><td>Hover over a flagged cell. Comments name the missing headers, the value RMS has, the required UDA, the flagged word, the character count, or the Phase ID end date.</td></tr></tbody></table></div>
+      <p>The highlight colour tells you what kind of problem it is:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Looks like</th><th>Means</th></tr></thead><tbody><tr><td><span style="display:inline-block;min-width:3.2em;padding:1px 6px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#ffb266;color:#8b0000;font-weight:600;">Abc</span></td><td>Required field missing, or a format or value problem. Most errors use this colour.</td></tr><tr><td><span style="display:inline-block;min-width:3.2em;padding:1px 6px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#ffff00;color:#8b0000;font-weight:600;">Abc</span></td><td>The RMS Size (Diff ID) doesn’t exist in RMS.</td></tr><tr><td><span style="display:inline-block;min-width:3.2em;padding:1px 6px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#ffc7ce;color:#8b0000;font-weight:600;">Abc</span></td><td>The item or GTIN already exists in RMS.</td></tr><tr><td><span style="display:inline-block;min-width:3.2em;padding:1px 6px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#ffffcc;color:#8b0000;font-weight:600;">Abc</span></td><td>Duplicate values inside the worksheet.</td></tr><tr><td><span style="display:inline-block;min-width:3.2em;padding:1px 6px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#e4d4f4;color:#7030a0;font-weight:600;">Abc</span></td><td>Dept/Class/Subclass doesn’t match RMS for the parent item (Add Tran Item or GTIN).</td></tr><tr><td><span style="display:inline-block;min-width:3.2em;padding:1px 6px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#f4dcc0;color:#8b0000;font-weight:600;">Abc</span></td><td>Parent Description doesn’t start with the brand.</td></tr><tr><td><span style="display:inline-block;min-width:3.2em;padding:1px 6px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#cfe6f7;color:#8b0000;font-weight:600;">Abc</span></td><td>Parent Description has proper-case, spelling, size, colour or unit-word problems.</td></tr><tr><td><span style="display:inline-block;min-width:3.2em;padding:1px 6px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#eadcf7;color:#8b0000;font-weight:600;">Abc</span></td><td>The same Parent Description is used for more than one Family ID.</td></tr><tr><td><span style="color:#c00000;font-weight:700;">Red bold word</span></td><td>That word in the description is misspelled, or is a size/colour/unit word that should come out.</td></tr><tr><td><span style="text-decoration:underline;">Underlined word</span></td><td>That word isn’t in proper case (brand words are exempt).</td></tr></tbody></table></div>
+      <h3 id="ind-checks">What It Checks</h3>
+      <p>The checker reports about 60 error types. The full list, with what each means and how to fix it, is in the user guide; this is the overview:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Area</th><th>Examples of what’s checked</th></tr></thead><tbody><tr><td><strong>Required fields</strong></td><td>Red-header fields on Create Item Family; Inner Size, Case Size, Ti and Hi; Action-specific fields (see the Actions table above); Consignment Rate for consignment items.</td></tr><tr><td><strong>Supplier &amp; packaging</strong></td><td>Supplier Site is digits only and exists in RMS; only one primary supplier per item; Case Size is an exact multiple of Inner Size; only one Case, Each, Inner, Outer or Pallet row per Family ID + GTIN.</td></tr><tr><td><strong>Description &amp; brand</strong></td><td>Brand in capitals, on the approved brand list and at the start of the Parent Description; proper case and spelling; colour description not repeated in the Parent Description; 100-character limit; no <code>! @ &amp; $ ™ ® © ?</code> in the Parent, Transaction or Web Description.</td></tr><tr><td><strong>Colour, UDA &amp; e-commerce</strong></td><td>NRF Color Code is three digits (000–999) with a description unless it’s 000; e-commerce colour family, warranty and gender from the allowed lists; required UDAs for certain Dept/Class/Subclass; UDA ID + value pairs exist in RMS.</td></tr><tr><td><strong>Department rules</strong></td><td>Departments that require Perishable, Consignment/Concession item type, or dimensions; e-commerce warranty only for eligible departments.</td></tr><tr><td><strong>GTIN / UPC</strong></td><td>Length matches the Item Number Type (UCC12 = 12, EAN/UCC-13 = 13, EAN/UCC-14 = 14); valid GS1 check digit; not already in RMS; not duplicated for the same Action. <code>GENERATE</code> (capitals) is accepted as a placeholder.</td></tr><tr><td><strong>RMS lookups</strong></td><td>Dept/Class/Subclass combination exists; size exists and is attached to the Size Group; colour + size not already built under the parent; retail matches the parent’s existing children.</td></tr><tr><td><strong>Allowed values &amp; seasons</strong></td><td>Dropdown fields (Status, Item Type, UOMs, Round Level, Ticket Type, Handling Temp, etc.) contain allowed values; Phase IDs aren’t for a season that has already ended; no <code>$</code> typed in Initial Retail, MSRP or Unit Cost.</td></tr><tr><td><strong>Countries</strong></td><td>Source Country is USA; Manufacture Country is a valid three-letter code.</td></tr><tr><td><strong>Location tab</strong></td><td>Present when the Actions need it; every Create Item Family Family ID is listed; item and location numbers are digits only; every row has a Family ID or Item.</td></tr><tr><td><strong>Consistency</strong></td><td>Rows sharing a Family ID use the same Dept/Class/Subclass and Size Group ID.</td></tr></tbody></table></div>
+      <h3 id="ind-examples">Use Case Examples</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>You see</th><th>Why</th><th>Fix</th></tr></thead><tbody><tr><td>GTIN cell orange, comment <em>“GTIN Invalid Check Digit”</em></td><td>A digit was mistyped. The last digit of a GTIN is calculated from the others, so a single typo is caught.</td><td>Re-copy the GTIN from the vendor’s file or the product label.</td></tr><tr><td>Supplier Site orange, <em>“Supplier Site Not Numbers Only”</em>, but it looks fine</td><td>A hidden space was pasted in with the number.</td><td>Retype the number in the cell.</td></tr><tr><td>Dept, Class and Subclass purple on an Add Tran Item or GTIN row</td><td>The new size or colour was given a different hierarchy than its parent item has in RMS.</td><td>Change them to match the parent (the comment shows RMS’s values), or check the parent item number.</td></tr><tr><td>Parent Description light blue with <span style="color:#c00000;font-weight:700;">Blue</span> in red bold</td><td>The colour is in the parent description. Colour belongs in the NRF Color Description and transaction description.</td><td>Remove the colour word from the Parent Description.</td></tr><tr><td>RMS Size yellow</td><td>That size code doesn’t exist in RMS.</td><td>Pick a valid size for the Size Group ID.</td></tr><tr><td>Phase ID orange with an end date in the comment</td><td>The Phase ID is for a season that has already ended.</td><td>Choose a current or future season.</td></tr><tr><td>Several Case rows light yellow</td><td>Two rows for the same Family ID + GTIN both have Package Type <em>Case</em>.</td><td>Keep one Case row for that GTIN.</td></tr></tbody></table></div>
+      <h3 id="ind-workflow">Recommended Fix Order</h3>
+      <ol>
+        <li>Start with the summary in <strong>A4</strong> to see which error types are present.</li>
+        <li>Fix <strong>orange</strong> required-field and format problems first; they often cause other errors.</li>
+        <li>Read the <strong>comments</strong> for errors that give a specific RMS value, UDA, Phase ID end date or description detail.</li>
+        <li>On Add Tran Item or GTIN rows, fix <strong>hierarchy mismatches</strong> (purple) before looking at RMS duplicate results on the same row.</li>
+        <li>Resolve <strong>RMS existence</strong> (pink) and <strong>size</strong> (yellow) conflicts.</li>
+        <li>Check <strong>duplicates</strong> across the whole sheet, including hidden or filtered rows.</li>
+        <li>Run the checker again until A3 says <em>Successful</em>, then <strong>save</strong>.</li>
+      </ol>
+      <div class="note red-note"><strong>Clear old highlights before re-running.</strong> The checker adds highlighting but doesn’t remove it from earlier runs, so a cell you’ve fixed stays coloured. Select the data rows and set <strong>Home → Fill Color → No Fill</strong> (and font colour back to Automatic) before running again, so only current problems are highlighted.</div>
+      <div class="note"><strong>OK to submit after review:</strong> spelling and proper-case flags can be submitted when the vendor’s wording is confirmed correct (the spell check uses Microsoft’s dictionary and flags brand stylings). A <em>Unit Retail mismatch vs RMS Parent</em> can be submitted once you’ve confirmed the retail is right. A clean result means the workbook passed these checks; it doesn’t replace normal business review.</div>
+      <h3 id="ind-exceptions">Built-in Exceptions</h3>
+      <ul>
+        <li>Supplier Color may be blank when the NRF Color Code is <code>000</code>.</li>
+        <li>Package Type, Depth, Width, Height, Gross Weight and Presentation Method are only required for departments that need dimensions. Dept 884 Class 1401, and buyers 60, 90, 720 and 960, are exempt.</li>
+        <li>The brand-at-start check is skipped when <code>S/O</code> appears in the description, and accepts the brand without apostrophes.</li>
+        <li>Colour code <code>262S</code> is never flagged as an already-built colour + size.</li>
+        <li>Duplicate GTINs are only compared within the same Action.</li>
+        <li>Perishable departments accept Yes or No; only a blank is an error.</li>
+        <li>The Location tab is only required when an Action on the Item tab needs it (not for Add Tran Item or GTIN or Add Item Supplier).</li>
+      </ul>
+      <h3 id="ind-maintain">Keeping It Up to Date</h3>
+      <p>Department lists, allowed values, season and Phase IDs, buyer exemptions and required UDAs are written into the VBA. When the business rules change, update the macro and the user guide together. In particular, each <strong>new season</strong> needs adding in two places: the allowed Phase ID list <em>and</em> the season end-date table (e.g. FAL26 ends 10/31/2026, WNT26 ends 01/31/2027), otherwise the new Phase ID passes without being checked for expiry.</p>
+      <h3 id="ind-troubleshooting">Troubleshooting</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td>The macro isn’t in the <kbd>Alt</kbd>+<kbd>F8</kbd> list</td><td>Open HighlightSizeColorDuplicates2.xlsm and enable macros. It’s hidden once open; check <strong>View → Unhide</strong> if you need to confirm it’s loaded.</td></tr><tr><td><em>“Item Tab Not Found”</em></td><td>No sheet has an <em>Action</em> header on row 7. Click into the induction workbook (not the checker) and check its headers weren’t moved to another row.</td></tr><tr><td><em>“Problem connecting to network drive. Check your VPN/Access.”</em></td><td>You’re off the network or VPN, or don’t have access to the share holding the RMS password file. Connect and run again.</td></tr><tr><td><em>“Failed to check: …”</em></td><td>RMS couldn’t be reached, the Oracle ODBC driver isn’t installed, or a required header is missing or renamed. The message names the problem; the workbook is <strong>not</strong> marked as checked.</td></tr><tr><td>Brand errors never appear</td><td>The brand list on the shared drive couldn’t be opened, so that one check was skipped. Check your access to the induction folder.</td></tr><tr><td>A fixed cell is still highlighted</td><td>Highlighting from earlier runs isn’t cleared. Set the cells to No Fill and run again.</td></tr><tr><td>A correct vendor word is flagged as a spelling error</td><td>The spell check uses Microsoft’s dictionary. Confirm the wording with the vendor; it can be submitted after review.</td></tr><tr><td>A new season’s Phase ID is rejected, or an old one isn’t</td><td>The season lists in the VBA need updating (see Keeping It Up to Date).</td></tr></tbody></table></div>
+    </div>
+
 <!-- FILES & TEMPLATES -->
 <div class="section" id="files-templates">
   <h2>Files &amp; Templates</h2>
@@ -2014,6 +2106,12 @@ td.red-border-cell:nth-child(4) {
       <span class="file-title">Ad Bible</span>
       <span class="file-type">Macro-enabled workbook (.xlsm)</span>
       <a href="Files/AD_BIBLE_Standalone.xlsm" download>Download Ad Bible</a>
+    </div>
+    <div class="file-card" id="Induction-Checker">
+      <span class="file-title">Induction Checker</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm) + guide (.docx)</span>
+      <a href="Files/HighlightSizeColorDuplicates2.xlsm" download>Download Induction Checker</a>
+      <a href="Files/Item_Validation_Tool_User_Guide_v2.0.docx" download>Download User Guide v2.0</a>
     </div>
     <div class="file-card" id="Ad-Tracker">
       <span class="file-title">Ad Tracker</span>
