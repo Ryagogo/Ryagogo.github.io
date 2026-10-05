@@ -1123,6 +1123,17 @@ td.red-border-cell:nth-child(4) {
     </div>
   </div>
   <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Sort and Format BI Report <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#sort-format-bi">Overview &amp; Download</a>
+      <a class="nav-sub-link" href="#bi-example">Before and After</a>
+      <a class="nav-sub-link" href="#bi-setup">One-Time Setup</a>
+      <a class="nav-sub-link" href="#bi-use">How to Use It</a>
+      <a class="nav-sub-link" href="#bi-how">How It Works</a>
+      <a class="nav-sub-link" href="#bi-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+  <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Files &amp; Templates <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#files-templates">All Files</a>
@@ -2144,6 +2155,45 @@ td.red-border-cell:nth-child(4) {
       <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td>The template opens but no window appears</td><td><strong>View → Unhide</strong> and choose the template. Its open macro hides the window.</td></tr><tr><td><em>“Header check”</em> box listing tabs or headers</td><td>A tab was renamed or deleted, or a header was changed or moved off its row (Pack Item row 6, Component Item row 3, Location row 2). Restore it.</td></tr><tr><td>A4: <em>“RMS checks skipped: could not read the RMS password file”</em></td><td>No network or VPN access to the share. Connect and run again.</td></tr><tr><td>A4: <em>“RMS account is locked (ORA-28000)”</em></td><td>Too many failed logins on the shared read-only account. Wait about 5 minutes.</td></tr><tr><td>A4: <em>“unable to connect to RMS”</em></td><td>The Oracle driver isn’t installed for your Excel (64-bit needs the Oracle Instant Client driver).</td></tr><tr><td><em>“No data found below row 6”</em></td><td>The Pack Item tab is empty, or the data starts on the wrong row.</td></tr><tr><td>A correct word is flagged as a misspelling</td><td>Brand and product names often aren’t in Excel’s dictionary. Confirm the wording and continue.</td></tr><tr><td>A new season or phase is rejected</td><td>Add it to the Season or Phase list in Module2.</td></tr><tr><td><em>“Macro error: …”</em></td><td>An unexpected problem; the message names it. Check the tabs and headers, then run again.</td></tr></tbody></table></div>
     </div>
 
+    <!-- SORT AND FORMAT BI REPORT -->
+    <div class="section" id="sort-format-bi">
+      <h2>Sort and Format BI Report</h2>
+      <p>Reports exported from the BI tool arrive with five rows of title and filter information above the column headers, unsorted rows, and columns too narrow to read. <strong>Sort and Format BI Report</strong> cleans one up in a single click:</p>
+      <ol>
+        <li><strong>Sorts</strong> the whole report by <strong>PARENT</strong>, then <strong>TRANSACTION</strong>, so every parent’s items sit together in order.</li>
+        <li><strong>Highlights</strong> the PARENT and TRANSACTION values in soft yellow so the item numbers stand out.</li>
+        <li><strong>Auto-fits</strong> every column and row so all the text is visible.</li>
+        <li><strong>Deletes rows 1–5</strong> (the report title and filters), leaving the headers in row 1, ready to filter, pivot or paste into another workbook.</li>
+      </ol>
+      <p>It works on whichever sheet you’re looking at, so it’s meant to live on a <strong>Quick Access Toolbar button</strong> and be used on any report you open.</p>
+      <p class="file-link"><a href="Files/CustomSortandFormat.xlsm" download>Sort and Format BI Report workbook</a></p>
+      <h3 id="bi-example">Before and After</h3>
+      <p><strong>Before</strong>: report as exported (headers on row 6, rows in no particular order):</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Row</th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead><tbody><tr><td>1–5</td><td><span style="color:#888;">Report title, run date, filters…</span></td><td></td><td></td><td></td></tr><tr><td>6</td><td><strong>PARENT</strong></td><td><strong>TRANSACTION</strong></td><td><strong>DESCRIPTION</strong></td><td><strong>UNITS</strong></td></tr><tr><td>7</td><td>100245</td><td>100251</td><td>Classic Tee Navy L</td><td>14</td></tr><tr><td>8</td><td>100198</td><td>100201</td><td>Water Bottle 24oz</td><td>40</td></tr><tr><td>9</td><td>100245</td><td>100247</td><td>Classic Tee Navy S</td><td>9</td></tr><tr><td>10</td><td>100245</td><td>100249</td><td>Classic Tee Navy M</td><td>22</td></tr></tbody></table></div>
+      <p><strong>After</strong>: title rows gone, sorted by PARENT then TRANSACTION, item numbers highlighted, columns sized to fit:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Row</th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead><tbody><tr><td>1</td><td><strong>PARENT</strong></td><td><strong>TRANSACTION</strong></td><td><strong>DESCRIPTION</strong></td><td><strong>UNITS</strong></td></tr><tr><td>2</td><td style="background:#ffffcc;color:#222;">100198</td><td style="background:#ffffcc;color:#222;">100201</td><td>Water Bottle 24oz</td><td>40</td></tr><tr><td>3</td><td style="background:#ffffcc;color:#222;">100245</td><td style="background:#ffffcc;color:#222;">100247</td><td>Classic Tee Navy S</td><td>9</td></tr><tr><td>4</td><td style="background:#ffffcc;color:#222;">100245</td><td style="background:#ffffcc;color:#222;">100249</td><td>Classic Tee Navy M</td><td>22</td></tr><tr><td>5</td><td style="background:#ffffcc;color:#222;">100245</td><td style="background:#ffffcc;color:#222;">100251</td><td>Classic Tee Navy L</td><td>14</td></tr></tbody></table></div>
+      <h3 id="bi-setup">One-Time Setup: Add the Button</h3>
+      <ol>
+        <li>Save <strong>CustomSortandFormat.xlsm</strong> somewhere permanent, then open it and <strong>enable macros</strong>. Its window <strong>hides itself</strong>, which is expected: it stays open in the background so the macro can run on other workbooks.</li>
+        <li>In Excel go to <strong>File → Options → Quick Access Toolbar</strong>.</li>
+        <li>Under <strong>Choose commands from</strong>, pick <strong>Macros</strong>, select <strong>CustomSortandFormat.xlsm!CustomSortAndFormat</strong> and click <strong>Add &gt;&gt;</strong>.</li>
+        <li>Click <strong>Modify…</strong> to choose an icon and a display name such as <em>Sort BI Report</em>, then <strong>OK</strong>.</li>
+      </ol>
+      <div class="note"><strong>Tip:</strong> to have the macro ready every time Excel starts, put the workbook in your Excel startup folder: type <code>%APPDATA%\Microsoft\Excel\XLSTART</code> into the File Explorer address bar and save it there. It opens hidden with Excel.</div>
+      <h3 id="bi-use">How to Use It</h3>
+      <ol>
+        <li>Export the report from BI and open it in Excel.</li>
+        <li>Make sure you’re on the <strong>report’s sheet</strong> and the headers are on <strong>row 6</strong>, with columns named <strong>PARENT</strong> and <strong>TRANSACTION</strong> (any position, any capitalisation).</li>
+        <li>Click the <strong>Sort BI Report</strong> button.</li>
+        <li>When <em>“Sort, targeted highlight, autofit, and row cleanup completed!”</em> appears, the report is ready. Save it.</li>
+      </ol>
+      <div class="note red-note"><strong>Run it once per report.</strong> The macro deletes rows 1–5 and Excel can’t undo a macro, so a second run on the same sheet would look for headers on row 6 again and stop (or delete data rows). If you might need the original layout, save a copy before running it.</div>
+      <h3 id="bi-how">How It Works</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Step</th><th>What happens</th></tr></thead><tbody><tr><td>Find the data</td><td>The last row is the last filled cell in <strong>column A</strong>; the last column is the last header on row 6. If there’s nothing below row 6 it stops.</td></tr><tr><td>Find the columns</td><td>Searches row 6 for <strong>PARENT</strong> and <strong>TRANSACTION</strong>, ignoring case and extra spaces, so the report’s column order doesn’t matter.</td></tr><tr><td>Sort</td><td>Sorts the whole block (all columns, so rows stay intact) ascending by PARENT, then TRANSACTION, with row 6 treated as the header.</td></tr><tr><td>Highlight</td><td>Fills only the data cells under PARENT and TRANSACTION in soft yellow; headers and other columns are untouched.</td></tr><tr><td>Auto-fit</td><td>Resizes every column width and row height to fit its contents.</td></tr><tr><td>Clean up</td><td>Deletes rows 1–5 last, so the headers end up in row 1.</td></tr></tbody></table></div>
+      <h3 id="bi-troubleshooting">Troubleshooting</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td><em>“No data found below Row 6 to sort!”</em></td><td>Column A is empty below row 6, or the report was already processed. Check you’re on the right sheet and column A has data.</td></tr><tr><td><em>“Could not find ‘PARENT’ or ‘TRANSACTION’ in Row 6”</em></td><td>The report layout changed, the columns are named differently, or the macro already ran (headers are now on row 1). Check the headers on row 6.</td></tr><tr><td>The button does nothing or says the macro can’t be found</td><td>The workbook was moved or renamed after the button was added. Open it again from its new location, or remove the button and add it again.</td></tr><tr><td>The last few rows weren’t sorted</td><td>Those rows have a blank cell in column A, so they were treated as past the end of the data. Fill column A or delete the blank rows first.</td></tr><tr><td>Item numbers sort oddly (e.g. 1000 before 999)</td><td>Some numbers are stored as text. Convert the column to numbers (<strong>Data → Text to Columns → Finish</strong>) and run on a fresh export.</td></tr><tr><td>I can’t see the workbook to edit the macro</td><td>It hides itself on open. Use <strong>View → Unhide</strong>, or press <kbd>Alt</kbd>+<kbd>F11</kbd> to open the VBA editor directly.</td></tr></tbody></table></div>
+    </div>
+
 <!-- FILES & TEMPLATES -->
 <div class="section" id="files-templates">
   <h2>Files &amp; Templates</h2>
@@ -2184,6 +2234,11 @@ td.red-border-cell:nth-child(4) {
       <span class="file-title">Pack Item Induction Template</span>
       <span class="file-type">Macro-enabled workbook (.xlsm)</span>
       <a href="Files/Pack_Item_Induction_Template.xlsm" download>Download Pack Item Induction Template</a>
+    </div>
+    <div class="file-card" id="Sort-Format-BI">
+      <span class="file-title">Sort and Format BI Report</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm)</span>
+      <a href="Files/CustomSortandFormat.xlsm" download>Download Sort and Format BI Report</a>
     </div>
     <div class="file-card" id="Ad-Tracker">
       <span class="file-title">Ad Tracker</span>
