@@ -1145,6 +1145,18 @@ td.red-border-cell:nth-child(4) {
     </div>
   </div>
   <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">AGC Macro <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#agc-macro">Overview &amp; Download</a>
+      <a class="nav-sub-link" href="#agc-before">Before You Start</a>
+      <a class="nav-sub-link" href="#agc-run">How to Use It</a>
+      <a class="nav-sub-link" href="#agc-fills">What Gets Filled In</a>
+      <a class="nav-sub-link" href="#agc-upc">How UPCs Are Cleaned</a>
+      <a class="nav-sub-link" href="#agc-example">Example</a>
+      <a class="nav-sub-link" href="#agc-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+  <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Files &amp; Templates <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#files-templates">All Files</a>
@@ -2244,6 +2256,50 @@ td.red-border-cell:nth-child(4) {
       <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td>Nothing happened</td><td>No tab with “Location” in its name, no <strong>Item</strong> header in rows 1–25, or no rows with both an Item and a numeric Location. Check you ran it with the induction workbook active, not another file.</td></tr><tr><td>Some rows stayed blank</td><td>RMS has no record for that item at that store. Fill them by hand. Also check the Location is digits only (no letters or spaces).</td></tr><tr><td>Values landed in the wrong columns</td><td>Your Location tab’s headers don’t match the names the macro looks for (e.g. <em>Location - Primary Supp</em>), so it fell back to columns I and J. Move the columns to I and J, or rename the headers to <em>Primary Supplier</em> and <em>Store Order Multiple</em>.</td></tr><tr><td><em>“Problem connecting to network drive. Check your VPN/Access.”</em></td><td>You’re off the network or VPN, or can’t reach the RMS password file. Connect and run again.</td></tr><tr><td><em>“Error …”</em> box titled <em>Location Lookup</em></td><td>Usually an RMS connection problem or a missing Oracle ODBC driver. The message gives the details.</td></tr><tr><td>I can’t see the workbook to edit it</td><td>It hides itself on open. Use <strong>View → Unhide</strong>, or <kbd>Alt</kbd>+<kbd>F11</kbd> for the VBA editor.</td></tr></tbody></table></div>
     </div>
 
+    <!-- AGC MACRO -->
+    <div class="section" id="agc-macro">
+      <h2>AGC Macro</h2>
+      <p>The <strong>AGC Macro</strong> turns a greeting-card vendor’s item list (American Greetings and Papyrus-Recycled Greetings) into ready-made <strong>Add Tran Item or GTIN</strong> rows on the item induction template. Card lines arrive as long lists of card numbers and UPCs; keying each one into the template, looking up its parent and transaction item, retail and supplier, and fixing the UPC format by hand takes hours. In one click the macro:</p>
+      <ol>
+        <li><strong>Reads</strong> the vendor list (card number and UPC) from the sheet you’re on.</li>
+        <li><strong>Opens</strong> the shared item induction template and adds one row per card below any existing rows.</li>
+        <li><strong>Cleans each UPC</strong> into a 12-digit GTIN and fills the fixed card-line values (Action, Dept/Class/Subclass, colour, size, buyer).</li>
+        <li><strong>Looks up</strong> each card number in the TPGC Master database (Microsoft Access) for its Parent Item, Transaction Item, Initial Retail and supplier.</li>
+        <li><strong>Sets the supplier</strong> from the card-number prefix: <code>AGCE…</code> → American Greetings, <code>PRGS…</code> → Papyrus-Recycled Greetings.</li>
+      </ol>
+      <p class="file-link"><a href="Files/AGC_Macro.xlsm" download>AGC Macro workbook</a></p>
+      <h3 id="agc-before">Before You Start</h3>
+      <ul>
+        <li><strong>Enable macros</strong> when you open the workbook.</li>
+        <li><strong>Network access</strong> to the shared drives holding the induction template (<strong>109</strong>) and the <strong>TPGC Master</strong> Access database. Both locations are set in the macro.</li>
+        <li>The <strong>Microsoft Access Database Engine</strong> (ACE OLEDB 12.0) installed, so Excel can read the Access database.</li>
+        <li>A vendor list with headers in <strong>row 1</strong>, including <code>cpn_nbr</code> (the card number) and <code>prim_upc_cd</code> (the primary UPC). Other columns can be there too; they’re ignored.</li>
+      </ul>
+      <h3 id="agc-run">How to Use It</h3>
+      <ol>
+        <li>Open <strong>AGC_Macro.xlsm</strong> and paste the vendor’s list onto <strong>Sheet1</strong>, starting at A1 so the headers are in row 1. Clear any rows from the previous run first.</li>
+        <li>Stay on that sheet and click the <strong>button</strong> on it (or <kbd>Alt</kbd>+<kbd>F8</kbd> → <strong>CopyData_And_AccessLookup_Optimized</strong> → Run).</li>
+        <li>The induction template opens and fills in. When <em>“Fast processing complete! (n rows added)”</em> appears, switch to the template.</li>
+        <li><strong>Review the new rows</strong>: any card without a database match has a blank Parent Item, Transaction Item and Initial Retail to fill in.</li>
+        <li>Use <strong>File → Save As</strong> to save the template under a new name for this induction. Don’t save over the shared template.</li>
+        <li>Run the <a href="#induction-checker">Induction Checker</a> on it, fix anything flagged, and submit.</li>
+      </ol>
+      <div class="note red-note"><strong>The macro doesn’t save the template.</strong> It opens the shared master, adds rows and leaves it open. Always <strong>Save As</strong> a new file; a plain Save would put this vendor’s rows into everyone’s blank template.</div>
+      <h3 id="agc-fills">What Gets Filled In</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Template column</th><th>Value</th><th>Where it comes from</th></tr></thead><tbody><tr><td>A: Action</td><td><code>Add Tran Item or GTIN</code></td><td>Fixed</td></tr><tr><td>L / M / N: Dept / Class / Subclass</td><td><code>532</code> / <code>1001</code> / <code>1</code></td><td>Fixed (greeting cards)</td></tr><tr><td>O: Parent Item Description</td><td>The card number, e.g. <code>AGCE1234</code></td><td><code>cpn_nbr</code></td></tr><tr><td>GTIN</td><td>12-digit cleaned UPC</td><td><code>prim_upc_cd</code> (see below)</td></tr><tr><td>Z: NRF Color Code</td><td><code>000</code></td><td>Fixed</td></tr><tr><td>AD / AE: Size Group ID / RMS Size</td><td><code>262S</code> / <code>0000</code></td><td>Fixed. The Induction Checker deliberately skips its colour + size check for <code>262S</code>.</td></tr><tr><td>DK: Buyer</td><td><code>260</code></td><td>Fixed</td></tr><tr><td>Parent Item, Transaction Item</td><td>From the database</td><td>TPGC Master record whose <em>Item Desc</em> matches the card number</td></tr><tr><td>AG: Initial Retail</td><td>From the database</td><td><em>Retail</em> (or <em>Retail Price</em>)</td></tr><tr><td>BE / BF: Supplier Site / Name</td><td>From the database, or the prefix rule</td><td><code>AGCE…</code> → American Greetings; <code>PRGS…</code> → Papyrus-Recycled Greetings; otherwise the database value</td></tr></tbody></table></div>
+      <p>Text columns (Dept, Class, Subclass, description, colour, size, GTIN, item numbers, supplier, buyer) are formatted as text first, so leading zeros such as <code>000</code> and <code>0000</code> are kept.</p>
+      <h3 id="agc-upc">How UPCs Are Cleaned</h3>
+      <p>Vendor files mix UPC formats. The macro strips anything that isn’t a digit, then makes it a 12-digit UPC-A GTIN:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Vendor UPC</th><th>Rule</th><th>GTIN written</th></tr></thead><tbody><tr><td><code>0-12345-67890-5</code></td><td>Remove dashes and spaces; 12 digits stay as-is</td><td><code>012345678905</code></td></tr><tr><td><code>0012345678912</code></td><td>13 digits starting with 0: drop the leading zero</td><td><code>012345678912</code></td></tr><tr><td><code>12345678</code></td><td>Fewer than 12 digits: pad with leading zeros</td><td><code>000012345678</code></td></tr><tr><td><code>4012345678901</code></td><td>13 digits not starting with 0 (EAN-13), or 14 digits: left unchanged</td><td><code>4012345678901</code></td></tr></tbody></table></div>
+      <h3 id="agc-example">Example</h3>
+      <p>Vendor list on Sheet1:</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>cpn_nbr</th><th>prim_upc_cd</th></tr></thead><tbody><tr><td>AGCE1234</td><td>0-12345-67890-5</td></tr><tr><td>PRGS5678</td><td>0012345678912</td></tr></tbody></table></div>
+      <p>Rows added to the template (Parent, Transaction and Retail from the database):</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Action</th><th>Dept/Class/Sub</th><th>Parent Item Description</th><th>GTIN</th><th>Size Group / Size</th><th>Retail</th><th>Supplier Name</th></tr></thead><tbody><tr><td>Add Tran Item or GTIN</td><td>532 / 1001 / 1</td><td>AGCE1234</td><td>012345678905</td><td>262S / 0000</td><td>4.99</td><td>AMERICAN GREETING CORP.</td></tr><tr><td>Add Tran Item or GTIN</td><td>532 / 1001 / 1</td><td>PRGS5678</td><td>012345678912</td><td>262S / 0000</td><td>7.99</td><td>PAPYRUS-RECYCLED GREETINGS INC</td></tr></tbody></table></div>
+      <h3 id="agc-troubleshooting">Troubleshooting</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td><em>“Could not find headers ‘cpn_nbr’ or ‘prim_upc_cd’ in Row 1”</em></td><td>The list wasn’t pasted at A1, the headers are named differently, or you ran it from a different sheet. Paste the list with its headers in row 1 and run it from that sheet.</td></tr><tr><td><em>“No data found under headers”</em></td><td>Nothing below the <code>cpn_nbr</code> header.</td></tr><tr><td><em>“Destination file not found”</em></td><td>The shared induction template has moved or you can’t reach that drive. Connect to the network; if it moved, update the path in the macro.</td></tr><tr><td><em>“Could not find one or more required headers in Row 7”</em></td><td>The template’s first sheet doesn’t have <em>GTIN</em>, <em>Parent Item</em> and <em>Transaction Item</em> headers on row 7. Check the template wasn’t changed.</td></tr><tr><td><em>“Access Database not found”</em></td><td>The TPGC database is unreachable. The rows have already been added to the template without database values; close the template <strong>without saving</strong>, fix access, and run again.</td></tr><tr><td>Parent, Transaction or Retail blank on some rows</td><td>No TPGC Master record has that exact card number as its <em>Item Desc</em>. Add the card to the database or fill those cells by hand.</td></tr><tr><td>Supplier wrong or blank</td><td>The card number doesn’t start with <code>AGCE</code> or <code>PRGS</code> and the database has no supplier for it. Enter the supplier by hand.</td></tr><tr><td>The template opened read-only</td><td>Someone else has it open. Close it, wait, and run again, or Save As a copy.</td></tr><tr><td>Rows from the last run appear again</td><td>Sheet1 still had the previous list. Clear it before pasting a new one.</td></tr><tr><td><em>“An unexpected error occurred: …”</em></td><td>Usually the Access Database Engine isn’t installed, or the database is locked. The template may be left open with partial rows; close it without saving.</td></tr></tbody></table></div>
+    </div>
+
 <!-- FILES & TEMPLATES -->
 <div class="section" id="files-templates">
   <h2>Files &amp; Templates</h2>
@@ -2294,6 +2350,11 @@ td.red-border-cell:nth-child(4) {
       <span class="file-title">QTY KEY Macro</span>
       <span class="file-type">Macro-enabled workbook (.xlsm)</span>
       <a href="Files/LocationLookup.xlsm" download>Download QTY KEY Macro</a>
+    </div>
+    <div class="file-card" id="AGC-Macro">
+      <span class="file-title">AGC Macro</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm)</span>
+      <a href="Files/AGC_Macro.xlsm" download>Download AGC Macro</a>
     </div>
     <div class="file-card" id="Ad-Tracker">
       <span class="file-title">Ad Tracker</span>
