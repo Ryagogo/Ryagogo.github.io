@@ -1134,6 +1134,17 @@ td.red-border-cell:nth-child(4) {
     </div>
   </div>
   <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">QTY KEY Macro <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#qty-key-macro">Overview &amp; Download</a>
+      <a class="nav-sub-link" href="#qk-example">Example</a>
+      <a class="nav-sub-link" href="#qk-setup">One-Time Setup</a>
+      <a class="nav-sub-link" href="#qk-use">How to Use It</a>
+      <a class="nav-sub-link" href="#qk-how">How It Works</a>
+      <a class="nav-sub-link" href="#qk-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+  <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Files &amp; Templates <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#files-templates">All Files</a>
@@ -2195,6 +2206,44 @@ td.red-border-cell:nth-child(4) {
       <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td><em>“No data found below Row 6 to sort!”</em></td><td>Column A is empty below row 6, or the report was already processed. Check you’re on the right sheet and column A has data.</td></tr><tr><td><em>“Could not find ‘PARENT’ or ‘TRANSACTION’ in Row 6”</em></td><td>The report layout changed, the columns are named differently, or the macro already ran (headers are now on row 1). Check the headers on row 6.</td></tr><tr><td>The button does nothing or says the macro can’t be found</td><td>The workbook was moved or renamed after the button was added. Open it again from its new location, or remove the button and add it again.</td></tr><tr><td>The last few rows weren’t sorted</td><td>Those rows have a blank cell in column A, so they were treated as past the end of the data. Fill column A or delete the blank rows first.</td></tr><tr><td>Item numbers sort oddly (e.g. 1000 before 999)</td><td>Some numbers are stored as text. Convert the column to numbers (<strong>Data → Text to Columns → Finish</strong>) and run on a fresh export.</td></tr><tr><td>I can’t see the workbook to edit the macro</td><td>It hides itself on open. Use <strong>View → Unhide</strong>, or press <kbd>Alt</kbd>+<kbd>F11</kbd> to open the VBA editor directly.</td></tr></tbody></table></div>
     </div>
 
+    <!-- QTY KEY MACRO -->
+    <div class="section" id="qty-key-macro">
+      <h2>QTY KEY Macro</h2>
+      <p>The <strong>QTY KEY Macro</strong> (LocationLookup) fills in the <strong>Location</strong> tab of an induction workbook from RMS. For every row with an <strong>Item</strong> and a <strong>Location</strong>, it looks up that item at that store in RMS and writes:</p>
+      <ul>
+        <li><strong>Primary Supplier</strong>: the supplier RMS has set up for the item at that location.</li>
+        <li><strong>Location – Store Order Multiple</strong> (the quantity key): how the store orders the item, as <strong>Cases</strong>, <strong>Inner</strong> or <strong>Eaches</strong>.</li>
+      </ul>
+      <p>Typing these by hand means looking up every item/store pair, which is slow and easy to get wrong on large rangings. The macro reads all the rows at once and queries RMS in batches of 500 items, so even thousands of rows fill in within seconds. Rows RMS has no record for are left exactly as they are.</p>
+      <p class="file-link"><a href="Files/LocationLookup.xlsm" download>QTY KEY Macro (LocationLookup) workbook</a></p>
+      <h3 id="qk-example">Example</h3>
+      <p>Location tab before running (Item and Location entered; supplier and quantity key blank or out of date):</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>C: Item</th><th>H: Location</th><th>I: Primary Supplier</th><th>J: Store Order Multiple</th></tr></thead><tbody><tr><td>100247</td><td>715</td><td></td><td></td></tr><tr><td>100247</td><td>0820</td><td></td><td></td></tr><tr><td>100249</td><td>715</td><td></td><td>Eaches</td></tr><tr><td>100251</td><td>999</td><td></td><td></td></tr></tbody></table></div>
+      <p>After running (filled from RMS shown in green; row 4 had no RMS record for that item and store, so it was left alone):</p>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>C: Item</th><th>H: Location</th><th>I: Primary Supplier</th><th>J: Store Order Multiple</th></tr></thead><tbody><tr><td>100247</td><td>715</td><td style="background:#e2f0d9;color:#222;">600123</td><td style="background:#e2f0d9;color:#222;">Cases</td></tr><tr><td>100247</td><td>0820</td><td style="background:#e2f0d9;color:#222;">600123</td><td style="background:#e2f0d9;color:#222;">Inner</td></tr><tr><td>100249</td><td>715</td><td style="background:#e2f0d9;color:#222;">600123</td><td style="background:#e2f0d9;color:#222;">Cases</td></tr><tr><td>100251</td><td>999</td><td></td><td></td></tr></tbody></table></div>
+      <p>Note that <code>0820</code> matched store <code>820</code> (leading zeros are ignored), and that row 3’s <em>Eaches</em> was replaced with the value RMS holds.</p>
+      <h3 id="qk-setup">One-Time Setup</h3>
+      <ol>
+        <li>Save <strong>LocationLookup.xlsm</strong> somewhere permanent, open it and <strong>enable macros</strong>. Its window <strong>hides itself</strong>, which is expected: it stays open in the background so the macro can run on your induction workbook.</li>
+        <li>Add a button: <strong>File → Options → Quick Access Toolbar</strong>, choose commands from <strong>Macros</strong>, pick <strong>LocationLookup.xlsm!LocationLookup</strong>, click <strong>Add &gt;&gt;</strong>, then <strong>Modify…</strong> to name it e.g. <em>QTY KEY</em>.</li>
+        <li>Optional: save the workbook in <code>%APPDATA%\Microsoft\Excel\XLSTART</code> so it loads hidden every time Excel starts.</li>
+      </ol>
+      <div class="note"><strong>Needs RMS access:</strong> network or VPN access, and the Microsoft ODBC for Oracle driver. RMS is read with a read-only login whose password is read from a protected network file.</div>
+      <h3 id="qk-use">How to Use It</h3>
+      <ol>
+        <li>Open the induction workbook and fill the <strong>Location</strong> tab’s <strong>Item</strong> and <strong>Location</strong> columns.</li>
+        <li>With that workbook active (any tab), click the <strong>QTY KEY</strong> button (or <kbd>Alt</kbd>+<kbd>F8</kbd> → <strong>LocationLookup</strong> → Run).</li>
+        <li>The macro runs <strong>silently</strong>: there’s no “done” message. When the cursor returns, check that the Primary Supplier and Store Order Multiple columns have filled in.</li>
+        <li>Fill any rows that stayed blank by hand. Those item/store pairs aren’t set up in RMS yet (e.g. a new store for that item).</li>
+        <li>Run your <a href="#induction-checker">induction checker</a> and submit.</li>
+      </ol>
+      <div class="note red-note"><strong>It overwrites matched rows.</strong> For every row RMS knows about, columns I and J are replaced with RMS’s values, even if you’d typed something different. If you’re deliberately <em>changing</em> a quantity key, run the macro first and then type your new values.</div>
+      <h3 id="qk-how">How It Works</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Step</th><th>What happens</th></tr></thead><tbody><tr><td>Find the tab</td><td>Uses the active workbook’s tab named <strong>Location</strong>, or failing that the first tab with “Location” in its name.</td></tr><tr><td>Find the columns</td><td>Finds the header row (the first row in rows 1–25 with an <strong>Item</strong> header), then the <em>Item</em>, <em>Location</em>, <em>Primary Supplier</em> and <em>Store Order Multiple</em> columns by name. If a header isn’t found it uses columns C, H, I and J.</td></tr><tr><td>Read the rows</td><td>Reads every row down to the last Item. Locations must be numbers (up to 10 digits); leading zeros are dropped, so <code>0715</code> = <code>715</code>. Rows missing an Item or a valid Location are skipped.</td></tr><tr><td>Query RMS</td><td>Looks up the unique items in the RMS item/location table in batches of 500, limited to the stores on the sheet.</td></tr><tr><td>Translate</td><td>Converts RMS’s store order multiple codes: <code>C</code> → Cases, <code>I</code> → Inner, <code>E</code> → Eaches.</td></tr><tr><td>Write</td><td>Fills Primary Supplier and Store Order Multiple only on rows with a match. Unmatched rows aren’t touched.</td></tr><tr><td>Tidy up</td><td>Restores Excel’s calculation mode and screen updating, even if an error occurs.</td></tr></tbody></table></div>
+      <h3 id="qk-troubleshooting">Troubleshooting</h3>
+      <div style="overflow-x:auto;"><table class="inspect-table"><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody><tr><td>Nothing happened</td><td>No tab with “Location” in its name, no <strong>Item</strong> header in rows 1–25, or no rows with both an Item and a numeric Location. Check you ran it with the induction workbook active, not another file.</td></tr><tr><td>Some rows stayed blank</td><td>RMS has no record for that item at that store. Fill them by hand. Also check the Location is digits only (no letters or spaces).</td></tr><tr><td>Values landed in the wrong columns</td><td>Your Location tab’s headers don’t match the names the macro looks for (e.g. <em>Location - Primary Supp</em>), so it fell back to columns I and J. Move the columns to I and J, or rename the headers to <em>Primary Supplier</em> and <em>Store Order Multiple</em>.</td></tr><tr><td><em>“Problem connecting to network drive. Check your VPN/Access.”</em></td><td>You’re off the network or VPN, or can’t reach the RMS password file. Connect and run again.</td></tr><tr><td><em>“Error …”</em> box titled <em>Location Lookup</em></td><td>Usually an RMS connection problem or a missing Oracle ODBC driver. The message gives the details.</td></tr><tr><td>I can’t see the workbook to edit it</td><td>It hides itself on open. Use <strong>View → Unhide</strong>, or <kbd>Alt</kbd>+<kbd>F11</kbd> for the VBA editor.</td></tr></tbody></table></div>
+    </div>
+
 <!-- FILES & TEMPLATES -->
 <div class="section" id="files-templates">
   <h2>Files &amp; Templates</h2>
@@ -2240,6 +2289,11 @@ td.red-border-cell:nth-child(4) {
       <span class="file-title">Sort and Format BI Report</span>
       <span class="file-type">Macro-enabled workbook (.xlsm)</span>
       <a href="Files/CustomSortandFormat.xlsm" download>Download Sort and Format BI Report</a>
+    </div>
+    <div class="file-card" id="Qty-Key-Macro">
+      <span class="file-title">QTY KEY Macro</span>
+      <span class="file-type">Macro-enabled workbook (.xlsm)</span>
+      <a href="Files/LocationLookup.xlsm" download>Download QTY KEY Macro</a>
     </div>
     <div class="file-card" id="Ad-Tracker">
       <span class="file-title">Ad Tracker</span>
