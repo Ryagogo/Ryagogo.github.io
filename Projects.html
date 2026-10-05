@@ -235,7 +235,7 @@
       <a class="nav-sub-link" href="#gpg-create">2. Create a Key Pair</a>
       <a class="nav-sub-link" href="#gpg-backup">3. Back Up &amp; Revocation</a>
       <a class="nav-sub-link" href="#gpg-share">4. Share &amp; Import Keys</a>
-      <a class="nav-sub-link" href="#gpg-encrypt">5. Encrypt &amp; Decrypt</a>
+      <a class="nav-sub-link" href="#gpg-encrypt">5. Encrypt &amp; Decrypt (Linux/Windows)</a>
       <a class="nav-sub-link" href="#gpg-sign">6. Sign &amp; Verify</a>
       <a class="nav-sub-link" href="#gpg-verify-downloads">Verify a Downloaded ISO</a>
       <a class="nav-sub-link" href="#gpg-git">Sign Git Commits</a>
@@ -4549,37 +4549,66 @@ gpg --keyserver hkps://keys.openpgp.org --search-keys alice@example.com</code></
             </div>
 
             <div id="gpg-encrypt">
-                <h3>Step 5: Encrypt and Decrypt Files</h3>
-                <p><strong>Encrypt a file for someone</strong> (only Alice can open it). Add yourself as a second recipient so you can still read your copy:</p>
+                <h3>Step 5: Encrypt and Decrypt Files (Linux and Windows)</h3>
+                <p>There are two ways to encrypt a file. Pick one based on who needs to open it:</p>
+                <table>
+                    <thead><tr><th>Method</th><th>Use it when</th><th>Who can decrypt</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Public-key</strong> (<code>--encrypt</code>)</td><td>Sending a file to a specific person, or encrypting for yourself with your key</td><td>Only the holders of the recipients’ private keys</td></tr>
+                        <tr><td><strong>Password</strong> (<code>--symmetric</code>)</td><td>Backups, or sharing with someone who doesn’t use GPG</td><td>Anyone who knows the passphrase</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>A file encrypted on Linux decrypts on Windows and the other way round. The commands are the same on both; only the file paths and the graphical tools differ. To encrypt for someone, you need their public key imported first (see <a href="#gpg-share">Step 4</a>).</div></div>
+                <h4>Linux: Encrypt a File for Someone</h4>
+                <ol>
+                    <li>Check that the recipient’s key is in your keyring:</li>
+                </ol>
                 <div class="code-container">
                     <div class="code-header">
-                        <span>bash · terminal</span>
+                        <span>bash · Linux terminal</span>
                         <div class="header-controls">
                             <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>gpg --encrypt --recipient alice@example.com --recipient haven@example.com report.pdf
-# creates report.pdf.gpg</code></pre>
+<pre><code>gpg --list-keys alice@example.com</code></pre>
                     </div>
                 </div>
-                <p>Use <code>--armor</code> to produce text (<code>.asc</code>) you can paste into an email or chat:</p>
+                <ol start="2">
+                    <li>Encrypt the file. Add yourself as a second recipient so you can still open your own copy:</li>
+                </ol>
                 <div class="code-container">
                     <div class="code-header">
-                        <span>bash · terminal</span>
+                        <span>bash · Linux terminal</span>
                         <div class="header-controls">
                             <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>gpg --armor --encrypt --recipient alice@example.com notes.txt
-# creates notes.txt.asc</code></pre>
+<pre><code>gpg --encrypt --recipient alice@example.com --recipient haven@example.com --output report.pdf.gpg report.pdf</code></pre>
                     </div>
                 </div>
-                <p><strong>Decrypt</strong> a file sent to you (GPG asks for your passphrase):</p>
+                <ol start="3">
+                    <li>Confirm the encrypted file exists, then send <code>report.pdf.gpg</code>. Optionally destroy the unencrypted original:</li>
+                </ol>
                 <div class="code-container">
                     <div class="code-header">
-                        <span>bash · terminal</span>
+                        <span>bash · Linux terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>ls -l report.pdf.gpg
+shred -u report.pdf    # optional: overwrite and delete the original</code></pre>
+                    </div>
+                </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Need text you can paste into an email or chat instead of a binary file? Add <code>--armor</code> and name the output <code>.asc</code>: <code>gpg --armor --encrypt --recipient alice@example.com --output notes.txt.asc notes.txt</code></div></div>
+                <h4>Linux: Decrypt a File</h4>
+                <p>Run this on the computer that holds your private key. GPG detects which key the file was encrypted to and prompts for that key’s passphrase:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Linux terminal</span>
                         <div class="header-controls">
                             <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
                         </div>
@@ -4588,33 +4617,165 @@ gpg --keyserver hkps://keys.openpgp.org --search-keys alice@example.com</code></
 <pre><code>gpg --output report.pdf --decrypt report.pdf.gpg</code></pre>
                     </div>
                 </div>
-                <p><strong>Password-only encryption</strong> (no keys needed), handy for backups:</p>
+                <p>It also prints who the file was encrypted to (and, if it was signed, a <code>Good signature</code> line). On a server over SSH where no passphrase box appears, enter it in the terminal instead:</p>
                 <div class="code-container">
                     <div class="code-header">
-                        <span>bash · terminal</span>
+                        <span>bash · Linux terminal</span>
                         <div class="header-controls">
                             <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>gpg --symmetric --cipher-algo AES256 backup-2026-10-05.tar.gz
-# creates backup-2026-10-05.tar.gz.gpg
-gpg --output backup-2026-10-05.tar.gz --decrypt backup-2026-10-05.tar.gz.gpg</code></pre>
+<pre><code>export GPG_TTY=$(tty)
+gpg --pinentry-mode loopback --output report.pdf --decrypt report.pdf.gpg</code></pre>
                     </div>
                 </div>
-                <p><strong>Encrypt and sign together</strong>, so Alice knows it came from you and wasn’t changed:</p>
+                <h4>Linux: Encrypt and Decrypt with a Password</h4>
                 <div class="code-container">
                     <div class="code-header">
-                        <span>bash · terminal</span>
+                        <span>bash · Linux terminal</span>
                         <div class="header-controls">
                             <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>gpg --sign --encrypt --recipient alice@example.com contract.pdf</code></pre>
+<pre><code># encrypt (asks for a new passphrase twice) -&gt; secrets.txt.gpg
+gpg --symmetric --cipher-algo AES256 secrets.txt
+
+# decrypt
+gpg --output secrets.txt --decrypt secrets.txt.gpg</code></pre>
                     </div>
                 </div>
-                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Encrypt backups before they leave the server, e.g. <code>tar czf - /etc | gpg --symmetric --cipher-algo AES256 -o etc-backup.tar.gz.gpg</code>, then copy the <code>.gpg</code> file off-site (see <a href="#backups">Backups</a>).</div></div>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div><code>gpg-agent</code> remembers the passphrase for a few minutes, so decrypting straight after encrypting may not ask for it. To test that the passphrase really works, clear the cache first with <code>gpgconf --kill gpg-agent</code>.</div></div>
+                <h4>Linux: Encrypt a Whole Folder</h4>
+                <p>GPG encrypts single files, so pack the folder into an archive first. This does both in one step without leaving an unencrypted archive on disk:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Linux terminal</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code># encrypt the folder ~/Documents/taxes
+tar czf - -C ~/Documents taxes | gpg --symmetric --cipher-algo AES256 --output taxes.tar.gz.gpg
+
+# decrypt and unpack into the current folder
+gpg --decrypt taxes.tar.gz.gpg | tar xzf -</code></pre>
+                    </div>
+                </div>
+                <h4>Windows: Encrypt and Decrypt with Kleopatra (No Commands)</h4>
+                <p>Install <a href="https://www.gpg4win.org/" target="_blank" rel="noopener">Gpg4win</a> (Step 1). It adds Kleopatra and right-click menu entries in File Explorer.</p>
+                <p><strong>Encrypt:</strong></p>
+                <ol>
+                    <li>In File Explorer, right-click the file. On Windows 11, click <strong>Show more options</strong> first.</li>
+                    <li>Choose <strong>More GpgEX options → Sign and encrypt</strong>. (Or open Kleopatra and click <strong>Sign/Encrypt…</strong>, then pick the file.)</li>
+                    <li>For a person: tick <strong>Encrypt for others</strong> and choose their key. Leave <strong>Encrypt for me</strong> ticked so you can open it too. For a password instead: tick <strong>Encrypt with password</strong> and untick the others.</li>
+                    <li>Untick <strong>Sign as</strong> if you only want encryption, check the output file name (it ends in <code>.gpg</code>), then click <strong>Encrypt</strong>.</li>
+                    <li>Kleopatra shows “Encryption succeeded”. Send or store the <code>.gpg</code> file.</li>
+                </ol>
+                <p><strong>Decrypt:</strong></p>
+                <ol>
+                    <li>Right-click the <code>.gpg</code> file → <strong>More GpgEX options → Decrypt and verify</strong>. (Or double-click it, or use Kleopatra’s <strong>Decrypt/Verify…</strong> button.)</li>
+                    <li>Enter the passphrase for your key (or the file’s password) when asked.</li>
+                    <li>Click <strong>Save All</strong>. The original file appears next to the encrypted one.</li>
+                </ol>
+                <h4>Windows: Encrypt and Decrypt in PowerShell</h4>
+                <p>Gpg4win also installs the <code>gpg</code> command. Open a <strong>new</strong> PowerShell window after installing and check it works with <code>gpg --version</code>. Then <code>cd</code> to the folder with the file:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>powershell · Windows</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd &quot;$env:USERPROFILE\Documents&quot;</code></pre>
+                    </div>
+                </div>
+                <p><strong>Encrypt for someone</strong> (plus yourself):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>powershell · Windows</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --encrypt --recipient alice@example.com --recipient haven@example.com --output report.pdf.gpg report.pdf</code></pre>
+                    </div>
+                </div>
+                <p><strong>Decrypt</strong> (a passphrase window appears):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>powershell · Windows</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --output report.pdf --decrypt report.pdf.gpg</code></pre>
+                    </div>
+                </div>
+                <p><strong>Password-only</strong> encryption and decryption:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>powershell · Windows</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --symmetric --cipher-algo AES256 secrets.txt
+gpg --output secrets.txt --decrypt secrets.txt.gpg</code></pre>
+                    </div>
+                </div>
+                <p><strong>A whole folder:</strong> zip it, encrypt the zip, then delete the unencrypted zip. To restore, decrypt and unzip:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>powershell · Windows</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code># encrypt
+Compress-Archive -Path .\Taxes -DestinationPath Taxes.zip
+gpg --symmetric --cipher-algo AES256 --output Taxes.zip.gpg Taxes.zip
+Remove-Item Taxes.zip
+
+# decrypt and unzip
+gpg --output Taxes.zip --decrypt Taxes.zip.gpg
+Expand-Archive -Path Taxes.zip -DestinationPath .\Taxes-restored</code></pre>
+                    </div>
+                </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Use quotes around paths with spaces, e.g. <code>gpg --output "My Report.pdf" --decrypt "My Report.pdf.gpg"</code>. Always put <code>--output</code> before <code>--decrypt</code>. In PowerShell, don’t redirect decrypted output with <code>&gt;</code>; Windows PowerShell 5.1 re-encodes it and corrupts binary files like PDFs and zips.</div></div>
+                <h4>Encrypt and Sign Together</h4>
+                <p>Adding <code>--sign</code> proves the file came from you. The recipient sees <code>Good signature from "Haven Example"</code> when they decrypt. This works the same on Linux and in PowerShell; in Kleopatra, leave <strong>Sign as</strong> ticked.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Linux or PowerShell</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>gpg --sign --encrypt --recipient alice@example.com --recipient haven@example.com --output contract.pdf.gpg contract.pdf</code></pre>
+                    </div>
+                </div>
+                <h4>Encrypt and Decrypt Problems</h4>
+                <table>
+                    <thead><tr><th>Message</th><th>Cause and fix</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>No public key</code> / <code>skipped: No public key</code> when encrypting</td><td>The recipient’s key isn’t imported, or the email doesn’t match. Import it and check with <code>gpg --list-keys</code>.</td></tr>
+                        <tr><td><code>unusable public key</code></td><td>The key has expired or been revoked. Ask the owner for an updated key.</td></tr>
+                        <tr><td><code>There is no assurance this key belongs to the named user</code></td><td>You haven’t verified the key yet. Check its fingerprint, then <code>gpg --lsign-key alice@example.com</code>.</td></tr>
+                        <tr><td><code>decryption failed: No secret key</code></td><td>The file was encrypted to a different key, or your private key isn’t on this computer. Import your backup (Step 3).</td></tr>
+                        <tr><td><code>Bad passphrase</code> / <code>Bad session key</code></td><td>Wrong passphrase or password. Check Caps Lock and try again.</td></tr>
+                        <tr><td><code>File exists. Overwrite? (y/N)</code></td><td>The output file already exists. Answer <code>y</code>, or choose a different <code>--output</code> name.</td></tr>
+                        <tr><td>Windows: <code>gpg is not recognized</code></td><td>Close and reopen PowerShell after installing Gpg4win, or reinstall it.</td></tr>
+                    </tbody>
+                </table>
             </div>
 
             <div id="gpg-sign">
