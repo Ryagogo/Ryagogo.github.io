@@ -141,7 +141,6 @@
       <a class="nav-sub-link" href="#raid-homelab-verify">Verification</a>
       <a class="nav-sub-link" href="#raid-setup">Standalone Server over SSH</a>
       <a class="nav-sub-link" href="#raid-maintenance">Health &amp; Disk Replacement</a>
-      <a class="nav-sub-link" href="#raid-original-setup">What Was Wrong Before</a>
       <a class="nav-sub-link" href="#raid-troubleshooting">Troubleshooting</a>
     </div>
   </div>
@@ -281,7 +280,13 @@
     </div>
   </div>
   <a class="nav-top-link" href="#html-section">HTML</a>
-  <a class="nav-top-link" href="#troubleshoots">Troubleshoots</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Troubleshoots <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#troubleshoots">Overview</a>
+      <a class="nav-sub-link" href="#raid-original-setup">Original Homelab Setup: What Went Wrong</a>
+    </div>
+  </div>
   <a class="nav-top-link" href="#command-dictionary">Command Dictionary</a>
 </nav>
 
@@ -2802,30 +2807,7 @@ sudo mdadm /dev/md0 --add /dev/sdf</code></pre>
 
             <div id="raid-troubleshooting">
                 <h3>Troubleshooting</h3>
-                <h4 id="raid-original-setup">What Was Wrong with the Original Setup</h4>
-                <p>The first version of this homelab worked on paper but had structural problems. These are the differences between how it was set up then and the build documented above, and why each one mattered.</p>
-                <p><strong>The three root causes:</strong></p>
-                <ul>
-                    <li><strong>Two owners for one set of disks.</strong> The host and VM 100 could both see and assemble the mirror. Everything RAID-related that went wrong traces back to this.</li>
-                    <li><strong>Backups that depended on what they were protecting.</strong> Backups were stored on a share served by VM 100 over its Tailscale address, so losing VM 100 (or the VPN) also lost the backups.</li>
-                    <li><strong>Fragile working habits.</strong> Unstable disk names, long commands over a bare SSH session, and passwords pasted into commands turned small slips into real problems.</li>
-                </ul>
-                <table>
-                    <thead><tr><th>Area</th><th>Original setup</th><th>What went wrong</th><th>Corrected setup</th></tr></thead>
-                    <tbody>
-                        <tr><td><strong>Who owned the RAID</strong></td><td>VM 100 was given the assembled array (<code>scsi2</code>) <em>and</em> both raw member drives (<code>virtio1</code>, <code>virtio2</code>), while the Proxmox host could still see the same disks.</td><td>The host and the VM each assembled their own <code>md0</code> from the same drives, so two RAID drivers were writing metadata and resyncing the same disks, and the filesystem could be mounted in two places at once. That’s how silent corruption and a split mirror happen.</td><td>The host is the only owner. It builds, mounts and monitors the mirror; VM 100 gets just the <code>/mnt/raid</code> folder through virtiofs and never sees a disk (<a href="#raid-homelab-build">Part 1</a>, <a href="#raid-homelab-share">Part 2</a>).</td></tr>
-                        <tr><td><strong>How disks were named</strong></td><td>Drives were referred to as <code>/dev/sda</code>, <code>/dev/sdb</code>.</td><td>Those names are handed out at boot and can swap, so a command or a passthrough could hit the wrong disk, including one holding data.</td><td>Every command uses <code>/dev/disk/by-id/ata-...</code>, which follows the physical drive.</td></tr>
-                        <tr><td><strong>Where backups went</strong></td><td>Proxmox backup storage was a Samba share <em>served by VM 100</em>.</td><td>Backups failed whenever VM 100 was off, and the backups depended on the very VM being backed up: if VM 100 broke, the backups needed to restore it were unreachable.</td><td>Backups are written by the host to local <code>dir</code> storage on <code>/mnt/raid</code>, with <code>--is_mountpoint</code> so they never fill the boot disk (<a href="#backups-storage">Backups → step 1</a>).</td></tr>
-                        <tr><td><strong>Network path to storage</strong></td><td>The storage pointed at VM 100’s Tailscale address (<code>100.x.x.x</code>), and admin work was done over Tailscale through VM 100.</td><td>Backups and file access depended on the VPN being up, and shutting down VM 100 (required for virtiofs and the guest agent) cut off the connection being used to manage the server.</td><td>Host backups need no network at all; the Samba share uses the LAN IP with a DHCP reservation; admin work is done from the LAN or the console.</td></tr>
-                        <tr><td><strong>What went into VM backups</strong></td><td>Physical disks were passed through to VM 100 with the default backup setting.</td><td>A backup of VM 100 would have copied the whole 20 TB RAID (and the 1 TB drive) into the backups stored on that same RAID.</td><td>Every passed-through disk has <code>backup=0</code>; virtiofs folders are never included (<a href="#backups-passthrough">Backups → step 2</a>).</td></tr>
-                        <tr><td><strong>Boot configuration</strong></td><td><code>mdadm.conf</code> and the initramfs were edited over a plain SSH session that dropped part-way.</td><td>The expected config line was never written and <code>update-initramfs</code> was interrupted, so what the host would assemble at boot didn’t match the plan.</td><td>Long commands run in tmux; <code>mdadm.conf</code> is rewritten with exactly one <code>ARRAY</code> line and no <code>AUTO -all</code>, checked with <code>grep</code>, then <code>update-initramfs -u -k all</code> is left to finish (<a href="#raid-homelab-build">Part 1, step 5</a>).</td></tr>
-                        <tr><td><strong>Restore testing</strong></td><td>A full-size VM was the planned restore test on <code>local-lvm</code>.</td><td>The thin pool was overcommitted (about 1.1 TB of VM disks in 794 GB), so a large test restore could fill it and stop running VMs.</td><td>Test with a small VM and check <code>lvs</code> first (<a href="#backups-restore">Backups → step 5</a>).</td></tr>
-                        <tr><td><strong>Samba logins</strong></td><td>Users were expected to log in with their Linux password.</td><td><code>NT_STATUS_LOGON_FAILURE</code>: Samba keeps its own password database.</td><td><code>smbpasswd -a</code> for every user, then test with <code>smbclient</code> (<a href="#raid-homelab-share">Part 2, step 5</a>).</td></tr>
-                        <tr><td><strong>App-data archives</strong></td><td>Vaultwarden was archived with <code>tar</code> run from inside its own folder, a typed date in <code>$( )</code>, and a capitalised <code>/mnt/Raid</code> path.</td><td>The archive landed inside the folder being backed up, the date broke the command, and <code>/mnt/Raid</code> silently created a new folder on the boot disk instead of using the RAID.</td><td>Absolute destination on <code>/mnt/raid</code>, <code>$(date +%F)</code>, and <code>-C /home/docker vault</code> (<a href="#backups-apps">Backups → step 6</a>).</td></tr>
-                        <tr><td><strong>Handling passwords</strong></td><td>Several lines including <code>read -s</code> were pasted at once, and passwords were typed into commands and chat.</td><td><code>read</code> swallowed the next command as the “password”, Gmail rejected the login (<code>535 5.7.8</code>), and credentials were exposed.</td><td>Paste <code>read -s</code> on its own line; never put a secret in a command or chat; rotate anything that leaked (<a href="#backups-notify">Backups → step 7</a>).</td></tr>
-                    </tbody>
-                </table>
-                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>If you’re fixing an existing system that looks like the “Original setup” column: shut VM 100 down, remove the array and member drives from its hardware, make sure only the host has <code>md0</code> assembled (<code>cat /proc/mdstat</code> on both), then follow <a href="#raid-homelab-build">Part 1, step 5</a> onward and <a href="#raid-homelab-share">Part 2</a>. Don’t re-create the array: that erases the data.</div></div>
+                <p>For how the original homelab setup differed from this build and why it failed, see <a href="#raid-original-setup">Troubleshoots → What Was Wrong with the Original Homelab Setup</a>.</p>
                 <h4>Problems hit during the homelab build</h4>
                 <table>
                     <thead><tr><th>Problem</th><th>Cause</th><th>Fix</th></tr></thead>
@@ -4976,7 +4958,7 @@ systemctl restart smartd</code></pre>
 
             <div id="backups-troubleshooting">
                 <h3>Troubleshooting</h3>
-                <p>Every row below happened during the first build. For how the original backup design differed from this one, and why it failed, see <a href="#raid-original-setup">RAID → What Was Wrong with the Original Setup</a>.</p>
+                <p>Every row below happened during the first build. For how the original backup design differed from this one, and why it failed, see <a href="#raid-original-setup">Troubleshoots → What Was Wrong with the Original Homelab Setup</a>.</p>
                 <h4>Proxmox backups</h4>
                 <table>
                     <thead><tr><th>Problem</th><th>Cause</th><th>Fix</th></tr></thead>
@@ -6042,7 +6024,32 @@ nslookup www.yourname.com</code></pre>
         <div id="troubleshoots">
             <h2>TROUBLESHOOTS</h2>
             <p class="tool-overview"><strong>What it is:</strong> This section collects fixes for problems run into in the lab. The approach is the same every time: identify the symptom, check the logs, change one thing at a time, and write down what fixed it.</p>
-            <div class="placeholder-section">Section listing environment remediation options logs data checklists pending.</div>
+            <div id="raid-original-setup">
+                <h3>What Was Wrong with the Original Homelab Setup (RAID, Samba &amp; Backups)</h3>
+                <p>The first version of this homelab worked on paper but had structural problems. These are the differences between how it was set up then and the build documented in <a href="#raid-homelab">RAID → Homelab Build</a> and <a href="#backups">Backups</a>, and why each one mattered.</p>
+                <p><strong>The three root causes:</strong></p>
+                <ul>
+                    <li><strong>Two owners for one set of disks.</strong> The host and VM 100 could both see and assemble the mirror. Everything RAID-related that went wrong traces back to this.</li>
+                    <li><strong>Backups that depended on what they were protecting.</strong> Backups were stored on a share served by VM 100 over its Tailscale address, so losing VM 100 (or the VPN) also lost the backups.</li>
+                    <li><strong>Fragile working habits.</strong> Unstable disk names, long commands over a bare SSH session, and passwords pasted into commands turned small slips into real problems.</li>
+                </ul>
+                <table>
+                    <thead><tr><th>Area</th><th>Original setup</th><th>What went wrong</th><th>Corrected setup</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Who owned the RAID</strong></td><td>VM 100 was given the assembled array (<code>scsi2</code>) <em>and</em> both raw member drives (<code>virtio1</code>, <code>virtio2</code>), while the Proxmox host could still see the same disks.</td><td>The host and the VM each assembled their own <code>md0</code> from the same drives, so two RAID drivers were writing metadata and resyncing the same disks, and the filesystem could be mounted in two places at once. That’s how silent corruption and a split mirror happen.</td><td>The host is the only owner. It builds, mounts and monitors the mirror; VM 100 gets just the <code>/mnt/raid</code> folder through virtiofs and never sees a disk (<a href="#raid-homelab-build">Part 1</a>, <a href="#raid-homelab-share">Part 2</a>).</td></tr>
+                        <tr><td><strong>How disks were named</strong></td><td>Drives were referred to as <code>/dev/sda</code>, <code>/dev/sdb</code>.</td><td>Those names are handed out at boot and can swap, so a command or a passthrough could hit the wrong disk, including one holding data.</td><td>Every command uses <code>/dev/disk/by-id/ata-...</code>, which follows the physical drive.</td></tr>
+                        <tr><td><strong>Where backups went</strong></td><td>Proxmox backup storage was a Samba share <em>served by VM 100</em>.</td><td>Backups failed whenever VM 100 was off, and the backups depended on the very VM being backed up: if VM 100 broke, the backups needed to restore it were unreachable.</td><td>Backups are written by the host to local <code>dir</code> storage on <code>/mnt/raid</code>, with <code>--is_mountpoint</code> so they never fill the boot disk (<a href="#backups-storage">Backups → step 1</a>).</td></tr>
+                        <tr><td><strong>Network path to storage</strong></td><td>The storage pointed at VM 100’s Tailscale address (<code>100.x.x.x</code>), and admin work was done over Tailscale through VM 100.</td><td>Backups and file access depended on the VPN being up, and shutting down VM 100 (required for virtiofs and the guest agent) cut off the connection being used to manage the server.</td><td>Host backups need no network at all; the Samba share uses the LAN IP with a DHCP reservation; admin work is done from the LAN or the console.</td></tr>
+                        <tr><td><strong>What went into VM backups</strong></td><td>Physical disks were passed through to VM 100 with the default backup setting.</td><td>A backup of VM 100 would have copied the whole 20 TB RAID (and the 1 TB drive) into the backups stored on that same RAID.</td><td>Every passed-through disk has <code>backup=0</code>; virtiofs folders are never included (<a href="#backups-passthrough">Backups → step 2</a>).</td></tr>
+                        <tr><td><strong>Boot configuration</strong></td><td><code>mdadm.conf</code> and the initramfs were edited over a plain SSH session that dropped part-way.</td><td>The expected config line was never written and <code>update-initramfs</code> was interrupted, so what the host would assemble at boot didn’t match the plan.</td><td>Long commands run in tmux; <code>mdadm.conf</code> is rewritten with exactly one <code>ARRAY</code> line and no <code>AUTO -all</code>, checked with <code>grep</code>, then <code>update-initramfs -u -k all</code> is left to finish (<a href="#raid-homelab-build">Part 1, step 5</a>).</td></tr>
+                        <tr><td><strong>Restore testing</strong></td><td>A full-size VM was the planned restore test on <code>local-lvm</code>.</td><td>The thin pool was overcommitted (about 1.1 TB of VM disks in 794 GB), so a large test restore could fill it and stop running VMs.</td><td>Test with a small VM and check <code>lvs</code> first (<a href="#backups-restore">Backups → step 5</a>).</td></tr>
+                        <tr><td><strong>Samba logins</strong></td><td>Users were expected to log in with their Linux password.</td><td><code>NT_STATUS_LOGON_FAILURE</code>: Samba keeps its own password database.</td><td><code>smbpasswd -a</code> for every user, then test with <code>smbclient</code> (<a href="#raid-homelab-share">Part 2, step 5</a>).</td></tr>
+                        <tr><td><strong>App-data archives</strong></td><td>Vaultwarden was archived with <code>tar</code> run from inside its own folder, a typed date in <code>$( )</code>, and a capitalised <code>/mnt/Raid</code> path.</td><td>The archive landed inside the folder being backed up, the date broke the command, and <code>/mnt/Raid</code> silently created a new folder on the boot disk instead of using the RAID.</td><td>Absolute destination on <code>/mnt/raid</code>, <code>$(date +%F)</code>, and <code>-C /home/docker vault</code> (<a href="#backups-apps">Backups → step 6</a>).</td></tr>
+                        <tr><td><strong>Handling passwords</strong></td><td>Several lines including <code>read -s</code> were pasted at once, and passwords were typed into commands and chat.</td><td><code>read</code> swallowed the next command as the “password”, Gmail rejected the login (<code>535 5.7.8</code>), and credentials were exposed.</td><td>Paste <code>read -s</code> on its own line; never put a secret in a command or chat; rotate anything that leaked (<a href="#backups-notify">Backups → step 7</a>).</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>If you’re fixing an existing system that looks like the “Original setup” column: shut VM 100 down, remove the array and member drives from its hardware, make sure only the host has <code>md0</code> assembled (<code>cat /proc/mdstat</code> on both), then follow <a href="#raid-homelab-build">Part 1, step 5</a> onward and <a href="#raid-homelab-share">Part 2</a>. Don’t re-create the array: that erases the data.</div></div>
+            </div>
         </div>
 
         <div id="command-dictionary">
