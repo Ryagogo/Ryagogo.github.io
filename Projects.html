@@ -300,6 +300,7 @@
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#troubleshoots">Overview</a>
       <a class="nav-sub-link" href="#raid-original-setup">Original Homelab Setup: What Went Wrong</a>
+      <a class="nav-sub-link" href="#plex-gpu-fix">Plex Crashes: NVIDIA GPU Passthrough Fix</a>
     </div>
   </div>
   <a class="nav-top-link" href="#command-dictionary">Command Dictionary</a>
@@ -4252,7 +4253,7 @@ id</code></pre>
                 </div>
                 <p><code>id</code> shows your user and group numbers, usually <code>uid=1000</code> and <code>gid=1000</code>. Plex runs as that user, which is in the <code>raidusers</code> group, so it can read the RAID without any extra permissions.</p>
                 <h4>2. GPU prerequisites (NVIDIA)</h4>
-                <p><code>runtime: nvidia</code> needs the NVIDIA driver and the NVIDIA Container Toolkit on the machine running Docker (for a VM, pass the GPU through to it in Proxmox first). Check the driver, then register the runtime with Docker:</p>
+                <p><code>runtime: nvidia</code> needs the NVIDIA driver and the NVIDIA Container Toolkit on the machine running Docker (for a VM, pass the GPU through to it in Proxmox first; see <a href="#plex-gpu-fix">Troubleshoots → Plex Crashes: NVIDIA GPU Passthrough</a> for the full steps and why it matters). Check the driver, then register the runtime with Docker:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4450,6 +4451,7 @@ sudo docker image prune -f</code></pre>
                         <tr><td>Server doesn’t appear in your account</td><td>Claim it from a browser on the same network, or add a fresh <code>PLEX_CLAIM</code> code (it expires after 4 minutes) and run <code>sudo docker compose up -d</code>.</td></tr>
                         <tr><td><em>“could not select device driver "nvidia"”</em> when starting</td><td>The NVIDIA Container Toolkit isn’t installed or registered. Install it, run <code>sudo nvidia-ctk runtime configure --runtime=docker</code> and <code>sudo systemctl restart docker</code>. Without a GPU, remove the <code>runtime</code> and <code>NVIDIA_</code> lines.</td></tr>
                         <tr><td>Database errors or “permission denied” in the logs after moving from a non-Docker Plex</td><td>The old files belong to the <code>plex</code> user. Stop the container, run <code>sudo chown -R 1000:1000 /var/lib/plexmediaserver</code> (your <code>PUID</code>/<code>PGID</code>), then <code>sudo docker compose up -d</code>.</td></tr>
+                        <tr><td>Plex Media Server keeps crashing during playback</td><td>Software transcoding on the CPU is exhausting the VM’s CPU and RAM. Pass the NVIDIA GPU through and enable hardware transcoding: see <a href="#plex-gpu-fix">Troubleshoots → Plex Crashes: NVIDIA GPU Passthrough Fix</a>.</td></tr>
                         <tr><td>Container is killed during heavy transcodes</td><td>It hit <code>mem_limit</code>. Raise the limit, or lower the number of simultaneous transcodes in <strong>Settings → Transcoder</strong>. Transcodes in <code>/dev/shm</code> count towards RAM.</td></tr>
                         <tr><td>Wrong movie or show matched</td><td>Rename files to the naming scheme and use <strong>Fix Match</strong>; then <strong>Refresh Metadata</strong>.</td></tr>
                         <tr><td>Video buffers or stutters</td><td>The CPU is transcoding. Lower the quality on the player, use a format the device plays directly, or check hardware transcoding: <code>nvidia-smi</code> on the server should list a Plex process while a video transcodes (Plex Pass, Step 2 settings).</td></tr>
@@ -6330,6 +6332,198 @@ nslookup www.yourname.com</code></pre>
                     </tbody>
                 </table>
                 <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>If you’re fixing an existing system that looks like the “Original setup” column: shut VM 100 down, remove the array and member drives from its hardware, make sure only the host has <code>md0</code> assembled (<code>cat /proc/mdstat</code> on both), then follow <a href="#raid-homelab-build">Part 1, step 5</a> onward and <a href="#raid-homelab-share">Part 2</a>. Don’t re-create the array: that erases the data.</div></div>
+            </div>
+
+            <div id="plex-gpu-fix">
+                <h3>Plex Media Server Kept Crashing: Fixed by Passing the NVIDIA GPU to the Ubuntu VM</h3>
+                <p><strong>Symptom:</strong> Plex Media Server (in Docker on VM 100) kept crashing or dropping streams, especially when a video had to be converted for the player. <strong>Fix:</strong> the server’s NVIDIA GPU was passed through from the Proxmox host to the Ubuntu VM, then given to the Plex container in its <a href="#plex-install">Docker Compose file</a> (<code>runtime: nvidia</code>). With the GPU doing the video work, the crashes stopped.</p>
+                <h4>Why it was crashing</h4>
+                <p>When a phone, TV or browser can’t play a file as it is (wrong codec, too high a bitrate for the connection, 4K or HDR on a 1080p screen, or burned-in subtitles), Plex <strong>transcodes</strong> it: it decodes every frame and re-encodes it in a format the player can handle, in real time. Without a GPU, all of that ran on the VM’s CPU:</p>
+                <ul>
+                    <li><strong>The CPU was overloaded.</strong> Real-time video encoding is one of the heaviest jobs a CPU can do. A single 4K or HEVC (H.265) transcode can use every core a VM has; HDR-to-SDR tone mapping makes it far worse. With the vCPUs pinned at 100%, the transcoder couldn’t keep up, the Plex server stopped responding to its own health checks and apps, and streams stalled or the server process fell over.</li>
+                    <li><strong>Memory ran out.</strong> Each software transcode uses a lot of RAM, and the Compose file caps Plex at <code>mem_limit: 16g</code> with transcode files written to RAM (<code>/dev/shm</code>). Two or three heavy transcodes at once could push the container past its limit, and Linux’s out-of-memory killer then ends the process, which looks like Plex crashing.</li>
+                    <li><strong>Everything else on the VM suffered too.</strong> Samba, Vaultwarden and the other containers share the same vCPUs and RAM, so a busy transcode slowed the whole server down.</li>
+                </ul>
+                <p>The exact trigger can vary by file and device, but the pattern (crashes during playback that needed converting, fine for files played directly) points to CPU and memory exhaustion from software transcoding.</p>
+                <h4>Why the GPU fixed it</h4>
+                <ul>
+                    <li>NVIDIA GPUs have dedicated video hardware, <strong>NVDEC</strong> (decode) and <strong>NVENC</strong> (encode), separate from the graphics cores. Plex hands the transcode to these chips instead of the CPU.</li>
+                    <li>A transcode that pinned every CPU core drops to a few percent of CPU, and the GPU can handle several streams at once, including 4K, HEVC and HDR tone mapping.</li>
+                    <li>Hardware transcodes use much less system RAM, so the container stays well under its memory limit.</li>
+                    <li>Because the VM’s CPU and RAM are no longer exhausted, Plex keeps responding and the other services on VM 100 stay fast.</li>
+                </ul>
+                <p>The GPU has to be <strong>passed through</strong> because VMs can’t see the host’s hardware by default. PCI passthrough hands the physical card to VM 100 as if it were plugged straight into it, so the NVIDIA driver inside Ubuntu and then Docker can use it. The card then belongs to that VM only; the Proxmox host and other VMs can’t use it at the same time.</p>
+                <h4>How to set it up</h4>
+                <p>Overview: <strong>(1)</strong> turn on IOMMU on the Proxmox host, <strong>(2)</strong> reserve the GPU for passthrough, <strong>(3)</strong> attach it to VM 100, <strong>(4)</strong> install the NVIDIA driver in Ubuntu, <strong>(5)</strong> install the NVIDIA Container Toolkit, <strong>(6)</strong> give it to Plex and turn on hardware transcoding. Hardware transcoding in Plex needs <strong>Plex Pass</strong>.</p>
+                <p><strong>1. Turn on IOMMU (Proxmox host).</strong> In the motherboard BIOS/UEFI, enable <strong>VT-d</strong> (Intel) or <strong>AMD-Vi / IOMMU</strong> (AMD), plus <strong>Above 4G Decoding</strong> if available. Then add the kernel options. On a standard install that boots with GRUB, edit the default command line:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nano /etc/default/grub
+# Intel: GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet intel_iommu=on iommu=pt&quot;
+# AMD:   GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet iommu=pt&quot;
+update-grub</code></pre>
+                    </div>
+                </div>
+                <p>If Proxmox was installed on ZFS and boots with systemd-boot, add the same options to the single line in <code>/etc/kernel/cmdline</code> instead and run <code>proxmox-boot-tool refresh</code>.</p>
+                <p><strong>2. Load the VFIO modules and reserve the GPU (Proxmox host).</strong> Find the card’s IDs. A GPU usually has two functions, video and audio:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>lspci -nn | grep -i nvidia</code></pre>
+                    </div>
+                </div>
+                <p>Example output: <code>01:00.0 VGA compatible controller [0300]: NVIDIA ... [10de:2484]</code> and <code>01:00.1 Audio device [0403]: NVIDIA ... [10de:228b]</code>. Note the bus address (<code>01:00</code>) and both IDs in brackets, then bind them to the passthrough driver and stop the host from loading its own NVIDIA drivers:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>printf &quot;vfio\nvfio_iommu_type1\nvfio_pci\n&quot; &gt;&gt; /etc/modules
+echo &quot;options vfio-pci ids=10de:2484,10de:228b disable_vga=1&quot; &gt; /etc/modprobe.d/vfio.conf
+printf &quot;blacklist nouveau\nblacklist nvidia\nblacklist nvidiafb\n&quot; &gt; /etc/modprobe.d/blacklist-nvidia.conf
+update-initramfs -u -k all
+reboot</code></pre>
+                    </div>
+                </div>
+                <p>Use <em>your</em> IDs, not the example ones. After the reboot, check that IOMMU is on and the card is reserved:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>dmesg | grep -e DMAR -e IOMMU | head
+lspci -nnk -d 10de:</code></pre>
+                    </div>
+                </div>
+                <p>Both functions should show <code>Kernel driver in use: vfio-pci</code>.</p>
+                <p><strong>3. Attach the GPU to VM 100 (Proxmox host).</strong> Shut the VM down, add the card (all functions) and start it again:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>qm shutdown 100 --timeout 300
+qm set 100 --hostpci0 0000:01:00,pcie=1
+qm start 100</code></pre>
+                    </div>
+                </div>
+                <p><code>pcie=1</code> needs the VM’s machine type to be <strong>q35</strong> (<strong>Hardware → Machine</strong>); on the older i440fx type, leave <code>,pcie=1</code> off. In the web UI this is <strong>VM 100 → Hardware → Add → PCI Device → Raw Device</strong>, pick the GPU and tick <strong>All Functions</strong> (and <strong>PCI-Express</strong> on q35).</p>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Don’t switch an already-installed VM’s <strong>BIOS</strong> between SeaBIOS and OVMF (UEFI); it won’t boot afterwards. Changing the machine type to q35 is usually fine, but the network interface name inside Ubuntu can change, so do it from the Proxmox console, not over SSH. A VM with a passed-through device also can’t use memory ballooning, so give it a fixed amount of RAM.</div></div>
+                <p><strong>4. Install the NVIDIA driver (inside VM 100).</strong></p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>lspci | grep -i nvidia
+sudo ubuntu-drivers list
+sudo ubuntu-drivers install
+sudo reboot</code></pre>
+                    </div>
+                </div>
+                <p>After the reboot, <code>nvidia-smi</code> should show the card, the driver version and no processes yet:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nvidia-smi</code></pre>
+                    </div>
+                </div>
+                <p><strong>5. Install the NVIDIA Container Toolkit (inside VM 100).</strong> This lets Docker containers use the GPU (commands from <a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html" target="_blank" rel="noopener">NVIDIA’s install guide</a>):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+  sed &#x27;s#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g&#x27; | \
+  sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+sudo apt update
+sudo apt install -y nvidia-container-toolkit
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker
+sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi</code></pre>
+                    </div>
+                </div>
+                <p>The last command runs a throwaway container; it should print the same <code>nvidia-smi</code> table.</p>
+                <p><strong>6. Give the GPU to Plex and turn on hardware transcoding (inside VM 100).</strong> These are the GPU lines in the <a href="#plex-install">Plex Compose file</a>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml · ~/docker/plex/docker-compose.yml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility</code></pre>
+                    </div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/docker/plex
+sudo docker compose up -d
+sudo docker exec plex nvidia-smi</code></pre>
+                    </div>
+                </div>
+                <p>Then in Plex: <strong>Settings → Transcoder</strong> → tick <strong>Use hardware acceleration when available</strong> and <strong>Use hardware-accelerated video encoding</strong> (and HDR tone mapping if you have HDR content) → <strong>Save Changes</strong>.</p>
+                <h4>Check it’s working</h4>
+                <ol>
+                    <li>Play a video and lower the quality in the player (e.g. 720p) to force a transcode.</li>
+                    <li>In Plex, open <strong>Dashboard</strong>: the stream should say <strong>Transcode (hw)</strong>.</li>
+                    <li>On VM 100, <code>nvidia-smi</code> lists a <strong>Plex Transcoder</strong> process, and <code>htop</code> shows the CPU mostly idle.</li>
+                </ol>
+                <h4>If it doesn’t work</h4>
+                <table>
+                    <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>VM won’t start: “IOMMU not present” or “cannot reset device”</td><td>IOMMU isn’t on: check VT-d / AMD-Vi in the BIOS and the kernel options in step 1, then <code>dmesg | grep -e DMAR -e IOMMU</code>.</td></tr>
+                        <tr><td><code>lspci -nnk</code> on the host shows <code>nouveau</code> or <code>nvidia</code>, not <code>vfio-pci</code></td><td>The host grabbed the card. Recheck <code>/etc/modprobe.d/vfio.conf</code> (both IDs) and the blacklist, run <code>update-initramfs -u -k all</code> and reboot.</td></tr>
+                        <tr><td><code>nvidia-smi</code> in the VM: “No devices were found”</td><td>The driver didn’t load: <code>sudo ubuntu-drivers install</code> again and reboot. If the VM uses UEFI with Secure Boot, approve the driver key (MOK) on the reboot screen or turn Secure Boot off.</td></tr>
+                        <tr><td><code>could not select device driver "nvidia"</code> when starting Plex</td><td>The Container Toolkit isn’t installed or registered with Docker: repeat step 5.</td></tr>
+                        <tr><td>Dashboard shows <strong>Transcode</strong> without <strong>(hw)</strong></td><td>Hardware acceleration needs Plex Pass and the Transcoder settings in step 6. Check <code>sudo docker exec plex nvidia-smi</code> works.</td></tr>
+                        <tr><td>Passthrough stopped working after a Proxmox update</td><td>Check <code>lspci -nnk -d 10de:</code> on the host still shows <code>vfio-pci</code>; if not, rerun <code>update-initramfs -u -k all</code> and reboot.</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
