@@ -215,12 +215,12 @@
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">AMP (Game Servers) <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#amp">Overview</a>
-      <a class="nav-sub-link" href="#amp-example-values">Example Values</a>
-      <a class="nav-sub-link" href="#amp-mac">1. Fixed MAC Address</a>
-      <a class="nav-sub-link" href="#amp-compose">2. Compose File</a>
-      <a class="nav-sub-link" href="#amp-start">3. Start &amp; Sign In</a>
-      <a class="nav-sub-link" href="#amp-instance">4. Create a Game Server</a>
-      <a class="nav-sub-link" href="#amp-playit">5. Playit (Friends)</a>
+      <a class="nav-sub-link" href="#amp-example-values">How It’s Set Up</a>
+      <a class="nav-sub-link" href="#amp-install">1. Install AMP</a>
+      <a class="nav-sub-link" href="#amp-start">2. Sign In &amp; Activate</a>
+      <a class="nav-sub-link" href="#amp-instance">3. Create a Game Server</a>
+      <a class="nav-sub-link" href="#amp-playit">4. Playit (Friends)</a>
+      <a class="nav-sub-link" href="#amp-commands">Useful Commands</a>
       <a class="nav-sub-link" href="#amp-updating">Updating</a>
       <a class="nav-sub-link" href="#amp-troubleshooting">Troubleshooting</a>
     </div>
@@ -4667,26 +4667,30 @@ sudo docker start homeassistant</code></pre>
             <h2>AMP (Game Server Panel)</h2>
             <p class="tool-overview"><strong>What it is:</strong> AMP (Application Management Panel) by CubeCoders is a web panel for hosting game servers such as Minecraft, Valheim, Terraria and Satisfactory. From a browser you can create servers, start and stop them, edit settings, install mods, schedule restarts and backups, and give friends limited access. It needs a paid licence.</p>
             <div id="amp-example-values">
-                <h3>Example Values</h3>
-                <p>These notes follow the <a href="https://github.com/hardwarehaven/Video-Notes/blob/main/AMP%20Server%20Guide%20Snippets.md" target="_blank" rel="noopener">Hardware Haven AMP server guide</a>, but run AMP in Docker like the rest of the server instead of using the install script. Replace these with your own:</p>
+                <h3>How It’s Set Up &amp; Example Values</h3>
+                <p>These notes follow the <a href="https://github.com/hardwarehaven/Video-Notes/blob/main/AMP%20Server%20Guide%20Snippets.md" target="_blank" rel="noopener">Hardware Haven AMP server guide</a>, using CubeCoders’ own installer with <strong>Docker for the game servers</strong>, which is how the homelab runs it:</p>
+                <ul>
+                    <li><strong>The AMP panel</strong> (called <strong>ADS</strong>, normally the instance <code>ADS01</code>) is installed directly on the server and runs as a system user named <code>amp</code>.</li>
+                    <li><strong>Each game server</strong> (an AMP “instance”) runs in its own Docker container built from CubeCoders’ <code>cubecoders/ampbase</code> image, named <code>AMP_&lt;instance name&gt;</code>. For example, a Minecraft server called <code>Cobblemon01</code> shows up in <code>docker ps</code> as <code>AMP_Cobblemon01</code> using <code>cubecoders/ampbase:java</code>.</li>
+                    <li>Containers keep game servers isolated from each other and from the rest of the server, while AMP creates, starts, updates and removes them for you. You never write a Compose file for AMP.</li>
+                </ul>
                 <table>
                     <thead><tr><th>Value in the commands</th><th>What it is</th></tr></thead>
                     <tbody>
                         <tr><td><code>192.168.1.51</code></td><td>The server’s IP address</td></tr>
-                        <tr><td><code>~/docker/amp</code></td><td>Folder holding the Compose file and all AMP data</td></tr>
-                        <tr><td><code>1000</code> / <code>1000</code></td><td>Your user and group numbers (from <code>id</code>)</td></tr>
-                        <tr><td><code>02:42:AC:3F:8B:12</code></td><td>The container’s fixed MAC address (generate your own in Step 1)</td></tr>
-                        <tr><td><code>8080</code></td><td>AMP web panel port</td></tr>
-                        <tr><td><code>25565</code></td><td>Minecraft Java server port (add others for other games)</td></tr>
+                        <tr><td><code>8080</code></td><td>AMP panel port (the installer shows the actual address when it finishes)</td></tr>
+                        <tr><td><code>ADS01</code></td><td>The AMP panel instance</td></tr>
+                        <tr><td><code>Minecraft01</code> → <code>AMP_Minecraft01</code></td><td>An example game server and its Docker container</td></tr>
+                        <tr><td><code>25565</code></td><td>Minecraft Java port (each game has its own)</td></tr>
+                        <tr><td><code>/home/amp/.ampdata</code></td><td>Where AMP keeps every instance, world, save and setting</td></tr>
                     </tbody>
                 </table>
-                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div><strong>Unofficial image.</strong> <code>mitchtalmadge/amp-dockerized</code> is community-made and <strong>not supported by CubeCoders</strong>. If something breaks, use the image’s GitHub issues, not CubeCoders support. You still need an AMP licence; the image doesn’t replace it.</div></div>
-                <p><strong>Before you start:</strong> a server with a <a href="#static-ip">static IP</a> and SSH, <a href="#docker">Docker and Docker Compose</a> installed, and an <a href="https://cubecoders.com/AMP" target="_blank" rel="noopener">AMP licence key</a>.</p>
+                <p><strong>Before you start:</strong> an Ubuntu or Debian server with a <a href="#static-ip">static IP</a> and SSH, <a href="#docker">Docker</a> installed, and an <a href="https://cubecoders.com/AMP" target="_blank" rel="noopener">AMP licence key</a>. The guide installs Debian first; Ubuntu Server works the same way.</p>
             </div>
 
-            <div id="amp-mac">
-                <h3>Step 1: Generate a Fixed MAC Address</h3>
-                <p>AMP ties its licence to the machine’s hardware and deactivates every instance when something significant changes. Docker gives a container a new MAC address each time it’s recreated, which AMP sees as new hardware. Giving the container a permanent MAC address prevents this. Generate one in Docker’s range:</p>
+            <div id="amp-install">
+                <h3>Step 1: Install AMP</h3>
+                <p>Install <code>curl</code>, then run CubeCoders’ installer <strong>as root</strong>:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4695,73 +4699,37 @@ sudo docker start homeassistant</code></pre>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>printf &#x27;02:42:AC:%02X:%02X:%02X\n&#x27; $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256))</code></pre>
+<pre><code>sudo apt update &amp;&amp; sudo apt install -y curl
+sudo su -
+bash &lt;(curl -fsSL getamp.sh)</code></pre>
                     </div>
                 </div>
-                <p>Copy the result (e.g. <code>02:42:AC:3F:8B:12</code>) for the next step. Generate it once and keep it; don’t change it later.</p>
-            </div>
-
-            <div id="amp-compose">
-                <h3>Step 2: Create the Compose File</h3>
-                <div class="code-container">
-                    <div class="code-header">
-                        <span>bash · on the server</span>
-                        <div class="header-controls">
-                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                        </div>
-                    </div>
-                    <div class="code-scroll-wrapper">
-<pre><code>mkdir -p ~/docker/amp
-cd ~/docker/amp
-id
-nano docker-compose.yml</code></pre>
-                    </div>
-                </div>
-                <p>Paste this, then put in your MAC address, the <code>UID</code>/<code>GID</code> from <code>id</code>, your time zone, and the ports for the games you’ll host. Save with <kbd>Ctrl</kbd>+<kbd>O</kbd>, <kbd>Enter</kbd>, <kbd>Ctrl</kbd>+<kbd>X</kbd>.</p>
-                <div class="code-container">
-                    <div class="code-header">
-                        <span>yaml · docker-compose.yml</span>
-                        <div class="header-controls">
-                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                        </div>
-                    </div>
-                    <div class="code-scroll-wrapper">
-<pre><code>services:
-  amp:
-    container_name: amp
-    image: mitchtalmadge/amp-dockerized:latest
-    networks:
-      default:
-        mac_address: 02:42:AC:3F:8B:12   # your own generated address
-    ports:
-      - 8080:8080                       # AMP web panel
-      - 25565:25565/tcp                 # Minecraft Java
-      - 25565:25565/udp
-      # - 19132:19132/udp               # Minecraft Bedrock
-      # - 2456-2458:2456-2458/udp       # Valheim
-    volumes:
-      - ./ampdata:/home/amp/
-    environment:
-      - UID=1000
-      - GID=1000
-      - TZ=America/Chicago
-    restart: unless-stopped</code></pre>
-                    </div>
-                </div>
+                <p>Answer the installer’s questions:</p>
                 <table>
-                    <thead><tr><th>Line</th><th>What it does</th></tr></thead>
+                    <thead><tr><th>Prompt</th><th>Answer</th></tr></thead>
                     <tbody>
-                        <tr><td><code>mac_address</code></td><td>The fixed address from Step 1, so the licence stays active.</td></tr>
-                        <tr><td><code>8080:8080</code></td><td>The AMP web panel.</td></tr>
-                        <tr><td><code>25565:25565/tcp</code> and <code>/udp</code></td><td>Game ports. Every game server port must be listed here, with the right protocol; look up a game’s ports on <a href="https://portforward.com/ports/" target="_blank" rel="noopener">portforward.com</a>.</td></tr>
-                        <tr><td><code>./ampdata:/home/amp/</code></td><td><strong>Required.</strong> All instances, worlds, saves and logins live here (<code>~/docker/amp/ampdata</code>). Without it everything is wiped when the container is recreated.</td></tr>
-                        <tr><td><code>UID</code> / <code>GID</code></td><td>Your user owns <code>ampdata</code>, so you can copy and back up files without <code>sudo</code>.</td></tr>
+                        <tr><td>Username and password</td><td>The login for the AMP web panel. Use a strong password and save it in <a href="#vault-warden">Vaultwarden</a>.</td></tr>
+                        <tr><td>Use Docker for instances?</td><td><strong>y</strong>. Each game server then runs in its own container.</td></tr>
+                        <tr><td>Enable HTTPS?</td><td><strong>n</strong>, unless you have a domain and want to expose the panel with HTTPS (not needed here; use <a href="#nginx">Nginx Proxy Manager</a> or <a href="#tailscale">Tailscale</a> instead).</td></tr>
                     </tbody>
                 </table>
+                <p>When it finishes it prints the panel address (e.g. <code>http://192.168.1.51:8080</code>). Don’t press <kbd>Ctrl</kbd>+<kbd>C</kbd> while it’s still running, as that can stop the install part-way. Then leave the root shell:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>exit</code></pre>
+                    </div>
+                </div>
             </div>
 
             <div id="amp-start">
-                <h3>Step 3: Start AMP and Sign In</h3>
+                <h3>Step 2: Sign In and Activate</h3>
+                <p>If the firewall is on, open the panel port first:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4770,43 +4738,42 @@ nano docker-compose.yml</code></pre>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>sudo docker compose up -d
-sudo docker compose logs -f amp</code></pre>
-                    </div>
-                </div>
-                <p>The first start downloads and installs AMP, which takes a few minutes. Wait until the log shows AMP has started, then press <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop <em>watching</em> the log (AMP keeps running; unlike the install script, Ctrl+C here can’t stop anything). If the firewall is on, open the panel and game ports:</p>
-                <div class="code-container">
-                    <div class="code-header">
-                        <span>bash · on the server</span>
-                        <div class="header-controls">
-                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                        </div>
-                    </div>
-                    <div class="code-scroll-wrapper">
-<pre><code>sudo ufw allow 8080/tcp
-sudo ufw allow 25565</code></pre>
+<pre><code>sudo ufw allow 8080/tcp</code></pre>
                     </div>
                 </div>
                 <ol>
-                    <li>Open <code>http://192.168.1.51:8080</code> in a browser.</li>
-                    <li>Sign in with the default <strong>admin</strong> / <strong>password</strong>, and <strong>change the password straight away</strong> (it isn’t put in the Compose file, so it never sits in a plain-text file).</li>
+                    <li>Open <code>http://192.168.1.51:8080</code> in a browser on your network.</li>
+                    <li>Sign in with the username and password you chose in the installer.</li>
                     <li>Paste your licence key and choose <strong>Standalone</strong> when asked how to set up.</li>
                 </ol>
             </div>
 
             <div id="amp-instance">
-                <h3>Step 4: Create a Game Server</h3>
+                <h3>Step 3: Create a Game Server</h3>
                 <ol>
-                    <li>In AMP, open <strong>Instances → Create Instance</strong>, pick the game (e.g. Minecraft Java Edition) and give it a name.</li>
-                    <li>Start the instance and accept the game’s EULA if asked. Its port must match one mapped in the Compose file (25565 for Minecraft Java).</li>
-                    <li>From a PC on the same network, connect to <code>192.168.1.51:25565</code>.</li>
+                    <li>In AMP, open <strong>Instances → Create Instance</strong>, pick the game (e.g. Minecraft Java Edition) and give it a name such as <code>Minecraft01</code>.</li>
+                    <li>AMP downloads the right <code>cubecoders/ampbase</code> image the first time and creates the container. Start the instance and accept the game’s EULA if asked.</li>
+                    <li>Open the game’s port in the firewall, then connect from a PC on your network to <code>192.168.1.51:25565</code>.</li>
                 </ol>
-                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Adding another game later:</strong> add its ports under <code>ports:</code> in <code>docker-compose.yml</code> and run <code>sudo docker compose up -d</code> in <code>~/docker/amp</code> (this recreates the container; your data in <code>ampdata</code> is kept). Then create the instance in AMP.</div></div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo ufw allow 25565
+sudo docker ps --filter name=AMP_</code></pre>
+                    </div>
+                </div>
+                <p><code>docker ps</code> should list <code>AMP_Minecraft01</code> as <strong>Up</strong>. The instance’s ports are set in AMP (the instance’s <strong>Configuration → Network</strong> page) and AMP publishes them from the container for you.</p>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Manage game servers from the AMP panel, not with <code>docker stop</code> or <code>docker rm</code>: AMP tracks its containers and recreates them when needed.</div></div>
             </div>
 
             <div id="amp-playit">
-                <h3>Step 5: Let Friends Join with Playit (No Port Forwarding)</h3>
-                <p><a href="https://playit.gg" target="_blank" rel="noopener">playit.gg</a> gives your server a public address without opening ports on your router. It runs on the host (not in Docker) and forwards to the ports Docker publishes. Install it from Playit’s repository (check <a href="https://playit.gg/download/linux" target="_blank" rel="noopener">playit.gg/download/linux</a> for the current commands):</p>
+                <h3>Step 4: Let Friends Join with Playit (No Port Forwarding)</h3>
+                <p><a href="https://playit.gg" target="_blank" rel="noopener">playit.gg</a> gives your server a public address without opening ports on your router. Install it from Playit’s repository (check <a href="https://playit.gg/download/linux" target="_blank" rel="noopener">playit.gg/download/linux</a> for the current commands):</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4838,19 +4805,33 @@ sudo tail -f /var/log/playit/playit.log</code></pre>
                 <p>Share the address Playit gives you (e.g. <code>something.joinmc.link</code>) with your friends.</p>
             </div>
 
+            <div id="amp-commands">
+                <h3>Useful Commands</h3>
+                <p>AMP is managed with <code>ampinstmgr</code>, run as the <code>amp</code> user (<code>sudo -iu amp</code> does that from your own account):</p>
+                <table>
+                    <thead><tr><th>Task</th><th>Command</th></tr></thead>
+                    <tbody>
+                        <tr><td>List instances and their status</td><td><code>sudo -iu amp ampinstmgr list</code></td></tr>
+                        <tr><td>Start / stop one instance</td><td><code>sudo -iu amp ampinstmgr start Minecraft01</code> / <code>stop Minecraft01</code></td></tr>
+                        <tr><td>Stop / start everything</td><td><code>sudo -iu amp ampinstmgr stopall</code> / <code>startall</code></td></tr>
+                        <tr><td>See the game-server containers</td><td><code>sudo docker ps --filter name=AMP_</code></td></tr>
+                        <tr><td>A game server’s console output</td><td><code>sudo docker logs --tail 50 AMP_Minecraft01</code> (or the instance’s Console in AMP)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div id="amp-updating">
                 <h3>Updating</h3>
                 <table>
                     <thead><tr><th>What</th><th>How</th></tr></thead>
                     <tbody>
-                        <tr><td><strong>AMP itself</strong></td><td>Updates automatically every time the container restarts. When the panel says an update is available: <code>cd ~/docker/amp &amp;&amp; sudo docker compose restart</code>. You can also update from AMP’s web UI.</td></tr>
+                        <tr><td><strong>AMP and every instance</strong></td><td><code>sudo apt update &amp;&amp; sudo apt upgrade</code> (updates AMP’s tools from CubeCoders’ repository), then <code>sudo -iu amp ampinstmgr upgradeall</code>. This shuts each instance down, upgrades it, and pulls the newest <code>cubecoders/ampbase</code> images. The panel also shows a notice when an update is available.</td></tr>
                         <tr><td><strong>Game servers</strong></td><td>In AMP, open the instance and use <strong>Update</strong> (stop the server first for most games). Many games can be set to update on start in the instance’s settings.</td></tr>
-                        <tr><td><strong>The Docker image</strong></td><td>Only needed occasionally, when a new AMP version needs it. Read the image’s <a href="https://github.com/MitchTalmadge/AMP-dockerized/releases" target="_blank" rel="noopener">release notes</a> first, then run the commands below.</td></tr>
                         <tr><td><strong>Playit</strong></td><td>Updates with the system: <code>sudo apt update &amp;&amp; sudo apt upgrade</code>, then <code>sudo systemctl restart playit</code>.</td></tr>
                     </tbody>
                 </table>
-                <h4>Back up, then update the image</h4>
-                <p>Stop AMP, copy <code>ampdata</code> to the RAID (see <a href="#backups">Backups</a>), then pull the new image and start it again:</p>
+                <h4>Back up, then update</h4>
+                <p>Stop the servers, copy AMP’s data to the RAID (see <a href="#backups">Backups</a>), update, then start them again:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4859,16 +4840,16 @@ sudo tail -f /var/log/playit/playit.log</code></pre>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>cd ~/docker/amp
-sudo docker compose down
-sudo tar czf /mnt/raid/amp-backups/ampdata-$(date +%F).tar.gz -C ~/docker/amp ampdata
-sudo docker compose pull
-sudo docker compose up -d
-sudo docker image prune -f</code></pre>
+<pre><code>sudo -iu amp ampinstmgr stopall
+sudo mkdir -p /mnt/raid/amp-backups
+sudo tar czf /mnt/raid/amp-backups/ampdata-$(date +%F).tar.gz -C /home/amp .ampdata
+sudo apt update &amp;&amp; sudo apt upgrade -y
+sudo -iu amp ampinstmgr upgradeall
+sudo -iu amp ampinstmgr startall</code></pre>
                     </div>
                 </div>
-                <p>Create <code>/mnt/raid/amp-backups</code> the first time with <code>sudo mkdir -p /mnt/raid/amp-backups</code>. Don’t point an automatic updater such as Watchtower at this image; the image’s author asks that you read the changelog before updating.</p>
-                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Never run <code>docker compose down -v</code> or delete <code>ampdata</code>: that is every world, save and setting. <code>down</code> without <code>-v</code> is safe.</div></div>
+                <p><code>startall</code> starts every instance; stop any you don’t want running from the panel afterwards. AMP also has its own scheduled backups per instance (the instance’s <strong>Backups</strong> tab), which are handy for rolling back a world.</p>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Never delete <code>/home/amp/.ampdata</code> or remove AMP’s containers by hand; that is every world, save and setting.</div></div>
             </div>
 
             <div id="amp-troubleshooting">
@@ -4876,12 +4857,11 @@ sudo docker image prune -f</code></pre>
                 <table>
                     <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
                     <tbody>
-                        <tr><td>Instances deactivated / licence asks to re-activate after every restart</td><td>No fixed MAC address, or it changed. Set <code>mac_address</code> (Step 1–2), run <code>sudo docker compose up -d</code>, and re-activate once.</td></tr>
-                        <tr><td>Web panel won’t load</td><td><code>sudo docker compose ps</code> and <code>sudo docker compose logs --tail 50 amp</code> in <code>~/docker/amp</code>; first start can take a few minutes. Check <code>8080:8080</code> is mapped and <code>sudo ufw allow 8080/tcp</code>.</td></tr>
-                        <tr><td>Players can’t connect to a game</td><td>The game’s port isn’t in <code>ports:</code>, uses the wrong protocol (TCP vs UDP), or the firewall blocks it. Add it, <code>sudo docker compose up -d</code>, <code>sudo ufw allow &lt;port&gt;</code>.</td></tr>
-                        <tr><td>Everything was wiped after an update</td><td>The <code>./ampdata:/home/amp/</code> volume was missing or pointed somewhere else. Restore <code>ampdata</code> from backup and fix the volume line.</td></tr>
-                        <tr><td>“Permission denied” on files in <code>ampdata</code></td><td><code>UID</code>/<code>GID</code> don’t match your user. Fix them to match <code>id</code>, then <code>sudo chown -R 1000:1000 ~/docker/amp/ampdata</code> and restart.</td></tr>
-                        <tr><td>Port already in use when starting</td><td>Another container or service uses 8080 or the game port. Change the left-hand number (e.g. <code>8081:8080</code>) and open <code>http://192.168.1.51:8081</code>.</td></tr>
+                        <tr><td>Panel won’t load</td><td>Check the panel is running: <code>sudo -iu amp ampinstmgr list</code>; start it with <code>sudo -iu amp ampinstmgr start ADS01</code>. Check <code>sudo ufw allow 8080/tcp</code> and use the address the installer printed.</td></tr>
+                        <tr><td>Installer stopped part-way (Ctrl+C or a dropped SSH session)</td><td>Run <code>bash &lt;(curl -fsSL getamp.sh)</code> again as root; it picks up where it left off. Use tmux for long installs.</td></tr>
+                        <tr><td>A game server won’t start</td><td>Read its console in AMP or <code>sudo docker logs --tail 50 AMP_&lt;name&gt;</code>. If the error mentions Docker permissions, the <code>amp</code> user needs Docker access: <code>sudo usermod -aG docker amp</code>, then restart the server.</td></tr>
+                        <tr><td>Players can’t connect</td><td>The port in the instance’s network settings, the firewall (<code>sudo ufw allow 25565</code>) and the address all need to match. Check <code>sudo docker ps --filter name=AMP_</code> shows the container <strong>Up</strong> with the port listed.</td></tr>
+                        <tr><td>Update fails or “ADS version does not match AMP version”</td><td>Update the tools first, then upgrade as the <code>amp</code> user: <code>sudo apt update &amp;&amp; sudo apt upgrade</code>, then <code>sudo -iu amp ampinstmgr upgradeall</code>.</td></tr>
                         <tr><td>Friends can’t join through Playit</td><td><code>sudo systemctl status playit</code> and <code>sudo tail -f /var/log/playit/playit.log</code>; check the tunnel points at <code>127.0.0.1</code> and the same port the game uses.</td></tr>
                     </tbody>
                 </table>
