@@ -134,7 +134,12 @@
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">RAID <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
       <a class="nav-sub-link" href="#raid-levels">Choosing a RAID Level</a>
-      <a class="nav-sub-link" href="#raid-setup">Setup over SSH</a>
+      <a class="nav-sub-link" href="#raid-homelab">Homelab Build (Proxmox)</a>
+      <a class="nav-sub-link" href="#raid-homelab-prep">Before You Start</a>
+      <a class="nav-sub-link" href="#raid-homelab-build">1. Build the RAID on the Host</a>
+      <a class="nav-sub-link" href="#raid-homelab-share">2. Share It (virtiofs &amp; Samba)</a>
+      <a class="nav-sub-link" href="#raid-homelab-verify">Verification</a>
+      <a class="nav-sub-link" href="#raid-setup">Standalone Server over SSH</a>
       <a class="nav-sub-link" href="#raid-maintenance">Health &amp; Disk Replacement</a>
       <a class="nav-sub-link" href="#raid-troubleshooting">Troubleshooting</a>
     </div>
@@ -225,7 +230,22 @@
   <a class="nav-top-link" href="#powershell">PowerShell</a>
   <a class="nav-top-link" href="#central-logging">Central Logging</a>
   <a class="nav-top-link" href="#alerting">Alerting</a>
-  <a class="nav-top-link" href="#backups">Backups</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Backups <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#backups">Overview</a>
+      <a class="nav-sub-link" href="#backups-overview">How the Backups Work</a>
+      <a class="nav-sub-link" href="#backups-storage">1. Backup Storage</a>
+      <a class="nav-sub-link" href="#backups-passthrough">2. Exclude Physical Disks</a>
+      <a class="nav-sub-link" href="#backups-agent">3. Guest Agent</a>
+      <a class="nav-sub-link" href="#backups-job">4. Nightly Job</a>
+      <a class="nav-sub-link" href="#backups-restore">5. Test a Restore</a>
+      <a class="nav-sub-link" href="#backups-apps">6. Archive App Data</a>
+      <a class="nav-sub-link" href="#backups-notify">7. Email Notifications</a>
+      <a class="nav-sub-link" href="#backups-verify">Verification</a>
+      <a class="nav-sub-link" href="#backups-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">GPG <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
@@ -1964,7 +1984,7 @@ ssh haven@ubuntu-server.home.arpa</code></pre>
 
         <div id="raid">
             <h2>RAID</h2>
-            <p class="tool-overview"><strong>What it is:</strong> RAID (Redundant Array of Independent Disks) combines several physical drives into one logical drive for more speed, more redundancy, or both. This guide builds a <strong>software RAID</strong> on Ubuntu Server with <code>mdadm</code>, entirely over SSH. No hardware RAID card is needed.</p>
+            <p class="tool-overview"><strong>What it is:</strong> RAID (Redundant Array of Independent Disks) combines several physical drives into one logical drive for more speed, more redundancy, or both. These notes use <strong>software RAID</strong> with <code>mdadm</code>, so no hardware RAID card is needed: first the homelab build, a mirror owned by the Proxmox host and shared to a VM with Samba, then a standalone Ubuntu server set up over SSH.</p>
                 <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div><strong>Creating an array erases every disk you add to it.</strong> Back up anything on those disks first, and double-check the device names before running the create command.</div></div>
                 <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>RAID is not a backup.</strong> It keeps the server running when a disk dies, but it will happily mirror an accidental delete, ransomware, or a corrupted file to every disk. Keep separate backups.</div></div>
 
@@ -1985,8 +2005,342 @@ ssh haven@ubuntu-server.home.arpa</code></pre>
                 <p>Use disks of the same size. The array treats every member as the size of the smallest one.</p>
             </div>
 
+            <div id="raid-homelab">
+                <h3>Homelab Build: A Host-Owned Mirror on Proxmox</h3>
+                <p>This is the setup running in the homelab. The <strong>Proxmox host owns the RAID</strong>: it assembles the <code>mdadm</code> mirror, formats it ext4 and mounts it at <code>/mnt/raid</code>. VM 100 (Ubuntu) receives that folder through <strong>virtiofs</strong> and shares it on the network with <a href="#samba">Samba</a>. Proxmox writes its <a href="#backups">backups</a> straight to the RAID, so backups no longer depend on VM 100 being up.</p>
+                <figure class="diagram" style="margin:18px 0;">
+                <svg viewBox="0 0 660 380" role="img" aria-labelledby="raidDiagTitle" style="width:100%;max-width:660px;height:auto;display:block;font-family:inherit;">
+                    <title id="raidDiagTitle">Only the Proxmox host touches the disks: two 20 TB disks form the md0 RAID 1 mirror mounted at /mnt/raid, which holds Proxmox backups and is passed to VM 100 by virtiofs, where Samba shares it with PCs and phones.</title>
+                    <defs><marker id="raidArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--text-muted)"/></marker></defs>
+                    <style>
+                        .rd-frame{fill:none;stroke:var(--border);stroke-width:1.5}
+                        .rd-box{fill:var(--surface);stroke:var(--border);stroke-width:1.5}
+                        .rd-hot{fill:var(--accent-pale);stroke:var(--accent);stroke-width:2}
+                        .rd-t{fill:var(--text);font-size:14px;font-weight:600}
+                        .rd-s{fill:var(--text-muted);font-size:12px}
+                        .rd-l{fill:var(--text-muted);font-size:12px}
+                        .rd-f{fill:var(--text);font-size:13px;font-weight:700}
+                        .rd-a{fill:none;stroke:var(--text-muted);stroke-width:1.5;marker-end:url(#raidArrow)}
+                    </style>
+                    <rect class="rd-frame" x="10" y="10" width="640" height="225" rx="10"/>
+                    <text class="rd-f" x="26" y="34">Proxmox host: the only owner of the RAID</text>
+                    <rect class="rd-box" x="26" y="52" width="130" height="40" rx="7"/><text class="rd-t" x="91" y="77" text-anchor="middle">Disk 1 · 20 TB</text>
+                    <rect class="rd-box" x="26" y="104" width="130" height="40" rx="7"/><text class="rd-t" x="91" y="129" text-anchor="middle">Disk 2 · 20 TB</text>
+                    <rect class="rd-hot" x="200" y="66" width="160" height="62" rx="8"/><text class="rd-t" x="280" y="93" text-anchor="middle">md0 · RAID 1</text><text class="rd-s" x="280" y="112" text-anchor="middle">mirror, ext4</text>
+                    <rect class="rd-box" x="404" y="66" width="160" height="62" rx="8"/><text class="rd-t" x="484" y="93" text-anchor="middle">/mnt/raid</text><text class="rd-s" x="484" y="112" text-anchor="middle">mounted on the host</text>
+                    <rect class="rd-box" x="200" y="164" width="200" height="54" rx="8"/><text class="rd-t" x="300" y="187" text-anchor="middle">Proxmox backups</text><text class="rd-s" x="300" y="205" text-anchor="middle">/mnt/raid/proxmox-backups</text>
+                    <path class="rd-a" d="M156,72 H178 V86 H198"/>
+                    <path class="rd-a" d="M156,124 H178 V108 H198"/>
+                    <path class="rd-a" d="M360,97 H402"/>
+                    <path class="rd-a" d="M440,128 V191 H402"/>
+                    <text class="rd-l" x="432" y="160" text-anchor="end">nightly backups</text>
+                    <rect class="rd-frame" x="180" y="268" width="470" height="100" rx="10"/>
+                    <text class="rd-f" x="196" y="291">VM 100 (Ubuntu)</text>
+                    <rect class="rd-box" x="196" y="302" width="170" height="54" rx="8"/><text class="rd-t" x="281" y="325" text-anchor="middle">Samba [RAID]</text><text class="rd-s" x="281" y="343" text-anchor="middle">users haven, alex</text>
+                    <rect class="rd-box" x="430" y="302" width="200" height="54" rx="8"/><text class="rd-t" x="530" y="325" text-anchor="middle">virtiofs mount</text><text class="rd-s" x="530" y="343" text-anchor="middle">/mnt/raid in the VM</text>
+                    <rect class="rd-box" x="10" y="302" width="130" height="54" rx="8"/><text class="rd-t" x="75" y="334" text-anchor="middle">PCs and phones</text>
+                    <path class="rd-a" d="M530,128 V300"/>
+                    <text class="rd-l" x="522" y="256" text-anchor="end">folder passed by virtiofs</text>
+                    <path class="rd-a" d="M430,329 H368"/>
+                    <path class="rd-a" d="M196,329 H142"/>
+                    <text class="rd-l" x="158" y="320">SMB</text>
+                </svg>
+                <figcaption style="font-size:13px;color:var(--text-muted);margin-top:6px;">Arrows show where data flows: the two disks form one mirror on the host, which keeps Proxmox backups locally and hands the same folder to VM 100 for Samba.</figcaption>
+                </figure>
+                <p>The steps start from two blank 20 TB drives and an existing Ubuntu VM (VM 100). Part 1 builds the RAID and Part 2 shares it; backing up to it and email alerts are in the <a href="#backups">Backups</a> section. If you’re running Ubuntu directly on the hardware with no Proxmox, use <a href="#raid-setup">Standalone Server</a> below instead.</p>
+                <p><strong>Golden rules</strong> (each one comes from a real problem in <a href="#raid-troubleshooting">Troubleshooting</a>):</p>
+                <ul>
+                    <li><strong>One owner per disk.</strong> Each disk or array is assembled and mounted by exactly one system: here, the host.</li>
+                    <li><strong>Never give a VM a RAID’s member disks.</strong> If a VM sees the raw drives, it can assemble its own copy of the array, and two RAID drivers end up managing the same disks.</li>
+                    <li><strong>Never mount one filesystem in two places at once.</strong> Share folders with virtiofs or Samba instead.</li>
+                    <li><strong>Refer to disks by <code>/dev/disk/by-id/...</code></strong>, never <code>/dev/sdX</code>, which can change between boots.</li>
+                    <li><strong>Run long commands in <code>tmux</code></strong> and paste one code block at a time.</li>
+                    <li><strong>Never put a password inside a command you paste into a chat, ticket or screenshot.</strong> Use the <code>read -s</code> prompt shown in <a href="#backups-notify">Email Notifications</a>, run on its own line.</li>
+                </ul>
+            </div>
+
+            <div id="raid-homelab-prep">
+                <h3>Before You Start</h3>
+                <p>About an hour of hands-on work; the new mirror then syncs in the background for about a day while it is already usable.</p>
+                <ul>
+                    <li>☐ Two identical 20 TB drives installed in the server. <strong>Everything on them will be erased.</strong></li>
+                    <li>☐ Proxmox VE 8.4 or newer (check with <code>pveversion</code>); virtiofs needs it.</li>
+                    <li>☐ VM 100 running Ubuntu 24.04, with a DHCP reservation in your router so its LAN IP never changes.</li>
+                    <li>☐ Work from the local network or the console, not over <a href="#tailscale">Tailscale</a> through VM 100.</li>
+                    <li>☐ tmux and gdisk installed on the host: <code>apt install -y tmux gdisk</code>, then start a session with <code>tmux</code> (reattach later with <code>tmux attach</code>).</li>
+                </ul>
+                <table>
+                    <thead><tr><th>Example value</th><th>What it is</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>ata-ST20000NE000-3G5101_SERIAL01</code></td><td>RAID drive 1 (yours has your drive’s model and serial)</td></tr>
+                        <tr><td><code>ata-ST20000NE000-3G5101_SERIAL02</code></td><td>RAID drive 2</td></tr>
+                        <tr><td><code>/mnt/raid</code></td><td>Mount point on the host (and in VM 100)</td></tr>
+                        <tr><td><code>192.168.1.51</code></td><td>VM 100’s LAN IP (the Samba server)</td></tr>
+                        <tr><td><code>haven</code>, <code>alex</code></td><td>Samba users in VM 100</td></tr>
+                        <tr><td><code>[RAID]</code>, group <code>raidusers</code></td><td>Samba share name and the group allowed to use it</td></tr>
+                    </tbody>
+                </table>
+                <h4>Identify the two drives</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>lsblk -d -o NAME,SIZE,MODEL,SERIAL
+ls -l /dev/disk/by-id/ | grep -E &quot;ata-.*sd[a-z]$&quot;</code></pre>
+                    </div>
+                </div>
+                <p>Match each 18.2T drive to its <code>ata-...</code> name, then save both names in variables. Re-run these two lines in every new shell:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>D1=/dev/disk/by-id/ata-ST20000NE000-3G5101_SERIAL01
+D2=/dev/disk/by-id/ata-ST20000NE000-3G5101_SERIAL02</code></pre>
+                    </div>
+                </div>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Never use the boot drive or any other data drive here. If unsure, stop and check <code>lsblk</code> again.</div></div>
+            </div>
+
+            <div id="raid-homelab-build">
+                <h3>Part 1: Build the RAID on the Proxmox Host</h3>
+                <p>The host wipes both drives, creates one partition on each, mirrors them as <code>/dev/md0</code>, formats it ext4 and mounts it at <code>/mnt/raid</code>. Run everything as root on the Proxmox host, inside tmux, with <code>D1</code> and <code>D2</code> set.</p>
+                <h4>1. Confirm the drives are the right ones and unused</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT $D1 $D2
+wipefs -n $D1 $D2</code></pre>
+                    </div>
+                </div>
+                <p>Both should be 18.2T with nothing mounted. <code>wipefs -n</code> only lists old signatures; it changes nothing.</p>
+                <h4>2. Erase and partition both drives</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>wipefs -a $D1 $D2
+sgdisk --zap-all $D1
+sgdisk --zap-all $D2
+sgdisk -n 1:0:-100M -t 1:FD00 -c 1:raid $D1
+sgdisk -n 1:0:-100M -t 1:FD00 -c 1:raid $D2
+partprobe; udevadm settle
+ls -l ${D1}-part1 ${D2}-part1</code></pre>
+                    </div>
+                </div>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>This permanently erases both drives. The partition stops 100 MB short of the end so a replacement drive that is slightly smaller still fits.</div></div>
+                <h4>3. Create the mirror</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mdadm --create /dev/md0 --level=1 --raid-devices=2 --metadata=1.2 \
+  --bitmap=internal --name=raid ${D1}-part1 ${D2}-part1
+cat /proc/mdstat</code></pre>
+                    </div>
+                </div>
+                <p><code>/proc/mdstat</code> shows <code>resync</code> with a progress bar. It takes about a day on 20 TB drives; you can use the array right away. The internal bitmap makes a resync after a crash or a briefly missing disk take minutes instead of a day.</p>
+                <h4>4. Format it</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkfs.ext4 -L raid -m 0 /dev/md0</code></pre>
+                    </div>
+                </div>
+                <p><code>-m 0</code> skips the 5% root reserve, which would waste about 900 GB on a data-only disk.</p>
+                <h4>5. Make the host assemble it at every boot</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sed -i -e &#x27;/^AUTO -all/d&#x27; -e &#x27;/^ARRAY/d&#x27; /etc/mdadm/mdadm.conf
+mdadm --detail --scan &gt;&gt; /etc/mdadm/mdadm.conf
+grep -E &quot;^(ARRAY|AUTO)&quot; /etc/mdadm/mdadm.conf
+update-initramfs -u -k all</code></pre>
+                    </div>
+                </div>
+                <p><code>grep</code> should show one <code>ARRAY /dev/md0 ... name=...:raid</code> line and no <code>AUTO -all</code>. Wait for <code>update-initramfs</code> to return to the prompt before doing anything else; do not reboot while it runs.</p>
+                <h4>6. Mount it permanently</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkdir -p /mnt/raid
+chattr +i /mnt/raid
+echo &quot;UUID=$(blkid -s UUID -o value /dev/md0) /mnt/raid ext4 defaults,nofail 0 2&quot; &gt;&gt; /etc/fstab
+systemctl daemon-reload
+mount -a
+findmnt /mnt/raid
+df -h /mnt/raid</code></pre>
+                    </div>
+                </div>
+                <p><code>chattr +i</code> locks the <em>empty</em> mount folder, so nothing can write to the boot disk if the RAID ever fails to mount. <code>findmnt</code> should show <code>/dev/md0</code> as <code>ext4</code>, and <code>df</code> about 18T.</p>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div><strong>Never</strong> mount <code>/dev/md0</code> anywhere else, and never attach <code>$D1</code> or <code>$D2</code> to a VM.</div></div>
+            </div>
+
+            <div id="raid-homelab-share">
+                <h3>Part 2: Give the RAID to VM 100 and Share It with Samba</h3>
+                <p>virtiofs hands VM 100 the host’s <code>/mnt/raid</code> folder directly: no disks are passed to the VM, so it can never build its own copy of the array. Samba in the VM then shares that folder on your network.</p>
+                <h4>1. On the host: create the folder mapping and attach it</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>pvesh create /cluster/mapping/dir --id raid --map node=pve,path=/mnt/raid
+qm shutdown 100 --timeout 300
+qm status 100
+qm set 100 --virtiofs0 dirid=raid
+qm start 100</code></pre>
+                    </div>
+                </div>
+                <p>Run <code>qm set</code> only after <code>qm status</code> says <code>stopped</code>. Replace <code>pve</code> with your node name if it’s different. In the web UI this is <strong>Datacenter → Directory Mappings → Add</strong>, then <strong>VM 100 → Hardware → Add → Virtiofs</strong>.</p>
+                <h4>2. Inside VM 100: mount it</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mkdir -p /mnt/raid
+echo &quot;raid /mnt/raid virtiofs defaults,nofail 0 0&quot; | sudo tee -a /etc/fstab
+sudo systemctl daemon-reload
+sudo mount -a
+findmnt /mnt/raid</code></pre>
+                    </div>
+                </div>
+                <p><code>raid</code> is the mapping name from step 1. <code>findmnt</code> should show source <code>raid</code>, type <code>virtiofs</code>.</p>
+                <h4>3. Inside VM 100: create the share group and set permissions</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo groupadd raidusers
+sudo usermod -aG raidusers haven
+sudo chown haven:raidusers /mnt/raid
+sudo chmod 2775 /mnt/raid</code></pre>
+                    </div>
+                </div>
+                <p>For each extra person (for example <code>alex</code>), run <code>sudo adduser alex</code> and <code>sudo usermod -aG raidusers alex</code>. The <code>2</code> in <code>2775</code> makes new folders inherit the group.</p>
+                <h4>4. Inside VM 100: install Samba and add the share</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt update &amp;&amp; sudo apt install -y samba
+sudo tee -a /etc/samba/smb.conf &gt; /dev/null &lt;&lt;&#x27;EOF&#x27;
+
+[RAID]
+   path = /mnt/raid
+   valid users = @raidusers
+   force group = raidusers
+   read only = no
+   create mask = 0664
+   directory mask = 2775
+   veto files = /proxmox-backups/
+EOF
+sudo testparm -s &gt; /dev/null &amp;&amp; echo &quot;config OK&quot;</code></pre>
+                    </div>
+                </div>
+                <p><code>veto files</code> hides the Proxmox backup folder from network users, which keeps ransomware on a PC away from your backups.</p>
+                <h4>5. Inside VM 100: give each user a Samba password and start Samba</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo smbpasswd -a haven
+sudo systemctl enable --now smbd
+sudo systemctl restart smbd
+sudo ufw status</code></pre>
+                    </div>
+                </div>
+                <p>The Samba password is <strong>separate from the Linux login password</strong>. Repeat <code>smbpasswd -a</code> for each user. If <code>ufw</code> is active, also run <code>sudo ufw allow Samba</code>.</p>
+                <h4>6. Test the share</h4>
+                <p>On Windows, open <code>\\192.168.1.51\RAID</code> in File Explorer. From the Proxmox host:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>apt install -y smbclient
+smbclient //192.168.1.51/RAID -U haven -m SMB3 -c &#x27;ls&#x27;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="raid-homelab-verify">
+                <h3>Verification</h3>
+                <p>Run these after the build and again after the first host reboot; every row should match. Backup and email checks are in <a href="#backups-verify">Backups → Verification</a>.</p>
+                <table>
+                    <thead><tr><th>Where</th><th>Command</th><th>Expected</th></tr></thead>
+                    <tbody>
+                        <tr><td>Host</td><td><code>cat /proc/mdstat</code></td><td><code>md0 : active raid1 ... [UU]</code> (a resync bar is fine on day one)</td></tr>
+                        <tr><td>Host</td><td><code>findmnt /mnt/raid</code></td><td><code>/dev/md0</code>, <code>ext4</code></td></tr>
+                        <tr><td>Host</td><td><code>grep -E "^(ARRAY|AUTO)" /etc/mdadm/mdadm.conf</code></td><td>One <code>ARRAY</code> line, no <code>AUTO -all</code></td></tr>
+                        <tr><td>Host</td><td><code>qm config 100 | grep -E "^(scsi|virtio)"</code></td><td>No RAID drives listed</td></tr>
+                        <tr><td>VM 100</td><td><code>cat /proc/mdstat</code></td><td>No arrays at all</td></tr>
+                        <tr><td>VM 100</td><td><code>findmnt /mnt/raid</code></td><td>Source <code>raid</code>, type <code>virtiofs</code></td></tr>
+                        <tr><td>PC</td><td><code>\\192.168.1.51\RAID</code></td><td>Share opens and accepts a test file</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div id="raid-setup">
-                <h3>Setting Up a RAID Array over SSH</h3>
+                <h3>Standalone Server: Setting Up a RAID Array over SSH</h3>
+                <p>Use this when Ubuntu runs directly on the hardware with no Proxmox. On Proxmox, follow the <a href="#raid-homelab">Homelab Build</a> above instead.</p>
                 <p>The examples below use the disks <code>/dev/sdb</code>, <code>/dev/sdc</code>, <code>/dev/sdd</code> and <code>/dev/sde</code>, the array name <code>/dev/md0</code>, and the mount point <code>/mnt/raid</code>. Replace the disk names with your own from Step 3.</p>
                 <h4>Step 1: Connect to the server</h4>
                 <p>From your computer, open a terminal (PowerShell on Windows) and connect:</p>
@@ -2336,6 +2690,7 @@ df -h /mnt/raid</code></pre>
 
             <div id="raid-maintenance">
                 <h3>Checking Health and Replacing a Failed Disk</h3>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Homelab mirror:</strong> its members are partitions (<code>...-part1</code>), not whole disks. Use the <code>by-id</code> names and the partition in the <code>--fail</code>/<code>--remove</code> commands below, and before <code>--add</code> copy the partition layout to the new disk: <code>sgdisk -R NEW $D1</code> (replace <code>NEW</code> with the new disk’s <code>/dev/disk/by-id/...</code> name and keep <code>$D1</code> as the surviving disk), then <code>sgdisk -G NEW</code> and <code>mdadm /dev/md0 --add NEW-part1</code>. mdadm emails you when a disk drops out if <a href="#backups-notify">notifications</a> are set up.</div></div>
                 <h4>Check array health</h4>
                 <div class="code-container">
                     <div class="code-header">
@@ -2446,6 +2801,21 @@ sudo mdadm /dev/md0 --add /dev/sdf</code></pre>
 
             <div id="raid-troubleshooting">
                 <h3>Troubleshooting</h3>
+                <h4>Problems hit during the homelab build</h4>
+                <table>
+                    <thead><tr><th>Problem</th><th>Cause</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>Host and VM each assembled their own md0 from the same drives</td><td>VM 100 was given the array and the raw member drives</td><td>One owner only: follow <a href="#raid-homelab-build">Parts 1</a> and <a href="#raid-homelab-share">2</a>; never pass RAID drives to a VM</td></tr>
+                        <tr><td>Drives referenced as <code>/dev/sda</code>, <code>/dev/sdb</code></td><td>Those names can swap between boots</td><td>Always use <code>/dev/disk/by-id/ata-...</code></td></tr>
+                        <tr><td>Lost the SSH session mid-command</td><td>A long <code>update-initramfs</code> over a remote link timed out</td><td>Reconnect, rerun the command until it returns to the prompt; never reboot before it finishes. Use tmux next time</td></tr>
+                        <tr><td><code>tmux: command not found</code></td><td>Not installed on Proxmox by default</td><td><code>apt install -y tmux</code></td></tr>
+                        <tr><td><code>grep AUTO</code> printed nothing</td><td>The line was never written (session dropped)</td><td>Re-add the line, then <code>update-initramfs -u -k all</code></td></tr>
+                        <tr><td><code>-bash: VM-IP: No such file or directory</code></td><td><code>&lt;...&gt;</code> placeholders typed literally</td><td>Replace them with real values; never type the angle brackets</td></tr>
+                        <tr><td><code>NT_STATUS_LOGON_FAILURE</code></td><td>The Samba password is separate from the Linux login</td><td><code>sudo smbpasswd -a haven</code>, then test with <code>smbclient</code> before using it elsewhere</td></tr>
+                        <tr><td>Storage pointed at a <code>100.x.x.x</code> address</td><td>That is the VM’s Tailscale address</td><td>Use the LAN IP (e.g. <code>192.168.1.51</code>) with a DHCP reservation</td></tr>
+                    </tbody>
+                </table>
+                <h4>General mdadm problems</h4>
                 <h4>The array shows up as /dev/md127 after a reboot</h4>
                 <p>The layout was not saved in Step 9. Stop the array, reassemble it under the right name, and save the config:</p>
                 <div class="code-container">
@@ -4277,7 +4647,343 @@ sudo docker start homeassistant</code></pre>
         <div id="backups">
             <h2>Backups</h2>
             <p class="tool-overview"><strong>What it is:</strong> Backups are copies of data kept so it can be restored after hardware failure, accidental deletion or ransomware. A common rule is 3-2-1: three copies of the data, on two different types of storage, with one copy off-site. A backup is only reliable if restoring it is tested regularly.</p>
-            <div class="placeholder-section">Section referencing environment replication strategies pending workflow metrics tracking.</div>
+            <p>The homelab backs up every VM nightly to the host-owned RAID, archives app data such as Vaultwarden, and emails the results along with any RAID or disk-health warning.</p>
+
+            <div id="backups-overview">
+                <h3>How the Homelab Backups Work</h3>
+                <p>Proxmox writes nightly backups of every VM straight to <code>/mnt/raid/proxmox-backups</code> on the host-owned mirror built in <a href="#raid-homelab">RAID → Homelab Build</a>. It keeps <strong>7 daily, 4 weekly and 3 monthly</strong> copies and deletes older ones automatically. Because the host reads and writes the RAID directly, backups and restores work even when VM 100 is off or broken.</p>
+                <table>
+                    <thead><tr><th>What</th><th>Where it goes</th><th>How often</th></tr></thead>
+                    <tbody>
+                        <tr><td>Every VM (snapshot, zstd)</td><td><code>/mnt/raid/proxmox-backups</code> (storage <code>raid-backups</code>)</td><td>Nightly at 02:00</td></tr>
+                        <tr><td>App data, e.g. Vaultwarden</td><td><code>/mnt/raid/vaultwarden-backups</code></td><td>When you run the archive commands</td></tr>
+                        <tr><td>Results and warnings</td><td>Email (Gmail)</td><td>After every backup run, and on any RAID or disk problem</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>The RAID protects against a dead disk, not against deletion or ransomware, and everything here is still in one box. For 3-2-1, copy the backup folder somewhere off-site as well (another machine, an external drive you rotate, or cloud storage), ideally <a href="#gpg-encrypt">encrypted with GPG</a>.</div></div>
+            </div>
+
+            <div id="backups-storage">
+                <h3>1. Add the Backup Storage</h3>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkdir -p /mnt/raid/proxmox-backups
+chmod 700 /mnt/raid/proxmox-backups
+pvesm add dir raid-backups --path /mnt/raid/proxmox-backups \
+  --content backup --is_mountpoint /mnt/raid
+pvesm status</code></pre>
+                    </div>
+                </div>
+                <p><code>raid-backups</code> should show <strong>active</strong> with about 18 TB free. <code>--is_mountpoint</code> makes Proxmox refuse to write if the RAID is not mounted, instead of filling the boot disk.</p>
+            </div>
+
+            <div id="backups-passthrough">
+                <h3>2. Keep Physical Disks Out of VM Backups</h3>
+                <p>Any real disk passed through to a VM is included in its backup by default. For example, VM 100’s 1 TB drive:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>qm set 100 --scsi3 /dev/disk/by-id/ata-ST1000DM010-2DM162_SERIAL03,aio=native,cache=none,backup=0
+qm config 100 | grep -E &quot;^(scsi|virtio)&quot;</code></pre>
+                    </div>
+                </div>
+                <p>Use your own drive’s <code>by-id</code> name and the same <code>scsiN</code> slot it already uses. Every passed-through disk should show <code>backup=0</code>. virtiofs folders are never included, so the RAID itself is not copied into its own backups.</p>
+            </div>
+
+            <div id="backups-agent">
+                <h3>3. Install the Guest Agent (Consistent Snapshots)</h3>
+                <p>In VM 100 (and any other Linux VM):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt install -y qemu-guest-agent</code></pre>
+                    </div>
+                </div>
+                <p>Then on the host:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>qm set 100 --agent enabled=1
+qm shutdown 100 --timeout 300 &amp;&amp; qm start 100</code></pre>
+                    </div>
+                </div>
+                <p>The agent lets Proxmox briefly pause writes inside the VM so each snapshot is clean. It only takes effect after a full shutdown and start, not a reboot from inside the VM.</p>
+            </div>
+
+            <div id="backups-job">
+                <h3>4. Create the Nightly Job</h3>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>pvesh create /cluster/backup --schedule &quot;02:00&quot; --storage raid-backups \
+  --all 1 --mode snapshot --compress zstd --enabled 1 \
+  --notification-mode notification-system \
+  --prune-backups &quot;keep-daily=7,keep-weekly=4,keep-monthly=3&quot;
+pvesh get /cluster/backup --output-format yaml</code></pre>
+                    </div>
+                </div>
+                <p>Keep <code>--mode snapshot</code>: VMs stay running while they are backed up. Each backup is a full copy, so plan on roughly 10 times your used VM space once retention fills up. In the web UI the job is under <strong>Datacenter → Backup</strong>.</p>
+            </div>
+
+            <div id="backups-restore">
+                <h3>5. Test a Backup and a Restore</h3>
+                <p>A backup you’ve never restored isn’t a backup yet. Use a small VM (here VM 105, 32 GB):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>vzdump 105 --storage raid-backups --mode snapshot --compress zstd
+pvesm list raid-backups
+lvs
+qmrestore raid-backups:backup/&lt;file-from-the-list&gt; 999 --storage local-lvm
+qm start 999</code></pre>
+                    </div>
+                </div>
+                <p>Replace <code>&lt;file-from-the-list&gt;</code> with the real name, without the angle brackets. Check <code>lvs</code> first: if <code>local-lvm</code> is overcommitted, restoring a large VM as a test can fill it. Once VM 999 boots, remove it with <code>qm stop 999 &amp;&amp; qm destroy 999</code>.</p>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>Restoring for real:</strong> select the VM → <strong>Backup</strong> tab → pick a date → <strong>Restore</strong>. The host reads the RAID directly, so this works even if VM 100 is the one that broke.</div></div>
+            </div>
+
+            <div id="backups-apps">
+                <h3>6. Archive App Data (Vaultwarden Example)</h3>
+                <p>VM backups capture whole machines. For a quick, portable copy of one app’s data, such as <a href="#vault-warden">Vaultwarden</a>, archive its folder onto the RAID from inside VM 100:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo mkdir -p /mnt/raid/vaultwarden-backups
+sudo tar czf /mnt/raid/vaultwarden-backups/vault-$(date +%F).tar.gz -C /home/docker vault
+ls -lh /mnt/raid/vaultwarden-backups</code></pre>
+                    </div>
+                </div>
+                <p><code>$(date +%F)</code> stamps the file with today’s date (e.g. <code>vault-2026-10-06.tar.gz</code>), which sorts correctly. <code>-C /home/docker vault</code> stores clean relative paths. The archive holds every password in the vault, so encrypt it before it goes anywhere else:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · VM 100</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo gpg --pinentry-mode loopback --symmetric --cipher-algo AES256 \
+  /mnt/raid/vaultwarden-backups/vault-$(date +%F).tar.gz</code></pre>
+                    </div>
+                </div>
+                <p>That creates a <code>.tar.gz.gpg</code> next to it; delete the unencrypted <code>.tar.gz</code> once you’ve checked the encrypted copy opens (see <a href="#gpg-encrypt">GPG → Encrypt and Decrypt</a>).</p>
+            </div>
+
+            <div id="backups-notify">
+                <h3>7. Email Notifications</h3>
+                <p>Three senders cover everything: Proxmox reports backup results, mdadm warns when a RAID disk drops out, and smartd warns when a disk starts to fail. All three send through Gmail with an app password. This part is independent of the steps above; set it up whenever you like.</p>
+                <table>
+                    <thead><tr><th>Alert</th><th>Sent by</th><th>Test command</th></tr></thead>
+                    <tbody>
+                        <tr><td>Backup finished or failed</td><td>Proxmox notification system</td><td><code>pvesh create /cluster/notifications/targets/gmail/test</code></td></tr>
+                        <tr><td>RAID disk failed or array degraded</td><td>mdadm monitor</td><td><code>mdadm --monitor --scan --oneshot --test</code></td></tr>
+                        <tr><td>Disk health warning (SMART)</td><td>smartd</td><td>the <code>-M test</code> line in step f</td></tr>
+                    </tbody>
+                </table>
+                <h4>a. Create a Gmail app password</h4>
+                <p>Google Account → <strong>Security</strong> → turn on <strong>2-Step Verification</strong> → search <strong>App passwords</strong> → create one named <code>Proxmox</code>. Copy the 16 characters without spaces. Never paste it into a chat, ticket or screenshot; if it leaks, delete it there and make a new one.</p>
+                <h4>b. Add Gmail as a Proxmox target</h4>
+                <p>Paste this line <strong>by itself</strong>, press Enter, then paste the app password and press Enter (nothing shows as you type):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>read -s -p &quot;App password: &quot; APPPW; echo</code></pre>
+                    </div>
+                </div>
+                <p>Then paste this block, with your own address in place of <code>you@gmail.com</code>. If the <code>gmail</code> target already exists, change <code>create ... smtp --name gmail</code> to <code>set .../smtp/gmail</code> and drop <code>--name gmail</code>.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>pvesh create /cluster/notifications/endpoints/smtp --name gmail \
+  --server smtp.gmail.com --port 587 --mode starttls \
+  --username you@gmail.com --password &quot;$APPPW&quot; \
+  --from-address you@gmail.com --mailto you@gmail.com
+pvesh create /cluster/notifications/targets/gmail/test</code></pre>
+                    </div>
+                </div>
+                <p>Keep <code>APPPW</code> set for step d; it disappears when you close the shell.</p>
+                <h4>c. Send backup results to Gmail</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>pvesh create /cluster/notifications/matchers --name backup-alerts \
+  --target gmail --match-field exact:type=vzdump --match-severity error,warning,info</code></pre>
+                    </div>
+                </div>
+                <p><code>error,warning,info</code> emails after every run; use <code>error,warning</code> for failures only. The nightly job already sends its results to the notification system (<code>--notification-mode notification-system</code>).</p>
+                <h4>d. Let the host itself send mail (for mdadm and smartd)</h4>
+                <p>Proxmox already runs postfix. Point it at Gmail:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>apt install -y libsasl2-modules
+echo &quot;[smtp.gmail.com]:587 you@gmail.com:$APPPW&quot; &gt; /etc/postfix/sasl_passwd
+unset APPPW
+chmod 600 /etc/postfix/sasl_passwd
+postmap hash:/etc/postfix/sasl_passwd
+postconf -e &quot;relayhost = [smtp.gmail.com]:587&quot; \
+  &quot;smtp_tls_security_level = encrypt&quot; \
+  &quot;smtp_sasl_auth_enable = yes&quot; \
+  &quot;smtp_sasl_security_options = noanonymous&quot; \
+  &quot;smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd&quot; \
+  &quot;smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt&quot;
+systemctl restart postfix
+printf &quot;Subject: Postfix test from pve\n\nIt works.\n&quot; | sendmail you@gmail.com</code></pre>
+                    </div>
+                </div>
+                <p>If <code>APPPW</code> is empty because you opened a new shell, run the <code>read -s</code> line from step b again first. If no email arrives, <code>journalctl -u postfix -n 30</code> shows why.</p>
+                <h4>e. RAID failure alerts (mdadm)</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sed -i &#x27;/^MAILADDR/d&#x27; /etc/mdadm/mdadm.conf
+echo &quot;MAILADDR you@gmail.com&quot; &gt;&gt; /etc/mdadm/mdadm.conf
+systemctl restart mdmonitor
+mdadm --monitor --scan --oneshot --test</code></pre>
+                    </div>
+                </div>
+                <p>The last line sends one <code>TestMessage</code> email per array. This only works once the host owns the RAID (<a href="#raid-homelab-build">RAID → Part 1</a>).</p>
+                <h4>f. Disk health alerts (smartd)</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>apt install -y smartmontools
+sed -i &#x27;s/^DEVICESCAN/#DEVICESCAN/&#x27; /etc/smartd.conf
+echo &#x27;DEVICESCAN -a -o on -S on -n standby,q -s (S/../.././03|L/../01/./04) -m you@gmail.com -M test&#x27; &gt;&gt; /etc/smartd.conf
+systemctl restart smartd</code></pre>
+                    </div>
+                </div>
+                <p>This runs a short self-test nightly at 3 AM and a long test on the 1st of each month at 4 AM, and emails on any warning. You get one test email per disk right away; then remove the test flag:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · Proxmox host</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sed -i &#x27;s/ -M test//&#x27; /etc/smartd.conf
+systemctl restart smartd</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="backups-verify">
+                <h3>Verification</h3>
+                <table>
+                    <thead><tr><th>Where</th><th>Command</th><th>Expected</th></tr></thead>
+                    <tbody>
+                        <tr><td>Host</td><td><code>pvesm status</code></td><td><code>raid-backups</code> active</td></tr>
+                        <tr><td>Host</td><td><code>qm config 100 | grep -E "^(scsi|virtio)"</code></td><td>Every physical disk has <code>backup=0</code></td></tr>
+                        <tr><td>Host</td><td><code>pvesh get /cluster/backup --output-format yaml</code></td><td>Schedule <code>02:00</code>, storage <code>raid-backups</code>, the prune settings</td></tr>
+                        <tr><td>Host</td><td><code>pvesm list raid-backups</code></td><td>Last night’s backups listed</td></tr>
+                        <tr><td>Inbox</td><td>Next morning</td><td>Backup report from Proxmox</td></tr>
+                        <tr><td>Inbox</td><td>After steps e and f</td><td>One mdadm <code>TestMessage</code> and one smartd test email per disk</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="backups-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <p>Every row below happened during the first build.</p>
+                <h4>Proxmox backups</h4>
+                <table>
+                    <thead><tr><th>Problem</th><th>Cause</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>Backups failed whenever VM 100 was off</td><td>Backup storage was a Samba share served by VM 100</td><td>Host-owned RAID with local <code>dir</code> storage (step 1)</td></tr>
+                        <tr><td>Backup of VM 100 would copy the whole RAID</td><td>Passed-through disks are backed up by default</td><td>Set <code>backup=0</code> on every passed-through disk (step 2)</td></tr>
+                        <tr><td>A restore test could fill <code>local-lvm</code></td><td>Thin pool overcommitted (about 1.1 TB of VM disks in 794 GB)</td><td>Test restores with a small VM; check <code>lvs</code> first</td></tr>
+                        <tr><td><code>pvesh get /cluster/backup</code> shows only an id</td><td>The default table view shows one column</td><td>Add <code>--output-format yaml</code></td></tr>
+                    </tbody>
+                </table>
+                <h4>Archive commands (Vaultwarden)</h4>
+                <table>
+                    <thead><tr><th>Problem</th><th>Cause</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>tar</code> fails on <code>$(10-05-26)</code></td><td><code>$( )</code> runs its contents as a command</td><td>Use <code>$(date +%m-%d-%y)</code>, or <code>$(date +%F)</code> for sortable names</td></tr>
+                        <tr><td><code>tar: Removing leading `/'</code></td><td>Normal notice, not an error</td><td>Ignore it, or use <code>-C /home/docker vault</code> for cleaner paths</td></tr>
+                        <tr><td>Archive saved inside the folder being backed up</td><td><code>tar</code> ran from inside <code>/home/docker/vault</code></td><td>Always write to a full path elsewhere, e.g. <code>/mnt/raid/vaultwarden-backups/</code></td></tr>
+                        <tr><td>Backup went to <code>/mnt/Raid</code>, not the RAID</td><td>Linux paths are case-sensitive; <code>mkdir -p</code> made a new folder on the boot disk</td><td>Use <code>/mnt/raid</code>; check with <code>df -h /mnt/raid</code>; delete the stray <code>/mnt/Raid</code></td></tr>
+                        <tr><td>gpg passphrase prompt missing under <code>sudo</code></td><td>No terminal for the pinentry program</td><td>Add <code>--pinentry-mode loopback</code></td></tr>
+                    </tbody>
+                </table>
+                <h4>Email</h4>
+                <table>
+                    <thead><tr><th>Problem</th><th>Cause</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>read -s</code> swallowed the next command</td><td>Several lines pasted at once; <code>read</code> took the next line as the password</td><td>Paste the <code>read -s</code> line alone, press Enter, then type the password</td></tr>
+                        <tr><td>Gmail <code>535 5.7.8 Username and Password not accepted</code></td><td>Wrong value saved as the password (often from the problem above)</td><td>New app password, then <code>pvesh set /cluster/notifications/endpoints/smtp/gmail --password "$APPPW"</code> (and redo step d)</td></tr>
+                        <tr><td>Passwords pasted into a chat</td><td>Typed into the prompt text or the command itself</td><td>Change them right away: <code>sudo smbpasswd -a haven</code> and a new Gmail app password</td></tr>
+                        <tr><td>No mdadm or smartd emails</td><td>Postfix isn’t relaying</td><td><code>journalctl -u postfix -n 30</code>; redo step d</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="gpg">
