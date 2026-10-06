@@ -189,11 +189,12 @@
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Plex <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#plex-install">1. Install Plex</a>
+      <a class="nav-sub-link" href="#plex-install">1. Install Plex (Docker)</a>
       <a class="nav-sub-link" href="#plex-setup">2. First-Time Setup</a>
       <a class="nav-sub-link" href="#plex-folders">3. Folders &amp; Naming</a>
       <a class="nav-sub-link" href="#plex-libraries">4. Add Libraries</a>
       <a class="nav-sub-link" href="#plex-watching">5. Watch Anywhere</a>
+      <a class="nav-sub-link" href="#plex-updating">Updating Plex</a>
       <a class="nav-sub-link" href="#plex-troubleshooting">Troubleshooting</a>
     </div>
   </div>
@@ -208,6 +209,20 @@
       <a class="nav-sub-link" href="#ha-automations">5. First Automation</a>
       <a class="nav-sub-link" href="#ha-maintenance">Updates, Backups &amp; Remote</a>
       <a class="nav-sub-link" href="#ha-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">AMP (Game Servers) <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#amp">Overview</a>
+      <a class="nav-sub-link" href="#amp-example-values">Example Values</a>
+      <a class="nav-sub-link" href="#amp-mac">1. Fixed MAC Address</a>
+      <a class="nav-sub-link" href="#amp-compose">2. Compose File</a>
+      <a class="nav-sub-link" href="#amp-start">3. Start &amp; Sign In</a>
+      <a class="nav-sub-link" href="#amp-instance">4. Create a Game Server</a>
+      <a class="nav-sub-link" href="#amp-playit">5. Playit (Friends)</a>
+      <a class="nav-sub-link" href="#amp-updating">Updating</a>
+      <a class="nav-sub-link" href="#amp-troubleshooting">Troubleshooting</a>
     </div>
   </div>
   <div class="nav-section">
@@ -300,7 +315,7 @@
                 <li><strong>Base server setup:</strong> <a href="#core-services">Core Services (SSH, keys, CLI tools, Docker, Tailscale)</a>, <a href="#security-hardening">Security Hardening</a>. The tools almost every server needs, then lock it down.</li>
                 <li><strong>Network services:</strong> <a href="#dns">DNS</a>, <a href="#pi-hole">Pi-hole</a>, <a href="#ntp">NTP</a>, <a href="#windows-server">Windows Server</a>. Name resolution, ad blocking, time and directory services the rest of the lab uses.</li>
                 <li><strong>Storage:</strong> <a href="#raid">RAID</a>, <a href="#nas">NAS</a>, <a href="#samba">Samba</a>. Redundant disks and shared folders for media and backups.</li>
-                <li><strong>Reverse proxy and apps:</strong> <a href="#nginx">Nginx Proxy Manager</a>, <a href="#vault-warden">Vaultwarden</a>, <a href="#plex">Plex</a>, <a href="#home-assistant">Home Assistant</a>. HTTPS and friendly names first, then the self-hosted apps behind them.</li>
+                <li><strong>Reverse proxy and apps:</strong> <a href="#nginx">Nginx Proxy Manager</a>, <a href="#vault-warden">Vaultwarden</a>, <a href="#plex">Plex</a>, <a href="#home-assistant">Home Assistant</a>, <a href="#amp">AMP</a>. HTTPS and friendly names first, then the self-hosted apps behind them.</li>
                 <li><strong>Scale and automate:</strong> <a href="#containerization">Kubernetes</a>, <a href="#automation">Automation</a>, <a href="#scripting">Scripting</a>, <a href="#bash">Bash</a>, <a href="#powershell">PowerShell</a>.</li>
                 <li><strong>Monitor and protect:</strong> <a href="#central-logging">Central Logging</a>, <a href="#alerting">Alerting</a>, <a href="#backups">Backups</a>, <a href="#gpg">GPG</a>.</li>
                 <li><strong>Extras and reference:</strong> <a href="#sql">SQL</a>, <a href="#website-online">Deploy an HTML Site</a>, <a href="#html-section">HTML</a>, <a href="#troubleshoots">Troubleshoots</a>, <a href="#command-dictionary">Command Dictionary</a>.</li>
@@ -4212,14 +4227,15 @@ sudo docker image prune -f</code></pre>
         <div id="plex">
             <h2>Plex</h2>
             <p class="tool-overview"><strong>What it is:</strong> Plex is a media server that organizes your own movies, TV shows, music and photos and streams them to phones, TVs and browsers, at home or remotely, like your own Netflix. It downloads artwork and details automatically and can convert video on the fly for devices that can’t play the original format.</p>
-            <p>These steps continue the home-server video from the <a href="#nas">NAS</a> section and assume Ubuntu, a static IP, SSH and a Samba share are already set up.</p>
+            <p>These steps continue the home-server video from the <a href="#nas">NAS</a> section and assume Ubuntu, a static IP, SSH and a Samba share are already set up. Plex runs in <strong><a href="#docker">Docker</a></strong> (the same way as on the homelab server), so <a href="#docker">Docker and Docker Compose</a> need to be installed first.</p>
                 <p><strong>Video Tutorial:</strong> <a href="https://youtu.be/72D3MvPk3Xs" target="_blank" rel="noopener">https://youtu.be/72D3MvPk3Xs</a> (embedded in the <a href="#nas">NAS</a> section)</p>
 
             <div id="plex-install">
-                <h3>Step 1: Install Plex Media Server</h3>
-                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=498" target="_blank" rel="noopener">▶ Watch this step (8:18)</a></p>
-                <p>Plex isn’t in Ubuntu’s built-in app list, so first tell Ubuntu where to get it (Plex’s repository), then install it. Paste these one at a time; none of them need editing.</p>
-                <p><strong>1. Add Plex’s signing key</strong> (lets Ubuntu check that downloads really come from Plex):</p>
+                <h3>Step 1: Install Plex in Docker</h3>
+                <p>The video installs Plex directly on Ubuntu; these notes run it in a Docker container instead. Plex’s settings and database live in a folder you can back up, updating is one command, and nothing is added to the system itself. The <a href="https://docs.linuxserver.io/images/docker-plex/" target="_blank" rel="noopener">linuxserver.io Plex image</a> is used here.</p>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Already installed Plex the old way?</strong> Stop and disable it first so it doesn’t hold port 32400: <code>sudo systemctl disable --now plexmediaserver</code>.</div></div>
+                <h4>1. Create the media folders and the Plex folder</h4>
+                <p>Create the media folders first (inside the network share, so you can drag media in from any PC), then a folder for Plex’s own files:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4228,10 +4244,16 @@ sudo docker image prune -f</code></pre>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>curl -fsSL https://downloads.plex.tv/plex-keys/PlexSign.key | sudo gpg --dearmor -o /usr/share/keyrings/plex.gpg</code></pre>
+<pre><code>mkdir -p ~/haven-share/plex/movies ~/haven-share/plex/shows
+mkdir -p ~/docker/plex
+cd ~/docker/plex
+id</code></pre>
                     </div>
                 </div>
-                <p><strong>2. Add Plex’s repository:</strong></p>
+                <p><code>id</code> shows your user and group numbers, usually <code>uid=1000</code> and <code>gid=1000</code>. Plex will run as that user, so it can read the media folders without changing any permissions.</p>
+                <h4>2. Get a claim token (optional)</h4>
+                <p>Open <a href="https://www.plex.tv/claim" target="_blank" rel="noopener">plex.tv/claim</a> while signed in to Plex and copy the code (<code>claim-...</code>). It links the server to your account automatically, but <strong>expires after 4 minutes</strong>, so get it just before you start Plex in part 4 below. You can skip it and claim the server from the browser in Step 2 instead; just delete the <code>PLEX_CLAIM</code> line.</p>
+                <h4>3. Create the Compose file</h4>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4240,10 +4262,50 @@ sudo docker image prune -f</code></pre>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>echo &quot;deb [signed-by=/usr/share/keyrings/plex.gpg] https://downloads.plex.tv/repo/deb public main&quot; | sudo tee /etc/apt/sources.list.d/plexmediaserver.list</code></pre>
+<pre><code>nano docker-compose.yml</code></pre>
                     </div>
                 </div>
-                <p><strong>3. Install Plex:</strong></p>
+                <p>Paste this, then change <code>PUID</code>/<code>PGID</code> if <code>id</code> showed different numbers, <code>TZ</code> to your time zone, <code>haven</code> to your username and the claim code to yours. Save with <kbd>Ctrl</kbd>+<kbd>O</kbd>, <kbd>Enter</kbd>, <kbd>Ctrl</kbd>+<kbd>X</kbd>.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml · docker-compose.yml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - VERSION=docker
+      - PLEX_CLAIM=claim-xxxxxxxxxxxxxxxxxxxx
+    volumes:
+      - ./config:/config
+      - /home/haven/haven-share/plex/movies:/movies
+      - /home/haven/haven-share/plex/shows:/tv
+    # Optional: hardware transcoding (Intel/AMD iGPU, needs Plex Pass)
+    # devices:
+    #   - /dev/dri:/dev/dri
+    restart: unless-stopped</code></pre>
+                    </div>
+                </div>
+                <table>
+                    <thead><tr><th>Line</th><th>What it does</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>network_mode: host</code></td><td>Plex uses the server’s network directly, so devices on your network discover it automatically and port 32400 needs no mapping.</td></tr>
+                        <tr><td><code>PUID</code> / <code>PGID</code></td><td>The user Plex runs as inside the container (your own user), so it can read your media folders.</td></tr>
+                        <tr><td><code>VERSION=docker</code></td><td>Plex is updated by pulling a newer image (see <a href="#plex-updating">Updating</a>), not from inside Plex.</td></tr>
+                        <tr><td><code>./config:/config</code></td><td>Plex’s settings, database and artwork, stored in <code>~/docker/plex/config</code>. Back this folder up.</td></tr>
+                        <tr><td><code>/home/haven/...:/movies</code>, <code>:/tv</code></td><td>Your media folders, which Plex sees as <code>/movies</code> and <code>/tv</code> (used in Step 4).</td></tr>
+                    </tbody>
+                </table>
+                <h4>4. Start Plex</h4>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4252,25 +4314,12 @@ sudo docker image prune -f</code></pre>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>sudo apt update
-sudo apt install -y plexmediaserver</code></pre>
+<pre><code>sudo docker compose up -d
+sudo docker compose ps
+sudo docker compose logs --tail 30 plex</code></pre>
                     </div>
                 </div>
-                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Because Plex now comes from a repository, it updates with the rest of the system whenever you run <code>sudo apt update &amp;&amp; sudo apt upgrade</code>. If a step errors, Plex’s support article “Enable repository updating for supported Linux server distributions” has the current commands, or download the Ubuntu <code>.deb</code> file from <a href="https://www.plex.tv/media-server-downloads/" target="_blank" rel="noopener">plex.tv/media-server-downloads</a> instead.</div></div>
-                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=514" target="_blank" rel="noopener">▶ Watch this step (8:34)</a></p>
-                <p>Check that it’s running (press <kbd>Q</kbd> to exit):</p>
-                <div class="code-container">
-                    <div class="code-header">
-                        <span>bash · on the server</span>
-                        <div class="header-controls">
-                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                        </div>
-                    </div>
-                    <div class="code-scroll-wrapper">
-<pre><code>sudo systemctl status plexmediaserver</code></pre>
-                    </div>
-                </div>
-                <p>If the firewall is on, allow Plex’s port:</p>
+                <p><code>ps</code> should show <code>plex</code> as <strong>running</strong>. The first start takes a minute while Plex sets itself up. If the firewall is on, allow Plex’s port:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4282,6 +4331,7 @@ sudo apt install -y plexmediaserver</code></pre>
 <pre><code>sudo ufw allow 32400/tcp</code></pre>
                     </div>
                 </div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Once the server shows up in your Plex account you can delete the <code>PLEX_CLAIM</code> line; the code only works once. Run <code>sudo docker compose up -d</code> after editing the file.</div></div>
             </div>
 
             <div id="plex-setup">
@@ -4289,40 +4339,15 @@ sudo apt install -y plexmediaserver</code></pre>
                 <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=521" target="_blank" rel="noopener">▶ Watch this step (8:41)</a></p>
                 <ol>
                     <li>From a computer on the <strong>same network</strong>, open <code>http://192.168.1.51:32400/web</code> in a browser (the address must end in <code>/web</code>).</li>
-                    <li>Sign in or create a free Plex account. This “claims” the server so it belongs to your account.</li>
+                    <li>Sign in or create a free Plex account. If you used <code>PLEX_CLAIM</code> in Step 1 the server is already linked to your account; otherwise this step “claims” it.</li>
                     <li>Give the server a name. Leave <strong>Allow me to access my media outside my home</strong> on if you want remote streaming.</li>
                     <li>Skip adding libraries for now; you’ll add them in Step 4 once the folders exist.</li>
                 </ol>
             </div>
 
             <div id="plex-folders">
-                <h3>Step 3: Create Media Folders and Name Files Correctly</h3>
-                <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=550" target="_blank" rel="noopener">▶ Watch this step (9:10)</a></p>
-                <p>Create a <code>plex</code> folder inside the network share, with <code>movies</code> and <code>shows</code> folders in it. Because they’re inside <code>haven-share</code>, you can drag media into them from any PC:</p>
-                <div class="code-container">
-                    <div class="code-header">
-                        <span>bash · on the server</span>
-                        <div class="header-controls">
-                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                        </div>
-                    </div>
-                    <div class="code-scroll-wrapper">
-<pre><code>mkdir -p ~/haven-share/plex/movies ~/haven-share/plex/shows</code></pre>
-                    </div>
-                </div>
-                <p>Plex runs as its own user (named <code>plex</code>), and newer Ubuntu versions keep other users out of your home folder. These two commands let Plex <em>read</em> the media folders (it can’t change or delete anything):</p>
-                <div class="code-container">
-                    <div class="code-header">
-                        <span>bash · on the server</span>
-                        <div class="header-controls">
-                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                        </div>
-                    </div>
-                    <div class="code-scroll-wrapper">
-<pre><code>sudo chmod o+x /home/haven /home/haven/haven-share
-sudo chmod -R o+rX /home/haven/haven-share/plex</code></pre>
-                    </div>
-                </div>
+                <h3>Step 3: Add Media and Name Files Correctly</h3>
+                <p>The <code>movies</code> and <code>shows</code> folders were created in Step 1 inside <code>haven-share</code>, so you can copy media into them from any PC. Because Plex runs as your own user, no extra permissions are needed.</p>
                 <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=587" target="_blank" rel="noopener">▶ Watch this step (9:47)</a></p>
                 <p>Copy media into the folders over the network share. <strong>Plex identifies movies and episodes from their names</strong>, so follow its naming scheme:</p>
                 <div class="code-container">
@@ -4352,10 +4377,11 @@ sudo chmod -R o+rX /home/haven/haven-share/plex</code></pre>
                 <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=597" target="_blank" rel="noopener">▶ Watch this step (9:57)</a></p>
                 <ol>
                     <li>In Plex, open <strong>Settings → Manage → Libraries → Add Library</strong> (or the <strong>+</strong> next to your server in the sidebar).</li>
-                    <li>Choose <strong>Movies</strong>, click <strong>Browse for media folder</strong> and go to <code>/</code> → <code>home</code> → <code>haven</code> → <code>haven-share</code> → <code>plex</code> → <code>movies</code>. Click <strong>Add Library</strong>.</li>
-                    <li>Repeat with <strong>TV Shows</strong> and the <code>shows</code> folder.</li>
+                    <li>Choose <strong>Movies</strong>, click <strong>Browse for media folder</strong> and pick <code>/movies</code>. Click <strong>Add Library</strong>.</li>
+                    <li>Repeat with <strong>TV Shows</strong> and <code>/tv</code>.</li>
                     <li>Plex scans the folders and downloads posters and descriptions. New files you copy in are picked up automatically, or use <strong>⋯ → Scan Library Files</strong>.</li>
                 </ol>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Inside the container Plex only sees the paths on the right-hand side of the <code>volumes:</code> lines (<code>/movies</code>, <code>/tv</code>), not <code>/home/haven/...</code>. To add another library, add a volume line (e.g. <code>- /home/haven/haven-share/plex/music:/music</code>), run <code>sudo docker compose up -d</code>, then add <code>/music</code> in Plex.</div></div>
             </div>
 
             <div id="plex-watching">
@@ -4363,9 +4389,30 @@ sudo chmod -R o+rX /home/haven/haven-share/plex</code></pre>
                 <ul>
                     <li><strong>Apps:</strong> Plex has apps for smart TVs, Roku, Fire TV, Apple TV, game consoles, phones and tablets, or use <code>app.plex.tv</code> in a browser.</li>
                     <li><strong>Remote access:</strong> <strong>Settings → Remote Access</strong>. If it can’t connect automatically, forward TCP port 32400 on your router to the server, or skip port forwarding and watch over a VPN like <a href="#tailscale">Tailscale</a>.</li>
-                    <li><strong>Transcoding:</strong> if a device can’t play a file, Plex converts it on the fly, which is CPU-heavy on an old machine. Files in common formats (H.264 MP4/MKV) stream without converting. Hardware-accelerated transcoding requires <strong>Plex Pass</strong>.</li>
+                    <li><strong>Transcoding:</strong> if a device can’t play a file, Plex converts it on the fly, which is CPU-heavy on an old machine. Files in common formats (H.264 MP4/MKV) stream without converting. Hardware-accelerated transcoding requires <strong>Plex Pass</strong> and, in Docker, the <code>devices: /dev/dri</code> lines in the Compose file (Step 1).</li>
                     <li><strong>Share with family:</strong> <strong>Settings → Manage Library Access</strong> to invite other Plex accounts.</li>
                 </ul>
+            </div>
+
+            <div id="plex-updating">
+                <h3>Updating Plex</h3>
+                <p>With <code>VERSION=docker</code>, Plex is updated by pulling the newest image and recreating the container. Your settings and libraries stay in <code>./config</code>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/docker/plex
+sudo docker compose pull
+sudo docker compose up -d
+sudo docker image prune -f</code></pre>
+                    </div>
+                </div>
+                <p><code>pull</code> downloads the new image, <code>up -d</code> recreates the container only if the image changed, and <code>image prune</code> deletes the old image to free space. Check the version afterwards under <strong>Settings → General</strong>. Plex may show “update available” banners in its web app; ignore them and use these commands instead.</p>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Do this monthly, or after a Plex update announcement. To automate it, a container updater such as Watchtower can run the same pull for you, but updating by hand means you’re around if something breaks.</div></div>
             </div>
 
             <div id="plex-troubleshooting">
@@ -4373,11 +4420,13 @@ sudo chmod -R o+rX /home/haven/haven-share/plex</code></pre>
                 <table>
                     <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
                     <tbody>
-                        <tr><td>Web page won’t load</td><td>Use <code>http://192.168.1.51:32400/web</code> (with <code>/web</code> at the end), check <code>sudo systemctl status plexmediaserver</code> and run <code>sudo ufw allow 32400/tcp</code>.</td></tr>
-                        <tr><td>Folders are empty when browsing in Plex</td><td>The <code>plex</code> user can’t read them. Re-run the two <code>chmod</code> commands in Step 3, then rescan the library.</td></tr>
+                        <tr><td>Web page won’t load</td><td>Use <code>http://192.168.1.51:32400/web</code> (with <code>/web</code> at the end). Check the container with <code>cd ~/docker/plex &amp;&amp; sudo docker compose ps</code> and <code>sudo docker compose logs --tail 50 plex</code>, and run <code>sudo ufw allow 32400/tcp</code>.</td></tr>
+                        <tr><td>Container restarts or won’t start: “address already in use”</td><td>An old non-Docker Plex is still running. <code>sudo systemctl disable --now plexmediaserver</code>, then <code>sudo docker compose up -d</code>.</td></tr>
+                        <tr><td>Folders are empty when browsing in Plex</td><td>Browse <code>/movies</code> and <code>/tv</code>, not <code>/home/...</code>. If those are empty too, check the left-hand paths of the <code>volumes:</code> lines and that <code>PUID</code>/<code>PGID</code> match <code>id</code>, then <code>sudo docker compose up -d</code> and rescan.</td></tr>
+                        <tr><td>Server doesn’t appear in your account</td><td>The claim code expired (4 minutes). Get a new one, update <code>PLEX_CLAIM</code> and run <code>sudo docker compose up -d</code>, or claim it from a browser on the same network as the server.</td></tr>
                         <tr><td>Wrong movie or show matched</td><td>Rename files to the naming scheme and use <strong>Fix Match</strong>; then <strong>Refresh Metadata</strong>.</td></tr>
-                        <tr><td>Video buffers or stutters</td><td>The CPU is transcoding. Lower the quality on the player or use a format the device plays directly.</td></tr>
-                        <tr><td>“Server unavailable” on first setup</td><td>Claim the server from a browser on the same network as the server, not over the internet.</td></tr>
+                        <tr><td>Video buffers or stutters</td><td>The CPU is transcoding. Lower the quality on the player, use a format the device plays directly, or enable hardware transcoding (<code>/dev/dri</code>, Plex Pass).</td></tr>
+                        <tr><td>Still on the old version after updating</td><td>Run the commands from <code>~/docker/plex</code> and check <code>sudo docker compose pull</code> downloaded something; a restart alone doesn’t update.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -4582,6 +4631,231 @@ sudo docker start homeassistant</code></pre>
                         <tr><td>Devices aren’t discovered</td><td>Make sure the container uses <code>--network=host</code> and the devices are on the same network/VLAN as the server.</td></tr>
                         <tr><td>Automations run at the wrong time</td><td>Wrong <code>TZ</code> value or home location. Fix the container’s time zone and <strong>Settings → System → General</strong>.</td></tr>
                         <tr><td>Settings lost after an update</td><td>The <code>/config</code> folder wasn’t mapped to the server. Always include <code>-v /home/haven/hass:/config</code>.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="amp">
+            <h2>AMP (Game Server Panel)</h2>
+            <p class="tool-overview"><strong>What it is:</strong> AMP (Application Management Panel) by CubeCoders is a web panel for hosting game servers such as Minecraft, Valheim, Terraria and Satisfactory. From a browser you can create servers, start and stop them, edit settings, install mods, schedule restarts and backups, and give friends limited access. It needs a paid licence.</p>
+            <div id="amp-example-values">
+                <h3>Example Values</h3>
+                <p>These notes follow the <a href="https://github.com/hardwarehaven/Video-Notes/blob/main/AMP%20Server%20Guide%20Snippets.md" target="_blank" rel="noopener">Hardware Haven AMP server guide</a>, but run AMP in Docker like the rest of the server instead of using the install script. Replace these with your own:</p>
+                <table>
+                    <thead><tr><th>Value in the commands</th><th>What it is</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>192.168.1.51</code></td><td>The server’s IP address</td></tr>
+                        <tr><td><code>~/docker/amp</code></td><td>Folder holding the Compose file and all AMP data</td></tr>
+                        <tr><td><code>1000</code> / <code>1000</code></td><td>Your user and group numbers (from <code>id</code>)</td></tr>
+                        <tr><td><code>02:42:AC:3F:8B:12</code></td><td>The container’s fixed MAC address (generate your own in Step 1)</td></tr>
+                        <tr><td><code>8080</code></td><td>AMP web panel port</td></tr>
+                        <tr><td><code>25565</code></td><td>Minecraft Java server port (add others for other games)</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div><strong>Unofficial image.</strong> <code>mitchtalmadge/amp-dockerized</code> is community-made and <strong>not supported by CubeCoders</strong>. If something breaks, use the image’s GitHub issues, not CubeCoders support. You still need an AMP licence; the image doesn’t replace it.</div></div>
+                <p><strong>Before you start:</strong> a server with a <a href="#static-ip">static IP</a> and SSH, <a href="#docker">Docker and Docker Compose</a> installed, and an <a href="https://cubecoders.com/AMP" target="_blank" rel="noopener">AMP licence key</a>.</p>
+            </div>
+
+            <div id="amp-mac">
+                <h3>Step 1: Generate a Fixed MAC Address</h3>
+                <p>AMP ties its licence to the machine’s hardware and deactivates every instance when something significant changes. Docker gives a container a new MAC address each time it’s recreated, which AMP sees as new hardware. Giving the container a permanent MAC address prevents this. Generate one in Docker’s range:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>printf &#x27;02:42:AC:%02X:%02X:%02X\n&#x27; $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256))</code></pre>
+                    </div>
+                </div>
+                <p>Copy the result (e.g. <code>02:42:AC:3F:8B:12</code>) for the next step. Generate it once and keep it; don’t change it later.</p>
+            </div>
+
+            <div id="amp-compose">
+                <h3>Step 2: Create the Compose File</h3>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>mkdir -p ~/docker/amp
+cd ~/docker/amp
+id
+nano docker-compose.yml</code></pre>
+                    </div>
+                </div>
+                <p>Paste this, then put in your MAC address, the <code>UID</code>/<code>GID</code> from <code>id</code>, your time zone, and the ports for the games you’ll host. Save with <kbd>Ctrl</kbd>+<kbd>O</kbd>, <kbd>Enter</kbd>, <kbd>Ctrl</kbd>+<kbd>X</kbd>.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml · docker-compose.yml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>services:
+  amp:
+    container_name: amp
+    image: mitchtalmadge/amp-dockerized:latest
+    networks:
+      default:
+        mac_address: 02:42:AC:3F:8B:12   # your own generated address
+    ports:
+      - 8080:8080                       # AMP web panel
+      - 25565:25565/tcp                 # Minecraft Java
+      - 25565:25565/udp
+      # - 19132:19132/udp               # Minecraft Bedrock
+      # - 2456-2458:2456-2458/udp       # Valheim
+    volumes:
+      - ./ampdata:/home/amp/
+    environment:
+      - UID=1000
+      - GID=1000
+      - TZ=America/Chicago
+    restart: unless-stopped</code></pre>
+                    </div>
+                </div>
+                <table>
+                    <thead><tr><th>Line</th><th>What it does</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>mac_address</code></td><td>The fixed address from Step 1, so the licence stays active.</td></tr>
+                        <tr><td><code>8080:8080</code></td><td>The AMP web panel.</td></tr>
+                        <tr><td><code>25565:25565/tcp</code> and <code>/udp</code></td><td>Game ports. Every game server port must be listed here, with the right protocol; look up a game’s ports on <a href="https://portforward.com/ports/" target="_blank" rel="noopener">portforward.com</a>.</td></tr>
+                        <tr><td><code>./ampdata:/home/amp/</code></td><td><strong>Required.</strong> All instances, worlds, saves and logins live here (<code>~/docker/amp/ampdata</code>). Without it everything is wiped when the container is recreated.</td></tr>
+                        <tr><td><code>UID</code> / <code>GID</code></td><td>Your user owns <code>ampdata</code>, so you can copy and back up files without <code>sudo</code>.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="amp-start">
+                <h3>Step 3: Start AMP and Sign In</h3>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo docker compose up -d
+sudo docker compose logs -f amp</code></pre>
+                    </div>
+                </div>
+                <p>The first start downloads and installs AMP, which takes a few minutes. Wait until the log shows AMP has started, then press <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop <em>watching</em> the log (AMP keeps running; unlike the install script, Ctrl+C here can’t stop anything). If the firewall is on, open the panel and game ports:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo ufw allow 8080/tcp
+sudo ufw allow 25565</code></pre>
+                    </div>
+                </div>
+                <ol>
+                    <li>Open <code>http://192.168.1.51:8080</code> in a browser.</li>
+                    <li>Sign in with the default <strong>admin</strong> / <strong>password</strong>, and <strong>change the password straight away</strong> (it isn’t put in the Compose file, so it never sits in a plain-text file).</li>
+                    <li>Paste your licence key and choose <strong>Standalone</strong> when asked how to set up.</li>
+                </ol>
+            </div>
+
+            <div id="amp-instance">
+                <h3>Step 4: Create a Game Server</h3>
+                <ol>
+                    <li>In AMP, open <strong>Instances → Create Instance</strong>, pick the game (e.g. Minecraft Java Edition) and give it a name.</li>
+                    <li>Start the instance and accept the game’s EULA if asked. Its port must match one mapped in the Compose file (25565 for Minecraft Java).</li>
+                    <li>From a PC on the same network, connect to <code>192.168.1.51:25565</code>.</li>
+                </ol>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Adding another game later:</strong> add its ports under <code>ports:</code> in <code>docker-compose.yml</code> and run <code>sudo docker compose up -d</code> in <code>~/docker/amp</code> (this recreates the container; your data in <code>ampdata</code> is kept). Then create the instance in AMP.</div></div>
+            </div>
+
+            <div id="amp-playit">
+                <h3>Step 5: Let Friends Join with Playit (No Port Forwarding)</h3>
+                <p><a href="https://playit.gg" target="_blank" rel="noopener">playit.gg</a> gives your server a public address without opening ports on your router. It runs on the host (not in Docker) and forwards to the ports Docker publishes. Install it from Playit’s repository (check <a href="https://playit.gg/download/linux" target="_blank" rel="noopener">playit.gg/download/linux</a> for the current commands):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>curl -SsL https://playit-cloud.github.io/ppa/key.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/playit.gpg &gt;/dev/null
+echo &quot;deb [signed-by=/etc/apt/trusted.gpg.d/playit.gpg] https://playit-cloud.github.io/ppa/data ./&quot; | sudo tee /etc/apt/sources.list.d/playit-cloud.list
+sudo apt update
+sudo apt install -y playit</code></pre>
+                    </div>
+                </div>
+                <p>Run <code>playit</code> once and follow the link it prints to set up the agent in your Playit account. Create a tunnel for the game (e.g. Minecraft Java) pointing at <code>127.0.0.1:25565</code>. Then run it in the background and start it at boot:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo systemctl enable --now playit
+sudo systemctl status playit
+sudo tail -f /var/log/playit/playit.log</code></pre>
+                    </div>
+                </div>
+                <p>Share the address Playit gives you (e.g. <code>something.joinmc.link</code>) with your friends.</p>
+            </div>
+
+            <div id="amp-updating">
+                <h3>Updating</h3>
+                <table>
+                    <thead><tr><th>What</th><th>How</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>AMP itself</strong></td><td>Updates automatically every time the container restarts. When the panel says an update is available: <code>cd ~/docker/amp &amp;&amp; sudo docker compose restart</code>. You can also update from AMP’s web UI.</td></tr>
+                        <tr><td><strong>Game servers</strong></td><td>In AMP, open the instance and use <strong>Update</strong> (stop the server first for most games). Many games can be set to update on start in the instance’s settings.</td></tr>
+                        <tr><td><strong>The Docker image</strong></td><td>Only needed occasionally, when a new AMP version needs it. Read the image’s <a href="https://github.com/MitchTalmadge/AMP-dockerized/releases" target="_blank" rel="noopener">release notes</a> first, then run the commands below.</td></tr>
+                        <tr><td><strong>Playit</strong></td><td>Updates with the system: <code>sudo apt update &amp;&amp; sudo apt upgrade</code>, then <code>sudo systemctl restart playit</code>.</td></tr>
+                    </tbody>
+                </table>
+                <h4>Back up, then update the image</h4>
+                <p>Stop AMP, copy <code>ampdata</code> to the RAID (see <a href="#backups">Backups</a>), then pull the new image and start it again:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>cd ~/docker/amp
+sudo docker compose down
+sudo tar czf /mnt/raid/amp-backups/ampdata-$(date +%F).tar.gz -C ~/docker/amp ampdata
+sudo docker compose pull
+sudo docker compose up -d
+sudo docker image prune -f</code></pre>
+                    </div>
+                </div>
+                <p>Create <code>/mnt/raid/amp-backups</code> the first time with <code>sudo mkdir -p /mnt/raid/amp-backups</code>. Don’t point an automatic updater such as Watchtower at this image; the image’s author asks that you read the changelog before updating.</p>
+                <div class="callout warn"><span class="callout-icon" aria-hidden="true">⚠</span><div>Never run <code>docker compose down -v</code> or delete <code>ampdata</code>: that is every world, save and setting. <code>down</code> without <code>-v</code> is safe.</div></div>
+            </div>
+
+            <div id="amp-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <table>
+                    <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>Instances deactivated / licence asks to re-activate after every restart</td><td>No fixed MAC address, or it changed. Set <code>mac_address</code> (Step 1–2), run <code>sudo docker compose up -d</code>, and re-activate once.</td></tr>
+                        <tr><td>Web panel won’t load</td><td><code>sudo docker compose ps</code> and <code>sudo docker compose logs --tail 50 amp</code> in <code>~/docker/amp</code>; first start can take a few minutes. Check <code>8080:8080</code> is mapped and <code>sudo ufw allow 8080/tcp</code>.</td></tr>
+                        <tr><td>Players can’t connect to a game</td><td>The game’s port isn’t in <code>ports:</code>, uses the wrong protocol (TCP vs UDP), or the firewall blocks it. Add it, <code>sudo docker compose up -d</code>, <code>sudo ufw allow &lt;port&gt;</code>.</td></tr>
+                        <tr><td>Everything was wiped after an update</td><td>The <code>./ampdata:/home/amp/</code> volume was missing or pointed somewhere else. Restore <code>ampdata</code> from backup and fix the volume line.</td></tr>
+                        <tr><td>“Permission denied” on files in <code>ampdata</code></td><td><code>UID</code>/<code>GID</code> don’t match your user. Fix them to match <code>id</code>, then <code>sudo chown -R 1000:1000 ~/docker/amp/ampdata</code> and restart.</td></tr>
+                        <tr><td>Port already in use when starting</td><td>Another container or service uses 8080 or the game port. Change the left-hand number (e.g. <code>8081:8080</code>) and open <code>http://192.168.1.51:8081</code>.</td></tr>
+                        <tr><td>Friends can’t join through Playit</td><td><code>sudo systemctl status playit</code> and <code>sudo tail -f /var/log/playit/playit.log</code>; check the tunnel points at <code>127.0.0.1</code> and the same port the game uses.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -5038,7 +5312,7 @@ systemctl restart smartd</code></pre>
                         <tr><td><strong>Trust / Web of Trust</strong></td><td>How sure you are a key really belongs to its owner. You raise it by verifying the fingerprint in person (or another trusted channel) and signing their key.</td></tr>
                     </tbody>
                 </table>
-                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>Common uses in IT:</strong> verifying downloaded ISOs and installers, signing Git commits, encrypting backups and config files before storing them off-site, sending sensitive files by email, and the package-signing keys behind <code>apt</code> repositories (see the <a href="#plex">Plex</a> install).</div></div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>Common uses in IT:</strong> verifying downloaded ISOs and installers, signing Git commits, encrypting backups and config files before storing them off-site, sending sensitive files by email, and the package-signing keys behind <code>apt</code> repositories (see the <a href="#docker">Docker</a> install).</div></div>
             </div>
 
             <div id="gpg-install">
