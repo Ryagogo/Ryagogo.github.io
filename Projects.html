@@ -225,13 +225,22 @@
       <a class="nav-sub-link" href="#amp-troubleshooting">Troubleshooting</a>
     </div>
   </div>
+  <a class="nav-top-link" href="#containerization">Containerization</a>
   <div class="nav-section">
-    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Containerization <span class="chevron" aria-hidden="true">›</span></div>
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Kubernetes <span class="chevron" aria-hidden="true">›</span></div>
     <div class="nav-sub-links">
-      <a class="nav-sub-link" href="#k8s-cluster">Kubernetes Cluster</a>
-      <a class="nav-sub-link2" href="#minikube">Minikube</a>
-      <a class="nav-sub-link2" href="#kubeadm">Kubeadm</a>
-      <a class="nav-sub-link2" href="#microk8s">MicroK8s</a>
+      <a class="nav-sub-link" href="#kubernetes">Overview</a>
+      <a class="nav-sub-link" href="#k8s-cluster">How Kubernetes Works</a>
+      <a class="nav-sub-link" href="#k8s-choose">Choosing a Distribution</a>
+      <a class="nav-sub-link" href="#minikube">A. Minikube</a>
+      <a class="nav-sub-link" href="#microk8s">B. MicroK8s</a>
+      <a class="nav-sub-link" href="#kubeadm">C. Kubeadm (Multi-Node)</a>
+      <a class="nav-sub-link" href="#k8s-first-app">First Deployment</a>
+      <a class="nav-sub-link" href="#k8s-storage">Storage, Config &amp; Secrets</a>
+      <a class="nav-sub-link" href="#k8s-helm">Helm</a>
+      <a class="nav-sub-link" href="#k8s-upgrade">Upgrading Kubeadm</a>
+      <a class="nav-sub-link" href="#k8s-commands">kubectl Cheat Sheet</a>
+      <a class="nav-sub-link" href="#k8s-troubleshooting">Troubleshooting</a>
     </div>
   </div>
   <div class="nav-section">
@@ -317,7 +326,7 @@
                 <li><strong>Network services:</strong> <a href="#dns">DNS</a>, <a href="#pi-hole">Pi-hole</a>, <a href="#ntp">NTP</a>, <a href="#windows-server">Windows Server</a>. Name resolution, ad blocking, time and directory services the rest of the lab uses.</li>
                 <li><strong>Storage:</strong> <a href="#raid">RAID</a>, <a href="#nas">NAS</a>, <a href="#samba">Samba</a>. Redundant disks and shared folders for media and backups.</li>
                 <li><strong>Reverse proxy and apps:</strong> <a href="#nginx">Nginx Proxy Manager</a>, <a href="#vault-warden">Vaultwarden</a>, <a href="#plex">Plex</a>, <a href="#home-assistant">Home Assistant</a>, <a href="#amp">AMP</a>. HTTPS and friendly names first, then the self-hosted apps behind them.</li>
-                <li><strong>Scale and automate:</strong> <a href="#containerization">Kubernetes</a>, <a href="#automation">Automation</a>, <a href="#scripting">Scripting</a>, <a href="#bash">Bash</a>, <a href="#powershell">PowerShell</a>.</li>
+                <li><strong>Scale and automate:</strong> <a href="#containerization">Containerization</a>, <a href="#kubernetes">Kubernetes</a>, <a href="#automation">Automation</a>, <a href="#scripting">Scripting</a>, <a href="#bash">Bash</a>, <a href="#powershell">PowerShell</a>.</li>
                 <li><strong>Monitor and protect:</strong> <a href="#central-logging">Central Logging</a>, <a href="#alerting">Alerting</a>, <a href="#backups">Backups</a>, <a href="#gpg">GPG</a>.</li>
                 <li><strong>Extras and reference:</strong> <a href="#sql">SQL</a>, <a href="#website-online">Deploy an HTML Site</a>, <a href="#html-section">HTML</a>, <a href="#troubleshoots">Troubleshoots</a>, <a href="#command-dictionary">Command Dictionary</a>.</li>
             </ol>
@@ -4873,24 +4882,504 @@ sudo -iu amp ampinstmgr startall</code></pre>
         <div id="containerization">
             <h2>Containerization</h2>
             <p class="tool-overview"><strong>What it is:</strong> Containerization packages an application with its libraries and settings into an isolated container that runs the same way on any machine. Docker runs containers on a single host; orchestration platforms such as Kubernetes run and manage many containers across several machines, restarting failed ones and scaling them automatically.</p>
+                <p>On this homelab, single services (Plex, Vaultwarden, Home Assistant, AMP’s game servers) run in <a href="#docker">Docker</a> with <a href="#docker-compose">Docker Compose</a> on one machine. When you want containers spread across several machines, with automatic restarts on another node and rolling updates, that’s where <a href="#kubernetes">Kubernetes</a> comes in.</p>
+        </div>
+
+        <div id="kubernetes">
+            <h2>Kubernetes</h2>
+            <p class="tool-overview"><strong>What it is:</strong> Kubernetes (K8s) is the industry-standard platform for running containers across a group of machines. You describe what you want (for example “3 copies of this web app, reachable on port 80”) and Kubernetes keeps it that way: it places containers on nodes, restarts or moves them when something fails, scales them up and down, and rolls out updates without downtime. It’s what most companies use to run containers in production, and the skills (kubectl, YAML manifests, Helm) carry over to every cloud.</p>
             <div id="k8s-cluster">
-                <h3>Kubernetes Cluster</h3>
-                <p class="tool-overview"><strong>What it is:</strong> Kubernetes (K8s) is the industry-standard platform for running containers at scale. A cluster has a control plane that decides where containers (grouped into pods) run, and worker nodes that run them. Kubernetes keeps the cluster in the state you describe: it restarts crashed containers, spreads the load and rolls out updates without downtime.</p>
-                <div id="minikube">
-                    <h4>Minikube (Single-node)</h4>
-                    <p class="tool-overview"><strong>What it is:</strong> Minikube runs a complete single-node Kubernetes cluster on one computer, inside a VM or container. It is built for learning and local testing rather than production.</p>
-                    <div class="placeholder-section">Single-node cluster tracking definitions pending setup.</div>
+                <h3>How Kubernetes Works</h3>
+                <p>A cluster has a control plane that decides where containers (grouped into pods) run, and worker nodes that run them. Kubernetes keeps the cluster in the state you describe: it restarts crashed containers, spreads the load and rolls out updates without downtime.</p>
+                <table>
+                    <thead><tr><th></th><th>Docker Compose</th><th>Kubernetes</th></tr></thead>
+                    <tbody>
+                        <tr><td>Runs on</td><td>One machine</td><td>A cluster of machines (one or more nodes)</td></tr>
+                        <tr><td>If a container dies</td><td>Restarted on the same machine (<code>restart:</code>)</td><td>Restarted, or moved to another healthy node</td></tr>
+                        <tr><td>If the machine dies</td><td>Everything on it is down</td><td>Pods are rescheduled onto the remaining nodes</td></tr>
+                        <tr><td>Scaling</td><td>One copy per service (by hand otherwise)</td><td><code>replicas: 5</code>, spread across nodes</td></tr>
+                        <tr><td>Updates</td><td>Stop, pull, start</td><td>Rolling updates with automatic rollback</td></tr>
+                        <tr><td>Config</td><td>One <code>docker-compose.yml</code></td><td>Several YAML “manifests” (or Helm charts)</td></tr>
+                        <tr><td>Best for</td><td>Home services on one server</td><td>Learning, high availability, many services across machines</td></tr>
+                    </tbody>
+                </table>
+                <p><strong>The pieces of a cluster:</strong></p>
+                <table>
+                    <thead><tr><th>Part</th><th>Where</th><th>What it does</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>API server</strong> (<code>kube-apiserver</code>)</td><td>Control plane</td><td>The front door: <code>kubectl</code> and every component talk to it.</td></tr>
+                        <tr><td><strong>etcd</strong></td><td>Control plane</td><td>The database holding the whole cluster’s desired and current state.</td></tr>
+                        <tr><td><strong>Scheduler</strong></td><td>Control plane</td><td>Picks which node each new pod runs on.</td></tr>
+                        <tr><td><strong>Controller manager</strong></td><td>Control plane</td><td>Keeps reality matching what you asked for (e.g. recreates missing pods).</td></tr>
+                        <tr><td><strong>kubelet</strong></td><td>Every node</td><td>Starts and watches the containers the control plane assigns to its node.</td></tr>
+                        <tr><td><strong>Container runtime</strong> (containerd)</td><td>Every node</td><td>Actually runs the containers.</td></tr>
+                        <tr><td><strong>kube-proxy</strong> + <strong>CNI plugin</strong></td><td>Every node</td><td>Pod networking, so pods and services can reach each other across nodes.</td></tr>
+                    </tbody>
+                </table>
+                <p><strong>The objects you’ll use:</strong></p>
+                <table>
+                    <thead><tr><th>Object</th><th>What it is</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Pod</strong></td><td>The smallest unit: one or more containers that share an IP and storage. Pods are disposable.</td></tr>
+                        <tr><td><strong>Deployment</strong></td><td>Keeps a set number of identical pods running and handles rolling updates. What you normally create for an app.</td></tr>
+                        <tr><td><strong>Service</strong></td><td>A stable name and IP in front of a set of pods. <code>ClusterIP</code> (inside the cluster), <code>NodePort</code> (a port on every node, 30000–32767) or <code>LoadBalancer</code>.</td></tr>
+                        <tr><td><strong>Ingress</strong></td><td>Routes web traffic by hostname/path to services (like <a href="#nginx">Nginx Proxy Manager</a> for the cluster).</td></tr>
+                        <tr><td><strong>ConfigMap</strong> / <strong>Secret</strong></td><td>Settings and passwords given to pods as environment variables or files.</td></tr>
+                        <tr><td><strong>PersistentVolumeClaim</strong> (PVC)</td><td>A request for storage that survives pod restarts; a StorageClass provides the actual disk.</td></tr>
+                        <tr><td><strong>Namespace</strong></td><td>A folder for objects, to keep apps (or people) separate.</td></tr>
+                        <tr><td><strong>StatefulSet</strong>, <strong>DaemonSet</strong>, <strong>Job</strong>/<strong>CronJob</strong></td><td>Pods with stable identities (databases), one pod per node (agents), and run-to-completion or scheduled tasks.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="k8s-choose">
+                <h3>Choosing a Distribution</h3>
+                <table>
+                    <thead><tr><th>Option</th><th>Nodes</th><th>Best for</th><th>Effort</th></tr></thead>
+                    <tbody>
+                        <tr><td><a href="#minikube"><strong>Minikube</strong></a></td><td>1 (on your PC or a VM)</td><td>Learning <code>kubectl</code> and YAML; throwaway clusters</td><td>Minutes</td></tr>
+                        <tr><td><a href="#microk8s"><strong>MicroK8s</strong></a></td><td>1 or more</td><td>A small always-on cluster with add-ons switched on by one command</td><td>Minutes</td></tr>
+                        <tr><td><strong>k3s</strong></td><td>1 or more</td><td>Lightweight homelab clusters and Raspberry Pis (single binary from Rancher)</td><td>Minutes</td></tr>
+                        <tr><td><a href="#kubeadm"><strong>Kubeadm</strong></a></td><td>1 control plane + workers</td><td>Learning how a “real” cluster is built; closest to certification exams (CKA)</td><td>An hour</td></tr>
+                        <tr><td>Managed (EKS, AKS, GKE)</td><td>Cloud</td><td>Production, where the cloud runs the control plane</td><td>Paid</td></tr>
+                    </tbody>
+                </table>
+                <p>A good path: start with <strong>Minikube</strong> to learn the commands, then build a 3-VM <strong>kubeadm</strong> cluster on Proxmox to understand every part. All three options below end with the same <a href="#k8s-first-app">first deployment</a>.</p>
+                <table>
+                    <thead><tr><th>Example value</th><th>What it is</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>k8s-cp</code> · <code>192.168.1.61</code></td><td>Control-plane VM (kubeadm)</td></tr>
+                        <tr><td><code>k8s-w1</code> · <code>192.168.1.62</code>, <code>k8s-w2</code> · <code>192.168.1.63</code></td><td>Worker VMs</td></tr>
+                        <tr><td><code>haven</code></td><td>Your Linux user on each VM</td></tr>
+                        <tr><td><code>10.244.0.0/16</code></td><td>Pod network range (Flannel’s default)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="minikube">
+                <h3>Option A: Minikube (Single Node)</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Minikube runs a complete single-node Kubernetes cluster on one computer, inside a VM or container. It is built for learning and local testing rather than production.</p>
+                <p>Needs Docker installed (see <a href="#docker">Docker</a>), 2 CPUs and 2 GB of free RAM. Minikube won’t run as root with the Docker driver, so add your user to the <code>docker</code> group first:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · any machine with kubectl</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo usermod -aG docker $USER &amp;&amp; newgrp docker
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube &amp;&amp; rm minikube-linux-amd64
+minikube start --driver=docker</code></pre>
+                    </div>
                 </div>
-                <div id="kubeadm">
-                    <h4>Kubeadm (Multi-node)</h4>
-                    <p class="tool-overview"><strong>What it is:</strong> Kubeadm is the official tool for building a real multi-node Kubernetes cluster from scratch. It sets up the control plane and joins the worker nodes, which gives hands-on experience with how production clusters are put together.</p>
-                    <div class="placeholder-section">Bare-metal infrastructure provisioning guides pending layout.</div>
+                <p>Minikube downloads a matching <code>kubectl</code> for you; make <code>kubectl</code> point at it and check the cluster:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · any machine with kubectl</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>echo &#x27;alias kubectl=&quot;minikube kubectl --&quot;&#x27; &gt;&gt; ~/.bashrc &amp;&amp; source ~/.bashrc
+kubectl get nodes
+kubectl get pods -A</code></pre>
+                    </div>
                 </div>
-                <div id="microk8s">
-                    <h4>MicroK8s</h4>
-                    <p class="tool-overview"><strong>What it is:</strong> MicroK8s is a lightweight Kubernetes distribution from Canonical, installed as a single snap package. It runs well on small servers and Raspberry Pis, can form multi-node clusters, and turns on common add-ons (DNS, dashboard, storage) with one command.</p>
-                    <div class="placeholder-section">Lightweight production execution parameters pending deployment mapping.</div>
+                <table>
+                    <thead><tr><th>Task</th><th>Command</th></tr></thead>
+                    <tbody>
+                        <tr><td>Web dashboard</td><td><code>minikube dashboard</code></td></tr>
+                        <tr><td>Open a NodePort service</td><td><code>minikube service hello --url</code></td></tr>
+                        <tr><td>Pause / resume the cluster</td><td><code>minikube stop</code> / <code>minikube start</code></td></tr>
+                        <tr><td>Start over</td><td><code>minikube delete</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="microk8s">
+                <h3>Option B: MicroK8s</h3>
+                <p class="tool-overview"><strong>What it is:</strong> MicroK8s is a lightweight Kubernetes distribution from Canonical, installed as a single snap package. It runs well on small servers and Raspberry Pis, can form multi-node clusters, and turns on common add-ons (DNS, dashboard, storage) with one command.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · every node</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo snap install microk8s --classic
+sudo usermod -aG microk8s $USER
+mkdir -p ~/.kube &amp;&amp; sudo chown -f -R $USER ~/.kube
+newgrp microk8s
+microk8s status --wait-ready
+microk8s enable dns hostpath-storage
+echo &quot;alias kubectl=&#x27;microk8s kubectl&#x27;&quot; &gt;&gt; ~/.bashrc &amp;&amp; source ~/.bashrc
+kubectl get nodes</code></pre>
+                    </div>
                 </div>
+                <p><code>hostpath-storage</code> gives the cluster a default StorageClass so PVCs work. Other useful add-ons: <code>microk8s enable ingress</code>, <code>metrics-server</code>, <code>dashboard</code>, and <code>metallb</code> (real LAN IPs for <code>LoadBalancer</code> services).</p>
+                <p><strong>Add more nodes:</strong> on the first node run <code>microk8s add-node</code>; it prints a <code>microk8s join ...</code> command to run on the new node (add <code>--worker</code> to make it a worker only). Check with <code>kubectl get nodes</code>.</p>
+            </div>
+
+            <div id="kubeadm">
+                <h3>Option C: Kubeadm (Multi-Node Cluster on Proxmox)</h3>
+                <p class="tool-overview"><strong>What it is:</strong> Kubeadm is the official tool for building a real multi-node Kubernetes cluster from scratch. It sets up the control plane and joins the worker nodes, which gives hands-on experience with how production clusters are put together.</p>
+                <p><strong>Before you start:</strong> three Ubuntu 24.04 VMs on <a href="#proxmox">Proxmox</a> (one control plane, two workers), each with at least <strong>2 vCPUs and 2 GB RAM</strong>, a <a href="#static-ip">static IP</a> and a unique hostname. If you clone them from one template, give each a new machine ID (<code>sudo rm /etc/machine-id &amp;&amp; sudo systemd-machine-id-setup</code>) and set the hostname (<code>sudo hostnamectl set-hostname k8s-w1</code>) before going on.</p>
+                <h4>1. Prepare every node (control plane and workers)</h4>
+                <p>Kubernetes needs swap off, two kernel modules, and IP forwarding:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · every node</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo swapoff -a
+sudo sed -i &#x27;/ swap / s/^/#/&#x27; /etc/fstab
+cat &lt;&lt;EOF | sudo tee /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+EOF
+sudo modprobe overlay
+sudo modprobe br_netfilter
+cat &lt;&lt;EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+EOF
+sudo sysctl --system</code></pre>
+                    </div>
+                </div>
+                <h4>2. Install containerd (every node)</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · every node</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo apt update &amp;&amp; sudo apt install -y containerd
+sudo mkdir -p /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml &gt; /dev/null
+sudo sed -i &#x27;s/SystemdCgroup = false/SystemdCgroup = true/&#x27; /etc/containerd/config.toml
+sudo systemctl restart containerd</code></pre>
+                    </div>
+                </div>
+                <p><code>SystemdCgroup = true</code> makes containerd and the kubelet manage resources the same way; without it pods restart randomly. Check with <code>grep SystemdCgroup /etc/containerd/config.toml</code>.</p>
+                <h4>3. Install kubeadm, kubelet and kubectl (every node)</h4>
+                <p>Set <code>K8S</code> to the current minor version from <a href="https://kubernetes.io/releases/" target="_blank" rel="noopener">kubernetes.io/releases</a> (the example uses v1.34):</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · every node</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>K8S=v1.34
+sudo apt install -y apt-transport-https ca-certificates curl gpg
+sudo mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/$K8S/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo &quot;deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/$K8S/deb/ /&quot; | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt update
+sudo apt install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl</code></pre>
+                    </div>
+                </div>
+                <p><code>apt-mark hold</code> stops a routine <code>apt upgrade</code> from changing the Kubernetes version under a running cluster (see <a href="#k8s-upgrade">Upgrading</a>).</p>
+                <h4>4. Create the cluster (control plane only)</h4>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · control plane</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.1.61
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config</code></pre>
+                    </div>
+                </div>
+                <p><code>kubeadm init</code> ends by printing a <code>kubeadm join ...</code> command. <strong>Copy it</strong>; the workers need it in step 6. The <code>.kube/config</code> lines let your user run <code>kubectl</code>.</p>
+                <h4>5. Install the pod network (control plane only)</h4>
+                <p>Nodes stay <strong>NotReady</strong> until a CNI plugin is installed. Flannel is the simplest and matches the <code>10.244.0.0/16</code> range above:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · control plane</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+kubectl get pods -n kube-flannel
+kubectl get nodes</code></pre>
+                    </div>
+                </div>
+                <h4>6. Join the workers (each worker)</h4>
+                <p>Paste the join command from step 4 on each worker, with <code>sudo</code>:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · each worker</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>sudo kubeadm join 192.168.1.61:6443 --token &lt;token&gt; \
+  --discovery-token-ca-cert-hash sha256:&lt;hash&gt;</code></pre>
+                    </div>
+                </div>
+                <p>Lost it, or it’s been more than 24 hours? Make a new one on the control plane with <code>kubeadm token create --print-join-command</code>. Then check from the control plane:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · control plane</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>kubectl get nodes -o wide</code></pre>
+                    </div>
+                </div>
+                <p>All three nodes should be <strong>Ready</strong> within a minute or two.</p>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Firewall:</strong> if <code>ufw</code> is on, the control plane needs TCP 6443, 2379–2380, 10250, 10257 and 10259 open to the other nodes; workers need TCP 10250 and 30000–32767; Flannel needs UDP 8472 between all nodes. On a trusted lab LAN, many people simply leave ufw off on cluster nodes.</div></div>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>Single-node kubeadm?</strong> By default nothing runs on the control plane. To use it for apps too: <code>kubectl taint nodes --all node-role.kubernetes.io/control-plane-</code>.</div></div>
+            </div>
+
+            <div id="k8s-first-app">
+                <h3>Your First Deployment</h3>
+                <p>This works on any of the three options. Create a file describing 3 copies of a web server and a service in front of them:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · any machine with kubectl</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nano hello.yaml</code></pre>
+                    </div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml · hello.yaml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+spec:
+  type: NodePort
+  selector:
+    app: hello
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080</code></pre>
+                    </div>
+                </div>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · any machine with kubectl</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>kubectl apply -f hello.yaml
+kubectl get pods -o wide
+kubectl get service hello</code></pre>
+                    </div>
+                </div>
+                <p>Open <code>http://192.168.1.61:30080</code> (any node’s IP works; on Minikube use <code>minikube service hello --url</code>). The <code>-o wide</code> output shows the pods spread across the workers.</p>
+                <p><strong>See what Kubernetes does for you:</strong></p>
+                <table>
+                    <thead><tr><th>Try</th><th>Command</th><th>What happens</th></tr></thead>
+                    <tbody>
+                        <tr><td>Self-healing</td><td><code>kubectl delete pod &lt;one-pod-name&gt;</code></td><td>A replacement pod appears within seconds.</td></tr>
+                        <tr><td>Scaling</td><td><code>kubectl scale deployment hello --replicas=5</code></td><td>Two more pods start.</td></tr>
+                        <tr><td>Rolling update</td><td><code>kubectl set image deployment/hello web=nginx:1.28</code><br><code>kubectl rollout status deployment/hello</code></td><td>Pods are replaced a few at a time with no downtime.</td></tr>
+                        <tr><td>Roll back</td><td><code>kubectl rollout undo deployment/hello</code></td><td>Returns to the previous version.</td></tr>
+                        <tr><td>Node failure</td><td>Shut down one worker VM in Proxmox</td><td>After about 5 minutes its pods are recreated on the other worker.</td></tr>
+                        <tr><td>Clean up</td><td><code>kubectl delete -f hello.yaml</code></td><td>Removes the deployment and service.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="k8s-storage">
+                <h3>Storage, Config and Secrets</h3>
+                <p>Pods are disposable, so anything that must survive (databases, uploads) goes on a <strong>PersistentVolumeClaim</strong>. Minikube and MicroK8s (<code>hostpath-storage</code>) include a default StorageClass. A kubeadm cluster has none; the simplest is Rancher’s local-path provisioner, which stores data in a folder on the node:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · control plane</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+kubectl patch storageclass local-path -p &#x27;{&quot;metadata&quot;:{&quot;annotations&quot;:{&quot;storageclass.kubernetes.io/is-default-class&quot;:&quot;true&quot;}}}&#x27;
+kubectl get storageclass</code></pre>
+                    </div>
+                </div>
+                <p>A claim and a pod that uses it:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>yaml · storage.yaml</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+spec:
+  accessModes: [&quot;ReadWriteOnce&quot;]
+  resources:
+    requests:
+      storage: 1Gi
+---
+# in a Deployment&#x27;s pod spec:
+#   volumes:
+#     - name: data
+#       persistentVolumeClaim:
+#         claimName: data
+#   containers:
+#     - name: app
+#       volumeMounts:
+#         - name: data
+#           mountPath: /data</code></pre>
+                    </div>
+                </div>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>local-path data lives on one node, so the pod is tied to that node. For storage that follows pods between nodes, use network storage such as an NFS export from the <a href="#raid">RAID</a> (with the NFS CSI driver) or Longhorn.</div></div>
+                <p><strong>Settings and passwords:</strong> keep them out of the YAML with ConfigMaps and Secrets:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · any machine with kubectl</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>kubectl create configmap app-config --from-literal=TZ=America/Chicago
+kubectl create secret generic app-secret --from-literal=DB_PASSWORD=&#x27;change-me&#x27;
+kubectl get secret app-secret -o yaml</code></pre>
+                    </div>
+                </div>
+                <p>Pods read them with <code>envFrom: [{configMapRef: {name: app-config}}, {secretRef: {name: app-secret}}]</code>. Secrets are only base64-encoded, not encrypted, so limit who can read them and don’t commit them to Git.</p>
+            </div>
+
+            <div id="k8s-helm">
+                <h3>Helm (Package Manager)</h3>
+                <p>Helm installs whole apps (a “chart”: deployments, services, storage and config together) with one command, much like <code>apt</code> for Kubernetes:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · any machine with kubectl</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+helm version</code></pre>
+                    </div>
+                </div>
+                <table>
+                    <thead><tr><th>Task</th><th>Command</th></tr></thead>
+                    <tbody>
+                        <tr><td>Add a chart repository</td><td><code>helm repo add &lt;name&gt; &lt;url&gt;</code>, then <code>helm repo update</code></td></tr>
+                        <tr><td>Search</td><td><code>helm search repo &lt;keyword&gt;</code></td></tr>
+                        <tr><td>Install</td><td><code>helm install &lt;release&gt; &lt;repo/chart&gt; -n &lt;namespace&gt; --create-namespace -f values.yaml</code></td></tr>
+                        <tr><td>See what’s installed</td><td><code>helm list -A</code></td></tr>
+                        <tr><td>Upgrade / change settings</td><td><code>helm upgrade &lt;release&gt; &lt;repo/chart&gt; -f values.yaml</code></td></tr>
+                        <tr><td>Remove</td><td><code>helm uninstall &lt;release&gt; -n &lt;namespace&gt;</code></td></tr>
+                    </tbody>
+                </table>
+                <p>Each chart’s page lists its settings; put your changes in a <code>values.yaml</code> file so upgrades are repeatable.</p>
+            </div>
+
+            <div id="k8s-upgrade">
+                <h3>Upgrading a Kubeadm Cluster</h3>
+                <p>Upgrade one minor version at a time (e.g. 1.34 → 1.35), control plane first, then each worker. In short:</p>
+                <ol>
+                    <li>On every node, point the apt source at the new version (change <code>v1.34</code> to <code>v1.35</code> in <code>/etc/apt/sources.list.d/kubernetes.list</code>) and run <code>sudo apt update</code>.</li>
+                    <li>Control plane: <code>sudo apt-mark unhold kubeadm &amp;&amp; sudo apt install -y kubeadm=&lt;new version&gt; &amp;&amp; sudo apt-mark hold kubeadm</code>, then <code>sudo kubeadm upgrade plan</code> and <code>sudo kubeadm upgrade apply v1.35.x</code>.</li>
+                    <li>Each node in turn: <code>kubectl drain &lt;node&gt; --ignore-daemonsets</code>, upgrade <code>kubelet</code> and <code>kubectl</code> the same way (workers also run <code>sudo kubeadm upgrade node</code>), <code>sudo systemctl restart kubelet</code>, then <code>kubectl uncordon &lt;node&gt;</code>.</li>
+                </ol>
+                <p>Follow the official <a href="https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/" target="_blank" rel="noopener">kubeadm upgrade guide</a> for the exact package versions, and back up first (a Proxmox snapshot of each VM is the easy way in a lab).</p>
+            </div>
+
+            <div id="k8s-commands">
+                <h3>kubectl Cheat Sheet</h3>
+                <table>
+                    <thead><tr><th>Task</th><th>Command</th></tr></thead>
+                    <tbody>
+                        <tr><td>Everything in all namespaces</td><td><code>kubectl get all -A</code></td></tr>
+                        <tr><td>Nodes with IPs</td><td><code>kubectl get nodes -o wide</code></td></tr>
+                        <tr><td>Pods and which node they’re on</td><td><code>kubectl get pods -o wide</code></td></tr>
+                        <tr><td>Why is it broken? (events at the bottom)</td><td><code>kubectl describe pod &lt;pod&gt;</code></td></tr>
+                        <tr><td>Logs (and the previous crash)</td><td><code>kubectl logs &lt;pod&gt;</code> / <code>kubectl logs &lt;pod&gt; --previous</code></td></tr>
+                        <tr><td>Shell inside a pod</td><td><code>kubectl exec -it &lt;pod&gt; -- sh</code></td></tr>
+                        <tr><td>Reach a service from your PC</td><td><code>kubectl port-forward svc/hello 8080:80</code></td></tr>
+                        <tr><td>Apply / delete a file</td><td><code>kubectl apply -f file.yaml</code> / <code>kubectl delete -f file.yaml</code></td></tr>
+                        <tr><td>Recent events</td><td><code>kubectl get events --sort-by=.lastTimestamp</code></td></tr>
+                        <tr><td>CPU and memory use (needs metrics-server)</td><td><code>kubectl top nodes</code> / <code>kubectl top pods</code></td></tr>
+                        <tr><td>Which cluster am I talking to?</td><td><code>kubectl config get-contexts</code></td></tr>
+                        <tr><td>Work in a namespace</td><td><code>kubectl get pods -n kube-system</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="k8s-troubleshooting">
+                <h3>Troubleshooting</h3>
+                <table>
+                    <thead><tr><th>Problem</th><th>Cause and fix</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>The connection to the server localhost:8080 was refused</code></td><td><code>kubectl</code> has no config. On kubeadm, repeat the <code>~/.kube/config</code> lines from step 4; on Minikube/MicroK8s, use the <code>kubectl</code> alias.</td></tr>
+                        <tr><td><code>kubeadm init</code> fails a preflight check (swap, ports, CPUs)</td><td>Turn swap off (step 1), give the VM 2+ vCPUs and 2 GB RAM, and make sure nothing else uses port 6443. Reset a half-finished attempt with <code>sudo kubeadm reset -f</code>.</td></tr>
+                        <tr><td>Nodes stay <strong>NotReady</strong></td><td>No pod network yet, or Flannel isn’t running: <code>kubectl get pods -n kube-flannel</code>. Check <code>--pod-network-cidr</code> was <code>10.244.0.0/16</code>.</td></tr>
+                        <tr><td>Pod stuck in <strong>Pending</strong></td><td><code>kubectl describe pod</code>: not enough CPU/RAM, no StorageClass for its PVC, or (single-node kubeadm) the control-plane taint.</td></tr>
+                        <tr><td><strong>ImagePullBackOff</strong></td><td>Wrong image name or tag, or the node can’t reach the internet/registry. Check <code>describe</code> events.</td></tr>
+                        <tr><td><strong>CrashLoopBackOff</strong></td><td>The app starts and exits. Read <code>kubectl logs &lt;pod&gt; --previous</code>; usually a missing setting, secret or volume.</td></tr>
+                        <tr><td>Worker join fails: token expired</td><td>Tokens last 24 hours: <code>kubeadm token create --print-join-command</code> on the control plane.</td></tr>
+                        <tr><td>NodePort page won’t open</td><td>Firewall on the node (TCP 30000–32767), wrong port, or the service selector doesn’t match the pod labels (<code>kubectl get endpoints hello</code> is empty).</td></tr>
+                        <tr><td>Pods restart randomly on kubeadm</td><td>containerd and the kubelet disagree on cgroups: set <code>SystemdCgroup = true</code> (step 2) and restart containerd and the kubelet.</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
