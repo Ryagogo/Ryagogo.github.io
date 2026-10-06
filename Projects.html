@@ -4232,10 +4232,10 @@ sudo docker image prune -f</code></pre>
 
             <div id="plex-install">
                 <h3>Step 1: Install Plex in Docker</h3>
-                <p>The video installs Plex directly on Ubuntu; these notes run it in a Docker container instead. Plex’s settings and database live in a folder you can back up, updating is one command, and nothing is added to the system itself. The <a href="https://docs.linuxserver.io/images/docker-plex/" target="_blank" rel="noopener">linuxserver.io Plex image</a> is used here.</p>
-                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Already installed Plex the old way?</strong> Stop and disable it first so it doesn’t hold port 32400: <code>sudo systemctl disable --now plexmediaserver</code>.</div></div>
-                <h4>1. Create the media folders and the Plex folder</h4>
-                <p>Create the media folders first (inside the network share, so you can drag media in from any PC), then a folder for Plex’s own files:</p>
+                <p>The video installs Plex directly on Ubuntu; on the homelab server it runs in a Docker container instead, using the <a href="https://docs.linuxserver.io/images/docker-plex/" target="_blank" rel="noopener">linuxserver.io Plex image</a>. The Compose file below is the one the server actually runs: media comes straight from the <a href="#raid-homelab">RAID</a>, an NVIDIA GPU does the transcoding, and transcodes are written to RAM.</p>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div><strong>Moving from a non-Docker Plex?</strong> Stop and disable it first so it doesn’t hold port 32400: <code>sudo systemctl disable --now plexmediaserver</code>. The Compose file reuses its data folder (<code>/var/lib/plexmediaserver</code>), so your libraries, watch history and settings carry over.</div></div>
+                <h4>1. Make the media folders and the Plex folder</h4>
+                <p>Media lives on the RAID, which is also the <code>RAID</code> Samba share, so you can drag files into <code>\\192.168.1.51\RAID\Plex</code> from any PC. Create the folders (if they don’t exist yet) and a folder for the Compose file:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4244,15 +4244,29 @@ sudo docker image prune -f</code></pre>
                         </div>
                     </div>
                     <div class="code-scroll-wrapper">
-<pre><code>mkdir -p ~/haven-share/plex/movies ~/haven-share/plex/shows
+<pre><code>mkdir -p /mnt/raid/Plex/movies /mnt/raid/Plex/shows
 mkdir -p ~/docker/plex
 cd ~/docker/plex
 id</code></pre>
                     </div>
                 </div>
-                <p><code>id</code> shows your user and group numbers, usually <code>uid=1000</code> and <code>gid=1000</code>. Plex will run as that user, so it can read the media folders without changing any permissions.</p>
-                <h4>2. Get a claim token (optional)</h4>
-                <p>Open <a href="https://www.plex.tv/claim" target="_blank" rel="noopener">plex.tv/claim</a> while signed in to Plex and copy the code (<code>claim-...</code>). It links the server to your account automatically, but <strong>expires after 4 minutes</strong>, so get it just before you start Plex in part 4 below. You can skip it and claim the server from the browser in Step 2 instead; just delete the <code>PLEX_CLAIM</code> line.</p>
+                <p><code>id</code> shows your user and group numbers, usually <code>uid=1000</code> and <code>gid=1000</code>. Plex runs as that user, which is in the <code>raidusers</code> group, so it can read the RAID without any extra permissions.</p>
+                <h4>2. GPU prerequisites (NVIDIA)</h4>
+                <p><code>runtime: nvidia</code> needs the NVIDIA driver and the NVIDIA Container Toolkit on the machine running Docker (for a VM, pass the GPU through to it in Proxmox first). Check the driver, then register the runtime with Docker:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bash · on the server</span>
+                        <div class="header-controls">
+                            <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="code-scroll-wrapper">
+<pre><code>nvidia-smi
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker</code></pre>
+                    </div>
+                </div>
+                <p><code>nvidia-smi</code> should list the GPU. If <code>nvidia-ctk</code> isn’t found, install the toolkit by following <a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html" target="_blank" rel="noopener">NVIDIA’s install guide</a>. Hardware transcoding also needs <strong>Plex Pass</strong>. <strong>No NVIDIA GPU?</strong> Delete the <code>runtime</code> line and the two <code>NVIDIA_</code> lines.</p>
                 <h4>3. Create the Compose file</h4>
                 <div class="code-container">
                     <div class="code-header">
@@ -4265,10 +4279,10 @@ id</code></pre>
 <pre><code>nano docker-compose.yml</code></pre>
                     </div>
                 </div>
-                <p>Paste this, then change <code>PUID</code>/<code>PGID</code> if <code>id</code> showed different numbers, <code>TZ</code> to your time zone, <code>haven</code> to your username and the claim code to yours. Save with <kbd>Ctrl</kbd>+<kbd>O</kbd>, <kbd>Enter</kbd>, <kbd>Ctrl</kbd>+<kbd>X</kbd>.</p>
+                <p>Paste this, changing <code>PUID</code>/<code>PGID</code> if <code>id</code> showed different numbers and the memory limits to suit your machine. Save with <kbd>Ctrl</kbd>+<kbd>O</kbd>, <kbd>Enter</kbd>, <kbd>Ctrl</kbd>+<kbd>X</kbd>.</p>
                 <div class="code-container">
                     <div class="code-header">
-                        <span>yaml · docker-compose.yml</span>
+                        <span>yaml · ~/docker/plex/docker-compose.yml</span>
                         <div class="header-controls">
                             <button type="button" class="control-btn copy-code-btn" title="Copy code" aria-label="Copy code"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
                         </div>
@@ -4279,19 +4293,25 @@ id</code></pre>
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
     network_mode: host
+
+    mem_limit: 16g
+    mem_reservation: 12g
+
+    runtime: nvidia
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=America/Chicago
-      - VERSION=docker
-      - PLEX_CLAIM=claim-xxxxxxxxxxxxxxxxxxxx
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+
     volumes:
-      - ./config:/config
-      - /home/haven/haven-share/plex/movies:/movies
-      - /home/haven/haven-share/plex/shows:/tv
-    # Optional: hardware transcoding (Intel/AMD iGPU, needs Plex Pass)
-    # devices:
-    #   - /dev/dri:/dev/dri
+      - /var/lib/plexmediaserver:/config
+      - /mnt/raid:/mnt/raid
+      - /dev/shm/plex-transcode:/transcode
+
+    security_opt:
+      - apparmor:unconfined
+
     restart: unless-stopped</code></pre>
                     </div>
                 </div>
@@ -4299,12 +4319,16 @@ id</code></pre>
                     <thead><tr><th>Line</th><th>What it does</th></tr></thead>
                     <tbody>
                         <tr><td><code>network_mode: host</code></td><td>Plex uses the server’s network directly, so devices on your network discover it automatically and port 32400 needs no mapping.</td></tr>
-                        <tr><td><code>PUID</code> / <code>PGID</code></td><td>The user Plex runs as inside the container (your own user), so it can read your media folders.</td></tr>
-                        <tr><td><code>VERSION=docker</code></td><td>Plex is updated by pulling a newer image (see <a href="#plex-updating">Updating</a>), not from inside Plex.</td></tr>
-                        <tr><td><code>./config:/config</code></td><td>Plex’s settings, database and artwork, stored in <code>~/docker/plex/config</code>. Back this folder up.</td></tr>
-                        <tr><td><code>/home/haven/...:/movies</code>, <code>:/tv</code></td><td>Your media folders, which Plex sees as <code>/movies</code> and <code>/tv</code> (used in Step 4).</td></tr>
+                        <tr><td><code>mem_limit: 16g</code> / <code>mem_reservation: 12g</code></td><td>Caps Plex at 16 GB of RAM and asks Docker to keep about 12 GB available for it, so a busy transcode can’t starve the other containers.</td></tr>
+                        <tr><td><code>runtime: nvidia</code> + <code>NVIDIA_</code> lines</td><td>Gives the container the GPU, with the video encode/decode (<code>video</code>) and CUDA (<code>compute</code>) features Plex uses for hardware transcoding.</td></tr>
+                        <tr><td><code>PUID</code> / <code>PGID</code></td><td>The user Plex runs as inside the container (your own user), so it can read the RAID.</td></tr>
+                        <tr><td><code>/var/lib/plexmediaserver:/config</code></td><td>Plex’s database, settings and artwork. This is the same folder a non-Docker Plex uses, so an existing install carries over. Back it up.</td></tr>
+                        <tr><td><code>/mnt/raid:/mnt/raid</code></td><td>The whole RAID, at the same path inside the container, so library paths match what you see on the server (e.g. <code>/mnt/raid/Plex/movies</code>).</td></tr>
+                        <tr><td><code>/dev/shm/plex-transcode:/transcode</code></td><td><code>/dev/shm</code> is RAM, so temporary transcode files never wear out or fill a disk. Point Plex at it in Step 2.</td></tr>
+                        <tr><td><code>security_opt: apparmor:unconfined</code></td><td>Turns off Ubuntu’s AppArmor restrictions for this container, which can otherwise block Plex from the GPU or shared memory. Leave it out if Plex works without it.</td></tr>
                     </tbody>
                 </table>
+                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div><strong>New server, not yet linked to your account?</strong> Add <code>- PLEX_CLAIM=claim-…</code> under <code>environment:</code> with a code from <a href="https://www.plex.tv/claim" target="_blank" rel="noopener">plex.tv/claim</a>. It expires after 4 minutes, so get it just before starting Plex, and remove the line once the server appears in your account. Older Compose files start with <code>version: "3.9"</code>; current Docker ignores it and warns it’s obsolete, so it can be deleted.</div></div>
                 <h4>4. Start Plex</h4>
                 <div class="code-container">
                     <div class="code-header">
@@ -4319,7 +4343,7 @@ sudo docker compose ps
 sudo docker compose logs --tail 30 plex</code></pre>
                     </div>
                 </div>
-                <p><code>ps</code> should show <code>plex</code> as <strong>running</strong>. The first start takes a minute while Plex sets itself up. If the firewall is on, allow Plex’s port:</p>
+                <p><code>ps</code> should show <code>plex</code> as <strong>running</strong>. If the firewall is on, allow Plex’s port:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4331,7 +4355,6 @@ sudo docker compose logs --tail 30 plex</code></pre>
 <pre><code>sudo ufw allow 32400/tcp</code></pre>
                     </div>
                 </div>
-                <div class="callout tip"><span class="callout-icon" aria-hidden="true">💡</span><div>Once the server shows up in your Plex account you can delete the <code>PLEX_CLAIM</code> line; the code only works once. Run <code>sudo docker compose up -d</code> after editing the file.</div></div>
             </div>
 
             <div id="plex-setup">
@@ -4339,15 +4362,16 @@ sudo docker compose logs --tail 30 plex</code></pre>
                 <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=521" target="_blank" rel="noopener">▶ Watch this step (8:41)</a></p>
                 <ol>
                     <li>From a computer on the <strong>same network</strong>, open <code>http://192.168.1.51:32400/web</code> in a browser (the address must end in <code>/web</code>).</li>
-                    <li>Sign in or create a free Plex account. If you used <code>PLEX_CLAIM</code> in Step 1 the server is already linked to your account; otherwise this step “claims” it.</li>
+                    <li>Sign in or create a free Plex account. A server you moved from a non-Docker install, or claimed with <code>PLEX_CLAIM</code>, is already linked to your account; otherwise this step “claims” it.</li>
                     <li>Give the server a name. Leave <strong>Allow me to access my media outside my home</strong> on if you want remote streaming.</li>
                     <li>Skip adding libraries for now; you’ll add them in Step 4 once the folders exist.</li>
+                    <li>Under <strong>Settings → Transcoder</strong>, set <strong>Transcoder temporary directory</strong> to <code>/transcode</code> and, with Plex Pass, tick <strong>Use hardware acceleration when available</strong> (and <strong>hardware-accelerated video encoding</strong>). Save.</li>
                 </ol>
             </div>
 
             <div id="plex-folders">
                 <h3>Step 3: Add Media and Name Files Correctly</h3>
-                <p>The <code>movies</code> and <code>shows</code> folders were created in Step 1 inside <code>haven-share</code>, so you can copy media into them from any PC. Because Plex runs as your own user, no extra permissions are needed.</p>
+                <p>Copy media into <code>Plex\movies</code> and <code>Plex\shows</code> on the <code>RAID</code> share from any PC (or into <code>/mnt/raid/Plex/...</code> on the server). Because Plex runs as your own user, no extra permissions are needed.</p>
                 <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=587" target="_blank" rel="noopener">▶ Watch this step (9:47)</a></p>
                 <p>Copy media into the folders over the network share. <strong>Plex identifies movies and episodes from their names</strong>, so follow its naming scheme:</p>
                 <div class="code-container">
@@ -4377,11 +4401,11 @@ sudo docker compose logs --tail 30 plex</code></pre>
                 <p class="video-step"><a href="https://youtu.be/72D3MvPk3Xs?t=597" target="_blank" rel="noopener">▶ Watch this step (9:57)</a></p>
                 <ol>
                     <li>In Plex, open <strong>Settings → Manage → Libraries → Add Library</strong> (or the <strong>+</strong> next to your server in the sidebar).</li>
-                    <li>Choose <strong>Movies</strong>, click <strong>Browse for media folder</strong> and pick <code>/movies</code>. Click <strong>Add Library</strong>.</li>
-                    <li>Repeat with <strong>TV Shows</strong> and <code>/tv</code>.</li>
+                    <li>Choose <strong>Movies</strong>, click <strong>Browse for media folder</strong> and pick <code>/mnt/raid/Plex/movies</code>. Click <strong>Add Library</strong>.</li>
+                    <li>Repeat with <strong>TV Shows</strong> and <code>/mnt/raid/Plex/shows</code>.</li>
                     <li>Plex scans the folders and downloads posters and descriptions. New files you copy in are picked up automatically, or use <strong>⋯ → Scan Library Files</strong>.</li>
                 </ol>
-                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Inside the container Plex only sees the paths on the right-hand side of the <code>volumes:</code> lines (<code>/movies</code>, <code>/tv</code>), not <code>/home/haven/...</code>. To add another library, add a volume line (e.g. <code>- /home/haven/haven-share/plex/music:/music</code>), run <code>sudo docker compose up -d</code>, then add <code>/music</code> in Plex.</div></div>
+                <div class="callout info"><span class="callout-icon" aria-hidden="true">ℹ</span><div>Plex only sees what’s mapped under <code>volumes:</code>. Because the whole RAID is mapped to the same path, any folder on it (e.g. <code>/mnt/raid/Plex/music</code>) can be added as a library without changing the Compose file.</div></div>
             </div>
 
             <div id="plex-watching">
@@ -4389,14 +4413,14 @@ sudo docker compose logs --tail 30 plex</code></pre>
                 <ul>
                     <li><strong>Apps:</strong> Plex has apps for smart TVs, Roku, Fire TV, Apple TV, game consoles, phones and tablets, or use <code>app.plex.tv</code> in a browser.</li>
                     <li><strong>Remote access:</strong> <strong>Settings → Remote Access</strong>. If it can’t connect automatically, forward TCP port 32400 on your router to the server, or skip port forwarding and watch over a VPN like <a href="#tailscale">Tailscale</a>.</li>
-                    <li><strong>Transcoding:</strong> if a device can’t play a file, Plex converts it on the fly, which is CPU-heavy on an old machine. Files in common formats (H.264 MP4/MKV) stream without converting. Hardware-accelerated transcoding requires <strong>Plex Pass</strong> and, in Docker, the <code>devices: /dev/dri</code> lines in the Compose file (Step 1).</li>
+                    <li><strong>Transcoding:</strong> if a device can’t play a file, Plex converts it on the fly, which is CPU-heavy on an old machine. Files in common formats (H.264 MP4/MKV) stream without converting. Hardware-accelerated transcoding requires <strong>Plex Pass</strong>; the homelab uses the NVIDIA GPU set up in Step 1.</li>
                     <li><strong>Share with family:</strong> <strong>Settings → Manage Library Access</strong> to invite other Plex accounts.</li>
                 </ul>
             </div>
 
             <div id="plex-updating">
                 <h3>Updating Plex</h3>
-                <p>With <code>VERSION=docker</code>, Plex is updated by pulling the newest image and recreating the container. Your settings and libraries stay in <code>./config</code>:</p>
+                <p>In Docker, Plex is updated by pulling the newest image and recreating the container. Your settings and libraries stay in <code>/var/lib/plexmediaserver</code>:</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span>bash · on the server</span>
@@ -4422,10 +4446,13 @@ sudo docker image prune -f</code></pre>
                     <tbody>
                         <tr><td>Web page won’t load</td><td>Use <code>http://192.168.1.51:32400/web</code> (with <code>/web</code> at the end). Check the container with <code>cd ~/docker/plex &amp;&amp; sudo docker compose ps</code> and <code>sudo docker compose logs --tail 50 plex</code>, and run <code>sudo ufw allow 32400/tcp</code>.</td></tr>
                         <tr><td>Container restarts or won’t start: “address already in use”</td><td>An old non-Docker Plex is still running. <code>sudo systemctl disable --now plexmediaserver</code>, then <code>sudo docker compose up -d</code>.</td></tr>
-                        <tr><td>Folders are empty when browsing in Plex</td><td>Browse <code>/movies</code> and <code>/tv</code>, not <code>/home/...</code>. If those are empty too, check the left-hand paths of the <code>volumes:</code> lines and that <code>PUID</code>/<code>PGID</code> match <code>id</code>, then <code>sudo docker compose up -d</code> and rescan.</td></tr>
-                        <tr><td>Server doesn’t appear in your account</td><td>The claim code expired (4 minutes). Get a new one, update <code>PLEX_CLAIM</code> and run <code>sudo docker compose up -d</code>, or claim it from a browser on the same network as the server.</td></tr>
+                        <tr><td>Folders are empty when browsing in Plex</td><td>Browse to <code>/mnt/raid/Plex/...</code>. If the RAID looks empty in Plex, check it’s mounted on the server (<code>findmnt /mnt/raid</code>), that <code>PUID</code>/<code>PGID</code> match <code>id</code>, then <code>sudo docker compose up -d</code> and rescan.</td></tr>
+                        <tr><td>Server doesn’t appear in your account</td><td>Claim it from a browser on the same network, or add a fresh <code>PLEX_CLAIM</code> code (it expires after 4 minutes) and run <code>sudo docker compose up -d</code>.</td></tr>
+                        <tr><td><em>“could not select device driver "nvidia"”</em> when starting</td><td>The NVIDIA Container Toolkit isn’t installed or registered. Install it, run <code>sudo nvidia-ctk runtime configure --runtime=docker</code> and <code>sudo systemctl restart docker</code>. Without a GPU, remove the <code>runtime</code> and <code>NVIDIA_</code> lines.</td></tr>
+                        <tr><td>Database errors or “permission denied” in the logs after moving from a non-Docker Plex</td><td>The old files belong to the <code>plex</code> user. Stop the container, run <code>sudo chown -R 1000:1000 /var/lib/plexmediaserver</code> (your <code>PUID</code>/<code>PGID</code>), then <code>sudo docker compose up -d</code>.</td></tr>
+                        <tr><td>Container is killed during heavy transcodes</td><td>It hit <code>mem_limit</code>. Raise the limit, or lower the number of simultaneous transcodes in <strong>Settings → Transcoder</strong>. Transcodes in <code>/dev/shm</code> count towards RAM.</td></tr>
                         <tr><td>Wrong movie or show matched</td><td>Rename files to the naming scheme and use <strong>Fix Match</strong>; then <strong>Refresh Metadata</strong>.</td></tr>
-                        <tr><td>Video buffers or stutters</td><td>The CPU is transcoding. Lower the quality on the player, use a format the device plays directly, or enable hardware transcoding (<code>/dev/dri</code>, Plex Pass).</td></tr>
+                        <tr><td>Video buffers or stutters</td><td>The CPU is transcoding. Lower the quality on the player, use a format the device plays directly, or check hardware transcoding: <code>nvidia-smi</code> on the server should list a Plex process while a video transcodes (Plex Pass, Step 2 settings).</td></tr>
                         <tr><td>Still on the old version after updating</td><td>Run the commands from <code>~/docker/plex</code> and check <code>sudo docker compose pull</code> downloaded something; a restart alone doesn’t update.</td></tr>
                     </tbody>
                 </table>
