@@ -4052,6 +4052,16 @@
     </div>
   </div>
   <a class="nav-top-link" href="#reportuda">Creating a New Report UDA (ID) &amp; Report UDA Value</a>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Clearance BOPIP UDA Removal <span class="chevron">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#bopip-overview">What It Is</a>
+      <a class="nav-sub-link" href="#bopip-template">Build the Item List Template</a>
+      <a class="nav-sub-link" href="#bopip-upload">Upload the Item List</a>
+      <a class="nav-sub-link" href="#bopip-mass-change">Delete the BOPIP UDA</a>
+      <a class="nav-sub-link" href="#bopip-reply">Reply to the Email</a>
+    </div>
+  </div>
 
 </nav>
 
@@ -4115,6 +4125,7 @@
         <tr><td>Add UDAs</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
         <tr><td>Update UDAs (List of Values only)</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
         <tr><td>Delete UDAs (List of Values only)</td><td><strong>RMS Download</strong> <em>or</em> <strong>Front-End (RMS v16)</strong></td></tr>
+        <tr><td>Remove the BOPIP UDA from clearance items (weekly)</td><td><strong>Mass Change via Item List</strong> (see <a href="#bopip">Clearance BOPIP UDA Removal</a>)</td></tr>
       </tbody>
     </table></div>
   </div>
@@ -14207,6 +14218,85 @@ FROM rms.uda u1, rms.UDA_VALUES u2
 WHERE U1.UDA_ID = U2.UDA_ID
 ----AND u1.uda_id = 5261
 ORDER BY U1.UDA_ID, U2.UDA_VALUE;</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" id="bopip">
+  <h2 class="section-title">Clearance BOPIP UDA Removal</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Document</span><span class="doc-meta-value">SOP: Clearance BOPIP UDA Removal (RMS v16)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Author</span><span class="doc-meta-value">Data Steward Team</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Frequency</span><span class="doc-meta-value">Weekly (Wednesday)</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Systems</span><span class="doc-meta-value">RMS v16, Excel, Outlook</span></div>
+  </div>
+
+  <div class="sub-section" id="bopip-overview">
+    <h3 class="sub-section-title">What it is</h3>
+    <p>This process removes the <strong>BOPIP</strong> (Buy Online, Pick Up In Person) UDA from clearance or restricted items, using an item list and an RMS <strong>Mass Change</strong>. Removing it stops customers from placing online orders for store pickup on items that are no longer eligible for BOPIP fulfillment.</p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Request</td><td>The item list arrives every <strong>Wednesday</strong> in the email <strong>“Clearance BOPIP for UDA Removal”</strong>.</td></tr>
+        <tr><td>Missed weeks</td><td>Items not processed that week are included again in the following Wednesday's file.</td></tr>
+        <tr><td>UDA to remove</td><td>UDA <code>9627</code> (BOPIP), UDA Value <code>1</code>.</td></tr>
+        <tr><td>Working folder</td><td>DST drive: Code_M/Code_MS/Data Steward Team/BOPIP</td></tr>
+        <tr><td>File name</td><td><code>Clearance BOPIP for UDA Removal YYYY-MM-DD.ods</code>, using today's date.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="step-heading"><strong>Process at a glance</strong></p>
+    <ol class="steps">
+      <li><a href="#bopip-template">Build the item list template</a> from last week's file.</li>
+      <li><a href="#bopip-upload">Upload the item list</a> to RMS.</li>
+      <li><a href="#bopip-mass-change">Delete the BOPIP UDA</a> with a Mass Change.</li>
+      <li><a href="#bopip-reply">Reply to the email</a>.</li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="bopip-template">
+    <h3 class="sub-section-title">Step 1: Build the Item List Template</h3>
+    <ol class="steps">
+      <li>Open the <strong>BOPIP</strong> folder on the DST drive. Copy last week's file, paste it, and rename the copy with today's date.
+        <img class="sop-shot" src="Pictures/DST/BOPIP/bopip-folder.png" alt="BOPIP folder on the DST drive with a weekly Clearance BOPIP for UDA Removal file for each date." loading="lazy"></li>
+      <li>Replace <strong>column C, Item (Parent or Transaction)</strong>, with the transaction items from this week's email. Make sure there are <strong>no duplicate</strong> transaction items.
+        <img class="sop-shot" src="Pictures/DST/BOPIP/bopip-template-items.png" alt="Item list template with Item List Family ID, Item List Description and the Item column highlighted." loading="lazy"></li>
+      <li>Update the date in <strong>column A (Item List Family ID)</strong> and <strong>column B (Item List Description)</strong> to today's date, and fill both columns down to the last item.
+        <img class="sop-shot" src="Pictures/DST/BOPIP/bopip-template-dates.png" alt="Bottom of the item list with the dated Family ID and Description filled down to the last item." loading="lazy"></li>
+      <li>Save and close the file.</li>
+    </ol>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>To remove duplicates quickly, select column C and use <strong>Data</strong> &rarr; <strong>Remove Duplicates</strong> before filling down columns A and B.</div></div>
+  </div>
+
+  <div class="sub-section" id="bopip-upload">
+    <h3 class="sub-section-title">Step 2: Upload the Item List to RMS</h3>
+    <ol class="steps">
+      <li>In RMS v16 go to <span class="path-highlight">Tasks</span> &rarr; <span class="path-highlight">Foundation Data</span> &rarr; <span class="path-highlight">Items</span> &rarr; <span class="path-highlight">Upload Item List from File</span> and upload the .ods file you just saved.
+        <img class="sop-shot" src="Pictures/DST/BOPIP/rms-upload-item-list.png" alt="Upload Item List From File tab with the dated Clearance BOPIP .ods file selected as the source file." loading="lazy"></li>
+      <li>Go to <span class="path-highlight">Tasks</span> &rarr; <span class="path-highlight">Foundation Data</span> &rarr; <span class="path-highlight">Items</span> &rarr; <span class="path-highlight">Manage Item Lists</span> and search for the file name in <strong>Description</strong>. Check that <strong>Total Items</strong> matches the number of items on your file.
+        <img class="sop-shot" src="Pictures/DST/BOPIP/rms-manage-item-lists.png" alt="Item List Search results showing the uploaded Clearance BOPIP item list with its total items." loading="lazy"></li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="bopip-mass-change">
+    <h3 class="sub-section-title">Step 3: Delete the BOPIP UDA with a Mass Change</h3>
+    <ol class="steps">
+      <li>Select the item list, then go to <span class="path-highlight">Actions</span> &rarr; <span class="path-highlight">Mass Change</span> &rarr; <span class="path-highlight">User Defined Attributes</span>.
+        <img class="sop-shot" src="Pictures/DST/BOPIP/rms-mass-change-uda.png" alt="Actions menu open on Mass Change with User Defined Attributes highlighted." loading="lazy"></li>
+      <li>Under <strong>List of Values</strong>, click <strong>Add</strong> (the green plus).</li>
+      <li>Set <strong>Action</strong> to <strong>Delete</strong>, then select <strong>UDA</strong> <code>9627</code> (BOPIP) and <strong>UDA Value</strong> <code>1</code>.
+        <img class="sop-shot" src="Pictures/DST/BOPIP/rms-delete-uda-9627.png" alt="Add, Change, or Delete UDA window with Action Delete, UDA 9627 BOPIP and UDA Value 1." loading="lazy">
+        <div class="callout info"><span class="callout-icon">ℹ</span><div>The UDA and UDA Value drop-downs can take a <strong>long time</strong> to load. Wait for each one to finish before moving on.</div></div></li>
+      <li>Click <strong>OK</strong>, then <strong>Save and Close</strong>.</li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="bopip-reply">
+    <h3 class="sub-section-title">Step 4: Reply to the Email</h3>
+    <p>Reply to the <strong>“Clearance BOPIP for UDA Removal”</strong> email to confirm the work is done:</p>
+    <div class="code-container">
+      <div class="code-header"><span>Email reply</span><div class="header-controls"><button class="control-btn" title="Copy text" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+      <div class="code-wrapper">
+<pre><code>BOPIP UDA has been removed from items provided.</code></pre>
       </div>
     </div>
   </div>
