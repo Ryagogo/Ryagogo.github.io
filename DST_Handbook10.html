@@ -4051,6 +4051,19 @@
       <a class="nav-sub-link" href="#tpgc-deploy">Deploying the MNT Files into Xadmin</a>
     </div>
   </div>
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">AppleCare MNT <span class="chevron">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#acmnt-overview">What It Is &amp; Downloads</a>
+      <a class="nav-sub-link" href="#acmnt-before">Before You Start</a>
+      <a class="nav-sub-link" href="#acmnt-method-a">Method A: Cheat Sheet Macro</a>
+      <a class="nav-sub-link" href="#acmnt-method-b">Method B: Manual Entry</a>
+      <a class="nav-sub-link" href="#acmnt-start-mnt">MNT Files Without the Macro</a>
+      <a class="nav-sub-link" href="#acmnt-fields">Field Reference</a>
+      <a class="nav-sub-link" href="#acmnt-validate">Validation &amp; Troubleshooting</a>
+      <a class="nav-sub-link" href="#acmnt-deploy">Deployment</a>
+    </div>
+  </div>
   <a class="nav-top-link" href="#reportuda">Creating a New Report UDA (ID) &amp; Report UDA Value</a>
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Clearance BOPIP UDA Removal <span class="chevron">›</span></div>
@@ -14037,6 +14050,336 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
       <div>
     <img class="sop-shot" src="Pictures/DST/TPGC/xadmin-deploy-success.png" alt="Deployment was scheduled successfully progress bar at 100%." loading="lazy">
       </div>
+    </ol>
+  </div>
+</section>
+<section class="section" id="acmnt">
+  <h2 class="section-title">AppleCare MNT</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Document</span><span class="doc-meta-value">SOP: AppleCare MNT Setup</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Author</span><span class="doc-meta-value">Data Steward Team</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Systems</span><span class="doc-meta-value">RMS, Excel (MNT Master Creator), Xadmin</span></div>
+  </div>
+
+  <div class="sub-section" id="acmnt-overview">
+    <h3 class="sub-section-title">What it is</h3>
+    <p>Use this SOP whenever new Apple products and their <strong>AppleCare</strong> warranty items are added to the system. AppleCare warranties are non-physical items that reach Xadmin through a set of <code>.mnt</code> (maintenance) files built in the <strong>MNT Master Creator</strong>, the same workbook used for <a href="#tpgc">Third Party Gift Cards</a>.</p>
+    <p class="step-heading"><strong>The MNT files</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Master Creator tab</th><th>Purpose</th><th>Needed</th></tr></thead>
+      <tbody>
+        <tr><td>APPLECAREWARRANTYITEM</td><td>Creates the AppleCare warranty item in Xadmin</td><td>New AppleCare item</td></tr>
+        <tr><td>SQL Warranty Flag</td><td>Sets the warranty flag on both the Apple product and the AppleCare item</td><td>Every setup</td></tr>
+        <tr><td>ItemPriceAction</td><td>Sets the retail price of the AppleCare item</td><td>New AppleCare item</td></tr>
+        <tr><td>WarrantyATTACHEDITEMS</td><td>Attaches each Apple product to its AppleCare warranty</td><td>Every setup</td></tr>
+        <tr><td>ItemUPC</td><td>Adds a UPC to the AppleCare item</td><td>Only if the warranty needs a UPC in Xstore</td></tr>
+      </tbody>
+    </table></div>
+    <p>A brand-new AppleCare warranty normally needs the first four files. If the warranty is already built in Xstore and you are only attaching new Apple products to it, you only need <strong>SQL Warranty Flag</strong> and <strong>WarrantyATTACHEDITEMS</strong>.</p>
+    <div class="callout warn"><span class="callout-icon">⚠</span><div><strong>Deploy every file for a setup on the same day.</strong> The order does not matter.</div></div>
+    <p class="step-heading"><strong>Two ways to build the files</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Method</th><th>When to use it</th></tr></thead>
+      <tbody>
+        <tr><td><a href="#acmnt-method-a">A: AppleCare Cheat Sheet macro</a> (recommended)</td><td>Enter the data once on the cheat sheet and click <strong>Export</strong>. The <code>ExportAppleCare</code> macro checks the data, fills the Master Creator and writes all the MNT files.</td></tr>
+        <tr><td><a href="#acmnt-method-b">B: Manual entry</a></td><td>Type the data straight into the Master Creator tabs, then run <code>Start_MNT</code> on each tab. Use it when the macro is unavailable or for a one-off correction.</td></tr>
+      </tbody>
+    </table></div>
+    <p>Both methods produce the same files.</p>
+    <p class="step-heading"><strong>Downloads</strong></p>
+    <div class="download-card">
+      <div class="download-card-icon" aria-hidden="true">XLSM</div>
+      <div class="download-card-body">
+        <span class="download-card-title">Apple Items &amp; AppleCare Cheat Sheet</span>
+        <span class="download-card-meta">Macro-enabled Excel workbook (.xlsm) · the input workbook, with the <code>ExportAppleCare</code> and <code>CreateAppleCareMNTFiles</code> macros</span>
+      </div>
+      <a class="download-card-btn" href="Files/Apple_Items_and_Care_Cheat_Sheet.xlsm" download>Download</a>
+    </div>
+    <div class="download-card">
+      <div class="download-card-icon" aria-hidden="true">XLSM</div>
+      <div class="download-card-body">
+        <span class="download-card-title">MNT Master Creator (2026_10)</span>
+        <span class="download-card-meta">Macro-enabled Excel workbook (.xlsm) · the converter workbook; <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> runs <code>Start_MNT</code> on the active tab</span>
+      </div>
+      <a class="download-card-btn" href="Files/CreateMNTFile_MasterCreator_2026_10.xlsm" download>Download</a>
+    </div>
+    <p>The team copy of the Master Creator lives on the G: drive at <code>G:\Code_M\_Shared\Templates\TPGC MNT\</code>. The cheat sheet uses any Master Creator that is already open, so a downloaded copy works under any file name that starts with <code>CreateMNTFile_MasterCreator</code>.</p>
+  </div>
+
+  <div class="sub-section" id="acmnt-before">
+    <h3 class="sub-section-title">Before You Start</h3>
+    <p>Gather this information for every AppleCare warranty item and every Apple product it covers:</p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Information</th><th>Example</th><th>Used on</th></tr></thead>
+      <tbody>
+        <tr><td>AppleCare warranty transaction RIN</td><td><code>20424567</code></td><td>Every tab</td></tr>
+        <tr><td>Apple product transaction RIN(s)</td><td><code>20418550</code>, <code>20418548</code></td><td>SQL Warranty Flag, WarrantyATTACHEDITEMS</td></tr>
+        <tr><td>Transaction description (no special characters)</td><td><code>AppleCare Plus for Apple TV 4K</code></td><td>APPLECAREWARRANTYITEM</td></tr>
+        <tr><td>Group, Dept, Class, Subclass</td><td><code>207</code>, <code>810</code>, <code>1000</code>, <code>3</code></td><td>APPLECAREWARRANTYITEM</td></tr>
+        <tr><td>Warranty price</td><td><code>45</code></td><td>APPLECAREWARRANTYITEM, ItemPriceAction</td></tr>
+        <tr><td>Price effective date (today or later)</td><td><code>10/23/2026</code></td><td>ItemPriceAction</td></tr>
+        <tr><td>Warranty UPC (optional)</td><td><code>885909950805</code></td><td>ItemUPC</td></tr>
+      </tbody>
+    </table></div>
+    <p class="step-heading"><strong>Prepare the Master Creator</strong></p>
+    <ol class="steps">
+      <li>Open the Master Creator.</li>
+      <li>On <strong>APPLECAREWARRANTYITEM</strong>, <strong>ItemPriceAction</strong>, <strong>WarrantyATTACHEDITEMS</strong> and <strong>ItemUPC</strong>, delete every row below the header (row 1).</li>
+      <li>On <strong>SQL Warranty Flag</strong>, keep the statement in cell <strong>A2</strong> and delete everything else below the header, including old rows in column A. A2 must read:<br><code>RUN_SQL|UPDATE itm_item_options SET warranty_flag = 1 WHERE item_id = </code> (with the trailing space).</li>
+      <li>Delete any stray values in columns to the right of the last header, and unhide any hidden rows or columns to check them for leftover data.</li>
+    </ol>
+    <div class="callout warn"><span class="callout-icon">⚠</span><div><strong>ItemPriceAction is shared with the TPGC process.</strong> Clear it before you start so no gift card rows end up in the AppleCare file.</div></div>
+    <div class="callout info"><span class="callout-icon">ℹ</span><div>The SQL Warranty Flag tab in the Master Creator template has a leftover row with a different statement (<code>SET item_availability_code = 'NA'</code>). Delete it. The macro ignores rows with no RIN, but <code>Start_MNT</code> would write that row into the file.</div></div>
+  </div>
+
+  <div class="sub-section" id="acmnt-method-a">
+    <h3 class="sub-section-title">Method A: With the AppleCare Cheat Sheet Macro</h3>
+    <p>The cheat sheet has one input tab per MNT file. On every tab the headers are on <strong>row 3</strong> and the data starts on <strong>row 4</strong>. Leave a tab empty if you do not need that file; the macro skips it.</p>
+    <p class="step-heading"><strong>Step 1: Fill in the input tabs</strong></p>
+    <p><strong>AppleCareWarranty</strong>: one row per new AppleCare warranty item. Every column is required.</p>
+    <div class="table-wrap"><table class="decision-table">
+      <thead><tr><th>Warranty Transaction RIN</th><th>Transaction Description</th><th>Group</th><th>Dept</th><th>Class</th><th>Subclass</th><th>Warranty Price Amount</th></tr></thead>
+      <tbody>
+        <tr><td>20424567</td><td>AppleCare Plus for Apple TV 4K</td><td>207</td><td>810</td><td>1000</td><td>3</td><td>45</td></tr>
+      </tbody>
+    </table></div>
+    <p>The <strong>FOR DST USE ONLY</strong> columns (H to K) preview the merch level IDs the macro will build. Copy their formulas down if you want to check more rows.</p>
+    <p><strong>SQLWarrantyFlag</strong>: every RIN that needs the warranty flag, both the Apple products and the AppleCare warranty. Any layout below the header works (for example, product RINs in column A and the AppleCare RIN in column B). Duplicates are removed.</p>
+    <p><strong>ItemPriceAction</strong>: one row per new AppleCare item.</p>
+    <div class="table-wrap"><table class="decision-table">
+      <thead><tr><th>Transaction RIN of AppleCare Warranty</th><th>Retail</th><th>Effective Date</th></tr></thead>
+      <tbody>
+        <tr><td>20424567</td><td>45</td><td>10/23/2026</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>WarrantyATTACHEDItems</strong>: one row per Apple product and warranty pairing.</p>
+    <div class="table-wrap"><table class="decision-table">
+      <thead><tr><th>Physical Apple Transaction RIN</th><th>AppleCare Warranty Transaction RIN</th></tr></thead>
+      <tbody>
+        <tr><td>20418550</td><td>20424567</td></tr>
+        <tr><td>20418548</td><td>20424567</td></tr>
+      </tbody>
+    </table></div>
+    <p>If one product takes more than one warranty, list its most important warranty first. The macro numbers each product's warranties 10, 20, 30 in the order they appear.</p>
+    <p><strong>ITEMUPC</strong> (optional): the AppleCare warranty RIN and its UPC, only if the warranty needs a UPC in Xstore.</p>
+    <p class="step-heading"><strong>Step 2: Run the export</strong></p>
+    <ol class="steps">
+      <li>Open the Master Creator and confirm its AppleCare tabs are cleared (see <a href="#acmnt-before">Before You Start</a>). If it is not open, the macro opens it from the G: drive, or asks you to pick the file.</li>
+      <li>Click the <strong>Export</strong> button on the AppleCareWarranty tab, or press <kbd>Alt</kbd>+<kbd>F8</kbd>, select <code>ExportAppleCare</code> and click <strong>Run</strong>.</li>
+      <li>Read the summary. It shows the rows written to each tab and lists every row that was skipped and why, for example <em>AppleCareWarranty row 6: missing/invalid Group</em>.</li>
+      <li>If rows were skipped, click <strong>No</strong>. Fix them on the cheat sheet and run Export again. Rows already written are not added twice, so you do not need to clear the Master Creator first.</li>
+      <li>If everything is correct, click <strong>Yes</strong> to create the MNT files.</li>
+    </ol>
+    <p class="step-heading"><strong>Step 3: Create the MNT files</strong></p>
+    <ol class="steps">
+      <li>Review the <strong>Check the data</strong> message. For each tab it shows the row count, the last column and the last cell value. For SQL Warranty Flag it shows the RIN count, the statement and the last RIN.</li>
+      <li>If a count is higher than expected or the last column is wrong, click <strong>No</strong>. Old or hidden data is still on the tab; clear it and run again.</li>
+      <li>Click <strong>Yes</strong>, then choose the folder to save the files in (normally your U: drive).</li>
+      <li>The macro writes one file per populated tab, named <code>MNTCreation_&lt;Tab&gt;-&lt;Username&gt;&lt;yyyy_mm_dd_hhmm&gt;.mnt</code>, and lists them when it finishes.</li>
+    </ol>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>To rebuild the files later without exporting again (for example after correcting a cell on the Master Creator), press <kbd>Alt</kbd>+<kbd>F8</kbd> and run <code>CreateAppleCareMNTFiles</code>.</div></div>
+    <p class="step-heading"><strong>What the macro checks and fills in</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Tab</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>APPLECAREWARRANTYITEM</td><td>Writes the RIN, the description in both Name and Description, the merch levels (<code>207G</code>, <code>810D</code>, <code>810-1000C</code>, <code>810-1000-3S</code>), the price as <code>45.00</code>, and every default value from the <a href="#acmnt-fields">Field Reference</a>. Rejects a description with characters other than letters, numbers, spaces, hyphens and periods.</td></tr>
+        <tr><td>SQL Warranty Flag</td><td>Writes each RIN in <em>RIN of flagged item</em> with the A2 statement beside it. Skips RINs already on the tab and anything that is not a whole number.</td></tr>
+        <tr><td>ItemPriceAction</td><td>Writes the RIN, the retail as <code>45.00</code>, the effective date as <code>2026-10-23</code>, and the defaults. Rejects an effective date in the past.</td></tr>
+        <tr><td>WarrantyATTACHEDITEMS</td><td>Writes both RINs, the SEQUENCE number (10 for a product's first warranty, 20 for its second) and the defaults. Skips pairs already on the tab.</td></tr>
+        <tr><td>ItemUPC</td><td>Writes the RIN, the UPC as 12 digits (restoring dropped leading zeros), and the defaults.</td></tr>
+      </tbody>
+    </table></div>
+    <p>All values are written as text, so <code>45.00</code>, <code>2026-10-23</code> and <code>TRUE</code> reach the file exactly as shown.</p>
+  </div>
+
+  <div class="sub-section" id="acmnt-method-b">
+    <h3 class="sub-section-title">Method B: Manual Entry</h3>
+    <p>Enter the data directly on the Master Creator tabs, one row per record starting on row 2, then build each file with <a href="#acmnt-start-mnt">Start_MNT</a>. The value for every column is in the <a href="#acmnt-fields">Field Reference</a>.</p>
+    <p class="step-heading"><strong>Rules for every tab</strong></p>
+    <ul>
+      <li>Type action codes, table names and item codes in CAPS exactly as shown (<code>INSERT</code>, <code>WARRANTY_ITEM</code>, <code>ITEM</code>).</li>
+      <li>Format price and date cells as <strong>Text</strong> before typing, so <code>45.00</code> and <code>2026-10-23</code> keep their form.</li>
+      <li>To add rows, copy row 2 and paste it below, then change only the per-item cells.</li>
+      <li>Leave a column blank when the Field Reference shows no value. Do not delete columns; the file needs every column, including the ones marked "no longer in use".</li>
+    </ul>
+    <p class="step-heading"><strong>APPLECAREWARRANTYITEM</strong></p>
+    <ol class="steps">
+      <li>On row 2, enter the default values from the Field Reference.</li>
+      <li>Enter the per-item values: <strong>Warranty Tran RIN #</strong> (the AppleCare RIN); <strong>Name</strong> and <strong>Description</strong> (the transaction description); <strong>Merch Level 1 ID</strong> = Group + G (<code>207G</code>); <strong>Merch Level 2 Id</strong> = Dept + D (<code>810D</code>); <strong>Merch Level 3 Id</strong> = Dept-Class + C (<code>810-1000C</code>); <strong>Merch Level 4 Id</strong> = Dept-Class-Subclass + S (<code>810-1000-3S</code>); <strong>Warranty Price Amount</strong> with two decimals (<code>45.00</code>).</li>
+      <li>Repeat on the next row for each additional warranty item.</li>
+    </ol>
+    <p class="step-heading"><strong>SQL Warranty Flag</strong></p>
+    <ol class="steps">
+      <li>Check that cell A2 holds <code>RUN_SQL|UPDATE itm_item_options SET warranty_flag = 1 WHERE item_id = </code> with the trailing space.</li>
+      <li>In <strong>RIN of flagged item</strong>, starting at B2, enter one RIN per row: every Apple product RIN and every AppleCare RIN.</li>
+      <li>Copy the A2 statement down column A to match each RIN row, and delete any rows with no RIN.</li>
+      <li>Do not enter the same RIN twice, and do not add quotes around the RIN; the MNT step adds them.</li>
+    </ol>
+    <p class="step-heading"><strong>ItemPriceAction</strong></p>
+    <ol class="steps">
+      <li>One row per AppleCare item, starting on row 2.</li>
+      <li>Enter <code>INSERT</code>, <code>PRICE_UPDATE_2</code>, the AppleCare RIN, <code>REGULAR_PRICE</code>, <code>*</code>, <code>*</code>.</li>
+      <li>Enter <strong>RETAIL</strong> as text with two decimals (<code>45.00</code>) and <strong>EFFECTIVE DATE</strong> as text in yyyy-mm-dd form (<code>2026-10-23</code>). The date must be today or later.</li>
+      <li>Leave End Date blank, enter <code>1</code> under FIELD, and leave LEAVE BLANK empty.</li>
+    </ol>
+    <p class="step-heading"><strong>WarrantyATTACHEDITEMS</strong></p>
+    <ol class="steps">
+      <li>One row per Apple product and warranty pair, starting on row 2.</li>
+      <li>Enter <code>INSERT</code>, <code>WARRANTY_ITEM_XREF</code>, the product RIN under <strong>Physical_item_tran</strong>, the AppleCare RIN under <strong>Warranty_tran</strong>, and <code>WARRANTY</code> under <strong>Warranty Type</strong>.</li>
+      <li><strong>SEQUENCE</strong>: <code>10</code> for the product's first (most important) warranty, <code>20</code> for its second, and so on. A product with one warranty gets <code>10</code>.</li>
+      <li>Enter <code>*</code> in both store columns.</li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="acmnt-start-mnt">
+    <h3 class="sub-section-title">Creating the MNT Files Without the Macro</h3>
+    <p><code>Start_MNT</code> writes one file from the active tab. Run it once per tab.</p>
+    <ol class="steps">
+      <li>Click the tab to export, starting with APPLECAREWARRANTYITEM.</li>
+      <li>Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> (or <kbd>Alt</kbd>+<kbd>F8</kbd>, select <code>Start_MNT</code>, <strong>Run</strong>).</li>
+      <li><strong>Is this correct?</strong> Check the last column header, the row count and the last cell value. If any look wrong, click <strong>No</strong>, delete the extra rows and columns, and run again.</li>
+      <li><strong>Split MNTs by Location?</strong> Click <strong>No</strong>. This option is not in use.</li>
+      <li>The file is saved to <code>U:\</code> as <code>MNTCreation_&lt;Tab&gt;-&lt;Username&gt;&lt;yyyy_mm_dd_hhmm&gt;.mnt</code>, and a <strong>Done</strong> message confirms it.</li>
+      <li>Repeat for SQL Warranty Flag, ItemPriceAction, WarrantyATTACHEDITEMS and (if used) ItemUPC.</li>
+    </ol>
+    <p class="step-heading"><strong>What each file contains</strong></p>
+    <ul>
+      <li><strong>Normal tabs</strong>: one line per row from row 2 down, every column joined with <code>|</code>, then a blank line. Example: <code>INSERT|WARRANTY_ITEM_XREF|20418550|20424567|WARRANTY|10|*|*</code></li>
+      <li><strong>SQL Warranty Flag</strong>: because the tab name starts with "SQL", each line is the A2 statement followed by the RIN in single quotes, for example <code>RUN_SQL|UPDATE itm_item_options SET warranty_flag = 1 WHERE item_id = '20418550'</code>.</li>
+    </ul>
+    <div class="callout warn"><span class="callout-icon">⚠</span><div><code>Start_MNT</code> counts every row in the tab's used range. On SQL Warranty Flag, a row with text in column A but no RIN in column B produces a line ending in <code>item_id = ''</code>. Delete such rows before running it.</div></div>
+  </div>
+
+  <div class="sub-section" id="acmnt-fields">
+    <h3 class="sub-section-title">Field Reference</h3>
+    <p>Per-item values change on every row; defaults are the same on every row. Any column not listed stays blank.</p>
+    <p class="step-heading"><strong>APPLECAREWARRANTYITEM</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Column</th><th>Value</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>ACTION Code</td><td><code>INSERT</code></td><td>Default</td></tr>
+        <tr><td>Record Identifier</td><td><code>WARRANTY_ITEM</code></td><td>Default</td></tr>
+        <tr><td>Warranty Tran RIN #</td><td>AppleCare warranty RIN</td><td>Per item</td></tr>
+        <tr><td>Item Level Code</td><td><code>ITEM</code></td><td>Default</td></tr>
+        <tr><td>Item Type Code ("There is no #7" column)</td><td><code>NON_PHYSICAL</code></td><td>Default</td></tr>
+        <tr><td>Name</td><td>Transaction description</td><td>Per item</td></tr>
+        <tr><td>Description</td><td>Transaction description</td><td>Per item</td></tr>
+        <tr><td>Merch Level 1 ID</td><td>Group + G (<code>207G</code>)</td><td>Per item</td></tr>
+        <tr><td>Merch Level 2 Id</td><td>Dept + D (<code>810D</code>)</td><td>Per item</td></tr>
+        <tr><td>Merch Level 3 Id</td><td>Dept-Class + C (<code>810-1000C</code>)</td><td>Per item</td></tr>
+        <tr><td>Merch Level 4 Id</td><td>Dept-Class-Subclass + S (<code>810-1000-3S</code>)</td><td>Per item</td></tr>
+        <tr><td>Unit of Measure Code</td><td><code>EA</code></td><td>Default</td></tr>
+        <tr><td>Qty Scale</td><td><code>1</code></td><td>Default</td></tr>
+        <tr><td>Tax Group ID</td><td><code>0</code></td><td>Default</td></tr>
+        <tr><td>Disallow Discounts Flag</td><td><code>1</code></td><td>Default</td></tr>
+        <tr><td>Disallow Price Change Flag</td><td><code>1</code></td><td>Default</td></tr>
+        <tr><td>Item Availability Code</td><td><code>AVAILABLE</code></td><td>Default</td></tr>
+        <tr><td>Serialized Item Flag</td><td><code>TRUE</code></td><td>Default</td></tr>
+        <tr><td>Disallow Work Order Flag</td><td><code>1</code></td><td>Default</td></tr>
+        <tr><td>Non-physical Item Type Code</td><td><code>WARRANTY</code></td><td>Default</td></tr>
+        <tr><td>Non-physical Item Sub-type</td><td><code>APPLECARE</code></td><td>Default</td></tr>
+        <tr><td>Display Order</td><td><code>10</code></td><td>Default</td></tr>
+        <tr><td>PRICING Method Code</td><td><code>FIXED_REGULAR</code></td><td>Default</td></tr>
+        <tr><td>Warranty Price Amount</td><td>Price as 0.00 (<code>45.00</code>)</td><td>Per item</td></tr>
+        <tr><td>Disallow Deals Flag</td><td><code>1</code></td><td>Default</td></tr>
+        <tr><td>Org Code</td><td><code>*</code></td><td>Default</td></tr>
+        <tr><td>Level Code</td><td><code>*</code></td><td>Default</td></tr>
+        <tr><td>Org Value</td><td><code>*</code></td><td>Default</td></tr>
+        <tr><td>Level Value (PK)</td><td><code>*</code></td><td>Default</td></tr>
+      </tbody>
+    </table></div>
+    <p class="step-heading"><strong>SQL Warranty Flag</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Column</th><th>Value</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>SQL query Action (column A)</td><td><code>RUN_SQL|UPDATE itm_item_options SET warranty_flag = 1 WHERE item_id = </code></td><td>Default (from A2)</td></tr>
+        <tr><td>RIN of flagged item</td><td>Apple product RIN or AppleCare RIN</td><td>Per RIN</td></tr>
+      </tbody>
+    </table></div>
+    <p class="step-heading"><strong>ItemPriceAction</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Column</th><th>Value</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>ACTION</td><td><code>INSERT</code></td><td>Default</td></tr>
+        <tr><td>TABLE NAME</td><td><code>PRICE_UPDATE_2</code></td><td>Default</td></tr>
+        <tr><td>TRANSACTION RIN</td><td>AppleCare warranty RIN</td><td>Per item</td></tr>
+        <tr><td>PRICE REGULAR_PRICE / CLEARANCE_PRICE</td><td><code>REGULAR_PRICE</code></td><td>Default</td></tr>
+        <tr><td>Store Field (STORE or *)</td><td><code>*</code></td><td>Default</td></tr>
+        <tr><td>STORE # or *</td><td><code>*</code></td><td>Default</td></tr>
+        <tr><td>RETAIL</td><td>Price as 0.00 (<code>45.00</code>)</td><td>Per item</td></tr>
+        <tr><td>EFFECTIVE DATE</td><td>yyyy-mm-dd (<code>2026-10-23</code>)</td><td>Per item</td></tr>
+        <tr><td>End Date</td><td>Blank</td><td>Default</td></tr>
+        <tr><td>FIELD</td><td><code>1</code></td><td>Default</td></tr>
+        <tr><td>LEAVE BLANK</td><td>Blank</td><td>Default</td></tr>
+      </tbody>
+    </table></div>
+    <p class="step-heading"><strong>WarrantyATTACHEDITEMS</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Column</th><th>Value</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>Action</td><td><code>INSERT</code></td><td>Default</td></tr>
+        <tr><td>Table Name</td><td><code>WARRANTY_ITEM_XREF</code></td><td>Default</td></tr>
+        <tr><td>Physical_item_tran</td><td>Apple product RIN</td><td>Per pair</td></tr>
+        <tr><td>Warranty_tran</td><td>AppleCare warranty RIN</td><td>Per pair</td></tr>
+        <tr><td>Warranty Type</td><td><code>WARRANTY</code></td><td>Default</td></tr>
+        <tr><td>SEQUENCE</td><td><code>10</code>, <code>20</code>, <code>30</code> by importance per product</td><td>Per pair</td></tr>
+        <tr><td>Store Field (STORE or *)</td><td><code>*</code></td><td>Default</td></tr>
+        <tr><td>Store_Field (store # or *)</td><td><code>*</code></td><td>Default</td></tr>
+      </tbody>
+    </table></div>
+    <p class="step-heading"><strong>ItemUPC (optional)</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Column</th><th>Value</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>INSERT, or DELETE</td><td><code>INSERT</code></td><td>Default</td></tr>
+        <tr><td>TABLE NAME</td><td><code>ITEM_XREF</code></td><td>Default</td></tr>
+        <tr><td>Transaction RIN</td><td>AppleCare warranty RIN</td><td>Per item</td></tr>
+        <tr><td>LEAVE BLANK</td><td>Blank</td><td>Default</td></tr>
+        <tr><td>TRANSACTION UPC (12 digits)</td><td>Warranty UPC</td><td>Per item</td></tr>
+        <tr><td>Store Field (STORE or *)</td><td><code>*</code></td><td>Default</td></tr>
+        <tr><td>Store_Field (store # or *)</td><td><code>*</code></td><td>Default</td></tr>
+        <tr><td>APPLY IMMEDIATELY</td><td><code>TRUE</code></td><td>Default</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="sub-section" id="acmnt-validate">
+    <h3 class="sub-section-title">Validation &amp; Troubleshooting</h3>
+    <p class="step-heading"><strong>Check every file before deployment</strong></p>
+    <ul>
+      <li>One MNT file per tab you used, all with today's timestamp.</li>
+      <li>Open each file in Notepad. The line count matches the number of items, and the last line is blank.</li>
+      <li><strong>APPLECAREWARRANTYITEM</strong>: each line starts <code>INSERT|WARRANTY_ITEM|</code> and shows the RIN, the description twice, the four merch levels and the price as 0.00.</li>
+      <li><strong>SQL Warranty Flag</strong>: one line per RIN, both product and AppleCare RINs present, no line ending in <code>''</code>.</li>
+      <li><strong>ItemPriceAction</strong>: only AppleCare RINs, no gift card rows, dates in yyyy-mm-dd and today or later.</li>
+      <li><strong>WarrantyATTACHEDITEMS</strong>: every product RIN is paired with the right AppleCare RIN, and SEQUENCE starts at 10 for each product.</li>
+      <li>The same AppleCare RIN appears on APPLECAREWARRANTYITEM, ItemPriceAction and WarrantyATTACHEDITEMS.</li>
+    </ul>
+    <p class="step-heading"><strong>Troubleshooting</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Message or symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Could not open the MNT Master Creator</td><td>G: drive not mapped, the file was moved, or you cancelled the file picker</td><td>Open the Master Creator first, then run Export again</td></tr>
+        <tr><td>Tab '...' not found</td><td>A tab was renamed in either workbook</td><td>Restore the exact tab name</td></tr>
+        <tr><td>Headers not found on '...'</td><td>A header on row 3 (cheat sheet) or row 1 (Master Creator) was changed</td><td>Restore the header text; the message lists which one</td></tr>
+        <tr><td>Default-value headers not found on '...'</td><td>A Master Creator column header was renamed or deleted</td><td>Restore the column; the message lists which one</td></tr>
+        <tr><td>Row skipped: missing/invalid Group (or another field)</td><td>Blank cell, text in a number column, or a price or date that is not valid</td><td>Correct the cheat sheet row and run Export again</td></tr>
+        <tr><td>'...' is not a RIN</td><td>Text, spaces inside, or a decimal in a RIN cell</td><td>Enter digits only</td></tr>
+        <tr><td>Effective Date (in the past)</td><td>The price date is before today</td><td>Use today or a future date</td></tr>
+        <tr><td>cell A2 must contain the RUN_SQL statement</td><td>A2 on SQL Warranty Flag was cleared</td><td>Re-enter <code>RUN_SQL|UPDATE itm_item_options SET warranty_flag = 1 WHERE item_id = </code> in A2</td></tr>
+        <tr><td>Row count in Check the data is too high</td><td>Old or hidden rows left on the tab</td><td>Click No, clear the tab, run again</td></tr>
+        <tr><td>Gift card rows in the ItemPriceAction file</td><td>TPGC data left on the shared tab</td><td>Clear ItemPriceAction and run again</td></tr>
+        <tr><td>"... is already on ..." (ignored)</td><td>The RIN or pair is already on the tab</td><td>No action needed</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="sub-section" id="acmnt-deploy">
+    <h3 class="sub-section-title">Deployment</h3>
+    <ol class="steps">
+      <li>Deploy every file for the setup on the same day, in any order. Follow <a href="#tpgc-deploy">Deploying the MNT Files into Xadmin</a>: upload and deploy them yourself, or send them to the Store Systems team if you do not have deploy access.</li>
+      <li>After deployment, confirm in Xadmin that the AppleCare item exists with the right price and is attached to each Apple product.</li>
+      <li>Keep the cheat sheet and the MNT files for the record, then clear the Master Creator tabs for the next setup.</li>
     </ol>
   </div>
 </section>
