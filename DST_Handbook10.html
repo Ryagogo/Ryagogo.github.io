@@ -14072,9 +14072,10 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
         <tr><td>SQL Warranty Flag</td><td>Sets the warranty flag on both the Apple product and the AppleCare item</td><td>Every setup</td></tr>
         <tr><td>ItemPriceAction</td><td>Sets the retail price of the AppleCare item</td><td>New AppleCare item</td></tr>
         <tr><td>WarrantyATTACHEDITEMS</td><td>Attaches each Apple product to its AppleCare warranty</td><td>Every setup</td></tr>
+        <tr><td>ItemUPC</td><td>Adds the AppleCare item's UPC(s)</td><td>New AppleCare item</td></tr>
       </tbody>
     </table></div>
-    <p>A brand-new AppleCare warranty needs all four files. If the warranty is already built in Xstore and you are only attaching new Apple products to it, you only need <strong>SQL Warranty Flag</strong> and <strong>WarrantyATTACHEDITEMS</strong>.</p>
+    <p>A brand-new AppleCare warranty needs all five files. If the warranty is already built in Xstore and you are only attaching new Apple products to it, you only need <strong>SQL Warranty Flag</strong> and <strong>WarrantyATTACHEDITEMS</strong>.</p>
     <div class="callout warn"><span class="callout-icon">⚠</span><div><strong>Deploy every file for a setup on the same day.</strong> The order does not matter.</div></div>
     <p class="step-heading"><strong>Two ways to build the files</strong></p>
     <div class="table-wrap"><table class="decision-table ref-table">
@@ -14090,7 +14091,7 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
       <div class="download-card-icon" aria-hidden="true">XLSM</div>
       <div class="download-card-body">
         <span class="download-card-title">Apple Items &amp; AppleCare Cheat Sheet</span>
-        <span class="download-card-meta">Macro-enabled Excel workbook (.xlsm) · the input workbook, with the <code>ExportAppleCare</code> and <code>CreateAppleCareMNTFiles</code> macros</span>
+        <span class="download-card-meta">Macro-enabled Excel workbook (.xlsm) · the input workbook, with the <code>ExportAppleCare</code> and <code>CreateAppleCareMNTFiles</code> macros. Set the RMS connection first (see <a href="#acmnt-rms">RMS lookup</a>).</span>
       </div>
       <a class="download-card-btn" href="Files/Apple_Items_and_Care_Cheat_Sheet.xlsm" download>Download</a>
     </div>
@@ -14113,16 +14114,17 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
       <tbody>
         <tr><td>AppleCare warranty transaction RIN</td><td><code>20424567</code></td><td>Every tab</td></tr>
         <tr><td>Apple product transaction RIN(s)</td><td><code>20418550</code>, <code>20418548</code></td><td>SQL Warranty Flag, WarrantyATTACHEDITEMS</td></tr>
-        <tr><td>Transaction description (no special characters)</td><td><code>AppleCare Plus for Apple TV 4K</code></td><td>APPLECAREWARRANTYITEM</td></tr>
-        <tr><td>Group, Dept, Class, Subclass</td><td><code>207</code>, <code>810</code>, <code>1000</code>, <code>3</code></td><td>APPLECAREWARRANTYITEM</td></tr>
+        <tr><td>Transaction description (no special characters)</td><td><code>AppleCare Plus for Apple TV 4K</code></td><td>APPLECAREWARRANTYITEM (the macro can fill it from RMS)</td></tr>
+        <tr><td>Group, Dept, Class, Subclass</td><td><code>207</code>, <code>810</code>, <code>1000</code>, <code>3</code></td><td>APPLECAREWARRANTYITEM (the macro can fill them from RMS)</td></tr>
         <tr><td>Warranty price</td><td><code>45</code></td><td>APPLECAREWARRANTYITEM, ItemPriceAction</td></tr>
-        <tr><td>Price effective date (today or later)</td><td><code>10/23/2026</code></td><td>ItemPriceAction</td></tr>
+        <tr><td>Price effective date</td><td><code>2026-10-27</code></td><td>ItemPriceAction (the macro always uses tomorrow's date)</td></tr>
+        <tr><td>AppleCare item UPC(s)</td><td><code>885909950805</code></td><td>ItemUPC (the macro reads them from RMS)</td></tr>
       </tbody>
     </table></div>
     <p class="step-heading"><strong>Prepare the Master Creator</strong></p>
     <ol class="steps">
       <li>Open the Master Creator.</li>
-      <li>On <strong>APPLECAREWARRANTYITEM</strong>, <strong>ItemPriceAction</strong> and <strong>WarrantyATTACHEDITEMS</strong>, clear the contents of every data row from row 2 down (select the cells and press <kbd>Delete</kbd>). Clearing contents keeps row 2's formatting, which the macro copies onto new rows.</li>
+      <li>On <strong>APPLECAREWARRANTYITEM</strong>, <strong>ItemUPC</strong>, <strong>ItemPriceAction</strong> and <strong>WarrantyATTACHEDITEMS</strong>, clear the contents of every data row from row 2 down (select the cells and press <kbd>Delete</kbd>). Clearing contents keeps row 2's formatting, which the macro copies onto new rows.</li>
       <li>On <strong>SQL Warranty Flag</strong>, keep the statement in cell <strong>A2</strong> and clear everything else below the header, including old rows in column A. A2 must read:<br><code>RUN_SQL|UPDATE itm_item_options SET warranty_flag = 1 WHERE item_id = </code> (with the trailing space).</li>
       <li>Delete any stray values in columns to the right of the last header, and unhide any hidden rows or columns to check them for leftover data.</li>
     </ol>
@@ -14133,8 +14135,18 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
   <div class="sub-section" id="acmnt-method-a">
     <h3 class="sub-section-title">Method A: With the AppleCare Cheat Sheet Macro</h3>
     <p>The cheat sheet has one input tab per MNT file. On every tab the headers are on <strong>row 3</strong> and the data starts on <strong>row 4</strong>. Leave a tab empty if you do not need that file; the macro skips it.</p>
+    <p class="step-heading" id="acmnt-rms"><strong>RMS lookup</strong></p>
+    <p>At the start of every run the macro connects to RMS (read-only) and looks up every RIN on the input tabs. This needs network or VPN access to RMS and to the shared password file.</p>
+    <ul>
+      <li><strong>Checks every RIN.</strong> A RIN that is not in RMS, or is not a transaction-level item, is skipped and listed in the summary.</li>
+      <li><strong>Fills in blanks.</strong> On AppleCareWarranty, a blank Transaction Description, Group, Dept, Class or Subclass is filled from RMS. Special characters in the RMS description are replaced with spaces.</li>
+      <li><strong>Catches mismatches.</strong> A Group, Dept, Class or Subclass you typed that differs from RMS skips the row and is reported.</li>
+      <li><strong>Builds ItemUPC.</strong> It reads the UPCs under each AppleCare RIN written to APPLECAREWARRANTYITEM, primary UPC first. A UPC that is not 12 digits is reported, not written.</li>
+      <li><strong>If RMS can't be reached</strong>, the macro asks whether to continue without it. You can, but RINs are not checked, blanks are not filled, and ItemUPC is not built.</li>
+    </ul>
+    <div class="callout info"><span class="callout-icon">ℹ</span><div>In the downloaded copy, the RMS server, read-only user and password-file path are placeholders. Before using it, press <kbd>Alt</kbd>+<kbd>F11</kbd> and set <code>RMS_CONN</code> and <code>PW_FILE</code> at the top of <code>Module1</code> to your team's values.</div></div>
     <p class="step-heading"><strong>Step 1: Fill in the input tabs</strong></p>
-    <p><strong>AppleCareWarranty</strong>: one row per new AppleCare warranty item. Every column is required.</p>
+    <p><strong>AppleCareWarranty</strong>: one row per new AppleCare warranty item. The RIN and Warranty Price Amount are required; leave Transaction Description, Group, Dept, Class and Subclass blank to have them filled from RMS, or enter them to have them checked.</p>
     <div class="table-wrap"><table class="decision-table">
       <thead><tr><th>Warranty Transaction RIN</th><th>Transaction Description</th><th>Group</th><th>Dept</th><th>Class</th><th>Subclass</th><th>Warranty Price Amount</th></tr></thead>
       <tbody>
@@ -14143,11 +14155,11 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
     </table></div>
     <p>The <strong>FOR DST USE ONLY</strong> columns (H to K) preview the merch level IDs the macro will build. Copy their formulas down if you want to check more rows.</p>
     <p><strong>SQLWarrantyFlag</strong>: every RIN that needs the warranty flag, both the Apple products and the AppleCare warranty. Put the product RINs in column A and the AppleCare RIN beside them; any layout from column A rightward works. Duplicates are removed.</p>
-    <p><strong>ItemPriceAction</strong>: one row per new AppleCare item.</p>
+    <p><strong>ItemPriceAction</strong>: one row per new AppleCare item. The Effective Date column is not used: the macro always sets the effective date to the day after it runs.</p>
     <div class="table-wrap"><table class="decision-table">
-      <thead><tr><th>Transaction RIN of AppleCare Warranty</th><th>Retail</th><th>Effective Date</th></tr></thead>
+      <thead><tr><th>Transaction RIN of AppleCare Warranty</th><th>Retail</th></tr></thead>
       <tbody>
-        <tr><td>20424567</td><td>45</td><td>10/23/2026</td></tr>
+        <tr><td>20424567</td><td>45</td></tr>
       </tbody>
     </table></div>
     <p><strong>WarrantyATTACHEDItems</strong>: one row per Apple product and warranty pairing.</p>
@@ -14159,12 +14171,12 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
       </tbody>
     </table></div>
     <p>If one product takes more than one warranty, list its most important warranty first. The macro numbers each product's warranties 10, 20, 30 in the order they appear.</p>
-    <p>The <strong>ITEMUPC</strong> tab is not used by the macro.</p>
+    <p>Leave the <strong>ITEMUPC</strong> tab empty. The macro reads the UPCs from RMS.</p>
     <p class="step-heading"><strong>Step 2: Run the export</strong></p>
     <ol class="steps">
       <li>Confirm the Master Creator's AppleCare tabs are cleared (see <a href="#acmnt-before">Before You Start</a>). If the Master Creator is not open, the macro opens it from the G: drive.</li>
       <li>Click the <strong>Export</strong> button on the AppleCareWarranty tab, or press <kbd>Alt</kbd>+<kbd>F8</kbd>, select <code>ExportAppleCare</code> and click <strong>Run</strong>.</li>
-      <li>Read the summary. It shows the rows written to each tab and lists every row that was skipped and why, for example <em>AppleCareWarranty row 6: missing/invalid Group</em>.</li>
+      <li>Read the summary. It shows how many RINs were checked in RMS and how many fields were filled, the rows written to each tab, and every row that was skipped and why, for example <em>AppleCareWarranty row 6: Dept 811 does not match RMS (810)</em>.</li>
       <li>If rows were skipped, click <strong>No</strong>. Fix them on the cheat sheet, clear the Master Creator tabs, and run Export again.</li>
       <li>If everything is correct, click <strong>Yes</strong> to create the MNT files.</li>
     </ol>
@@ -14181,9 +14193,10 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
     <div class="table-wrap"><table class="decision-table ref-table">
       <thead><tr><th>Tab</th><th>What it does</th></tr></thead>
       <tbody>
-        <tr><td>APPLECAREWARRANTYITEM</td><td>Writes the RIN, the description in both Name and Description, the merch levels (<code>207G</code>, <code>810D</code>, <code>810-1000C</code>, <code>810-1000-3S</code>), the price as <code>45.00</code>, and every default value from the <a href="#acmnt-fields">Field Reference</a>. Skips a row with any blank field or a price that is not a number.</td></tr>
-        <tr><td>SQL Warranty Flag</td><td>Writes each RIN in <em>RIN of flagged item</em> with the A2 statement in column A. Skips duplicates and RINs already on the tab, and flags any value that is not a RIN.</td></tr>
-        <tr><td>ItemPriceAction</td><td>Writes the RIN, the retail as <code>45.00</code>, the effective date as <code>2026-10-23</code>, and the defaults. Skips a row with a missing RIN, retail or date.</td></tr>
+        <tr><td>APPLECAREWARRANTYITEM</td><td>Writes the RIN, the description in both Name and Description, the merch levels (<code>207G</code>, <code>810D</code>, <code>810-1000C</code>, <code>810-1000-3S</code>), the price as <code>45.00</code>, and every default value from the <a href="#acmnt-fields">Field Reference</a>. Fills blanks from RMS and skips a row that fails the RMS check, is still missing a field, or has a price that is not a number.</td></tr>
+        <tr><td>ItemUPC</td><td>Writes one row per RMS UPC for each AppleCare RIN written above (primary first), with the defaults. Skips UPCs already on the tab and reports any that are not 12 digits.</td></tr>
+        <tr><td>SQL Warranty Flag</td><td>Writes each RIN in <em>RIN of flagged item</em> with the A2 statement in column A. Skips duplicates, RINs already on the tab and RINs that fail the RMS check, and flags any value that is not a RIN.</td></tr>
+        <tr><td>ItemPriceAction</td><td>Writes the RIN, the retail as <code>45.00</code>, the effective date as tomorrow's date (<code>yyyy-mm-dd</code>), and the defaults. Skips a row with a missing RIN or retail.</td></tr>
         <tr><td>WarrantyATTACHEDITEMS</td><td>Writes both RINs, the SEQUENCE number (10 for a product's first warranty, 20 for its second, counting pairs already on the tab) and the defaults. Ignores duplicate pairs.</td></tr>
       </tbody>
     </table></div>
@@ -14227,6 +14240,12 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
       <li><strong>SEQUENCE</strong>: <code>10</code> for the product's first (most important) warranty, <code>20</code> for its second, and so on. A product with one warranty gets <code>10</code>.</li>
       <li>Enter <code>*</code> in both store columns.</li>
     </ol>
+    <p class="step-heading"><strong>ItemUPC</strong></p>
+    <ol class="steps">
+      <li>One row per UPC on the AppleCare item, starting on row 2, primary UPC first.</li>
+      <li>Enter <code>INSERT</code>, <code>ITEM_XREF</code>, the AppleCare RIN, leave LEAVE BLANK empty, then the 12-digit UPC formatted as text so leading zeros are kept.</li>
+      <li>Enter <code>*</code> in both store columns and <code>TRUE</code> under APPLY IMMEDIATELY.</li>
+    </ol>
   </div>
 
   <div class="sub-section" id="acmnt-start-mnt">
@@ -14238,7 +14257,7 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
       <li><strong>Is this correct?</strong> Check the last column header, the row count and the last cell value. If any look wrong, click <strong>No</strong>, delete the extra rows and columns, and run again.</li>
       <li><strong>Split MNTs by Location?</strong> Click <strong>No</strong>. This option is not in use.</li>
       <li>The file is saved to <code>U:\</code> as <code>MNTCreation_&lt;Tab&gt;-&lt;Username&gt;&lt;yyyy_mm_dd_hhmm&gt;.mnt</code>, and a <strong>Done</strong> message confirms it.</li>
-      <li>Repeat for SQL Warranty Flag, ItemPriceAction and WarrantyATTACHEDITEMS.</li>
+      <li>Repeat for ItemUPC, SQL Warranty Flag, ItemPriceAction and WarrantyATTACHEDITEMS.</li>
     </ol>
     <p class="step-heading"><strong>What each file contains</strong></p>
     <ul>
@@ -14325,6 +14344,20 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
         <tr><td>Store_Field (store # or *)</td><td><code>*</code></td><td>Default</td></tr>
       </tbody>
     </table></div>
+    <p class="step-heading"><strong>ItemUPC</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Column</th><th>Value</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>INSERT</td><td><code>INSERT</code></td><td>Default</td></tr>
+        <tr><td>TABLE NAME</td><td><code>ITEM_XREF</code></td><td>Default</td></tr>
+        <tr><td>Transaction RIN</td><td>AppleCare warranty RIN</td><td>Per item</td></tr>
+        <tr><td>LEAVE BLANK</td><td>Blank</td><td>Default</td></tr>
+        <tr><td>TRANSACTION UPC (12 digits)</td><td>UPC from RMS, as text</td><td>Per UPC</td></tr>
+        <tr><td>Store Field (STORE or *)</td><td><code>*</code></td><td>Default</td></tr>
+        <tr><td>Store_Field (store # or *)</td><td><code>*</code></td><td>Default</td></tr>
+        <tr><td>APPLY IMMEDIATELY</td><td><code>TRUE</code></td><td>Default</td></tr>
+      </tbody>
+    </table></div>
   </div>
 
   <div class="sub-section" id="acmnt-validate">
@@ -14335,19 +14368,25 @@ INSERT|ITEM_PROPERTY|4567|TPGC_MAX_PRICE|Decimal|||500</code></pre>
       <li>Open each file in Notepad. The line count matches the number of items, and the last line is blank.</li>
       <li><strong>APPLECAREWARRANTYITEM</strong>: each line starts <code>INSERT|WARRANTY_ITEM|</code> and shows the RIN, the description twice, the four merch levels and the price as 0.00.</li>
       <li><strong>SQL Warranty Flag</strong>: one line per RIN, both product and AppleCare RINs present, no line ending in <code>''</code>.</li>
-      <li><strong>ItemPriceAction</strong>: only AppleCare RINs, no gift card rows, dates in yyyy-mm-dd and today or later.</li>
+      <li><strong>ItemPriceAction</strong>: only AppleCare RINs, no gift card rows, and the effective date in yyyy-mm-dd form, today or later.</li>
+      <li><strong>ItemUPC</strong>: each line starts <code>INSERT|ITEM_XREF|</code> with the AppleCare RIN and a 12-digit UPC.</li>
       <li><strong>WarrantyATTACHEDITEMS</strong>: every product RIN is paired with the right AppleCare RIN, and SEQUENCE starts at 10 for each product.</li>
-      <li>The same AppleCare RIN appears on APPLECAREWARRANTYITEM, ItemPriceAction and WarrantyATTACHEDITEMS.</li>
+      <li>The same AppleCare RIN appears on APPLECAREWARRANTYITEM, ItemUPC, ItemPriceAction and WarrantyATTACHEDITEMS.</li>
     </ul>
     <p class="step-heading"><strong>Troubleshooting</strong></p>
     <div class="table-wrap"><table class="decision-table ref-table">
       <thead><tr><th>Message or symptom</th><th>Cause</th><th>Fix</th></tr></thead>
       <tbody>
         <tr><td>Could not open target workbook</td><td>The Master Creator is not open under its exact name and the G: drive path is unavailable</td><td>Open <code>CreateMNTFile_MasterCreator_2026_01.xlsm</code> (keep this name on a downloaded copy), then run Export again</td></tr>
+        <tr><td>Problem connecting to network drive / Could not connect to RMS</td><td>No VPN or network access, the password file path is wrong, or RMS is unavailable</td><td>Connect to the network and run again, or click Yes to continue without RMS and build ItemUPC by hand</td></tr>
+        <tr><td>Oracle Connection Error</td><td>The RMS connection settings or password are wrong, or the Oracle ODBC driver is missing</td><td>Check <code>RMS_CONN</code> and <code>PW_FILE</code> in <code>Module1</code>, or ask IT about the driver</td></tr>
+        <tr><td>RIN ... not found in RMS / is not a transaction-level item</td><td>A typo, or a parent-level item entered instead of the transaction RIN</td><td>Correct the RIN and run Export again</td></tr>
+        <tr><td>... does not match RMS (...)</td><td>A Group, Dept, Class or Subclass typed on the cheat sheet differs from RMS</td><td>Fix the value or leave it blank to use RMS</td></tr>
+        <tr><td>No UPC found in RMS / UPC ... is not 12 digits</td><td>The AppleCare item has no UPC under it in RMS, or a UPC is not a 12-digit UPC-A</td><td>Check the item in RMS; add the UPC row by hand if needed</td></tr>
         <tr><td>Tab '...' not found</td><td>A tab was renamed in either workbook</td><td>Restore the exact tab name</td></tr>
         <tr><td>Headers not found on '...'</td><td>A header on row 3 (cheat sheet) or row 1 (Master Creator) was changed</td><td>Restore the header text; the message lists which one</td></tr>
         <tr><td>Default-value headers not found on '...'</td><td>A Master Creator column header was renamed or deleted</td><td>Restore the column; the message lists which one</td></tr>
-        <tr><td>Row skipped: missing/invalid Group (or another field)</td><td>Blank cell, text in a number column, or a price or date that is not valid</td><td>Correct the cheat sheet row and run Export again</td></tr>
+        <tr><td>Row skipped: missing Group (or another field)</td><td>Blank cell that RMS could not fill, or a price that is not valid</td><td>Correct the cheat sheet row and run Export again</td></tr>
         <tr><td>'...' is not a RIN</td><td>Text, spaces inside, or a decimal in a RIN cell</td><td>Enter digits only</td></tr>
         <tr><td>cell A2 must contain the SQL statement</td><td>A2 on SQL Warranty Flag was cleared</td><td>Re-enter <code>RUN_SQL|UPDATE itm_item_options SET warranty_flag = 1 WHERE item_id = </code> in A2</td></tr>
         <tr><td>Row count in Check the data is too high</td><td>Old or hidden rows left on the tab</td><td>Click No, clear the tab, run again</td></tr>
