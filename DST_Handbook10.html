@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ryan Gray — Data Steward Team Guide</title>
 <meta name="description" content="Data Steward Team guide: SOPs, email templates and SQL references for item and supplier maintenance in Oracle RMS.">
-<link rel="canonical" href="https://ryanpgray.com/DST_Handbook10.html">
+<link rel="canonical" href="https://home.ryanpgray.com/DST_Handbook10.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -13,8 +13,8 @@
 <meta property="og:site_name" content="Ryan Gray">
 <meta property="og:title" content="Ryan Gray — Data Steward Team Guide">
 <meta property="og:description" content="Data Steward Team guide: SOPs, email templates and SQL references for item and supplier maintenance in Oracle RMS.">
-<meta property="og:url" content="https://ryanpgray.com/DST_Handbook10.html">
-<meta property="og:image" content="https://ryanpgray.com/Pictures/og-card.png">
+<meta property="og:url" content="https://home.ryanpgray.com/DST_Handbook10.html">
+<meta property="og:image" content="https://home.ryanpgray.com/Pictures/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -3968,6 +3968,17 @@
     </div>
   </div>
 
+  <div class="nav-section">
+    <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">American Greeting Cards (AGC) <span class="chevron">›</span></div>
+    <div class="nav-sub-links">
+      <a class="nav-sub-link" href="#agcnew-overview">What It Is &amp; Download</a>
+      <a class="nav-sub-link" href="#agcnew-request">Receive the Card List</a>
+      <a class="nav-sub-link" href="#agcnew-access">Update the Access Database</a>
+      <a class="nav-sub-link" href="#agcnew-run">Run the AGC Macro</a>
+      <a class="nav-sub-link" href="#agcnew-review">Review, Save and Induct</a>
+      <a class="nav-sub-link" href="#agcnew-troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
   <div class="nav-section">
     <div class="nav-section-header" onclick="toggleNav(this)" aria-expanded="false">Mass UPC Deletion <span class="chevron">›</span></div>
     <div class="nav-sub-links">
@@ -8459,6 +8470,169 @@ submit both of these templates on the same e-mail.</p>
       <li>Paste the Primary Supplier into the <strong>Primary Supplier Site</strong> field. Set <strong>Primary Country</strong> to <code>USA</code>.</li>
       <li>Click <strong>Save and Close</strong>.</li>
     </ol>
+  </div>
+</section>
+<section class="section" id="agcnew">
+  <h2 class="section-title">American Greeting Cards (AGC)</h2>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><span class="doc-meta-label">Document</span><span class="doc-meta-value">SOP: AGC Card UPC Setup</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Author</span><span class="doc-meta-value">Data Steward Team</span></div>
+    <div class="doc-meta-item"><span class="doc-meta-label">Systems</span><span class="doc-meta-value">Outlook, Toad (RMS v16), Microsoft Access, Excel</span></div>
+  </div>
+
+  <div class="sub-section" id="agcnew-overview">
+    <h3 class="sub-section-title">What it is</h3>
+    <p>American Greeting Cards (AGC) sells greeting cards through two suppliers, <strong>American Greeting Corp.</strong> and <strong>Papyrus-Recycled Greetings</strong>. The card departments are on Scan Base Trading: AGC manages the inventory and NEXCOM receives the sales (see <a href="#agc-upc-deletion">Mass UPC Deletion</a> for the monthly UPC deletes).</p>
+    <p>When AGC has new card UPCs, the <strong>AGC district manager (DM)</strong> emails the card list to the Data Steward Team. The <strong>AGC Macro</strong> turns that list into <em>Add Tran Item or GTIN</em> rows on the Item Induction Template, looking up each card's parent item, transaction item, retail, supplier and hierarchy in the team's Access database.</p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Request</td><td>Email from the AGC district manager (DM) with the card list attached.</td></tr>
+        <tr><td>Card list</td><td>Headers in row 1, including <code>cpn_nbr</code> (the card number, e.g. <code>AGCE1234</code>) and <code>prim_upc_cd</code> (the card's UPC). Other columns are ignored.</td></tr>
+        <tr><td>Suppliers</td><td><code>4180022</code> American Greeting Corp. (card numbers starting <code>AGCE</code>) and <code>62488978</code> Papyrus-Recycled Greetings (card numbers starting <code>PRGS</code>).</td></tr>
+        <tr><td>Lookup</td><td>The <strong>Master TPGC</strong> table in the Data Steward Team's Access database (<code>TPGC.accdb</code>), matched on <strong>Item Desc</strong> = card number. Update it with the RMS query before every run.</td></tr>
+        <tr><td>Template</td><td>The shared Item Induction Template (v1.10) in the Induction templates folder on the G: drive. The macro adds rows to it but never saves it.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="step-heading"><strong>Process at a glance</strong></p>
+    <ol class="steps">
+      <li><a href="#agcnew-request">Save the card list</a> from the DM's email.</li>
+      <li><a href="#agcnew-access">Update the Access database</a> with the latest AGC items from RMS.</li>
+      <li><a href="#agcnew-run">Run the AGC Macro</a> on the card list.</li>
+      <li><a href="#agcnew-review">Review and save the template</a>, then run the Induction Checker and induct as usual.</li>
+    </ol>
+    <p class="step-heading"><strong>Download</strong></p>
+    <div class="download-card">
+      <div class="download-card-icon" aria-hidden="true">XLSM</div>
+      <div class="download-card-body">
+        <span class="download-card-title">AGC Macro</span>
+        <span class="download-card-meta">Macro-enabled Excel workbook (.xlsm) · contains the <code>CopyData_And_AccessLookup_Optimized</code> macro</span>
+      </div>
+      <a class="download-card-btn" href="Files/AGC_Macro_2026_10.xlsm" download>Download</a>
+    </div>
+    <p>The macro needs network access to the G: and T: drives, the Microsoft Access Database Engine (so Excel can read the database), and an RMS ODBC connection named <code>RMS</code> for the hierarchy fallback.</p>
+  </div>
+
+  <div class="sub-section" id="agcnew-request">
+    <h3 class="sub-section-title">Step 1: Receive the Card List</h3>
+    <ol class="steps">
+      <li>The AGC district manager (DM) emails the new card list to the Data Steward Team inbox.</li>
+      <li>Save the attached card list to your computer.</li>
+      <li>Open it and check that the headers are in <strong>row 1</strong> and include <code>cpn_nbr</code> and <code>prim_upc_cd</code>. If the list was pasted below a title or the headers were renamed, fix that first.</li>
+    </ol>
+  </div>
+
+  <div class="sub-section" id="agcnew-access">
+    <h3 class="sub-section-title">Step 2: Update the Access Database</h3>
+    <p>The macro finds each card by matching its card number to the <strong>Item Desc</strong> field of the <strong>Master TPGC</strong> table. Cards built in RMS since the last update are not in the table until you refresh it, and those rows come back with a blank parent, transaction and retail. Refresh the table before every run.</p>
+    <ol class="steps">
+      <li>In Toad, connect to RMS v16 and run the query below. It returns every transaction-level item for both AGC suppliers with its parent, description, VPN, retail, supplier and hierarchy.</li>
+    </ol>
+    <div class="code-container">
+      <div class="code-header"><span>SQL: AGC Access DB update</span><div class="header-controls"><button class="control-btn" title="Copy text" onclick="copyCode(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+      <div class="code-wrapper">
+<pre><code>----AGC ACCESS DB UPDATE
+SELECT im.item_parent       AS "Parent",
+       im.item              AS "Transaction",
+       im.item_desc         AS "Items DESC",
+       isup.vpn             AS "VPN",
+       rz.retail            AS "Retail",
+       isup.supplier        AS "Supplier",
+       s.sup_name           AS "Supplier site name",
+       im.dept              AS "Dept",
+       im.class             AS "Class",
+       im.subclass          AS "Subclass"
+FROM rms.item_supplier isup
+JOIN rms.item_master  im ON im.item = isup.item
+JOIN rms.sups         s  ON s.supplier = isup.supplier
+LEFT JOIN (SELECT item, MAX(standard_retail) AS retail
+           FROM rms.rpm_item_zone_price
+           GROUP BY item) rz ON rz.item = im.item
+WHERE isup.supplier IN (4180022, 62488978)
+  AND im.item_level = im.tran_level
+ORDER BY isup.supplier, im.item_parent, im.item;</code></pre>
+      </div>
+    </div>
+    <ol class="steps" style="counter-reset: steps 1;">
+      <li>Copy all result rows <strong>with headers</strong> (or export the grid to Excel).</li>
+      <li>Open <code>TPGC.accdb</code> from the <span class="path-highlight">T:</span> &rarr; <span class="path-highlight">Code_M</span> &rarr; <span class="path-highlight">Code_MS</span> &rarr; <span class="path-highlight">Data Steward Team</span> &rarr; <span class="path-highlight">Database</span> folder and open the <strong>Master TPGC</strong> table.</li>
+      <li>Select all records and delete them, so no old or duplicate rows are left.</li>
+      <li>Paste the new rows with <span class="path-highlight">Home</span> &rarr; <span class="path-highlight">Paste</span> &rarr; <span class="path-highlight">Paste Append</span>. Check that each column lands in the matching field: the query's <strong>Items DESC</strong> column must fill the table's <strong>Item Desc</strong> field, which is what the macro searches.</li>
+      <li>Confirm the record count matches the query's row count, then <strong>close Access</strong> so the database is not locked when the macro reads it.</li>
+    </ol>
+    <div class="callout info"><span class="callout-icon">ℹ</span><div>The macro reads <strong>Parent</strong>, <strong>Transaction</strong>, <strong>Retail</strong>, <strong>Supplier site name</strong>, <strong>Dept</strong>, <strong>Class</strong> and <strong>Subclass</strong> from the matching record. <strong>VPN</strong> is kept for reference.</div></div>
+  </div>
+
+  <div class="sub-section" id="agcnew-run">
+    <h3 class="sub-section-title">Step 3: Run the AGC Macro</h3>
+    <ol class="steps">
+      <li>Open <strong>AGC_Macro.xlsm</strong> and enable macros. It opens in the background with no visible window; that is expected.</li>
+      <li>Open the DM's card list and click on the sheet with the cards, so it is the active sheet.</li>
+      <li>Press <kbd>Alt</kbd>+<kbd>F8</kbd>, set <strong>Macros in</strong> to <strong>All Open Workbooks</strong>, select <code style="word-break:break-all;">AGC_Macro.xlsm!CopyData_And_AccessLookup_Optimized</code> and click <strong>Run</strong>.</li>
+      <li>The macro opens the shared Item Induction Template and adds one row per card below any rows already there.</li>
+      <li>If the RMS login box appears, sign in with your RMS credentials. The macro only uses RMS to look up a hierarchy the database does not have, and asks once per run.</li>
+      <li>Read the <strong>Done</strong> message: the number of rows added, how many rows got their hierarchy from RMS, and up to 15 rows still missing Dept, Class or Subclass.</li>
+    </ol>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>You can also run it from the macro workbook itself: <span class="path-highlight">View</span> &rarr; <span class="path-highlight">Unhide</span> AGC_Macro, paste the card list on <strong>Sheet1</strong> starting at A1, and click the button on the sheet. Clear the previous list first.</div></div>
+    <p class="step-heading"><strong>What the macro fills in</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Template column</th><th>Value</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>A: Action</td><td><code>Add Tran Item or GTIN</code></td><td>Fixed</td></tr>
+        <tr><td>L / M / N</td><td><code>532</code> / <code>1001</code> / <code>1</code></td><td>Fixed card-line values</td></tr>
+        <tr><td>O: Parent Item Description</td><td>The card number, e.g. <code>AGCE1234</code></td><td><code>cpn_nbr</code></td></tr>
+        <tr><td>GTIN</td><td>12-digit cleaned UPC</td><td><code>prim_upc_cd</code> (see below)</td></tr>
+        <tr><td>Z: NRF Color Code</td><td><code>000</code></td><td>Fixed</td></tr>
+        <tr><td>AD / AE: Size Group / Size</td><td><code>262S</code> / <code>0000</code></td><td>Fixed</td></tr>
+        <tr><td>DK: Buyer</td><td><code>260</code></td><td>Fixed</td></tr>
+        <tr><td>Parent Item, Transaction Item</td><td>RMS item numbers</td><td>Master TPGC record whose Item Desc matches the card number</td></tr>
+        <tr><td>AG: Initial Retail</td><td>Retail</td><td>Master TPGC</td></tr>
+        <tr><td>Dept / Class / Subclass</td><td>The card's hierarchy</td><td>Master TPGC; if blank, RMS by parent item</td></tr>
+        <tr><td>BE / BF: Supplier Site / Name</td><td><code>4180022</code> American Greeting Corp. or <code>62488978</code> Papyrus-Recycled Greetings</td><td>Card number prefix (<code>AGCE</code> or <code>PRGS</code>), otherwise Master TPGC</td></tr>
+      </tbody>
+    </table></div>
+    <p>Code columns are formatted as text first, so values such as <code>000</code> and <code>0000</code> keep their leading zeros.</p>
+    <p class="step-heading"><strong>How UPCs are cleaned</strong></p>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Card list UPC</th><th>Rule</th><th>GTIN written</th></tr></thead>
+      <tbody>
+        <tr><td><code>0-12345-67890-5</code></td><td>Remove dashes and spaces; 12 digits stay as they are</td><td><code>012345678905</code></td></tr>
+        <tr><td><code>0012345678912</code></td><td>13 digits starting with 0: drop the leading zero</td><td><code>012345678912</code></td></tr>
+        <tr><td><code>12345678</code></td><td>Fewer than 12 digits: pad with leading zeros</td><td><code>000012345678</code></td></tr>
+        <tr><td><code>4012345678901</code></td><td>13 digits not starting with 0, or 14 digits: left as is</td><td><code>4012345678901</code></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="sub-section" id="agcnew-review">
+    <h3 class="sub-section-title">Step 4: Review, Save and Induct</h3>
+    <ol class="steps">
+      <li>Switch to the Item Induction Template and review the new rows.</li>
+      <li>Rows with a blank <strong>Parent Item</strong>, <strong>Transaction Item</strong> or <strong>Initial Retail</strong> had no match in Master TPGC. Check the card number in RMS; if the item exists, refresh the database (Step 2) and run again, otherwise fill the cells by hand or query the item.</li>
+      <li>Fill any Dept, Class or Subclass listed as missing in the Done message.</li>
+      <li>Use <span class="path-highlight">File</span> &rarr; <span class="path-highlight">Save As</span> to save the template under a new name for this request.</li>
+      <li>Run the <a href="#ivt-overview">Item Induction Checker</a>, fix anything it flags, and induct the template as usual.</li>
+    </ol>
+    <div class="callout warn"><span class="callout-icon">⚠</span><div><strong>Never save over the shared template.</strong> The macro opens the shared Item Induction Template, adds rows and leaves it open. A plain Save would put this request's rows into everyone's blank template.</div></div>
+  </div>
+
+  <div class="sub-section" id="agcnew-troubleshooting">
+    <h3 class="sub-section-title">Troubleshooting</h3>
+    <div class="table-wrap"><table class="decision-table ref-table">
+      <thead><tr><th>Message or symptom</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Could not find headers 'cpn_nbr' or 'prim_upc_cd' in Row 1</td><td>The card list sheet was not active, or the headers are not in row 1. Click the card list sheet, fix the headers, and run again.</td></tr>
+        <tr><td>No data found under headers</td><td>There is nothing below the cpn_nbr header.</td></tr>
+        <tr><td>Destination file not found</td><td>The shared Item Induction Template moved or the G: drive is not reachable. Connect to the network; if the template version changed, update <code>DEST_PATH</code> at the top of Module1.</td></tr>
+        <tr><td>Could not find one or more required headers in Row 7</td><td>The template's first sheet is missing GTIN, Parent Item, Transaction Item, Dept, Class or Subclass on row 7. Check the template has not been changed.</td></tr>
+        <tr><td>Access Database not found</td><td>The T: drive is not reachable or the database moved (<code>DB_PATH</code> in Module1). The rows were already added without database values: close the template without saving, fix access, and run again.</td></tr>
+        <tr><td>Parent, Transaction or Retail blank on some rows</td><td>No Master TPGC record has that exact card number as its Item Desc. Refresh the database (Step 2) and run again, or fill the cells by hand.</td></tr>
+        <tr><td>RMS fallback unavailable: …</td><td>The RMS connection failed or the login was cancelled. Rows still missing a hierarchy are listed; fill them by hand or fix the <code>RMS</code> ODBC connection.</td></tr>
+        <tr><td>Supplier blank or wrong</td><td>The card number does not start with AGCE or PRGS and the database has no supplier name for it. Enter the supplier by hand.</td></tr>
+        <tr><td>The template opened read-only</td><td>Someone else has it open. Close it, wait, and run again, or Save As a copy.</td></tr>
+        <tr><td>An unexpected error occurred: …</td><td>Usually the Access Database Engine is not installed, the database is open and locked (close Access), or the Master TPGC table has no <strong>Item Desc</strong> field. The template may be left open with partial rows; close it without saving.</td></tr>
+      </tbody>
+    </table></div>
   </div>
 </section>
 <section class="section" id="agc-upc-deletion">
